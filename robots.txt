@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /success.html
+
+Sitemap: https://wordtraps.app/sitemap.xml
+

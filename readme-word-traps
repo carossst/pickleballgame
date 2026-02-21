@@ -1,0 +1,220 @@
+# 🇫🇷 Test Your French: Word Traps
+
+> **A short-form linguistic judgment game — built as part of the Test Your French ecosystem.**
+
+---
+
+## 💡 Why This Exists
+
+Learning a language often gives you confidence too early.
+
+You recognize words.
+They look familiar.
+They feel correct.
+
+And that’s exactly where mistakes happen.
+
+**Word Traps** exists to test a very specific skill:
+your ability to **judge meaning**, not recall vocabulary or follow rules.
+
+No lessons.
+No progression.
+No hand-holding.
+
+Just a decision: **is this actually correct, or not?**
+
+---
+
+## 🎯 What It Does
+
+* A fixed pool of **100 word traps**
+  (false friends, semantic shifts, misleading similarities)
+* **True / False** judgment format
+* **10 questions per session**, then it ends
+* No levels, no difficulty curve
+* A pure **judgment game**, not a learning flow
+
+All linguistic content is loaded from `content.json`.
+
+---
+
+## 🛠️ How It Was Built
+
+### Vibe Coding with AI
+
+This project was built using the same **vibe coding** approach as *Test Your French*:
+a **human-led, AI-assisted** development workflow.
+
+AI is used to accelerate thinking and execution — not to replace judgment.
+
+In practice:
+
+* Product vision, UX decisions, and constraints remain human
+* AI is used for reasoning support, refactoring, and cross-checking
+* Outputs are reviewed, challenged, and corrected
+* No blind generation, no black-box logic
+
+AI acts as a **pair programmer**, not a decision-maker.
+
+### AI Usage in This Project
+
+* No AI runs during gameplay
+* Linguistic content is **human-designed**
+* AI supports architecture, code clarity, and edge-case detection
+* Ownership and responsibility remain fully human
+
+---
+
+## 🧠 Philosophy
+
+> *I don’t move fast by skipping understanding.
+> I move fast by removing unnecessary complexity.*
+
+### Product Mindset
+
+* This is **not** a course
+* This is **not** pedagogy
+* Discomfort is intentional
+* Judgment comes before explanation
+
+Constraints are deliberate:
+
+* Short, closed sessions
+* No retry loops inside a round
+* No adaptive difficulty to “help” the player
+
+The game tests instinct, not preparation.
+
+### Engineering Style
+
+* Vanilla JavaScript
+* No framework
+* No backend
+* Local state only
+* One responsibility per file
+* Single source of truth via configuration
+
+Complexity is removed, not abstracted.
+
+---
+
+## 🆓 Free & Premium
+
+### Free
+
+* **3 sessions** included
+* Full game, no functional limitation
+* Each session consumes **1 play**
+
+### Premium
+
+* **Unlimited play** (for this game only, on this device)
+* Unlocks **Mistakes only** mode
+  Replay only the items you previously got wrong
+* Activation via local code
+* No account, no server sync
+
+All rules are implemented in `storage.js`.
+
+---
+
+## 💳 Payments, Data & Privacy
+
+* No account
+* No backend
+* No tracking
+* All data stored **locally** in the browser
+
+Payments are processed by **Stripe Checkout**.
+Payment data is handled by Stripe and never stored by the game.
+
+Premium activation uses a local code (`WT-XXXX-XXXX`), stored only on the device.
+
+---
+
+## 📁 Project Structure
+
+```
+/
+├─ index.html        # App shell
+├─ style.css         # Design system + UI (KISS)
+├─ config.js         # Single source of truth
+├─ storage.js        # LocalStorage & product rules
+├─ game.js           # Selection algorithm + session engine
+├─ ui.js             # UI rendering & accessibility
+├─ main.js           # Bootstrap & orchestration
+├─ pwa.js            # Install prompt (A2HS)
+├─ email.js          # Email obfuscation
+├─ content.json      # Linguistic content
+├─ success.html      # Post-payment activation
+├─ sw.js             # Service Worker
+├─ manifest.json     # PWA manifest
+└─ icons/            # PWA icons
+```
+
+---
+
+## 📱 PWA & Offline
+
+* Installable on mobile and desktop
+* Fully usable offline after first load
+
+Caching strategy:
+
+* App shell: cache-first
+* `content.json`: stale-while-revalidate
+* Stripe: never cached
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Serve with any static server
+npx serve .
+# or
+python -m http.server 8000
+```
+
+Service Worker requires a local server — do not open files directly.
+
+---
+
+## 🚫 Non-Negotiable Constraints (V1)
+
+* ❌ No backend
+* ❌ No accounts
+* ❌ No external tracking
+* ❌ No level-based progression
+* ❌ No pedagogical redesign
+* ❌ No cross-game promises
+
+---
+
+## 🧠 What This Project Demonstrates
+
+* Designing a game around **judgment**, not teaching
+* Treating constraints as product features
+* Shipping a complete, monetized PWA without backend
+* Disciplined, pragmatic AI-assisted development
+* Clear separation between logic, UI, and storage
+
+---
+
+## 👩‍💻 About the Creator
+
+Built by **Carole Stromboni** — French native (Paris), product-oriented builder.
+
+This project is part of the **Test Your French** ecosystem and follows the same principles:
+clarity over complexity, judgment over hand-holding, and full human ownership of decisions.
+
+This work explores a central question:
+*Can a single person design, build, and ship a real product using AI responsibly?*
+
+The answer here is yes — with structure, discipline, and clear boundaries.
+
+---
+
+## 📄 License
+
+MIT — Use it. Fork it. Learn from it. Build your own.
