@@ -3144,22 +3144,18 @@ void function () {
     }
 
 
-    // One-shot: RUN deck rebuilt at end of pool (game.js exposes state.poolReshuffled)
-    // UX decision:
-    // - If this reshuffle corresponds to first-time 200/200 completion -> END celebration (and persist one-shot flag).
-    // - Otherwise (400+, etc.) -> do nothing (silent reshuffle).
+    /// One-shot: first-time pool completion (200/200) celebration.
+    // Source of truth: storage coverage + persisted "celebrated" flag (not transient engine signal).
     try {
-      const didReshuffle = !!(res && res.state && res.state.poolReshuffled === true);
-      if (didReshuffle) {
-        const isRunNow = (String(this._runtime?.runMode || "RUN").trim() === "RUN");
-
+      const isRunNow = (String(this._runtime?.runMode || "RUN").trim() === "RUN");
+      if (isRunNow) {
         const exhausted =
           !!(this.storage && typeof this.storage.hasSeenAllWordTraps === "function" && this.storage.hasSeenAllWordTraps() === true);
 
         const alreadyCelebrated =
           !!(this.storage && typeof this.storage.hasPoolCompleteCelebrated === "function" && this.storage.hasPoolCompleteCelebrated() === true);
 
-        if (isRunNow && exhausted && !alreadyCelebrated) {
+        if (exhausted && !alreadyCelebrated) {
           if (this.storage && typeof this.storage.markPoolCompleteCelebrated === "function") {
             this.storage.markPoolCompleteCelebrated();
           }
@@ -3168,12 +3164,8 @@ void function () {
           this._finishRun();
           return;
         }
-
-        // Silent reshuffle (no overlay)
       }
     } catch (_) { }
-
-
     // Game over rule (RUN / PRACTICE only):
     // - Freeze immediately
     // - Transition to END is deferred for the *effective* chance-loss overlay duration
@@ -3186,35 +3178,6 @@ void function () {
 
 
     if (isGameOverNow) {
-      // Block any "storage-updated" driven render during the delay
-      this._runtime.gameOverPending = true;
-
-      // Cancel the overlay auto-hide timer: the overlay must stay visible
-      // until render() transitions away from PLAYING (line ~4991).
-      // Without this, the overlay's own setTimeout can hide it 1 frame
-      // before _finishRun, revealing the empty PLAYING shell underneath.
-      if (chanceLostOverlayTimer) {
-        clearTimeout(chanceLostOverlayTimer);
-        chanceLostOverlayTimer = null;
-      }
-
-      // Cancel any pending feedback reveal timers
-      if (this._runtime.feedbackRevealTimerId) {
-        try { window.clearTimeout(this._runtime.feedbackRevealTimerId); } catch (_) { }
-        this._runtime.feedbackRevealTimerId = null;
-      }
-
-
-      // Ensure we do not enter feedback flow
-      this._runtime.feedbackPending = false;
-      this._runtime.feedbackReveal = true;
-      this._runtime.lastAnswer = null;
-      this._runtime.frozenItem = null;
-      this._runtime.finishAfterFeedback = false;
-
-      // Keep inputs locked until END
-      this._runtime.answerLocked = true;
-
       // Sync HUD mistakes immediately (avoid stale "2/3" display on the final mistake)
       try {
         const root = this.appEl || document.getElementById("app");
@@ -3248,59 +3211,28 @@ void function () {
         }
       } catch (_) { /* silent */ }
 
-      // Still record the answer for stats, but do not allow the resulting "storage-updated"
-      // to re-render PLAYING while the engine is done.
+      // Block renders BEFORE recordAnswer: _save() → _emit() → onStorageUpdated is synchronous.
+      // Without this, the dispatched event triggers render() while engine is done → blank screen.
+      this._runtime.gameOverPending = true;
+
+      // Record answer (storage-updated won't render - gameOverPending blocks it)
       if (this.storage && typeof this.storage.recordAnswer === "function") {
         this.storage.recordAnswer(res.itemId, res.isCorrect);
       }
       if (Number.isFinite(Number(res.itemId))) {
         const id = Number(res.itemId);
         this._runtime.runItemIds.push(id);
-
-        // Track per-run mistakes for END recap (dedup)
         if (res.isCorrect !== true) {
           if (!Array.isArray(this._runtime.runMistakeIds)) this._runtime.runMistakeIds = [];
           if (this._runtime.runMistakeIds.indexOf(id) === -1) this._runtime.runMistakeIds.push(id);
         }
       }
 
-      // Duration source of truth: WT_CONFIG.ui.chanceLostOverlayMs (+ optional extension on last chance)
-      const baseDurationMs = Number(this.config?.ui?.chanceLostOverlayMs);
-
-      if (Number.isFinite(baseDurationMs) && baseDurationMs >= 200 && baseDurationMs <= 3000) {
-        let durationMs = baseDurationMs;
-
-        const extraMs = Number(this.config?.ui?.gameplayPulseMs);
-        if (Number.isFinite(extraMs) && extraMs >= 0 && extraMs <= 2000) {
-          durationMs = baseDurationMs + Math.floor(extraMs);
-        }
-
-        if (durationMs > 3000) durationMs = 3000;
-
-        window.setTimeout(() => {
-          if (this.state !== STATES.PLAYING) return;
-          if (String(this._runtime?.runMode || "RUN").trim() === "BONUS") return;
-
-          // Keep overlay visible during transition â€” hide AFTER END renders
-          // (cleanup happens in render() â†’ enteredEnd block)
-
-          // Allow renders again
-          if (this._runtime) this._runtime.gameOverPending = false;
-
-          this._finishRun();
-        }, Math.floor(durationMs));
-      } else {
-        // Fail-safe: if config is invalid/missing, do not get stuck in PLAYING.
-        // No silent fallback duration â€” we end immediately.
-        // Keep overlay visible during transition â€” hide AFTER END renders.
-        if (this._runtime) this._runtime.gameOverPending = false;
-        this._finishRun();
-      }
-
-      // IMPORTANT: do NOT re-render PLAYING here (prevents â€œscreen bizarreâ€)
+      // Factored: freeze -> delay -> _finishRun (all modes, same contract)
+      // Note: _enterGameOverDelay sets gameOverPending = true again (idempotent, no harm)
+      this._enterGameOverDelay();
       return;
     }
-
 
     // Normal path: record answer immediately
     if (this.storage && typeof this.storage.recordAnswer === "function") {
@@ -3403,51 +3335,10 @@ void function () {
         this._runtime.answerLocked = false;
 
         if (res.done === true) {
-          // Product rule: if we ended by chances reaching 0, let the "Game over" overlay resolve before END renders.
           const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
           if (endedByGameOver) {
-            // Block renders during overlay delay (same guard as RUN game-over path)
-            this._runtime.gameOverPending = true;
-
-            // Re-lock input: prevent fall timeout from triggering _secretBonusFailCurrentItem
-            // during the overlay delay (answerLocked was cleared at line ~3400 before res.done check)
-            this._runtime.answerLocked = true;
-
-            // Stop fall animation: chip must not reach fail line during overlay delay
-            this._secretBonusFallStop();
-
-            // Cancel overlay auto-hide: render() will hide it on END entry
-            if (chanceLostOverlayTimer) {
-              clearTimeout(chanceLostOverlayTimer);
-              chanceLostOverlayTimer = null;
-            }
-
-            const baseMs = Number(this.config?.ui?.chanceLostOverlayMs);
-            if (Number.isFinite(baseMs) && baseMs >= 200 && baseMs <= 3000) {
-              let durationMs = Math.floor(baseMs);
-              // Match showChanceLostOverlay behavior: extend slightly on last chance using gameplayPulseMs (no fallback).
-              const extraMs = Number(this.config?.ui?.gameplayPulseMs);
-              if (Number.isFinite(extraMs) && extraMs >= 0 && extraMs <= 2000) {
-                durationMs = durationMs + Math.floor(extraMs);
-              }
-              if (durationMs > 3000) durationMs = 3000;
-
-              if (this._runtime.bonusEndTimerId) {
-                try { window.clearTimeout(this._runtime.bonusEndTimerId); } catch (_) { }
-                this._runtime.bonusEndTimerId = null;
-              }
-
-              this._runtime.bonusEndTimerId = window.setTimeout(() => {
-                // Keep overlay visible during transition — hide AFTER END renders (render → enteredEnd)
-                this._runtime.bonusEndTimerId = null;
-                if (this._runtime) this._runtime.gameOverPending = false;
-                this._finishRun();
-              }, Math.floor(durationMs));
-              return;
-
-            }
-            // Fail-safe: invalid overlay duration — end immediately but release guard first
-            if (this._runtime) this._runtime.gameOverPending = false;
+            this._enterGameOverDelay();
+            return;
           }
 
           this._finishRun();
@@ -3457,8 +3348,6 @@ void function () {
         this.render();
         return;
       }
-
-
 
       // Policy: minimal => toasts only (chance loss + end), no per-item feedback screen
       // Single source of truth for toast timing: WT_CONFIG.ui.toast (schema plat; no hardcoded fallback)
@@ -3472,21 +3361,22 @@ void function () {
       // - Deck exhausted: end because no more eligible words (chances may remain)
       // - Game over: end because chances reached 0
       if (res.done === true) {
-        const endedByDeck = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) > 0);
+        const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
 
-        const msg = endedByDeck
-          ? String(this.wording?.secretBonus?.endDeckExhaustedToast || "").trim()
-          : String(this.wording?.secretBonus?.endGameOverToast || "").trim();
+        if (endedByGameOver) {
+          this._enterGameOverDelay();
+          return;
+        }
 
-        // IMPORTANT: _finishRun() cancels scheduled toasts.
-        // So BONUS end toasts must be shown immediately, and the END transition must be delayed.
+        // Deck exhausted: show end toast, then transition to END after toast
+        const msg = String(this.wording?.secretBonus?.endDeckExhaustedToast || "").trim();
+
         const hasToast = !!(msg && durationMs != null);
         const toastMs = hasToast ? Math.max(0, Math.floor(durationMs)) : 0;
 
         if (hasToast) {
           cancelScheduledToast();
 
-          // Remove accidental-close guard
           if (this._beforeUnloadHandler) {
             window.removeEventListener("beforeunload", this._beforeUnloadHandler);
             this._beforeUnloadHandler = null;
@@ -3518,7 +3408,6 @@ void function () {
         this._finishRun();
         return;
       }
-
       // No feedback screen: immediately continue to next item
       this._runtime.feedbackPending = false;
       this._runtime.lastAnswer = null;
@@ -3609,6 +3498,84 @@ void function () {
     this.render();
   };
 
+  // ============================================
+  // Game-over delay (factored — all modes)
+  // ============================================
+  // Single entry point for the "freeze PLAYING → wait for overlay → END" transition.
+  // Contract:
+  //   1. Block all renders (gameOverPending)
+  //   2. Lock input (answerLocked) — prevents fall-timeout or tap during delay
+  //   3. Stop fall animation (BONUS only, idempotent elsewhere)
+  //   4. Cancel overlay auto-hide timer (overlay stays until render() leaves PLAYING)
+  //   5. Clear feedback state (frozenItem, lastAnswer, feedbackPending)
+  //   6. Cancel any pending feedback-reveal timer
+  //   7. Schedule _finishRun after overlay duration (or immediate if config invalid)
+  //
+  // Callers must still:
+  //   - Show the overlay BEFORE calling this (showChanceLostToast)
+  //   - Record the answer to storage BEFORE calling this
+  //   - Sync HUD if needed BEFORE calling this
+  UI.prototype._enterGameOverDelay = function () {
+    if (!this._runtime) { this._finishRun(); return; }
+
+    // 1. Block renders
+    this._runtime.gameOverPending = true;
+
+    // 2. Lock input
+    this._runtime.answerLocked = true;
+
+    // 3. Stop fall animation (idempotent if not running / not BONUS)
+    this._secretBonusFallStop();
+
+    // 4. Cancel overlay auto-hide timer
+    if (chanceLostOverlayTimer) {
+      clearTimeout(chanceLostOverlayTimer);
+      chanceLostOverlayTimer = null;
+    }
+
+    // 5. Clear feedback state
+    this._runtime.feedbackPending = false;
+    this._runtime.feedbackReveal = true;
+    this._runtime.lastAnswer = null;
+    this._runtime.frozenItem = null;
+    this._runtime.finishAfterFeedback = false;
+
+    // 6. Cancel pending feedback-reveal timer
+    if (this._runtime.feedbackRevealTimerId) {
+      try { window.clearTimeout(this._runtime.feedbackRevealTimerId); } catch (_) { }
+      this._runtime.feedbackRevealTimerId = null;
+    }
+
+    // 7. Schedule _finishRun after overlay duration
+    // Duration source of truth: WT_CONFIG.ui.chanceLostOverlayMs + gameplayPulseMs (game over extension)
+    const baseDurationMs = Number(this.config?.ui?.chanceLostOverlayMs);
+
+    if (Number.isFinite(baseDurationMs) && baseDurationMs >= 200 && baseDurationMs <= 3000) {
+      let durationMs = baseDurationMs;
+
+      const extraMs = Number(this.config?.ui?.gameplayPulseMs);
+      if (Number.isFinite(extraMs) && extraMs >= 0 && extraMs <= 2000) {
+        durationMs = baseDurationMs + Math.floor(extraMs);
+      }
+      if (durationMs > 3000) durationMs = 3000;
+
+      // Cancel any existing end timer (idempotent)
+      if (this._runtime.bonusEndTimerId) {
+        try { window.clearTimeout(this._runtime.bonusEndTimerId); } catch (_) { }
+        this._runtime.bonusEndTimerId = null;
+      }
+
+      window.setTimeout(() => {
+        if (this.state !== STATES.PLAYING) return;
+        if (this._runtime) this._runtime.gameOverPending = false;
+        this._finishRun();
+      }, Math.floor(durationMs));
+    } else {
+      // Fail-safe: invalid config → end immediately
+      this._runtime.gameOverPending = false;
+      this._finishRun();
+    }
+  };
 
   UI.prototype._finishRun = function () {
     // Idempotent: if we're already in END, do nothing (prevents "double END screen" from late timers)
@@ -4653,15 +4620,21 @@ void function () {
 
     // BONUS feedback policy already handled in UI.prototype.answer, but here we enforce the same "none/minimal".
     const sbFeedback = String(this.config?.secretBonus?.feedback || "").trim();
+
     if (sbFeedback === "none") {
       this._runtime.feedbackPending = false;
       this._runtime.lastAnswer = null;
       this._runtime.frozenItem = null;
       this._runtime.finishAfterFeedback = false;
-
       this._runtime.answerLocked = false;
 
       if (res.done === true) {
+        const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
+        if (endedByGameOver) {
+          // Fall already stopped (line above). Use factored delay for freeze + overlay hold.
+          this._enterGameOverDelay();
+          return;
+        }
         this._finishRun();
         return;
       }
@@ -4669,31 +4642,29 @@ void function () {
       this.render();
       return;
     }
-
-    // minimal: end feedback must use the centered gameplay overlay (no toasts during PLAYING).
-    this._runtime.answerLocked = false;
-
     if (res.done === true) {
-      // Determine end cause from observable state (chancesLeft > 0 => deck exhausted)
       let nowChancesLeft = null;
       try {
         const gsNow = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
         nowChancesLeft = (gsNow.chancesLeft != null) ? Number(gsNow.chancesLeft) : null;
       } catch (_) { nowChancesLeft = null; }
 
-      const endedByDeck = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) > 0);
+      const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
 
-      const msg = endedByDeck
-        ? String(this.wording?.secretBonus?.endDeckExhaustedToast || "").trim()
-        : String(this.wording?.secretBonus?.endGameOverToast || "").trim();
+      if (endedByGameOver) {
+        // Fall already stopped. Use factored delay for freeze + overlay hold.
+        this._enterGameOverDelay();
+        return;
+      }
 
-      // Config-driven timing (no fallback): reuse run-start overlay window for BONUS end.
+      // Deck exhausted: show gameplay overlay then transition to END
+      const msg = String(this.wording?.secretBonus?.endDeckExhaustedToast || "").trim();
       const durationMs = Number(this.config?.ui?.runStartOverlayMs);
 
       if (msg && Number.isFinite(durationMs) && durationMs >= 200 && durationMs <= 3000) {
         showGameplayOverlay(msg, {
           durationMs: Math.floor(durationMs),
-          variant: endedByDeck ? "success" : "danger"
+          variant: "success"
         });
 
         if (this._runtime.bonusEndTimerId) {
@@ -4702,23 +4673,14 @@ void function () {
         }
 
         this._runtime.bonusEndTimerId = window.setTimeout(() => {
-          // Timer consumed
           this._runtime.bonusEndTimerId = null;
-
-          // If we've already left PLAYING (or already ended), do NOT finish again.
-          if (this.state !== STATES.PLAYING) {
-            return;
-          }
-
-          // Keep overlay visible during transition â€” hide AFTER END renders (render â†’ enteredEnd)
+          if (this.state !== STATES.PLAYING) return;
           this._finishRun();
         }, Math.floor(durationMs));
 
         return;
-
       }
 
-      // If timing is invalid or msg missing, finish immediately (fail-closed on UI feedback).
       this._finishRun();
       return;
     }
@@ -4726,6 +4688,8 @@ void function () {
     this.render();
 
   };
+
+
 
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
@@ -5361,23 +5325,31 @@ void function () {
         } catch (_) { seen = 0; }
 
         seen = clampInt(seen, 0, poolSizeSafe);
-
-        // Unique mistakes (items with at least one wrong)
+        // Mistakes to fix (global, can go down):
+        // remaining = lastWrongAt > lastCorrectAt
+        // Mistakes to fix (global, can go down):
+        // remaining = lastWrongAt > lastCorrectAt
         let mistakes = 0;
         try {
           const stats = (this.storage && typeof this.storage.getStatsByItem === "function")
             ? (this.storage.getStatsByItem() || {})
             : ((this.storage && typeof this.storage.getData === "function") ? ((this.storage.getData() || {}).statsByItem || {}) : {});
+
           if (stats && typeof stats === "object") {
             for (const k in stats) {
               const s = stats[k] || {};
-              if (Number(s.wrongCount || 0) > 0) mistakes += 1;
+              const lastWrongAt = Number(s.lastWrongAt || 0);
+              const lastCorrectAt = Number(s.lastCorrectAt || 0);
+
+              const lw = (Number.isFinite(lastWrongAt) && lastWrongAt > 0) ? lastWrongAt : 0;
+              const lc = (Number.isFinite(lastCorrectAt) && lastCorrectAt > 0) ? lastCorrectAt : 0;
+
+              if (lw > lc) mistakes += 1;
             }
           }
         } catch (_) { mistakes = 0; }
 
         mistakes = clampInt(mistakes, 0, poolSizeSafe);
-
         const isComplete = (seen >= poolSizeSafe);
         const remaining = clampInt(poolSizeSafe - seen, 0, poolSizeSafe);
 
@@ -5406,17 +5378,12 @@ void function () {
           title = "";
           sub = fillTemplate(seenTpl, { seen, poolSize: poolSizeSafe, remaining });
         } else {
-          title =
-            (completeLabelTpl ? fillTemplate(completeLabelTpl, { poolSize: poolSizeSafe }) : "") ||
-            seenLabel;
+          // Fail-closed: after completion, do not fall back to other labels/lines.
+          title = (completeLabelTpl ? fillTemplate(completeLabelTpl, { poolSize: poolSizeSafe }) : "");
 
-          const mistakesLine = (mistakesLabel && mistakesTpl)
+          sub = (mistakesLabel && mistakesTpl)
             ? `${mistakesLabel}: ${fillTemplate(mistakesTpl, { mistakes })}`
             : "";
-
-          sub =
-            mistakesLine ||
-            (seenTpl ? fillTemplate(seenTpl, { seen, poolSize: poolSizeSafe, remaining }) : "");
         }
 
         // UI decision: do not show the "Words seen" label. Show only the numeric line, left-aligned.
@@ -5715,7 +5682,7 @@ ${landingHeaderRowHtml}
 
     ${welcomeBackHtml}
 
-    ${(landing.microFun ? `<p class="wt-sub wt-muted" style="margin-top:10px">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
+    ${((!premium && landing.microFun) ? `<p class="wt-sub wt-muted" style="margin-top:10px">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
 
     ${postBlock}
 

@@ -2004,8 +2004,9 @@ body.wt-state--playing .wt-footer {
 
 .wt-skip-link {
   position: absolute;
-  top: -40px;
+  top: 0;
   left: 0;
+  transform: translateY(-120%);
   background: rgb(var(--primary-dark));
   color: rgb(var(--on-primary));
   padding: var(--gap-1) var(--gap-3);
@@ -2014,7 +2015,7 @@ body.wt-state--playing .wt-footer {
 }
 
 .wt-skip-link:focus {
-  top: 0;
+  transform: translateY(0);
 }
 
 .sr-only {

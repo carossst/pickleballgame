@@ -64,7 +64,7 @@
     // success.html (contact email domain)
     identity: {
       appName: "Word Traps",
-      appUrl: "https://wordtraps.app",
+      appUrl: "https://wordtraps.com",
       parentUrl: "https://www.testyourfrench.com",
 
       // UI signature icon (in-card). Single source of truth for in-app branding.
@@ -460,8 +460,8 @@
 
   window.WT_WORDING = {
     brand: {
-      creatorLine: "Created by Carole, a French native from Paris. 🇫🇷",
-      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>, a French native from Paris. 🇫🇷"
+      creatorLine: "Carole, a French native from Paris 🇫🇷",
+      creatorLineHtml: "An indie game by Test Your French created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>, a French native from Paris. 🇫🇷"
     },
 
     system: {
@@ -485,7 +485,7 @@
       open: "Open",
       notNow: "Not now",
       continue: "Next",
-      tapToContinue: "Tap to continue",
+      tapToContinue: "",
       playAria: "Start a new run",
       shareAria: "Share the game",
       resultGridAria: "Result grid",
@@ -544,14 +544,12 @@
       cheatSheetBody: "If you added the Cheat Sheet to your order, enter your email below to receive the download link.",
 
     },
-
-
     landing: {
       title: "Word Traps",
       tagline: "",
       subtitle: "Faux amis or true friends?\n{poolSize} French words.\n{maxChances} mistakes allowed.\nLooks obvious. It isn't.",
       microFun: "No signup - Play in under 2 minutes - Free to start",
-      microTrust: "An indie game by Carole · Test Your French",
+      microTrust: "",
 
 
       runsLabel: "Runs",
@@ -567,6 +565,11 @@
       // Before completion (goal gradient) 
       statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} word traps · {remaining} to go",
 
+      // After completion (fail-closed: required for the post-200 line)
+      statsSeenCompleteLabel: "You've seen all {poolSize} word traps.",
+      statsMistakesLabel: "Mistakes to fix",
+      statsMistakesSummaryTemplate: "{mistakes}",
+
 
       postPaywallTitle: "Free runs completed.",
       postPaywallBody: "Unlock unlimited runs anytime and keep your progress on this device.",
@@ -575,8 +578,6 @@
       postPaywallSbTitle: "Before you decide...",
       postPaywallSbBody: "You still have a secret bonus to try. Tap 🎁."
     },
-
-
 
     firstRun: {
       framingLines: [
@@ -843,11 +844,11 @@
 
 
       // Pool complete (one-shot celebration when 200/200 reached)
-      poolCompleteTitle: "Bravo. You made it through all 200.",
-      poolCompleteLine1: "That was not easy.",
-      poolCompleteLine2: "You earned it.",
-      poolCompleteScoreLine: "Score: {score} {fpShort}",
-      poolCompleteCtaPrimary: "Play again in a new random order",
+      poolCompleteTitle: "You did it. All 200 word traps.",
+      poolCompleteLine1: "Not many people get this far.",
+      poolCompleteLine2: "Now you can replay in a new order, practice the ones you missed, or try the bonus mode. The game is yours.",
+      poolCompleteScoreLine: "This run: {score} {fpShort}",
+      poolCompleteCtaPrimary: "Replay in a new order",
       poolCompleteCtaPractice: "Practice your mistakes",
 
       // No redundancy: do not mention chances on END (player already knows).
@@ -1038,10 +1039,9 @@
     },
 
 
-
     postCompletion: {
-      title: "You've seen all {poolSize} word traps in this version.",
-      body: "Practice mode (Mistakes only) is the fastest way to focus on what still trips you up."
+      title: "You've seen everything.",
+      body: "Now make it stick. Practice your mistakes, explore Bonus Mode, or replay full runs."
     },
 
     houseAd: {

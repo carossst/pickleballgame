@@ -27,7 +27,7 @@
       "termFr": "éventuellement",
       "termEn": "eventually",
       "correctAnswer": false,
-      "explanationShort": "éventuellement (FR) = possibly, perhaps.\neventually (EN) = in the end, after some time.\nFrench expresses uncertainty; English points to a final outcome.",
+      "explanationShort": "éventuellement (FR) = possibly, perhaps.\neventually (EN) = in the end, after some time.\nFrench is uncertainty; English is outcome.",
       "tag": "false_friend"
     },
     {
@@ -35,7 +35,7 @@
       "termFr": "collège",
       "termEn": "college",
       "correctAnswer": false,
-      "explanationShort": "collège (FR) = middle school in France, for ages 11-15.\ncollege (EN) = higher education after high school.\nThe Napoleonic education system fixed it as the level between primary school and high school.",
+      "explanationShort": "collège (FR) = middle school (ages 11-15).\ncollege (EN) = higher education after high school.\nTeenagers in French, adults in English.",
       "tag": "false_friend"
     },
     {
@@ -43,7 +43,7 @@
       "termFr": "location",
       "termEn": "location",
       "correctAnswer": false,
-      "explanationShort": "location (FR) = a rental, the act of renting a flat, car, or equipment.\nlocation (EN) = a geographical place or position.\nBoth from Latin 'locare' (to place), but French took the leasing action while English took the place itself.",
+      "explanationShort": "location (FR) = a rental (flat, car, equipment).\nlocation (EN) = a place or position.\nRenting in French, place in English.",
       "tag": "false_friend"
     },
     {
@@ -51,7 +51,7 @@
       "termFr": "stage",
       "termEn": "stage",
       "correctAnswer": false,
-      "explanationShort": "stage (FR) = an internship or training course.\nstage (EN) = a platform for performances, or a phase in a process.\nFrom Old French 'estage' (a stay); the internship sense grew from the idea of a temporary stay for learning.",
+      "explanationShort": "stage (FR) = an internship or training period.\nstage (EN) = a platform for performances, or a phase.\nWork experience in French, theatre in English.",
       "tag": "false_friend"
     },
     {
@@ -67,7 +67,7 @@
       "termFr": "caméra",
       "termEn": "camera",
       "correctAnswer": false,
-      "explanationShort": "caméra (FR) = primarily a video camera, but also used for surveillance cameras.\ncamera (EN) = any device that takes photos or records video.",
+      "explanationShort": "caméra (FR) = mainly a video camera.\ncamera (EN) = a device that takes photos or video.\nFrench leans video; English covers both.",
       "tag": "false_friend"
     },
     {
@@ -99,7 +99,7 @@
       "termFr": "monnaie",
       "termEn": "money",
       "correctAnswer": false,
-      "explanationShort": "monnaie (FR) = loose change (coins) or a country's currency.\nmoney (EN) = wealth in general, cash of any kind.\nBoth from Latin 'Moneta,' a title of goddess Juno whose temple housed Rome's coin mint.",
+      "explanationShort": "monnaie (FR) = coins or a country's currency.\nmoney (EN) = cash or wealth in general.\nFrench often means coins; English is broader.",
       "tag": "false_friend"
     },
     {
@@ -123,7 +123,7 @@
       "termFr": "définitivement",
       "termEn": "definitely",
       "correctAnswer": false,
-      "explanationShort": "définitivement (FR) = permanently, for good.\ndefinitely (EN) = certainly, without a doubt.",
+      "explanationShort": "définitivement (FR) = permanently, for good.\ndefinitely (EN) = certainly, without doubt.\nPermanent in French, certain in English.",
       "tag": "false_friend"
     },
     {
@@ -251,7 +251,7 @@
       "termFr": "phrase",
       "termEn": "phrase",
       "correctAnswer": false,
-      "explanationShort": "phrase (FR) = a complete sentence in French.\nphrase (EN) = a group of words or expression, usually shorter than a full sentence.",
+      "explanationShort": "phrase (FR) = a full sentence.\nphrase (EN) = a group of words, not always a full sentence.\nFrench is complete; English can be shorter.",
       "tag": "false_friend"
     },
     {
@@ -355,7 +355,7 @@
       "termFr": "fournir",
       "termEn": "furnish",
       "correctAnswer": false,
-      "explanationShort": "fournir (FR) = to supply or provide goods and services.\nfurnish (EN) = to equip a room with furniture.",
+      "explanationShort": "fournir (FR) = to supply or provide.\nfurnish (EN) = to equip with furniture.\nFrench provides; English decorates.",
       "tag": "false_friend"
     },
     {
@@ -379,7 +379,7 @@
       "termFr": "rester",
       "termEn": "rest",
       "correctAnswer": false,
-      "explanationShort": "rester (FR) = to stay or remain in a place.\nrest (EN) = to relax or stop activity.",
+      "explanationShort": "rester (FR) = to stay or remain somewhere.\nrest (EN) = to relax or stop working.\nStaying in French; relaxing in English.",
       "tag": "false_friend"
     },
     {
@@ -411,7 +411,7 @@
       "termFr": "déception",
       "termEn": "deception",
       "correctAnswer": false,
-      "explanationShort": "déception (FR) = disappointment, when expectations are not met.\ndeception (EN) = trickery, the act of lying or misleading.",
+      "explanationShort": "déception (FR) = disappointment, when expectations are not met.\ndeception (EN) = trickery, deliberate lying or misleading.\nFrench is about unmet hopes; English is about intentional dishonesty.",
       "tag": "false_friend"
     },
     {
@@ -419,7 +419,7 @@
       "termFr": "décevoir",
       "termEn": "deceive",
       "correctAnswer": false,
-      "explanationShort": "décevoir (FR) = to disappoint someone.\ndeceive (EN) = to trick or lie to someone.",
+      "explanationShort": "décevoir (FR) = to disappoint someone.\ndeceive (EN) = to trick or mislead someone.\nFrench hurts feelings; English breaks trust.",
       "tag": "false_friend"
     },
     {
@@ -427,7 +427,7 @@
       "termFr": "roman",
       "termEn": "roman",
       "correctAnswer": false,
-      "explanationShort": "roman (FR) = a novel, a work of fiction.\nroman (EN) = relating to ancient Rome or its empire.\nMedieval stories written in vernacular French (not Latin) were called 'romances' — the word stuck for novels.",
+      "explanationShort": "roman (FR) = a novel, a work of fiction.\nroman (EN) = relating to ancient Rome.\nFrench names the story; English names the empire.",
       "tag": "false_friend"
     },
     {
@@ -435,7 +435,7 @@
       "termFr": "bras",
       "termEn": "brass",
       "correctAnswer": false,
-      "explanationShort": "bras (FR) = an arm, the body part.\nbrass (EN) = a yellow metal alloy of copper and zinc.",
+      "explanationShort": "bras (FR) = an arm, the body part.\nbrass (EN) = a yellow metal alloy.\nOne moves; the other shines.",
       "tag": "false_friend"
     },
     {
@@ -443,7 +443,7 @@
       "termFr": "limonade",
       "termEn": "lemonade",
       "correctAnswer": false,
-      "explanationShort": "limonade (FR) = a carbonated lemon-flavoured soda.\nlemonade (EN) = a still drink made from fresh lemon juice, water, and sugar.\nIn France, ordering one gets you a fizzy soft drink, not a homemade citrus drink.",
+      "explanationShort": "limonade (FR) = a fizzy lemon soda.\nlemonade (EN) = a still drink made with lemon juice.\nIn France it bubbles; in English it does not.",
       "tag": "false_friend"
     },
     {
@@ -451,7 +451,7 @@
       "termFr": "prune",
       "termEn": "prune",
       "correctAnswer": false,
-      "explanationShort": "prune (FR) = a fresh plum, the fruit picked from the tree.\nprune (EN) = a dried plum.\nSame shift as raisin/grape: English borrowed the French word and applied it only to the dried version.",
+      "explanationShort": "prune (FR) = a fresh plum.\nprune (EN) = a dried plum.\nFrench is fresh; English is dried.",
       "tag": "false_friend"
     },
     {
@@ -459,7 +459,7 @@
       "termFr": "pain",
       "termEn": "pain",
       "correctAnswer": false,
-      "explanationShort": "pain (FR) = bread.\npain (EN) = physical or emotional suffering.\nFrom Latin \"panis\" (bread); the two words share no root despite identical spelling.",
+      "explanationShort": "pain (FR) = bread.\npain (EN) = physical or emotional suffering.\nSame spelling, totally different meaning.",
       "tag": "false_friend"
     },
     {
@@ -787,7 +787,7 @@
       "termFr": "libraire",
       "termEn": "librarian",
       "correctAnswer": false,
-      "explanationShort": "libraire (FR) = a bookseller, someone who sells books in a shop.\nlibrarian (EN) = a person who works in a lending library, not a bookstore.",
+      "explanationShort": "libraire (FR) = a bookseller.\nlibrarian (EN) = a person who works in a library.\nSeller in French; library staff in English.",
       "tag": "false_friend"
     },
     {
@@ -1163,7 +1163,7 @@
       "termFr": "apologie",
       "termEn": "apology",
       "correctAnswer": false,
-      "explanationShort": "apologie (FR) = a defence or justification of something.\napology (EN) = an expression of regret for a mistake.\nDefending a position in French, expressing regret in English — near opposites.",
+      "explanationShort": "apologie (FR) = a defense or strong justification of something.\napology (EN) = saying sorry for a mistake.\nBoth come from Greek 'apologia' (a speech in defense), but English shifted toward regret.",
       "tag": "false_friend"
     },
     {

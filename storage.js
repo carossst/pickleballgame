@@ -523,7 +523,8 @@
         correctCount: 0,
         wrongCount: 0,
         lastSeenAt: 0,
-        lastWrongAt: 0
+        lastWrongAt: 0,
+        lastCorrectAt: 0
       };
     }
     const s = this.data.statsByItem[k];
@@ -532,6 +533,7 @@
     if (!Number.isFinite(s.wrongCount)) s.wrongCount = 0;
     if (!Number.isFinite(s.lastSeenAt)) s.lastSeenAt = 0;
     if (!Number.isFinite(s.lastWrongAt)) s.lastWrongAt = 0;
+    if (!Number.isFinite(s.lastCorrectAt)) s.lastCorrectAt = 0;
     return s;
   };
 
@@ -768,7 +770,8 @@
       correctCount: clampNonNegativeInt(s.correctCount),
       wrongCount: clampNonNegativeInt(s.wrongCount),
       lastSeenAt: clampNonNegativeInt(s.lastSeenAt),
-      lastWrongAt: clampNonNegativeInt(s.lastWrongAt)
+      lastWrongAt: clampNonNegativeInt(s.lastWrongAt),
+      lastCorrectAt: clampNonNegativeInt(s.lastCorrectAt)
     };
   };
 
@@ -786,7 +789,8 @@
         correctCount: clampNonNegativeInt(s.correctCount),
         wrongCount: clampNonNegativeInt(s.wrongCount),
         lastSeenAt: clampNonNegativeInt(s.lastSeenAt),
-        lastWrongAt: clampNonNegativeInt(s.lastWrongAt)
+        lastWrongAt: clampNonNegativeInt(s.lastWrongAt),
+        lastCorrectAt: clampNonNegativeInt(s.lastCorrectAt)
       };
     }
     return out;
@@ -1235,6 +1239,7 @@
 
     if (isCorrect) {
       s.correctCount = clampNonNegativeInt(s.correctCount) + 1;
+      s.lastCorrectAt = now();
     } else {
       s.wrongCount = clampNonNegativeInt(s.wrongCount) + 1;
       s.lastWrongAt = now();

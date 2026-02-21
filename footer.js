@@ -40,15 +40,89 @@
         </div>
       </div>
     `;
+    }
 
+    function hydrateFooter(root) {
+        if (!root) return;
+
+        const cfg = window.WT_CONFIG || {};
+        const w = window.WT_WORDING || {};
+
+        // Apply wording (scoped to footer only)
+        try {
+            const nodes = root.querySelectorAll("[data-wt-wording]");
+            nodes.forEach((el) => {
+                const key = String(el.getAttribute("data-wt-wording") || "").trim();
+                if (!key) return;
+
+                const parts = key.split(".");
+                let cur = w;
+                for (const p of parts) {
+                    if (!cur || typeof cur !== "object") { cur = null; break; }
+                    cur = cur[p];
+                }
+
+                const txt = String(cur || "").trim();
+                el.textContent = txt || "";
+            });
+        } catch (_) { /* silent */ }
+
+        // Creator line (prefer HTML if provided)
+        try {
+            const creatorEl = root.querySelector('[data-wt-brand="creatorLine"]');
+            if (creatorEl) {
+                const html = String(w.brand?.creatorLineHtml || "").trim();
+                const line = String(w.brand?.creatorLine || "").trim();
+                if (html) creatorEl.innerHTML = html;
+                else creatorEl.textContent = line || "";
+            }
+        } catch (_) { /* silent */ }
+
+        // Parent app/site link (optional segment)
+        try {
+            const appUrlEl = root.querySelector("#wt-tyf-link");
+            const appUrlSep = root.querySelector(".wt-footer-sep--tyf");
+            const url = String(cfg.identity?.parentUrl || "").trim();
+
+            if (appUrlEl) {
+                if (url) {
+                    appUrlEl.setAttribute("href", url);
+                    appUrlEl.setAttribute("target", "_blank");
+                    appUrlEl.setAttribute("rel", "noopener");
+
+                    try {
+                        appUrlEl.textContent = new URL(url).hostname.replace(/^www\./, "");
+                    } catch (_) {
+                        appUrlEl.textContent = url;
+                    }
+
+                    appUrlEl.style.display = "";
+                    if (appUrlSep) appUrlSep.style.display = "";
+                } else {
+                    appUrlEl.style.display = "none";
+                    if (appUrlSep) appUrlSep.style.display = "none";
+                }
+            }
+        } catch (_) { /* silent */ }
+
+        // Version
+        try {
+            const vEl = root.querySelector("[data-wt-version]");
+            const v = String(cfg.version || "").trim();
+            const prefix = String(w.system?.versionPrefix || "").trim();
+            if (vEl) {
+                vEl.textContent = (v && prefix) ? `${prefix}${v}` : "";
+            }
+        } catch (_) { /* silent */ }
     }
 
     function tryInject() {
         const existing = document.querySelector("footer.wt-footer");
-        if (existing && hasNonEmptyContent(existing)) return;
+        const root = document.getElementById("wt-footer-root") || existing;
+        if (!root) return;
 
-        const root = document.getElementById("wt-footer-root");
-        if (root) injectIntoFooterRoot(root);
+        injectIntoFooterRoot(root);
+        hydrateFooter(root);
 
         // Let email.js wire the contact link, but enforce FAIL-CLOSED here:
         // - If the support hook is missing, remove Contact entry.
@@ -72,7 +146,6 @@
             }
         }
     }
-
 
     tryInject();
 
