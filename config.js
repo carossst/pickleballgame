@@ -461,7 +461,7 @@
   window.WT_WORDING = {
     brand: {
       creatorLine: "Carole, a French native from Paris 🇫🇷",
-      creatorLineHtml: "An indie game by Test Your French created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>, a French native from Paris. 🇫🇷"
+      creatorLineHtml: "An indie game by Test Your French.<br>Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>, a French native from Paris. 🇫🇷"
     },
 
     system: {
@@ -571,7 +571,7 @@
       statsMistakesSummaryTemplate: "{mistakes}",
 
 
-      postPaywallTitle: "Free runs completed.",
+      postPaywallTitle: "Free runs completed. Ready for more?",
       postPaywallBody: "Unlock unlimited runs anytime and keep your progress on this device.",
       postPaywallCta: "See Premium options",
 
@@ -583,7 +583,7 @@
       framingLines: [
         "{maxChances} mistakes allowed. Take your time.",
         "Looks obvious. It isn’t.",
-        "{freeRuns} free runs to see how well you really know these words."
+        "{freeRuns} free runs. See how well you really know these words."
       ],
 
       trustLines: [
@@ -619,7 +619,7 @@
       // Start-of-run overlay (economy)
       // Visible uniquement pour FREE et LAST_FREE
       startRunTypeFree: "FREE RUN",
-      startRunTypeLastFree: "Final free run. Take your time.",
+      startRunTypeLastFree: "Final free run. Make it count.",
       startRunTypeUnlimited: "",
       startRunTypePractice: "Your past mistakes, one more time.",
 
@@ -679,16 +679,16 @@
 
       // BONUS END - identity (no "streak" wording)
       identityByLevel: {
-        low: "",
-        medium: "",
-        high: ""
+        low: "Speed changes everything.",
+        medium: "You kept up with the pace.",
+        high: "You owned the speed."
       },
 
       // BONUS END - gentle lens (descriptive, no imperatives)
       lensByLevel: {
-        low: "",
-        medium: "",
-        high: ""
+        low: "Speed reveals what you really know.",
+        medium: "Under pressure, the right answers still came.",
+        high: "Excellent. That's real fluency."
       },
 
       // BONUS END - emotionally congruent CTA label
@@ -849,10 +849,10 @@
       poolCompleteLine2: "Now you can replay in a new order, practice the ones you missed, or try the bonus mode. The game is yours.",
       poolCompleteScoreLine: "This run: {score} {fpShort}",
       poolCompleteCtaPrimary: "Replay in a new order",
-      poolCompleteCtaPractice: "Practice your mistakes",
+      poolCompleteCtaPractice: "Fix your mistakes",
 
       // No redundancy: do not mention chances on END (player already knows).
-      endLine: "Run complete. Want to go again?",
+      endLine: "Run complete.",
 
 
       // (verdict grid removed — identityByVerdict is now the primary END signal)
@@ -902,7 +902,7 @@
       // False friends identified (RUN only)
       // Definition: distinct items with tag === "false_friend" and correctCount > 0
       // Vars: {count}
-      falseFriendsIdentifiedLine: "{count} false friends identified.",
+      falseFriendsIdentifiedLine: "",
 
 
       // END secondary content toggles
@@ -918,7 +918,7 @@
       personalBestLine: "Best score: {best} {fpLong}",
 
       // Free runs hint (RUN-only; shown only when remaining > 0)
-      freeRunLeft: "{remaining} free run{pluralS} left.",
+      freeRunLeft: "{remaining} free run{pluralS} available.",
 
       // RUN END - mistakes recap (free + premium)
       mistakesTitle: "Mistakes",
@@ -929,8 +929,8 @@
       playAgain: "Start a new run",
 
 
-      practiceCta: "Practice mode (Mistakes only)",
-      practiceCtaPremium: "Practice mode (Mistakes only) (Premium)",
+      practiceCta: "Fix your weak spots",
+      practiceCtaPremium: "Fix your weak spots (Premium)",
       shareTitle: "Share"
     },
 
@@ -956,7 +956,7 @@
       valueBullets: [
         "Access the full set of word traps",
         "Play unlimited runs - same rules, no limits",
-        "Unlock a new mode: practice your mistakes",
+        "Unlock a new mode: practice your mistakes and fix your weak spots",
         "Enjoy unlimited bonus mode - even better once all word traps are unlocked"
       ],
 
@@ -987,13 +987,13 @@
       checkoutNote: "Secure checkout via Stripe - takes about 30 seconds.",
 
       // Primary CTA changes with price phase (EARLY vs STANDARD)
-      ctaEarly: "Get unlimited runs at $4.99",
-      ctaStandard: "Get unlimited runs - $6.99",
+      ctaEarly: "Unlock all 200 word traps — $4.99",
+      ctaStandard: "Get unlimited runs — $6.99",
 
       // Backward compat (still used in a few places)
       cta: "Get unlimited runs",
 
-      alreadyHaveCode: "Already have a code? Redeem it here.",
+      alreadyHaveCode: "Already have a code? Activate it here.",
       deviceNote: "Premium stays unlocked on this device. No account needed.",
 
       // PW2: EARLY visual badge (copy visible)
@@ -1038,10 +1038,15 @@
       autoActivateLater: "Not now"
     },
 
-
     postCompletion: {
       title: "You've seen everything.",
-      body: "Now make it stick. Practice your mistakes, explore Bonus Mode, or replay full runs."
+      body: "Now make it stick. Practice your mistakes, explore Bonus Mode, or replay full runs.",
+      waitlistTitle: "Stay in the loop",
+      waitlistBody1: "Get notified when we add new word traps or features.",
+      waitlistBody2: "No spam. No account. Leave anytime.",
+      waitlistCta: "Get notified",
+      waitlistDisclaimer: "Email only. Unsubscribe anytime.",
+      houseAdCta: "Try Test Your French"
     },
 
     houseAd: {
@@ -1056,7 +1061,7 @@
       landingTitle: "You've seen all {poolSize} word traps.",
       landingBodyLine1: "Word Traps is a mini-game by Test Your French.",
       landingBodyLine2: "We have other games.",
-      landingCtaPrimary: "Try Test Your French",
+      landingCtaPrimary: "Try Daily French",
       landingCtaRemindLater: "Remind later"
     },
 
@@ -1094,7 +1099,7 @@ Thanks!`
       previewLabel: "Preview message",
       toastCopied: "Copied.",
       template: `Hey!
-I just played a cool French challenge 🇫🇷
+I just played a cool French word game 🇫🇷
 {funFact}
 Find out 😄
 {url}`,

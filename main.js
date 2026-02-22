@@ -157,7 +157,8 @@
           if (cfg.serviceWorker.autoUpdate) {
             setInterval(() => {
               registration.update().catch(() => { });
-            }, 60 * 60 * 1000); // Every hour
+            }, 10 * 60 * 1000); // Every 10 min
+
           }
 
           // Update notification (config: showUpdateNotifications)

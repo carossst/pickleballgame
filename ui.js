@@ -15,7 +15,7 @@ void function () {
 
   // Module-scoped guard: prevents ReferenceError if any code path references `premium` without a local declaration.
   // Refreshed at the start of each render() from StorageManager (single source of truth).
-  var premium = false;
+  let premium = false;
 
 
   // ============================================
@@ -1397,7 +1397,6 @@ void function () {
     }
 
 
-    // Prefer pointer events when available (better for touch)
     const pointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
 
     // Main app event delegation (LANDING / PLAYING / END / PAYWALL)
@@ -1405,7 +1404,7 @@ void function () {
     if (!this._wtBoundAppActions) {
       this._wtBoundAppActions = true;
 
-      this.appEl.addEventListener(pointerEvt, (e) => {
+      const appActionHandler = (e) => {
         const t = e && e.target ? e.target : null;
         if (!t) return;
 
@@ -1434,10 +1433,31 @@ void function () {
 
         const action = String(btn.getAttribute("data-action") || "").trim();
         if (!action) return;
-
         e.preventDefault();
         dispatchAction(action);
-      });
+      };
+
+      this.appEl.addEventListener(pointerEvt, appActionHandler);
+
+      // Mobile safety: also listen on "click" when primary is "pointerup".
+      // Some iOS Safari + PWA combos silently swallow pointerup on buttons.
+      // The dedup guard (same timestamp check) prevents double-fire.
+      if (pointerEvt !== "click") {
+        let lastHandledTs = 0;
+        const origHandler = appActionHandler;
+        const dedupHandler = (e) => {
+          const now = e.timeStamp || Date.now();
+          if (now - lastHandledTs < 400) return; // already handled by pointerup
+          origHandler(e);
+        };
+        // Patch original to track timestamp
+        this.appEl.removeEventListener(pointerEvt, appActionHandler);
+        this.appEl.addEventListener(pointerEvt, (e) => {
+          lastHandledTs = e.timeStamp || Date.now();
+          appActionHandler(e);
+        });
+        this.appEl.addEventListener("click", dedupHandler);
+      }
 
     }
 
@@ -1982,8 +2002,11 @@ void function () {
   // ============================================
 
   UI.prototype.openModal = function (html, title) {
-    if (!this.modalEl || !this.modalContentEl) return;
-
+    if (!this.modalEl || !this.modalContentEl) {
+      if (window.WT_CONFIG?.debug?.enabled) console.error("[WT Debug] openModal ABORT: modalEl=", !!this.modalEl, "modalContentEl=", !!this.modalContentEl);
+      return;
+    }
+    if (window.WT_CONFIG?.debug?.enabled) console.log("[WT Debug] openModal called, title=", title);
     // A11Y: store last focused element to restore on close
     try {
       if (this._runtime) this._runtime._lastFocusBeforeModal = document.activeElement || null;
@@ -3214,8 +3237,18 @@ void function () {
       // Block renders BEFORE recordAnswer: _save() → _emit() → onStorageUpdated is synchronous.
       // Without this, the dispatched event triggers render() while engine is done → blank screen.
       this._runtime.gameOverPending = true;
+      // Normal path: record answer immediately
+      // Guard: if this answer ends the game (any mode), block renders before recordAnswer
+      // triggers the synchronous _save() → _emit() → onStorageUpdated() → render() chain.
+      const isGameOverAnyMode = (
+        chanceLost &&
+        Number.isFinite(nowChancesLeft) &&
+        Number(nowChancesLeft) === 0
+      );
+      if (isGameOverAnyMode) {
+        this._runtime.gameOverPending = true;
+      }
 
-      // Record answer (storage-updated won't render - gameOverPending blocks it)
       if (this.storage && typeof this.storage.recordAnswer === "function") {
         this.storage.recordAnswer(res.itemId, res.isCorrect);
       }
@@ -4956,6 +4989,21 @@ void function () {
   UI.prototype.render = function () {
 
     if (!this.appEl) return;
+
+    // Safety net: clear stuck overlay locks on LANDING/END (fail-closed)
+    if (this.state !== STATES.PLAYING) {
+      try {
+        if (this.appEl.getAttribute("data-wt-runstart-lock") === "1") {
+          this.appEl.style.pointerEvents = "";
+          try { this.appEl.inert = false; } catch (_) { }
+          this.appEl.removeAttribute("data-wt-runstart-lock");
+          this.appEl.removeAttribute("data-wt-runstart-prev-pe");
+          this.appEl.removeAttribute("data-wt-runstart-prev-inert");
+        }
+        if (this.appEl.inert === true) { try { this.appEl.inert = false; } catch (_) { } }
+        if (this.appEl.style.pointerEvents === "none") { this.appEl.style.pointerEvents = ""; }
+      } catch (_) { }
+    }
 
     // Refresh module-scoped premium guard from StorageManager (single source of truth).
     premium = (this.storage && typeof this.storage.isPremium === "function") ? (this.storage.isPremium() === true) : false;

@@ -56,16 +56,20 @@ const CRITICAL_ASSETS = [
   "./main.js",
   "./content.json"
 ];
-
 // Install event: cache app shell (resilient: one missing asset must not brick install)
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
 
-      // Avoid addAll() "all-or-nothing" failure mode.
+      // Bust HTTP cache on install: force fresh copies from server.
+      // Without this, GitHub Pages' aggressive caching serves stale files.
       const results = await Promise.allSettled(
-        ASSETS_TO_CACHE.map((url) => cache.add(url))
+        ASSETS_TO_CACHE.map(async (url) => {
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) throw new Error(`${url}: ${res.status}`);
+          await cache.put(url, res);
+        })
       );
 
       // Only force-activate if the critical shell is safely cached.

@@ -491,7 +491,11 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         const code = getOrCreateCode();
-        if (!code) return;
+        if (!code) {
+          const codeEl = document.getElementById("code");
+          if (codeEl) codeEl.textContent = "Unable to generate code. Please reload this page.";
+          return;
+        }
 
         renderCode(code);
         markCodeGeneratedBestEffort();

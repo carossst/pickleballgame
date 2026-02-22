@@ -378,9 +378,6 @@
     if (typeof ep.used !== "boolean") ep.used = false;
     this.data.earlyPrice = ep;
 
-
-    this.data.earlyPrice = ep;
-
     // Harden endgame
     if (typeof this.data.endgame.endgameShown !== "boolean") this.data.endgame.endgameShown = false;
     if (!Number.isFinite(this.data.endgame.endgameShownAt)) this.data.endgame.endgameShownAt = 0;
