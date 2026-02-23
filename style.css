@@ -247,7 +247,7 @@
 
   /* Branding */
   --wt-title-size: 31px;
-  --wt-logo-scale: 0.60;
+  --wt-logo-scale: 0.90;
 
   /* Calmer “premium” glow (less corporate, less neon) */
   --hero-glow: 0.16;
@@ -822,6 +822,7 @@ a:hover {
    ============================================ */
 .wt-btn {
   appearance: none;
+  touch-action: manipulation;
   border: 1px solid transparent;
   border-radius: var(--r-btn);
   padding: var(--gap-2) var(--gap-3);
@@ -1178,6 +1179,9 @@ a:hover {
 .wt-btn-icon {
   appearance: none;
   padding: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -1325,6 +1329,14 @@ a:hover {
   /* Stabilise les chiffres (évite le “wiggle” 9→10, 19→20, etc.) */
   font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.wt-pill__logo {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .wt-pill small {

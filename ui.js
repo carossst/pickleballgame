@@ -6688,6 +6688,9 @@ ${landingHeaderRowHtml}
     const modeNow = String(this._runtime?.runMode || "RUN").trim();
     const bonusBadge = String(this.wording?.secretBonus?.badge || "").trim();
 
+    // HUD logo (fail-closed): only show if explicitly configured.
+    const hudLogoUrl = String(cfg?.identity?.uiLogoUrl || "").trim();
+
     const seenOnlyLine = String(this.wording?.secretBonus?.seenOnlyLine || "").trim();
     const servedSoFar = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
 
@@ -6737,37 +6740,38 @@ ${landingHeaderRowHtml}
     }
 
     const headerHtml = `
-    <div class="wt-row wt-row--spaced" style="margin-bottom:12px">
-      <div class="wt-row" style="gap:8px">
-        ${hasChances ? `
-          <div class="wt-pill wt-pill--chances${mistakeTierClass}${pulseOn ? " wt-pill--danger-pulse" : ""}"
-           aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
-            <span>${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}</span>${mistakeDeltaHtml}<span style="margin-left:4px">${mistakesVisual}</span>
-          </div>
-        ` : ``}
+	    <div class="wt-row wt-row--spaced" style="margin-bottom:12px; align-items:center; flex-wrap:nowrap; gap:12px">
+	      <div class="wt-row" style="gap:8px; align-items:center; flex-wrap:nowrap; min-width:0">
+	        ${hasChances ? `
+	          <div class="wt-pill wt-pill--chances${mistakeTierClass}${pulseOn ? " wt-pill--danger-pulse" : ""}"
+	           aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
+	            <span>${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}</span>${mistakeDeltaHtml}<span style="margin-left:4px">${mistakesVisual}</span>
+	          </div>
+	        ` : ``}
 
-        ${(modeNow === "BONUS" && bonusBadge) ? `
-          <div class="wt-pill" aria-label="${escapeHtml(bonusBadge)}">
-            ${escapeHtml(bonusBadge)}
-          </div>
-        ` : ``}
-      </div>
+	        ${(modeNow === "BONUS" && bonusBadge) ? `
+	          <div class="wt-pill" aria-label="${escapeHtml(bonusBadge)}">
+	            ${hudLogoUrl ? `<img src="${escapeHtml(hudLogoUrl)}" alt="" class="wt-pill__logo" />` : ``}
+	            <span>${escapeHtml(bonusBadge)}</span>
+	          </div>
+	        ` : ``}
+	      </div>
 
-       ${(modeNow !== "PRACTICE") ? `
-               <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}"
-           aria-label="${escapeHtml(scoreAriaFull)}">
-        ${escapeHtml(scoreLabel)}: ${scoreFP}${scoreDeltaHtml}${bestHtml}
-      </div>
-        ` : ``}
+	       ${(modeNow !== "PRACTICE") ? `
+	               <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}"
+	           aria-label="${escapeHtml(scoreAriaFull)}">
+	        ${escapeHtml(scoreLabel)}: ${scoreFP}${scoreDeltaHtml}${bestHtml}
+	      </div>
+	        ` : ``}
 
-    </div>
+	    </div>
 
-    ${showSeenOnlyRule ? `
-      <p class="wt-muted" style="margin:-6px 0 12px; text-align:center;">
-        ${escapeHtml(seenOnlyLine)}
-      </p>
-    ` : ``}
-  `;
+	    ${showSeenOnlyRule ? `
+	      <p class="wt-muted" style="margin:-6px 0 12px; text-align:center;">
+	        ${escapeHtml(seenOnlyLine)}
+	      </p>
+	    ` : ``}
+	  `;
 
     // Current item (question)
     const item = this._runtime.feedbackPending
