@@ -3267,21 +3267,10 @@ void function () {
       return;
     }
 
-  }
-
-  // BONUS game-over guard: block renders BEFORE recordAnswer.
-  // Without this, recordAnswer → _save → _emit → render() fires while engine is done.
-  if (
-    res.done === true &&
-    String(this._runtime?.runMode || "").trim() === "BONUS" &&
-    Number.isFinite(nowChancesLeft) &&
-    Number(nowChancesLeft) === 0
-  ) {
-    this._runtime.gameOverPending = true;
-  }
-
-  // Normal path: record answer immediately
-  if (this.storage && typeof this.storage.recordAnswer === "function") {
+    // Normal path: record answer immediately
+    if (this.storage && typeof this.storage.recordAnswer === "function") {
+      this.storage.recordAnswer(res.itemId, res.isCorrect);
+    }
 
     if (Number.isFinite(Number(res.itemId))) {
       const id = Number(res.itemId);
@@ -4649,17 +4638,9 @@ void function () {
       this._runtime.lastChancePulseAt = 0;
     }
 
+
     if (chanceLost && Number.isFinite(nowChancesLeft)) {
       showChanceLostToast(this.config, this.wording, nowChancesLeft);
-    }
-
-    // Block renders before recordAnswer if game over (same contract as answer()).
-    if (
-      res.done === true &&
-      Number.isFinite(nowChancesLeft) &&
-      Number(nowChancesLeft) === 0
-    ) {
-      this._runtime.gameOverPending = true;
     }
 
     if (this.storage && typeof this.storage.recordAnswer === "function") {
@@ -5488,7 +5469,6 @@ void function () {
       : (Number.isFinite(runPlays) && runPlays >= landingAfterRuns);
 
     const canShowChest =
-      !isBonus &&
       Number.isFinite(windowMs) && windowMs > 0 &&
       Number.isFinite(tapsRequired) && tapsRequired >= 1 &&
       meetsRunGate;
@@ -6766,7 +6746,7 @@ ${landingHeaderRowHtml}
 	        ` : ``}
 
 	        ${(modeNow === "BONUS" && bonusBadge) ? `
-	         <div class="wt-pill wt-pill--bonus" aria-label="${escapeHtml(bonusBadge)}">
+	          <div class="wt-pill" aria-label="${escapeHtml(bonusBadge)}">
 	            ${hudLogoUrl ? `<img src="${escapeHtml(hudLogoUrl)}" alt="" class="wt-pill__logo" />` : ``}
 	            <span>${escapeHtml(bonusBadge)}</span>
 	          </div>
