@@ -1348,18 +1348,29 @@ a:hover {
 /* HUD emphasis: Chances + Score larger (keep arcade, but calmer) */
 .wt-pill--score,
 .wt-pill--chances {
-  font-size: var(--fs-md);
+  font-size: var(--fs-sm);
   transform: scale(1);
   filter: none;
   will-change: transform, filter, box-shadow;
   font-weight: 700;
   letter-spacing: 0.2px;
-  padding: var(--gap-1) var(--space-14);
+  padding: var(--space-6) var(--space-10);
   box-shadow: var(--shadow-2);
 
   position: relative;
-  padding-right: 44px;
+  padding-right: 36px;
   overflow: clip;
+  white-space: nowrap;
+}
+
+/* BONUS badge: same visual weight as HUD pills */
+.wt-pill--bonus {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  padding: var(--space-6) var(--space-10);
+  box-shadow: var(--shadow-2);
+  white-space: nowrap;
 }
 
 .wt-pill__delta {
@@ -1419,10 +1430,15 @@ a:hover {
 
   .wt-pill--score,
   .wt-pill--chances {
-    font-size: var(--fs-sm);
-    padding: 7px var(--gap-2);
-    padding-right: 38px;
-    letter-spacing: 0.2px;
+    font-size: var(--fs-xs);
+    padding: 5px var(--space-6);
+    padding-right: 32px;
+    letter-spacing: 0.1px;
+  }
+
+  .wt-pill--bonus {
+    font-size: var(--fs-xs);
+    padding: 5px var(--space-6);
   }
 }
 
