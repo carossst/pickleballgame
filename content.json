@@ -67,7 +67,7 @@
       "termFr": "caméra",
       "termEn": "camera",
       "correctAnswer": false,
-      "explanationShort": "caméra (FR) = mainly a video camera.\ncamera (EN) = a device that takes photos or video.\nFrench leans video; English covers both.",
+      "explanationShort": "caméra (FR) usually means a video camera.\ncamera (EN) usually means a device for taking photos or videos.\nFrench uses \"appareil photo\" for a photo camera.\nSo the everyday use is not exactly the same.",
       "tag": "false_friend"
     },
     {
@@ -99,7 +99,7 @@
       "termFr": "monnaie",
       "termEn": "money",
       "correctAnswer": false,
-      "explanationShort": "monnaie (FR) = coins or a country's currency.\nmoney (EN) = cash or wealth in general.\nFrench often means coins; English is broader.",
+      "explanationShort": "monnaie (FR) usually means currency or change (coins), and sometimes money in general.\nmoney (EN) means money in general.\nFrench often points to currency/change.\nEnglish is the broader default.",
       "tag": "false_friend"
     },
     {
@@ -171,7 +171,7 @@
       "termFr": "blesser",
       "termEn": "bless",
       "correctAnswer": false,
-      "explanationShort": "blesser (FR) = to injure or wound someone.\nbless (EN) = to give a holy or divine favour.\nEnglish 'bless' comes from Old English 'blēdsian' (to consecrate with blood) — no relation to the French word.",
+      "explanationShort": "blesser (FR) = to injure or wound someone.\nbless (EN) = to give a holy or divine favour.\nEnglish 'bless' comes from Old English 'blētsian' (to consecrate), possibly linked to \"blood\" in early usage — no relation to the French word.",
       "tag": "false_friend"
     },
     {
@@ -179,7 +179,7 @@
       "termFr": "charger",
       "termEn": "charge",
       "correctAnswer": false,
-      "explanationShort": "charger (FR) = to load or fill — a truck, a weapon, a file.\ncharge (EN) = to bill for payment, accuse of a crime, or rush forward.\nFrom Late Latin 'carricare' (to load a cart); the meanings forked as commerce and law created new needs.",
+      "explanationShort": "charger (FR) = to load or fill — a truck, a weapon, a phone.\ncharge (EN) = to bill for payment, accuse of a crime, or rush forward.\nBoth share the battery sense (charger/charge a phone), but the rest is different.\nSo in everyday use, different meaning.",
       "tag": "false_friend"
     },
     {
@@ -216,11 +216,11 @@
     },
     {
       "id": 27,
-      "termFr": "figure",
-      "termEn": "figure",
-      "correctAnswer": true,
-      "explanationShort": "figure = a shape, diagram, or numerical symbol.\nIn French it also means face. English does not share this meaning.",
-      "tag": "true_friend"
+      "termFr": "cave",
+      "termEn": "cave",
+      "correctAnswer": false,
+      "explanationShort": "cave (FR) = a cellar or basement, often used for wine.\ncave (EN) = a natural underground cavern.\nStorage space in French.\nRock formation in English.",
+      "tag": "false_friend"
     },
     {
       "id": 28,
@@ -235,7 +235,7 @@
       "termFr": "travail",
       "termEn": "travel",
       "correctAnswer": false,
-      "explanationShort": "travail (FR) = work or labour.\ntravel (EN) = the act of going on a journey.\nFrom Latin 'tripalium' (a torture device); French kept the suffering-turned-work meaning, English shifted to journeys.",
+      "explanationShort": "travail (FR) = work or labour.\ntravel (EN) = the act of going on a journey.\nThe French word is often linked to Latin \"tripalium,\" a device associated with hardship, though the exact origin is debated.\nThe meanings later diverged completely.",
       "tag": "false_friend"
     },
     {
@@ -259,7 +259,7 @@
       "termFr": "entrée",
       "termEn": "entrée",
       "correctAnswer": false,
-      "explanationShort": "entrée (FR) = the starter or first course of a meal.\nentrée (EN) = the main dish in American English.\nSame word, opposite position on the menu.",
+      "explanationShort": "entrée (FR) usually means the starter or first course.\nentrée (EN, American English) usually means the main dish.\nIn British English, it can still mean starter.\nSo the meaning changes depending on the country.",
       "tag": "false_friend"
     },
     {
@@ -315,7 +315,7 @@
       "termFr": "adresser",
       "termEn": "address",
       "correctAnswer": false,
-      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with an issue, or to speak to a group.",
+      "explanationShort": "adresser (FR) usually means to send or direct something to someone.\naddress (EN) usually means to deal with a problem or speak to a group.\nBoth words can refer to writing an address on an envelope.\nBut in everyday use, \"adresser\" is about sending, while \"address\" is about dealing with or speaking.",
       "tag": "false_friend"
     },
     {
@@ -323,7 +323,7 @@
       "termFr": "délai",
       "termEn": "delay",
       "correctAnswer": false,
-      "explanationShort": "délai (FR) = a deadline or time limit.\ndelay (EN) = a period of lateness or postponement.\nOne sets a boundary, the other describes slipping past it.",
+      "explanationShort": "délai (FR) usually means a time limit, timeframe, or period allowed.\ndelay (EN) means lateness or postponement.\nFrench is about the allowed time window.\nEnglish is about being late or postponing.",
       "tag": "false_friend"
     },
     {
@@ -331,7 +331,7 @@
       "termFr": "étiquette",
       "termEn": "etiquette",
       "correctAnswer": false,
-      "explanationShort": "étiquette (FR) = a label or price tag on an object.\netiquette (EN) = rules of polite social behaviour.\nAt Versailles, garden signs told courtiers where to walk — the word came to mean proper conduct.",
+      "explanationShort": "étiquette (FR) = a label or price tag on an object.\netiquette (EN) = rules of polite social behaviour.\nHistorically linked to the idea of a \"label/ticket\" used to mark things, then extended to social rules and proper conduct.",
       "tag": "false_friend"
     },
     {
@@ -507,7 +507,7 @@
       "termFr": "restaurant",
       "termEn": "restaurant",
       "correctAnswer": true,
-      "explanationShort": "restaurant = a place where meals are prepared and served to customers.\nThe word comes from French 'restaurer' (to restore) — early Parisian restaurants sold restorative broths.",
+      "explanationShort": "restaurant = a place where meals are prepared and served to customers.\nFrom French 'restaurer' (to restore): originally linked to food meant to \"restore\" strength (restorative nourishment).",
       "tag": "true_friend"
     },
     {
@@ -539,7 +539,7 @@
       "termFr": "information",
       "termEn": "information",
       "correctAnswer": true,
-      "explanationShort": "information = facts or knowledge about a subject.\nIn French, the plural form also refers to the TV news broadcast.",
+      "explanationShort": "information = facts or knowledge about a subject.\nSame core meaning in French and English.\nIn French, \"les informations\" can also mean the TV news, but the base meaning stays \"information.\"",
       "tag": "true_friend"
     },
     {
@@ -795,7 +795,7 @@
       "termFr": "historique",
       "termEn": "historical",
       "correctAnswer": true,
-      "explanationShort": "historique = relating to past events.\nIn French it also means \"landmark\" or \"groundbreaking,\" covering both English \"historical\" and \"historic.\"",
+      "explanationShort": "historique = relating to past events.\nSame everyday meaning as \"historical\".\nFrench can also mean \"historic\" (important in history), where English often uses \"historic.\"",
       "tag": "true_friend"
     },
     {
@@ -824,10 +824,10 @@
     },
     {
       "id": 103,
-      "termFr": "large",
-      "termEn": "large",
+      "termFr": "réclamer",
+      "termEn": "reclaim",
       "correctAnswer": false,
-      "explanationShort": "large (FR) = wide or broad in size.\nlarge (EN) = big in overall size, volume, or quantity.",
+      "explanationShort": "réclamer (FR) = to demand or ask for something.\nreclaim (EN) = to take something back or recover it.\nFrench is about demanding.\nEnglish is about recovering.",
       "tag": "false_friend"
     },
     {
@@ -835,7 +835,7 @@
       "termFr": "formidable",
       "termEn": "formidable",
       "correctAnswer": false,
-      "explanationShort": "formidable (FR) = wonderful, fantastic, terrific.\nformidable (EN) = intimidating, inspiring fear or respect.\nFrom Latin 'formidabilis' (fear-inspiring); French flipped it positive while English kept the original threat.",
+      "explanationShort": "formidable (FR) usually means wonderful or fantastic.\nformidable (EN) often means impressive, powerful, or sometimes intimidating.\nFrom Latin \"formidabilis\" (fear-inspiring).\nModern usage differs between the two languages.",
       "tag": "false_friend"
     },
     {
@@ -907,7 +907,7 @@
       "termFr": "réaliser",
       "termEn": "realize",
       "correctAnswer": false,
-      "explanationShort": "réaliser (FR) = to carry out or accomplish a task or project.\nrealize (EN) = to become aware of something.\nModern French is absorbing the English \"become aware\" sense, but the core meaning remains \"accomplish.\"",
+      "explanationShort": "réaliser (FR) usually means to accomplish or carry out something.\nrealize (EN) usually means to become aware of something.\nModern French sometimes uses the awareness meaning.\nBut the main meaning in French is about doing, not understanding.",
       "tag": "false_friend"
     },
     {
@@ -1131,7 +1131,7 @@
       "termFr": "limon",
       "termEn": "lemon",
       "correctAnswer": false,
-      "explanationShort": "limon (FR) = silt, fine sediment deposited by rivers.\nlemon (EN) = a sour yellow citrus fruit.\nMud vs. fruit, with no shared root despite the spelling.",
+      "explanationShort": "limon (FR) = silt, fine sediment deposited by rivers.\nlemon (EN) = a sour yellow citrus fruit.\nDespite the similar spelling, the words come from different origins and are unrelated in meaning.",
       "tag": "false_friend"
     },
     {
@@ -1184,11 +1184,11 @@
     },
     {
       "id": 148,
-      "termFr": "hôtel",
-      "termEn": "hotel",
-      "correctAnswer": true,
-      "explanationShort": "hôtel = a place offering paid accommodation.\nIn French, the word also refers to a grand private townhouse, a usage English does not share.",
-      "tag": "true_friend"
+      "termFr": "acte",
+      "termEn": "act",
+      "correctAnswer": false,
+      "explanationShort": "acte (FR) = a formal document or official deed.\nact (EN) = an action or something you do.\nFrench often refers to legal paperwork.\nEnglish refers to everyday action.",
+      "tag": "false_friend"
     },
     {
       "id": 149,
@@ -1208,10 +1208,10 @@
     },
     {
       "id": 151,
-      "termFr": "marcher",
-      "termEn": "march",
+      "termFr": "assiette",
+      "termEn": "asset",
       "correctAnswer": false,
-      "explanationShort": "marcher (FR) = to walk, ordinary everyday walking.\nmarch (EN) = to stride in a formal, military, or protest manner.",
+      "explanationShort": "assiette (FR) = a plate, a dish used for eating.\nasset (EN) = a valuable resource or property.\nKey difference: dining object vs. valuable resource.",
       "tag": "false_friend"
     },
     {
@@ -1243,7 +1243,7 @@
       "termFr": "assurance",
       "termEn": "assurance",
       "correctAnswer": false,
-      "explanationShort": "assurance (FR) = insurance, the contract covering health, car, or home risks.\nassurance (EN) = confidence, or a firm guarantee.\nFrench also uses the word for self-confidence, but the dominant everyday meaning is the insurance policy.",
+      "explanationShort": "assurance (FR) usually means insurance.\nassurance (EN) usually means confidence or a guarantee.\nFrench can also use it to mean confidence, but that is less common.\nSo in everyday use, \"assurance\" in French refers to insurance, not confidence.",
       "tag": "false_friend"
     },
     {
@@ -1291,7 +1291,7 @@
       "termFr": "issue",
       "termEn": "issue",
       "correctAnswer": false,
-      "explanationShort": "issue (FR) = an exit or way out, like an emergency exit.\nissue (EN) = a problem, topic, or matter to discuss.\nBoth come from Old French \"issue\" meaning a way out.",
+      "explanationShort": "issue (FR) usually means an exit or way out.\nissue (EN) usually means a problem or topic to discuss.\nFrench can also use it to mean outcome.\nBut the dominant meanings are different.",
       "tag": "false_friend"
     },
     {
@@ -1400,11 +1400,11 @@
     },
     {
       "id": 175,
-      "termFr": "complet",
-      "termEn": "complete",
-      "correctAnswer": false,
-      "explanationShort": "complet (FR) = full, with no room left — a full hotel or a full train.\ncomplete (EN) = finished, whole, or entire.",
-      "tag": "false_friend"
+      "termFr": "buffet",
+      "termEn": "buffet",
+      "correctAnswer": true,
+      "explanationShort": "buffet = a self-service meal where people serve themselves.\nThe word can also refer to a sideboard or piece of furniture in both languages.\nThe core meanings overlap clearly.",
+      "tag": "true_friend"
     },
     {
       "id": 176,
@@ -1459,7 +1459,7 @@
       "termFr": "esprit",
       "termEn": "spirit",
       "correctAnswer": false,
-      "explanationShort": "esprit (FR) = mind, intellect, or wit.\nspirit (EN) = soul, ghost, or an alcoholic drink.\nSome overlap exists (\"team spirit\"), but the default meanings diverge sharply: thinking vs. soul.",
+      "explanationShort": "esprit (FR) usually means mind, intellect, or wit.\nspirit (EN) usually means soul, ghost, or an alcoholic drink.\nSome expressions overlap, like \"team spirit.\"\nBut the common meaning is not the same.",
       "tag": "false_friend"
     },
     {
@@ -1467,7 +1467,7 @@
       "termFr": "gentil",
       "termEn": "gentle",
       "correctAnswer": false,
-      "explanationShort": "gentil (FR) = kind, nice, or friendly.\ngentle (EN) = soft, delicate, or mild in manner.",
+      "explanationShort": "gentil (FR) means kind, nice, or friendly.\ngentle (EN) means not harsh: soft, mild, and sometimes kind.\nThere is some overlap.\nBut French is primarily about kindness, while English is primarily about softness or mildness.",
       "tag": "false_friend"
     },
     {
@@ -1475,7 +1475,7 @@
       "termFr": "délivrer",
       "termEn": "deliver",
       "correctAnswer": false,
-      "explanationShort": "délivrer (FR) = to set free or liberate.\ndeliver (EN) = to bring a package or goods to someone.\nFrench also uses it for issuing documents (a passport, a certificate), but the core meaning is liberation.",
+      "explanationShort": "délivrer (FR) usually means to set free or liberate.\ndeliver (EN) usually means to bring goods or packages.\nFrench can also use it for issuing documents (a passport or certificate).\nBut the dominant meanings are different.",
       "tag": "false_friend"
     },
     {
@@ -1483,7 +1483,7 @@
       "termFr": "caractère",
       "termEn": "character",
       "correctAnswer": false,
-      "explanationShort": "caractère (FR) = temperament or personality.\ncharacter (EN) = a fictional person in a story, or moral qualities.\nSome overlap exists on \"personality,\" but the default use diverges: temperament vs. fictional role.",
+      "explanationShort": "caractère (FR) usually means temperament or personality.\ncharacter (EN) often means a person in a story, but it can also mean personality or moral qualities.\nSo there is overlap.\nBut the common default meaning is different depending on context.",
       "tag": "false_friend"
     },
     {

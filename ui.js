@@ -3237,41 +3237,32 @@ void function () {
       // Block renders BEFORE recordAnswer: _save() → _emit() → onStorageUpdated is synchronous.
       // Without this, the dispatched event triggers render() while engine is done → blank screen.
       this._runtime.gameOverPending = true;
-      // Normal path: record answer immediately
-      // Guard: if this answer ends the game (any mode), block renders before recordAnswer
-      // triggers the synchronous _save() → _emit() → onStorageUpdated() → render() chain.
-      const isGameOverAnyMode = (
-        chanceLost &&
-        Number.isFinite(nowChancesLeft) &&
-        Number(nowChancesLeft) === 0
-      );
-      if (isGameOverAnyMode) {
-        this._runtime.gameOverPending = true;
-      }
+    }
 
-      if (this.storage && typeof this.storage.recordAnswer === "function") {
-        this.storage.recordAnswer(res.itemId, res.isCorrect);
-      }
-      if (Number.isFinite(Number(res.itemId))) {
-        const id = Number(res.itemId);
-        this._runtime.runItemIds.push(id);
-        if (res.isCorrect !== true) {
-          if (!Array.isArray(this._runtime.runMistakeIds)) this._runtime.runMistakeIds = [];
-          if (this._runtime.runMistakeIds.indexOf(id) === -1) this._runtime.runMistakeIds.push(id);
-        }
-      }
+    // BONUS game-over guard: block renders BEFORE recordAnswer.
+    if (
+      res.done === true &&
+      String(this._runtime?.runMode || "").trim() === "BONUS" &&
+      Number.isFinite(nowChancesLeft) &&
+      Number(nowChancesLeft) === 0
+    ) {
+      this._runtime.gameOverPending = true;
+    }
 
-      // Factored: freeze -> delay -> _finishRun (all modes, same contract)
-      // Note: _enterGameOverDelay sets gameOverPending = true again (idempotent, no harm)
-      this._enterGameOverDelay();
-      return;
+    // BONUS game-over guard: block renders BEFORE recordAnswer.
+    if (
+      res.done === true &&
+      String(this._runtime?.runMode || "").trim() === "BONUS" &&
+      Number.isFinite(nowChancesLeft) &&
+      Number(nowChancesLeft) === 0
+    ) {
+      this._runtime.gameOverPending = true;
     }
 
     // Normal path: record answer immediately
     if (this.storage && typeof this.storage.recordAnswer === "function") {
       this.storage.recordAnswer(res.itemId, res.isCorrect);
     }
-
     if (Number.isFinite(Number(res.itemId))) {
       const id = Number(res.itemId);
       this._runtime.runItemIds.push(id);
@@ -4641,6 +4632,15 @@ void function () {
 
     if (chanceLost && Number.isFinite(nowChancesLeft)) {
       showChanceLostToast(this.config, this.wording, nowChancesLeft);
+    }
+
+    // Block renders before recordAnswer if game over (same contract as answer()).
+    if (
+      res.done === true &&
+      Number.isFinite(nowChancesLeft) &&
+      Number(nowChancesLeft) === 0
+    ) {
+      this._runtime.gameOverPending = true;
     }
 
     if (this.storage && typeof this.storage.recordAnswer === "function") {
@@ -6459,7 +6459,11 @@ ${landingHeaderRowHtml}
                 ${escapeHtml(homeLabel)}
               </button>
             ` : ``}
-           
+            ${howToPlayTitle ? `
+              <button class="wt-btn wt-btn--ghost" data-action="open-howto">
+                ${escapeHtml(howToPlayTitle)}
+              </button>
+            ` : ``}
           `;
         }
 
@@ -6903,13 +6907,22 @@ ${questionPrompt ? `
         ? String(w.feedbackTitleOk || "").trim()
         : String(w.feedbackTitleBad || "").trim();
 
-      // Show the clicked choice label before the verdict (no fallback)
+      // Show the correct answer label in the title (no fallback)
+      const correctLabel = (ans.correctAnswer === true)
+        ? String(ui.trueLabel || "").trim()
+        : String(ui.falseLabel || "").trim();
+
+      const titleLine =
+        (verdictText && correctLabel) ? `${verdictText} - ${correctLabel}` :
+          (verdictText || correctLabel || "");
+
+      // Optional clarity line: "You chose: <label>" (no fallback)
       const pickedLabel = (ans.pickedAnswer === true)
         ? String(ui.trueLabel || "").trim()
         : String(ui.falseLabel || "").trim();
 
-      const titleLead = pickedLabel ? `${pickedLabel} - ` : "";
-      const titleLine = `${titleLead}${verdictText}`;
+      const youChosePrefix = String(wAll.system?.youChosePrefix || "").trim();
+      const youChoseLine = (youChosePrefix && pickedLabel) ? `${youChosePrefix} ${pickedLabel}` : "";
 
       const continueCta = String(wAll.system?.continue || "").trim();
       const tapToContinue = String(wAll.system?.tapToContinue || "").trim();
@@ -6932,6 +6945,11 @@ ${questionPrompt ? `
       <strong class="wt-feedback-title">
                     ${escapeHtml(titleLine)}: ${escapeHtml(termFr)} (FR) ${ans.correctAnswer === true ? "=" : "\u2260"} ${escapeHtml(termEn)} (EN)
       </strong>
+      ${youChoseLine ? `
+        <div class="wt-muted" style="margin-top:4px">
+          ${escapeHtml(youChoseLine)}
+        </div>
+      ` : ``}
     </div>
 
             ${explanationHtml}

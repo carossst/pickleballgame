@@ -486,6 +486,9 @@
       notNow: "Not now",
       continue: "Next",
       tapToContinue: "",
+
+      youChosePrefix: "You chose:",
+
       playAria: "Start a new run",
       shareAria: "Share the game",
       resultGridAria: "Result grid",
@@ -496,7 +499,6 @@
       storageSaveFailedToast: "Saving is disabled in this browser mode. Your progress may be lost if you refresh.",
       confirmLeaveRun: "Leave the current run? Your progress will be lost."
     },
-
 
     footer: {
       contact: "Contact",
