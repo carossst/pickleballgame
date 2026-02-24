@@ -1,9 +1,9 @@
 {
-  "version": "3.3",
+  "version": "3.4",
   "totalItems": 200,
   "breakdown": {
-    "falseItems": 106,
-    "trueItems": 94
+    "falseItems": 107,
+    "trueItems": 93
   },
   "items": [
     {
@@ -315,7 +315,7 @@
       "termFr": "adresser",
       "termEn": "address",
       "correctAnswer": false,
-      "explanationShort": "adresser (FR) usually means to send or direct something to someone.\naddress (EN) usually means to deal with a problem or speak to a group.\nBoth words can refer to writing an address on an envelope.\nBut in everyday use, \"adresser\" is about sending, while \"address\" is about dealing with or speaking.",
+      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with a problem, or to speak to a group.\nBoth share the postal sense (une adresse/an address), but the verbs mean different things.\nSo in everyday use, different meaning.",
       "tag": "false_friend"
     },
     {
@@ -339,7 +339,7 @@
       "termFr": "engager",
       "termEn": "engage",
       "correctAnswer": false,
-      "explanationShort": "engager (FR) = to hire someone, or to commit to something.\nengage (EN) = to interact with, participate in, or attract attention.",
+      "explanationShort": "engager (FR) = to hire someone, or to commit (s'engager).\nengage (EN) = to interact with, participate in, or attract attention.\nBoth can mean \"to hire,\" but in everyday use, different meaning.",
       "tag": "false_friend"
     },
     {
@@ -363,7 +363,7 @@
       "termFr": "éventuel",
       "termEn": "eventual",
       "correctAnswer": false,
-      "explanationShort": "éventuel (FR) = possible, potential — may or may not happen.\neventual (EN) = certain to happen at the end, final.",
+      "explanationShort": "éventuel (FR) = possible, potential, not certain.\neventual (EN) = final, happening at the end, ultimate.\nKey difference: French is uncertainty; English is end result.",
       "tag": "false_friend"
     },
     {
@@ -1186,9 +1186,9 @@
       "id": 148,
       "termFr": "acte",
       "termEn": "act",
-      "correctAnswer": false,
-      "explanationShort": "acte (FR) = a formal document or official deed.\nact (EN) = an action or something you do.\nFrench often refers to legal paperwork.\nEnglish refers to everyday action.",
-      "tag": "false_friend"
+      "correctAnswer": true,
+      "explanationShort": "acte/act = an action, a deed, or a division of a play.\nBoth also have legal uses: \"acte de naissance,\" \"Act of Parliament.\"\nSame meaning in most everyday contexts.",
+      "tag": "true_friend"
     },
     {
       "id": 149,
@@ -1379,7 +1379,7 @@
       "termFr": "abus",
       "termEn": "abuse",
       "correctAnswer": false,
-      "explanationShort": "abus (FR) = misuse or excess, like drinking too much.\nabuse (EN) = maltreatment or cruelty toward someone.",
+      "explanationShort": "abus (FR) = an excess, misuse, or an over-the-top situation.\nabuse (EN) = misuse, but very often harm or mistreatment (especially people).\nKey difference: French often means \"too much/excess\"; English often implies harm.",
       "tag": "false_friend"
     },
     {
@@ -1467,7 +1467,7 @@
       "termFr": "gentil",
       "termEn": "gentle",
       "correctAnswer": false,
-      "explanationShort": "gentil (FR) means kind, nice, or friendly.\ngentle (EN) means not harsh: soft, mild, and sometimes kind.\nThere is some overlap.\nBut French is primarily about kindness, while English is primarily about softness or mildness.",
+      "explanationShort": "gentil (FR) = kind, nice, friendly.\ngentle (EN) = soft, mild, not rough.\nThe words look close, but in everyday use, different meaning.",
       "tag": "false_friend"
     },
     {
