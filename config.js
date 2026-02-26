@@ -102,7 +102,36 @@
     mistakesOnly: {
       enabled: true,
       minWrongItemsToShowToggle: 1,
-      premiumOnly: true
+      premiumOnly: true,
+      maxItems: 10
+    },
+
+    routing: {
+      // If backlog >= this threshold, END (after RUN) promotes PRACTICE as primary CTA.
+      // Backlog model: number of items with wrongCount > 0.
+      practicePrimaryMinWrong: 10,
+
+      // PRACTICE repeat guidance tiers (based on remaining backlog after PRACTICE).
+      // UI picks the FIRST matching tier in the array (top-down).
+      // Fail-closed: missing/invalid tiers => no repeat note and no CTA override.
+      practiceRepeatTiers: [
+        { key: "direct", minRemaining: 7 },
+        { key: "firm", minRemaining: 4 },
+        { key: "light", minRemaining: 1 }
+      ],
+
+      // END RUN verdict thresholds (config-driven).
+      // Maps run scoreFP (best score signal for the run) -> verdictKey used by WT_WORDING.end.ctaByVerdict.
+      runScoreThresholds: {
+        start: 3,
+        building: 6,
+        strong: 10,
+        elite: 15,
+        legendary: 20
+      },
+
+      // END: show best-streak line only if bestStreakNum >= this threshold.
+      bestStreakLineMin: 2
     },
 
     // Personal best (premium history)
@@ -227,8 +256,11 @@
 
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.
-      endRecordMomentMs: 900,
+      endRecordMomentMs: 1600,
 
+      // PLAYING: toast duration when you beat your best score (RUN/BONUS).
+      // No fallback in UI: if missing/invalid => no toast.
+      newBestScoreToastMs: 1200,
 
       // PLAYING micro-howto policy (UI-only, fail-closed)
       // enabled: allows displaying WT_WORDING.playing.microHowTo
@@ -357,7 +389,11 @@
     postCompletion: {
       enabled: true,
       waitlistEnabled: true,
-      houseAdEnabled: true
+      houseAdEnabled: true,
+
+      // Milestones (% of unique pool coverage)
+      // UI must not hardcode 50% / 100%.
+      milestoneThresholds: [0.5, 1.0]
     },
 
 
@@ -384,7 +420,7 @@
       powerUserRunCompletes: 5,
 
       // Also prompt when free runs are exhausted (end of the 2 free runs)
-      promptOnFreeRunsExhausted: true
+      promptOnFreeRunsExhausted: false
     },
 
 
@@ -447,7 +483,7 @@
   // - No aggressive vocabulary (ruthless, destroy, crush, dominate, savage)
   // - No ego inflation (unstoppable, unbeatable, genius)
   // - No cold technical tone (optimize, calibrate, precision-driven language)
-  // - No "streak" vocabulary
+  // - Avoid "streak" as the core motivation (allowed only when explicitly contrasting with real improvement).
   //
   // Identity direction:
   // Word Traps speaks like a calm performance coach.
@@ -455,9 +491,8 @@
   // Always about maintaining rhythm and momentum.
   //
   // Validation rule for new copy:
-  // If it reinforces flow and continuity → valid.
-  // If it sounds aggressive, ego-heavy, technical, or gamified with "streak" mechanics → reject.
-
+  // If it reinforces flow and continuity -> valid.
+  // If it sounds aggressive, ego-heavy, technical, or like "play for streaks" -> reject.
   window.WT_WORDING = {
     brand: {
       creatorLine: "Carole, a French native from Paris 🇫🇷",
@@ -471,8 +506,7 @@
 
       loadingTitle: "Loading Word Traps...",
       loadingHint: "Preparing your French word challenge",
-      loadingSlowHint: "Still loading… Check your connection if this takes too long.",
-
+      loadingSlowHint: "Still loading... Check your connection if this takes too long.",
       updateAvailable: "Update available.",
       dismiss: "Dismiss",
       closeIcon: "✕",
@@ -583,9 +617,11 @@
 
     firstRun: {
       framingLines: [
-        "{maxChances} mistakes allowed. Take your time.",
-        "Looks obvious. It isn’t.",
-        "{freeRuns} free runs. See how well you really know these words."
+        "This isn't about streaks.",
+        "It's about whether you're actually improving.",
+        "",
+        "By the end of this set, you'll know.",
+        "You have {freeRuns} free runs."
       ],
 
       trustLines: [
@@ -595,7 +631,17 @@
 
       ctaLabel: "Begin"
     },
-
+    milestones: {
+      halfway: {
+        title: "Halfway milestone.",
+        bodyLines: [
+          "You reached 100/200.",
+          "Now keep going. This is where improving becomes real.",
+          "Practice when mistakes pile up. Bonus when your score is strong."
+        ],
+        cta: "Next"
+      }
+    },
 
 
     ui: {
@@ -662,6 +708,9 @@
       endTitle: "",
       endLine: "Nice one. Want another secret run?",
 
+      // BONUS new best label (END)
+      newBest: "NEW BEST SCORE.",
+
       // END BONUS - cognitive mirror (HIGH / MEDIUM / LOW)
       // Contract: arrays MUST contain exactly 2 sentences each. No fallback in UI.
       endByLevel: {
@@ -678,19 +727,17 @@
           "This mode rewards fast intuition."
         ]
       },
-
       // BONUS END - identity (no "streak" wording)
       identityByLevel: {
-        low: "Speed changes everything.",
-        medium: "You kept up with the pace.",
-        high: "You owned the speed."
+        low: "",
+        medium: "",
+        high: "You moved fast and stayed precise."
       },
 
-      // BONUS END - gentle lens (descriptive, no imperatives)
       lensByLevel: {
-        low: "Speed reveals what you really know.",
-        medium: "Under pressure, the right answers still came.",
-        high: "Excellent. That's real fluency."
+        low: "",
+        medium: "",
+        high: ""
       },
 
       // BONUS END - emotionally congruent CTA label
@@ -701,15 +748,13 @@
       },
 
 
-
-
       // Start overlay (same component as FREE runs)
       startOverlayLine1: "Faster pace. No downtime.",
       startOverlayLine2: "Only words you've already seen in normal runs.",
       startOverlayLine3: "Play normal runs to add more words to the bonus deck.",
 
       // Teaser premium (filled by ui.js): {remaining}, {limit}
-      startOverlayFreeRunsLimitLine: "Free bonus runs left: {remaining}/{limit}",
+      startOverlayFreeRunsLimitLine: "",
 
       // Block modal when free limit reached
       freeLimitReachedTitle: "That was intense.",
@@ -757,13 +802,23 @@
       // END screen (PRACTICE)
       endTitle: "Practice complete",
       endLine: "Good work. You tightened the weak spots.",
+      endStatsLine: "Mistakes fixed: {fixed}. Mistakes remaining: {remaining}.",
+
+      // Repeat guidance by tier (selected via WT_CONFIG.routing.practiceRepeatTiers)
+      // Fail-closed: missing tier key => no note
+      endRepeatNoteByTier: {
+        light: "Tip: You still have {remaining} mistakes left. One more Practice run will help.",
+        firm: "Tip: You still have {remaining} mistakes left. Run Practice again to clear your weak spots.",
+        direct: "Tip: You still have {remaining} mistakes left. Stay in Practice until these traps stop catching you."
+      },
+
       scoreLine: "Reviewed: {total} words",
 
       // PLAYING: calm progress line (replaces assertion in PRACTICE)
       playingProgressLine: "{current}/{total}",
 
       // Start overlay (PRACTICE): explain the mode (2 lines shown via typeLine + msg)
-      startRunChancesOverlayPractice: "No limit. Just review.",
+      startRunChancesOverlayPractice: "Practice focuses on your active mistakes.\nUp to 10 words per session.\nFix a word and it leaves the list.\nMake a mistake again, and it comes back.",
 
       // Backward compat (still used as fallback wording-only)
       ctaPracticeAgain: "Practice again",
@@ -786,21 +841,30 @@
         low: "Try another practice run",
         medium: "Practice again",
         high: "Keep the rhythm"
+      },
+
+      // Optional CTA override (END PRACTICE) based on remaining tier
+      // Fail-closed: missing tier key => keep existing CTA (ctaByLevel / ctaPracticeAgain)
+      ctaRepeatByTier: {
+        light: "One more Practice run",
+        firm: "Run Practice again",
+        direct: "Stay in Practice"
       }
 
 
     },
 
 
-
     playing: {
       questionLabel: "Word",
       assertion: "Does this mean the same thing in French and English?",
-      microHowTo: "Do the French and English words have the same meaning?",
       answersAria: "Answer choices",
       questionHeadingTemplate: "",
-      feedbackTitleOk: "Correct",
-      feedbackTitleBad: "Incorrect",
+      feedbackTitleOk: "",
+      feedbackTitleBad: "",
+
+      // New best score (PLAYING)
+      newBestScore: "New best score.",
 
       // Feedback truth line (used inline after Correct/Incorrect):
       // "Correct - {termFr} (FR) = {termEn} (EN)"
@@ -846,15 +910,15 @@
 
 
       // Pool complete (one-shot celebration when 200/200 reached)
-      poolCompleteTitle: "You did it. All 200 word traps.",
-      poolCompleteLine1: "Not many people get this far.",
-      poolCompleteLine2: "Now you can replay in a new order, practice the ones you missed, or try the bonus mode. The game is yours.",
+      poolCompleteTitle: "Bravo ! All 200 word traps complete.",
+      poolCompleteLine1: "This isn't about streaks. It's about whether you're actually improving. By the end of this set, you'll know.",
+      poolCompleteLine2: "Now we find out what you actually know. Come back in a few weeks. See if it still holds.",
       poolCompleteScoreLine: "This run: {score} {fpShort}",
       poolCompleteCtaPrimary: "Replay in a new order",
       poolCompleteCtaPractice: "Fix your mistakes",
 
       // No redundancy: do not mention chances on END (player already knows).
-      endLine: "Run complete.",
+      endLine: "",
 
 
       // (verdict grid removed — identityByVerdict is now the primary END signal)
@@ -862,17 +926,6 @@
       // RUN END — identity + lens + CTA by verdict tier
       // Keys must match UI mapping: none/start/building/strong/elite/legendary
       identityByVerdict: {
-        none: "You're still warming up. Keep it moving.",
-        start: "You're finding your rhythm. Keep it going.",
-        building: "You're building momentum. Stay with it.",
-        strong: "You're rolling now. Keep it steady.",
-        elite: "You're in the flow. Keep it steady.",
-        legendary: "Full control. Keep it going."
-      },
-
-
-
-      lensByVerdict: {
         none: "",
         start: "",
         building: "",
@@ -881,15 +934,22 @@
         legendary: ""
       },
 
-
+      lensByVerdict: {
+        none: "You have {backlog} mistakes to work on. That's where real improvement starts.",
+        start: "You have {backlog} mistakes to fix. Practice them and you'll feel the difference.",
+        building: "{seen} words seen out of {poolSize}. You're improving — keep closing the gap.",
+        strong: "{seen}/{poolSize} words covered. You're improving faster than you think.",
+        elite: "{seen}/{poolSize} words covered. The traps that used to catch you don't anymore.",
+        legendary: "{seen}/{poolSize} mastered. You've proven it: you are improving."
+      },
 
 
       ctaByVerdict: {
         none: "Reset and go again",
-        start: "Go again - push for 6 in a row",
-        building: "Go again - push for 10 in a row",
-        strong: "Go again - aim for 15 in a row",
-        elite: "Go again - chase 20 in a row",
+        start: "Go again - aim for 6+",
+        building: "Go again - aim for 10+",
+        strong: "Go again - aim for 15+",
+        elite: "Go again - aim for 20+",
         legendary: "Run it back"
       },
 
@@ -918,7 +978,7 @@
 
       // Best score surfacing (rendered by ui.js using {best})
       personalBestLine: "Best score: {best} {fpLong}",
-
+      nearBestLine: "{delta} {fpLong} away from your best.",
       // Free runs hint (RUN-only; shown only when remaining > 0)
       freeRunLeft: "{remaining} free run{pluralS} available.",
 
@@ -928,11 +988,19 @@
       mistakesToggle: "Show mistakes ({count})",
 
       newBest: "NEW PERSONAL BEST - You beat your previous score.",
-      playAgain: "Start a new run",
-
+      playAgain: "Keep improving your French",
 
       practiceCta: "Fix your weak spots",
       practiceCtaPremium: "Fix your weak spots (Premium)",
+
+      // RUN routing: when score reaches the "strong" tier, END can promote BONUS as primary CTA.
+      bonusCtaPrimary: "Test Bonus Mode",
+
+      // Post-completion routing (pool exhausted + mistakes)
+      // Vars: {backlog}
+      practiceCtaCount: "Fix your {backlog} remaining mistakes",
+      practiceCtaCountPremium: "Fix your {backlog} remaining mistakes (Premium)",
+
       shareTitle: "Share"
     },
 
@@ -983,14 +1051,13 @@
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)
       // Vars: {saveAmount} {earlyPrice} {standardPrice}
-      savingsLineTemplate: "Save {saveAmount} today (early price).",
-
+      savingsLineTemplate: "Save {saveAmount} today - early price.",
       // Micro reassurance under CTA (optional, no fallback)
       checkoutNote: "Secure checkout via Stripe - takes about 30 seconds.",
 
       // Primary CTA changes with price phase (EARLY vs STANDARD)
-      ctaEarly: "Unlock all 200 word traps — $4.99",
-      ctaStandard: "Get unlimited runs — $6.99",
+      ctaEarly: "Unlock all 200 word traps - $4.99",
+      ctaStandard: "Get unlimited runs - $6.99",
 
       // Backward compat (still used in a few places)
       cta: "Get unlimited runs",
@@ -1039,10 +1106,17 @@
       autoActivateCta: "Activate now",
       autoActivateLater: "Not now"
     },
-
     postCompletion: {
       title: "You've seen everything.",
       body: "Now make it stick. Practice your mistakes, explore Bonus Mode, or replay full runs.",
+
+      // Mastered (pool exhausted + 0 active mistakes)
+      masteredTitle: "Bravo ! You've mastered all 200 word traps.",
+      masteredLine1: "Zero active mistakes. Every trap identified correctly.",
+      masteredLine2: "Come back in a few weeks. See if it still holds.",
+      masteredCtaBonus: "Challenge yourself in Bonus Mode",
+      masteredCtaReplay: "Replay in a new order",
+
       waitlistTitle: "Stay in the loop",
       waitlistBody1: "Get notified when we add new word traps or features.",
       waitlistBody2: "No spam. No account. Leave anytime.",
@@ -1112,7 +1186,7 @@ Find out 😄
         `Can you guess? Does "{termFr}" (FR) really mean "{termEn}"? 🤔`
       ],
       funFactTemplatesTrue: [
-        `Can you guess? "{termFr}" (FR) and "{termEn}" (EN) — same meaning or trap? 🤔`
+        `Can you guess? "{termFr}" (FR) and "{termEn}" (EN) - same meaning or trap? 🤔`
       ],
 
 

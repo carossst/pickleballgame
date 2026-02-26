@@ -42,7 +42,7 @@ void function () {
     const c = (cfg && typeof cfg === "object") ? cfg : {};
     const b = String(c?.storage?.storageKey || "").trim();
     if (!b) return null;
-    // Persisted once the user has seen the â€œwelcomeâ€ modal for the secret chest (once per device).
+    // Persisted once the user has seen the "welcome" modal for the secret chest (once per device).
     return `${b}:secretChestWelcomeShown`;
   }
 
@@ -154,6 +154,12 @@ void function () {
     return Math.min(max, Math.max(min, v));
   }
 
+  function clampNonNegativeInt(n) {
+    const x = Number(n);
+    if (!Number.isFinite(x)) return 0;
+    return Math.max(0, Math.floor(x));
+  }
+
   function formatCents(cents, currency) {
     const n = Number(cents);
     if (!Number.isFinite(n)) return "";
@@ -180,6 +186,32 @@ void function () {
       out = out.replaceAll(`{${k}}`, String(v[k]));
     }
     return out;
+  }
+
+
+  function getRunVerdictKeyFromScore(cfg, scoreFP) {
+    const n = Number(scoreFP);
+    if (!Number.isFinite(n)) return "none";
+
+    const th = (cfg && cfg.routing && typeof cfg.routing.runScoreThresholds === "object")
+      ? cfg.routing.runScoreThresholds
+      : null;
+
+    if (!th) return "none";
+
+    const start = Number(th.start);
+    const building = Number(th.building);
+    const strong = Number(th.strong);
+    const elite = Number(th.elite);
+    const legendary = Number(th.legendary);
+
+    if (Number.isFinite(legendary) && n >= legendary) return "legendary";
+    if (Number.isFinite(elite) && n >= elite) return "elite";
+    if (Number.isFinite(strong) && n >= strong) return "strong";
+    if (Number.isFinite(building) && n >= building) return "building";
+    if (Number.isFinite(start) && n >= start) return "start";
+
+    return "none";
   }
 
   function extractTermsFromItem(item) {
@@ -321,7 +353,7 @@ void function () {
     const text = String(message || "").trim();
     if (!text) return;
 
-    // Nettoie un Ã©ventuel "show" en attente pour Ã©viter des toasts fantÃ´mes
+    // Nettoie un éventuel "show" en attente pour éviter des toasts fantômes
     if (toastShowTimer) clearTimeout(toastShowTimer);
     toastShowTimer = null;
 
@@ -355,12 +387,11 @@ void function () {
 
     if (toastShowTimer) clearTimeout(toastShowTimer);
     toastShowTimer = setTimeout(() => {
-      toastShowTimer = null; // timer consommÃ©
+      toastShowTimer = null; // timer consommé
       showToast(message, { durationMs: Math.floor(durationMs), variant });
     }, Math.floor(delayMs));
   }
 
-  // Same timing contract as toasts, but rendered as centered overlay for gameplay interactions.
   function scheduleGameplayOverlay(message, opts) {
     const o = (opts && typeof opts === "object") ? opts : null;
     const delayMs = o ? Number(o.delayMs) : NaN;
@@ -373,7 +404,8 @@ void function () {
 
     if (gameplayOverlayShowTimer) clearTimeout(gameplayOverlayShowTimer);
     gameplayOverlayShowTimer = setTimeout(() => {
-      gameplayOverlayShowTimer = null; // timer consommÃ©
+      // Nettoie un éventuel "show" en attente pour éviter des toasts fantômes
+      gameplayOverlayShowTimer = null; // timer consommé
       showGameplayOverlay(message, { durationMs: Math.floor(durationMs), variant });
     }, Math.floor(delayMs));
   }
@@ -610,7 +642,7 @@ void function () {
     else if (variant === "danger") overlay.classList.add("wt-chance-overlay--danger");
     else if (variant === "success") overlay.classList.add("wt-chance-overlay--success");
 
-    // Gameplay overlays: block taps by default (avoid â€œlooks modal but click-throughâ€)
+    // Gameplay overlays: block taps by default (avoid "looks modal but click-through")
     overlay.classList.add("wt-chance-overlay--blocking");
 
     overlay.innerHTML = `
@@ -739,7 +771,7 @@ void function () {
     overlay.setAttribute("aria-hidden", "false");
 
     // Block click-through always; dismiss on tap if enabled
-    const dismissEnabled = (window.WT_CONFIG && window.WT_CONFIG.ui && window.WT_CONFIG.ui.toastDismissOnTap === true);
+    const dismissEnabled = (cfg?.ui?.toastDismissOnTap === true);
     if (dismissEnabled) {
       overlay.classList.add("wt-chance-overlay--dismissible");
     } else {
@@ -750,12 +782,23 @@ void function () {
       const o = document.getElementById("wt-chance-lost-overlay");
       if (!o) return;
       if (!o.classList.contains("wt-chance-overlay--visible")) return;
+
       e.preventDefault();
       e.stopImmediatePropagation();
+
+      // Game over: tap should always skip to END (even if toastDismissOnTap is false),
+      // otherwise the overlay can trap the user on a blank background.
+      if (left === 0 && typeof window.__wtGameOverSkipToEnd === "function") {
+        hideChanceLostOverlay();
+        try { window.__wtGameOverSkipToEnd(); } catch (_) { /* silent */ }
+        return;
+      }
+
+      // Last chance: only dismiss if explicitly enabled
       if (dismissEnabled) hideChanceLostOverlay();
     };
-    document.addEventListener("pointerdown", chanceLostOverlayBlocker, true);
 
+    document.addEventListener("pointerdown", chanceLostOverlayBlocker, true);
     chanceLostOverlayTimer = setTimeout(() => {
       hideChanceLostOverlay();
     }, Math.floor(durationMs));
@@ -849,6 +892,10 @@ void function () {
     const bonusLine3 = String(wording?.secretBonus?.startOverlayLine3 || "").trim();
     const bonusLimitLine = String(extra?.bonusLimitLine || "").trim();
     const bonusLines = [bonusLine1, bonusLine2, bonusLine3, bonusLimitLine, msg].filter(Boolean);
+
+    const goalLine1 = String(extra?.goalLine1 || "").trim();
+    const goalLine2 = String(extra?.goalLine2 || "").trim();
+
     overlay.innerHTML = `
       <div class="wt-chance-overlay__content">
         <span class="wt-chance-overlay__text">
@@ -856,6 +903,8 @@ void function () {
         ? bonusLines.map(l => `<span>${escapeHtml(l)}</span>`).join("<br>")
         : `
                 ${typeLine ? `<span>${escapeHtml(typeLine)}</span><br>` : ``}
+                ${goalLine1 ? `<span class="wt-muted">${escapeHtml(goalLine1)}</span><br>` : ``}
+                ${goalLine2 ? `<span class="wt-muted">${escapeHtml(goalLine2)}</span><br>` : ``}
                 <span>${escapeHtml(msg)}</span>
               `
       }
@@ -1042,6 +1091,9 @@ void function () {
 
       shareAnchorId: null,
 
+      // Pool reshuffle toast guard (UI-only, once per RUN)
+      poolReshuffleToastShown: false,
+
       // Secret chest (END screen): tap x3 window + one-shot poetic hint
       secretChest: {
         tapCount: 0,
@@ -1170,16 +1222,7 @@ void function () {
             const cur = (self.game && typeof self.game.getCurrent === "function") ? self.game.getCurrent() : null;
             const correct = (cur && (cur.correctAnswer === true || cur.correctAnswer === false)) ? (cur.correctAnswer === true) : null;
 
-            if (btn && Number.isFinite(pulseMs) && pulseMs > 0 && pulseMs <= 2000 && correct != null) {
-              btn.classList.remove("wt-choice--flash");
-              btn.style.animationDuration = `${Math.floor(pulseMs)}ms`;
-              btn.classList.add("wt-choice--flash");
 
-              window.setTimeout(() => {
-                btn.classList.remove("wt-choice--flash");
-                btn.style.animationDuration = "";
-              }, Math.floor(pulseMs));
-            }
           } catch (_) { }
 
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
@@ -1409,7 +1452,7 @@ void function () {
         if (!t) return;
 
         // KISS: if user toggles the Share <details> near the bottom of the viewport,
-        // keep the summary visible to avoid the â€œopens upwardâ€ feel caused by layout jump.
+        // keep the summary visible to avoid the "opens upward" feel caused by layout jump.
         const shareSummary = (t.closest && t.closest("summary.wt-share-toggle")) ? t.closest("summary.wt-share-toggle") : null;
         if (shareSummary) {
           // Let native <details>/<summary> toggle happen (no preventDefault).
@@ -1812,12 +1855,34 @@ void function () {
 
 
   // Pool reshuffled toast (RUN only; one-shot from game.js state.poolReshuffled)
-  // UX decision: never interrupt PLAYING with a technical reshuffle message.
-  // Pool completion is celebrated via END (one-shot). After that, reshuffles are silent.
+  // UX decision: show a single discreet info toast once per RUN (no spam).
   UI.prototype._maybeShowPoolReshuffledToast = function () {
-    return;
-  };
+    if (this.state !== STATES.PLAYING) return;
 
+    const mode = String(this._runtime?.runMode || "").trim();
+    if (mode !== "RUN") return;
+
+    if (!this._runtime || this._runtime.poolReshuffleToastShown === true) return;
+
+    let poolReshuffled = false;
+    try {
+      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      poolReshuffled = (gs.poolReshuffled === true);
+    } catch (_) {
+      poolReshuffled = false;
+    }
+
+    if (poolReshuffled !== true) return;
+
+    const msg = String(this.wording?.ui?.poolReshuffledToast || "").trim();
+    if (!msg) return;
+
+    const timing = getToastTiming(this.config, "");
+    if (!timing) return;
+
+    this._runtime.poolReshuffleToastShown = true;
+    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info" });
+  };
 
 
   UI.prototype.setState = function (next) {
@@ -1947,15 +2012,32 @@ void function () {
           : false;
 
         const lastRun = this._runtime?.lastRun || {};
-        const mode = String(lastRun.mode || this._runtime?.runMode || "RUN").trim();
+
+        // One-shot: mastered celebration persistence (no modal required)
+        try {
+          const mastered =
+            !!(this.storage && typeof this.storage.isMastered === "function" && this.storage.isMastered() === true);
+
+          const already =
+            !!(this.storage && typeof this.storage.hasMasteredCelebrated === "function" && this.storage.hasMasteredCelebrated() === true);
+
+          if (mastered && !already && this.storage && typeof this.storage.markMasteredCelebrated === "function") {
+            this.storage.markMasteredCelebrated();
+          }
+        } catch (_) { /* silent */ }
+
+        const mode = String(lastRun.mode || "").trim();
         const isRun = (mode === "RUN");
-        const newBest = isRun && (lastRun.newBest === true);
+        const isBonus = (mode === "BONUS");
+        const newBest = (isRun || isBonus) && (lastRun.newBest === true);
 
         const ms = Number(cfg?.ui?.endRecordMomentMs);
-        const newBestTpl = String(endW.newBest || "").trim();
 
-        const enabled = premium && newBest && newBestTpl && Number.isFinite(ms) && ms > 0;
+        const newBestTpl = isBonus
+          ? String((w && w.secretBonus && w.secretBonus.newBest) || endW.newBest || "").trim()
+          : String(endW.newBest || "").trim();
 
+        const enabled = (newBest && newBestTpl && Number.isFinite(ms) && ms > 0);
         if (enabled) {
           if (!this._runtime) this._runtime = {};
           if (this._runtime.endRecordMomentTimer) {
@@ -2045,9 +2127,17 @@ void function () {
     try {
       const self = this;
       const trap = function (e) {
-        if (!e || e.key !== "Tab") return;
+        if (!e) return;
         if (!self.modalEl || self.modalEl.classList.contains("wt-hidden")) return;
 
+        // A11Y: Escape closes the modal
+        if (e.key === "Escape") {
+          e.preventDefault();
+          if (typeof self.closeModal === "function") self.closeModal();
+          return;
+        }
+
+        if (e.key !== "Tab") return;
         const focusables = self.modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
         if (!focusables || focusables.length === 0) return;
 
@@ -2382,7 +2472,7 @@ void function () {
 
 
   UI.prototype._openFirstRunFraming = function () {
-    // Lock immediately so it canâ€™t reappear later via other flows.
+    // Lock immediately so it can't reappear later via other flows.
     markSeenFirstRunFraming(this.config);
 
     const w = this.wording || {};
@@ -2596,7 +2686,7 @@ void function () {
       return String(fillTemplate(againTpl, { n: Math.floor(Number(threshold)), streak: s }) || "").trim();
     }
 
-    // #3 Recovery non-chiffrÃ© (one-shot), mÃªme sans record
+    // #3 Recovery non-chiffré (one-shot), même sans record
     if (mp.justRecoveredFromMistake === true && s >= tBuilding && mp.flowTierShown < tBuilding) {
       const msg = String(mpc.recovery || "").trim();
       if (tryShowRunOverlay(msg, "info")) {
@@ -2609,7 +2699,7 @@ void function () {
       return;
     }
 
-    // #4 RaretÃ© intelligente: streak micropics uniquement si nouveau record â€œrÃ©compensÃ©â€
+    // #4 RaretÃ© intelligente: streak micropics uniquement si nouveau record "récompensé"
     const shownMax = clampInt(mp.maxCorrectStreakDisplayed, 0, 9999);
     if (s <= shownMax) return;
 
@@ -2784,6 +2874,11 @@ void function () {
     this._runtime.frozenItem = null;
     this._runtime.shareAnchorId = null;
 
+    // Pool reshuffle toast guard (once per RUN)
+    this._runtime.poolReshuffleToastShown = false;
+
+    // One-shot per run: "New best score" toast (PLAYING)
+    this._runtime.newBestScoreToastShown = false;
 
     // micro-pics reset (run-only)
     if (this._runtime.microPics) {
@@ -2867,8 +2962,27 @@ void function () {
     // Persist runType for PAYWALL rendering (e.g., headlineLastFree).
     this._runtime.runType = runType;
 
-    showRunStartOverlay(cfg, this.wording, this.game, runType);
+    // Start overlay: show the same CTA as END for the current verdict tier (FREE / LAST_FREE only).
+    let startOverlayExtra = null;
+    try {
+      const runTypeStr = String(runType || "").trim();
+      const isPractice = (runTypeStr === "PRACTICE");
+      const isUnlimited = (runTypeStr === "UNLIMITED");
 
+      if (!isPractice && !isUnlimited) {
+        const lastScoreFP = clampInt(Number(this._runtime?.lastRun?.scoreFP), 0, 99999);
+
+        // Determine verdictKey using cfg.routing.runScoreThresholds (same mapping as END).
+        const verdictKey = getRunVerdictKeyFromScore(cfg, lastScoreFP);
+
+        const ctaLine = String(this.wording?.end?.ctaByVerdict?.[verdictKey] || "").trim();
+        if (ctaLine) startOverlayExtra = { goalLine1: ctaLine, goalLine2: "" };
+      }
+    } catch (_) {
+      startOverlayExtra = null;
+    }
+
+    showRunStartOverlay(cfg, this.wording, this.game, runType, startOverlayExtra);
     // Warn on accidental tab close during gameplay (run already consumed)
     if (!this._beforeUnloadHandler) {
       this._beforeUnloadHandler = (e) => {
@@ -2918,10 +3032,7 @@ void function () {
         return;
       }
 
-      // Increment counter for free users
-      if (this.storage && typeof this.storage.incrementSecretBonusFreeRunsUsed === "function") {
-        this.storage.incrementSecretBonusFreeRunsUsed();
-      }
+      // Free user increment: deferred AFTER deck check (avoid burning a free run on empty deck).
     }
     // Stats snapshot (source of truth for "seen")
     const statsByItem = (this.storage && typeof this.storage.getStatsByItem === "function")
@@ -2949,6 +3060,13 @@ void function () {
       const msg = String(this.wording?.secretBonus?.noSeenWordsToast || "").trim();
       if (msg) toastNow(this.config, msg);
       return;
+    }
+
+    // Increment counter for free users (AFTER deck check passed)
+    if (!premium) {
+      if (this.storage && typeof this.storage.incrementSecretBonusFreeRunsUsed === "function") {
+        this.storage.incrementSecretBonusFreeRunsUsed();
+      }
     }
 
     // Hook for live stats refresh during run (deck rebuild)
@@ -2981,6 +3099,8 @@ void function () {
     this._runtime.frozenItem = null;
     this._runtime.shareAnchorId = null;
 
+    // One-shot per run: "New best score" toast (PLAYING)
+    this._runtime.newBestScoreToastShown = false;
     // micro-pics reset (run-only)
     if (this._runtime.microPics) {
       this._runtime.microPics.correctStreak = 0;
@@ -3062,6 +3182,7 @@ void function () {
       if (!root) { this.render(); return; }
 
       let cleaned = false;
+      let scoreFlashCleaned = false;
 
       const chancePill = root.querySelector(".wt-pill--danger-pulse");
       if (chancePill) {
@@ -3077,11 +3198,19 @@ void function () {
         const delta = scorePill.querySelector(".wt-pill__delta");
         if (delta) delta.remove();
         cleaned = true;
+        scoreFlashCleaned = true;
       }
 
       // Reset timestamps so next render() won't re-add them
       if (this._runtime.chanceLostPulseAt) this._runtime.chanceLostPulseAt = 0;
       if (this._runtime.scoreFlashAt) this._runtime.scoreFlashAt = 0;
+
+      // Important: near-best is suppressed while scoreFlashOn is true.
+      // When score flash ends, force a render so near-best can appear immediately.
+      if (scoreFlashCleaned) {
+        this.render();
+        return;
+      }
 
       if (!cleaned) this.render();
     }, Math.floor(ms) + 30);
@@ -3101,9 +3230,15 @@ void function () {
 
     // Snapshot chances BEFORE answering (for UI animation when a chance disappears)
     let prevChancesLeft = null;
+    let prevScoreFP = null;
+
     try {
       const gsPrev = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+
       if (gsPrev.chancesLeft != null) prevChancesLeft = Number(gsPrev.chancesLeft);
+
+      // Snapshot score BEFORE answering (needed for "new best" crossing detection)
+      if (gsPrev.scoreFP != null) prevScoreFP = Number(gsPrev.scoreFP);
     } catch (_) { /* silent */ }
 
     const frozen = (this.game && typeof this.game.getCurrent === "function") ? this.game.getCurrent() : null;
@@ -3111,7 +3246,6 @@ void function () {
 
     const picked = (choiceBool === true);
     const res = (this.game && typeof this.game.answer === "function") ? this.game.answer(picked) : null;
-
     // Flag a short-lived pulse when a chance is lost (CSS owns the actual animation)
     let chanceLost = false;
     let nowChancesLeft = null;
@@ -3142,6 +3276,70 @@ void function () {
       // PRACTICE: no score flash (consolidation mode, no performance feedback)
       const isPracticeMode = (String(this._runtime?.runMode || "").trim() === "PRACTICE");
       this._runtime.scoreFlashAt = (!isPracticeMode && res && res.isCorrect === true) ? Date.now() : 0;
+
+      // New best (RUN/BONUS + premium): one-shot pulse + toast when you EXCEED the best during PLAYING.
+      // Fail-closed: missing config/storage/wording => no celebration.
+      try {
+        const modeNow = String(this._runtime?.runMode || "RUN").trim();
+        const isRun = (modeNow === "RUN");
+        const isBonus = (modeNow === "BONUS");
+
+        const cfg = this.config || {};
+        const pbCfg = (cfg?.personalBest && typeof cfg.personalBest === "object") ? cfg.personalBest : null;
+        const pbEnabled = !!(pbCfg && pbCfg.enabled === true);
+
+        const toastMs = Number(cfg?.ui?.newBestScoreToastMs);
+        const toastLine = String(this.wording?.playing?.newBestScore || "").trim();
+
+        let bestScoreFP = null;
+
+        if (premium === true && pbEnabled === true && this.storage) {
+          if (isRun && typeof this.storage.getPersonalBest === "function") {
+            const pb = this.storage.getPersonalBest() || null;
+            const b = Number(pb?.bestScoreFP);
+            if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
+          } else if (isBonus && typeof this.storage.getBonusBest === "function") {
+            const bb = this.storage.getBonusBest() || null;
+            const b = Number(bb?.bestScoreFP);
+            if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
+          }
+        }
+
+        const gsNow2 = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+        const nowScoreFP = (gsNow2.scoreFP != null) ? Number(gsNow2.scoreFP) : NaN;
+
+        const exceeded =
+          (premium === true) &&
+          (pbEnabled === true) &&
+          (bestScoreFP != null) &&
+          Number.isFinite(prevScoreFP) &&
+          Number.isFinite(nowScoreFP) &&
+          (prevScoreFP <= bestScoreFP) &&
+          (nowScoreFP > bestScoreFP);
+
+        if (exceeded) {
+          // Pulse (already styled via .wt-pill--new-best)
+          this._runtime.newBestPulseAt = Date.now();
+
+          // Toast one-shot per run
+          const canToast =
+            (this._runtime.newBestScoreToastShown !== true) &&
+            toastLine &&
+            Number.isFinite(toastMs) &&
+            toastMs > 0;
+
+          if (canToast) {
+            this._runtime.newBestScoreToastShown = true;
+
+            // New best score: centered gameplay overlay (stronger than toast)
+            scheduleGameplayOverlay(toastLine, {
+              delayMs: 0,
+              durationMs: Math.floor(toastMs),
+              variant: "success"
+            });
+          }
+        }
+      } catch (_) { /* fail closed */ }
     } catch (_) {
       chanceLost = false;
       nowChancesLeft = null;
@@ -3189,6 +3387,7 @@ void function () {
         }
       }
     } catch (_) { }
+
     // Game over rule (RUN / PRACTICE only):
     // - Freeze immediately
     // - Transition to END is deferred for the *effective* chance-loss overlay duration
@@ -3199,8 +3398,17 @@ void function () {
       Number.isFinite(nowChancesLeft) &&
       Number(nowChancesLeft) === 0;
 
+    // Bonus: still sync the HUD on the final mistake (avoid stale "2/3" display on the last error).
+    const shouldSyncFinalMistakeHud =
+      isGameOverNow ||
+      (
+        runModeNow === "BONUS" &&
+        chanceLost &&
+        Number.isFinite(nowChancesLeft) &&
+        Number(nowChancesLeft) === 0
+      );
 
-    if (isGameOverNow) {
+    if (shouldSyncFinalMistakeHud) {
       // Sync HUD mistakes immediately (avoid stale "2/3" display on the final mistake)
       try {
         const root = this.appEl || document.getElementById("app");
@@ -3233,21 +3441,14 @@ void function () {
           pill.textContent = text;
         }
       } catch (_) { /* silent */ }
+    }
 
+    if (isGameOverNow) {
       // Block renders BEFORE recordAnswer: _save() → _emit() → onStorageUpdated is synchronous.
       // Without this, the dispatched event triggers render() while engine is done → blank screen.
       this._runtime.gameOverPending = true;
     }
 
-    // BONUS game-over guard: block renders BEFORE recordAnswer.
-    if (
-      res.done === true &&
-      String(this._runtime?.runMode || "").trim() === "BONUS" &&
-      Number.isFinite(nowChancesLeft) &&
-      Number(nowChancesLeft) === 0
-    ) {
-      this._runtime.gameOverPending = true;
-    }
 
     // BONUS game-over guard: block renders BEFORE recordAnswer.
     if (
@@ -3442,13 +3643,20 @@ void function () {
       this.render();
       return;
     }
-
     // Default flow (Option A): show feedback and wait for Continue.
     // UX: if a chance was lost, give Chances a short solo moment before showing the feedback block.
     if (this._runtime.feedbackRevealTimerId) {
       try { window.clearTimeout(this._runtime.feedbackRevealTimerId); } catch (_) { }
       this._runtime.feedbackRevealTimerId = null;
     }
+
+    // Product rule: Game Over (RUN/PRACTICE) → auto-transition to END (no Continue tap needed).
+    // Reuses the same _enterGameOverDelay() already used by BONUS.
+    if (isGameOverNow) {
+      this._enterGameOverDelay();
+      return;
+    }
+
 
     this._runtime.feedbackPending = true;
 
@@ -3574,6 +3782,9 @@ void function () {
     // Duration source of truth: WT_CONFIG.ui.chanceLostOverlayMs + gameplayPulseMs (game over extension)
     const baseDurationMs = Number(this.config?.ui?.chanceLostOverlayMs);
 
+    // One-shot hook used by the chance-lost overlay to skip immediately to END on tap.
+    try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+
     if (Number.isFinite(baseDurationMs) && baseDurationMs >= 200 && baseDurationMs <= 3000) {
       let durationMs = baseDurationMs;
 
@@ -3589,13 +3800,33 @@ void function () {
         this._runtime.bonusEndTimerId = null;
       }
 
-      window.setTimeout(() => {
+      try {
+        window.__wtGameOverSkipToEnd = () => {
+          if (this.state !== STATES.PLAYING) return;
+
+          if (this._runtime && this._runtime.bonusEndTimerId) {
+            try { window.clearTimeout(this._runtime.bonusEndTimerId); } catch (_) { }
+            this._runtime.bonusEndTimerId = null;
+          }
+
+          try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+
+          if (this._runtime) this._runtime.gameOverPending = false;
+          this._finishRun();
+        };
+      } catch (_) { }
+
+      this._runtime.bonusEndTimerId = window.setTimeout(() => {
+        if (this._runtime) this._runtime.bonusEndTimerId = null;
+        try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+
         if (this.state !== STATES.PLAYING) return;
         if (this._runtime) this._runtime.gameOverPending = false;
         this._finishRun();
       }, Math.floor(durationMs));
     } else {
       // Fail-safe: invalid config → end immediately
+      try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
       this._runtime.gameOverPending = false;
       this._finishRun();
     }
@@ -3616,6 +3847,8 @@ void function () {
         this._runtime.bonusEndTimerId = null;
       }
     } catch (_) { /* silent */ }
+
+    try { window.__wtGameOverSkipToEnd = null; } catch (_) { /* silent */ }
 
     // Cancel pending overlays — but KEEP chance-lost overlay visible during PLAYING→END fade.
     // Design: the overlay stays on screen so the user never sees naked PLAYING underneath.
@@ -3666,8 +3899,17 @@ void function () {
 
       newBest = !!(res && res.newBest);
       bestScoreFP = Number(res && res.bestScoreFP || 0);
-    }
+    } else if (mode === "BONUS" && this.storage && typeof this.storage.recordBonusComplete === "function") {
+      const res = this.storage.recordBonusComplete(scoreFP, {
+        mode: "BONUS",
+        maxChances: Number(maxChances || 0),
+        chancesLeft: (chancesLeft == null) ? null : Number(chancesLeft),
+        endedFrom: "ui"
+      });
 
+      newBest = !!(res && res.newBest);
+      bestScoreFP = Number(res && res.bestScoreFP || 0);
+    }
     // Store for END screen
     this._runtime.lastRun = {
       mode,
@@ -4097,7 +4339,6 @@ void function () {
   };
 
 
-
   // ============================================
   // Pool complete (one-shot modal on END entry)
   // ============================================
@@ -4128,6 +4369,47 @@ void function () {
     this.openModal(html, title);
   };
 
+
+  // ============================================
+  // Milestone: halfway (one-shot modal on END entry)
+  // ============================================
+  UI.prototype.openHalfwayMilestoneModal = function () {
+    const w = this.wording || {};
+    const ms = w.milestones || {};
+    const hw = ms.halfway || {};
+
+    const title = String(hw.title || "").trim();
+    const lines = Array.isArray(hw.bodyLines) ? hw.bodyLines : [];
+    const cta = String(hw.cta || "").trim();
+
+    // Fail-closed: if required copy is missing, do nothing.
+    if (!title || !cta) return;
+
+    // Mark one-shot only if we can actually show the modal.
+    try {
+      if (this.storage && typeof this.storage.markHalfwayMilestoneShown === "function") {
+        this.storage.markHalfwayMilestoneShown();
+      }
+    } catch (_) { /* silent */ }
+
+    const bodyHtml = lines.map((s) => {
+      const line = String(s || "");
+      if (!line) return `<div style="height:8px"></div>`;
+      return `<p>${escapeHtml(line)}</p>`;
+    }).join("");
+
+    const html = `
+      ${bodyHtml}
+
+      <div class="wt-divider"></div>
+
+      <div class="wt-actions" style="margin-top:14px">
+        <button class="wt-btn wt-btn--primary" data-action="close-modal">${escapeHtml(cta)}</button>
+      </div>
+    `;
+
+    this.openModal(html, title);
+  };
 
 
   // ============================================
@@ -4919,7 +5201,7 @@ void function () {
     // Apply transform (no re-render)
     try { sbf.chipEl.style.transform = `translate3d(0px, ${Math.round(yPx)}px, 0px)`; } catch (_) { }
 
-    // Warning zone: keep the existing policy, but let micro-juice handle the â€œone-shotâ€
+    // Warning zone: keep the existing policy, but let micro-juice handle the "one-shot"
     if (Number.isFinite(danger01) && danger01 > 0 && sbf.chipEl) {
       const warningThreshold = danger01 * 0.65;
       const inWarning = sbf.y01 >= warningThreshold;
@@ -5054,6 +5336,10 @@ void function () {
           this.closeModal();
         }
         this.appEl.innerHTML = this._renderPlaying();
+
+        // One-shot info toast when the pool reshuffles (RUN only)
+        try { this._maybeShowPoolReshuffledToast(); } catch (_) { }
+
         break;
 
 
@@ -5079,7 +5365,8 @@ void function () {
 
     // END entry modals (priority order):
     // 1) Pool complete congratulations (one-shot per 200/200 run)
-    // 2) Waitlist (optional one-shot auto-modal)
+    // 2) Halfway milestone (one-shot at 50% unique coverage, RUN only)
+    // 3) Waitlist (optional one-shot auto-modal)
     try {
       const enteredEnd = (this.state === STATES.END && prevRenderedState !== STATES.END);
 
@@ -5101,6 +5388,37 @@ void function () {
         if (poolCompleteCelebration && !modalOpen0) {
           this.openPoolCompleteModal();
         }
+
+        // Halfway milestone: END-only (no gameplay interruption), RUN-only, not when pool is exhausted
+        try {
+          const modalOpen1 = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
+
+          if (isRun && !poolCompleteCelebration && !modalOpen1) {
+            const poolSize = clampInt(this.config?.game?.poolSize, 0, 9999);
+
+            const thresholds = Array.isArray(this.config?.postCompletion?.milestoneThresholds)
+              ? this.config.postCompletion.milestoneThresholds
+              : null;
+
+            const halfwayPctRaw = thresholds && thresholds.length ? Number(thresholds[0]) : NaN;
+            const halfwayPct = (Number.isFinite(halfwayPctRaw) && halfwayPctRaw > 0 && halfwayPctRaw < 1) ? halfwayPctRaw : null;
+
+            const threshold = (poolSize > 0 && halfwayPct != null) ? Math.floor(poolSize * halfwayPct) : 0;
+            const uniqueSeen =
+              (this.storage && typeof this.storage.getUniqueSeenCount === "function")
+                ? clampInt(this.storage.getUniqueSeenCount(), 0, 999999)
+                : 0;
+
+            const exhausted =
+              !!(this.storage && typeof this.storage.isPoolExhausted === "function" && this.storage.isPoolExhausted() === true);
+            const already =
+              !!(this.storage && typeof this.storage.hasHalfwayMilestoneShown === "function" && this.storage.hasHalfwayMilestoneShown() === true);
+
+            if (threshold > 0 && uniqueSeen >= threshold && !exhausted && !already) {
+              this.openHalfwayMilestoneModal();
+            }
+          }
+        } catch (_) { /* silent */ }
 
         // Waitlist: optional one-shot auto-modal on END (no dark patterns: only once per device)
         const cfg = this.config || {};
@@ -5127,7 +5445,6 @@ void function () {
         }
       }
     } catch (_) { /* silent */ }
-
 
     // Re-attach preserved footer (only if it belongs to #app)
     if (this._footerNode) {
@@ -5334,7 +5651,7 @@ void function () {
             Math.max(a, b);
 
     // LANDING gating should reflect â€œhas played at least onceâ€ (RUN or PRACTICE),
-    // not only â€œcompleted a RUNâ€.
+    // not only "completed a RUN".
     const runPlays = Math.max(runCompletes, (c == null ? 0 : c));
 
 
@@ -5373,27 +5690,14 @@ void function () {
         } catch (_) { seen = 0; }
 
         seen = clampInt(seen, 0, poolSizeSafe);
-        // Mistakes to fix (global, can go down):
-        // remaining = lastWrongAt > lastCorrectAt
-        // Mistakes to fix (global, can go down):
-        // remaining = lastWrongAt > lastCorrectAt
+        // Mistakes to fix: source of truth = StorageManager.getActiveMistakesCount()
         let mistakes = 0;
+
         try {
-          const stats = (this.storage && typeof this.storage.getStatsByItem === "function")
-            ? (this.storage.getStatsByItem() || {})
-            : ((this.storage && typeof this.storage.getData === "function") ? ((this.storage.getData() || {}).statsByItem || {}) : {});
-
-          if (stats && typeof stats === "object") {
-            for (const k in stats) {
-              const s = stats[k] || {};
-              const lastWrongAt = Number(s.lastWrongAt || 0);
-              const lastCorrectAt = Number(s.lastCorrectAt || 0);
-
-              const lw = (Number.isFinite(lastWrongAt) && lastWrongAt > 0) ? lastWrongAt : 0;
-              const lc = (Number.isFinite(lastCorrectAt) && lastCorrectAt > 0) ? lastCorrectAt : 0;
-
-              if (lw > lc) mistakes += 1;
-            }
+          if (this.storage && typeof this.storage.getActiveMistakesCount === "function") {
+            mistakes = Number(this.storage.getActiveMistakesCount() || 0);
+          } else {
+            mistakes = 0;
           }
         } catch (_) { mistakes = 0; }
 
@@ -5513,7 +5817,7 @@ void function () {
 
       const label = String(pay.timerLabel || "").trim();
 
-      if (isEarly && urgencyEnabled && label) {
+      if (!premium && isEarly && urgencyEnabled && label) {
         const cls = `wt-box wt-box--tinted`;
         landingUrgencyHtml = `
         <div class="${cls}" role="status" aria-live="polite">
@@ -5523,7 +5827,6 @@ void function () {
       `;
       }
     } catch (_) { landingUrgencyHtml = ""; }
-
 
 
     // Post-paywall reassurance block (deferred: needs canShowChest)
@@ -5703,10 +6006,12 @@ ${landingHeaderRowHtml}
 
         let mistakesCount = 0;
         for (const k in statsByItem) {
-          const wc = clampInt(Number(statsByItem[k]?.wrongCount), 0, 999999);
-          if (wc > 0) mistakesCount += 1;
+          const s = statsByItem[k];
+          if (!s || typeof s !== "object") continue;
+          const lw = Number(s.lastWrongAt || 0);
+          const lc = Number(s.lastCorrectAt || 0);
+          if (lw > lc) mistakesCount += 1;
         }
-
         if (!Number.isFinite(mistakesCount) || mistakesCount < minWrong) return ``;
 
         const action = premium ? "start-practice" : "open-paywall";
@@ -5747,6 +6052,7 @@ ${landingHeaderRowHtml}
   };
 
 
+
   UI.prototype._renderEnd = function () {
     const w = this.wording || {};
     const ui = w.ui || {};
@@ -5765,13 +6071,13 @@ ${landingHeaderRowHtml}
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const maxChances = clampInt(lastRun.maxChances || cfg?.game?.maxChances, 0, 99);
     const chancesLeft = (lastRun.chancesLeft == null) ? null : clampInt(lastRun.chancesLeft, 0, 99);
-    const newBest = isRun && !!lastRun.newBest;
+    const newBest = (isRun || isBonus) && !!lastRun.newBest;
 
     const totalPresented = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
 
     const bestStreakNum = clampInt(lastRun.bestStreak, 0, 9999);
 
-    let poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
+    const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
 
     let seen = null;
     if (this.storage && typeof this.storage.getSeenItemIds === "function") {
@@ -5796,16 +6102,15 @@ ${landingHeaderRowHtml}
       seen: (seen == null) ? "" : seen
     };
 
-
-
-
     const scoreLineTpl =
       isBonus ? String(bonusW.scoreLine || end.scoreLine || "").trim()
         : isPractice ? String(practiceW.scoreLine || end.scoreLine || "").trim()
           : (isRun && !!lastRun.poolCompleteCelebration) ? String(end.poolCompleteScoreLine || "").trim()
             : String(end.scoreLine || "").trim();
 
-    const newBestTpl = String(end.newBest || "").trim();
+    const newBestTpl = isBonus
+      ? String(bonusW.newBest || end.newBest || "").trim()
+      : String(end.newBest || "").trim();
 
     let endLineTpl = "";
 
@@ -5816,17 +6121,15 @@ ${landingHeaderRowHtml}
     let practiceLevel = "";
     let practiceIdentityTpl = "";
     let practiceLensTpl = "";
-
+    let practiceRepeatTierKey = "";
     let runVerdictKey = "";
     let runIdentityTpl = "";
     let runLensTpl = "";
 
-    // BONUS END â€” endByLevel (2 sentences) + endLine + identity + lens. No hardcoded fallback.
+    // BONUS END — endByLevel (2 sentences) + endLine + identity + lens. No hardcoded fallback.
     if (isBonus) {
       const total = clampInt(totalPresented, 0, 99999);
 
-      // Bucket from displayed score (scoreFP) and total presented.
-      // LOW: score=0 | HIGH: score=total (and total>0) | MEDIUM otherwise.
       if (total > 0) {
         if (scoreFP <= 0) bonusLevel = "low";
         else if (scoreFP >= total) bonusLevel = "high";
@@ -5848,11 +6151,76 @@ ${landingHeaderRowHtml}
       bonusLensTpl = String(bonusW?.lensByLevel?.[bonusLevel] || "").trim();
 
     } else if (isPractice) {
-      endLineTpl = String(practiceW.endLine || "").trim();
+      const practiceEndLineTpl = String(practiceW.endLine || "").trim();
+      const practiceEndStatsTpl = String(practiceW.endStatsLine || "").trim();
 
-      // PRACTICE level: based on mistake ratio (not score — no score in practice)
+      // PRACTICE stats (END):
+      // - fixed = reviewed - mistakes in this practice run
+      // - remaining = current backlog after the run (wrongCount>0 && correctCount==0)
       const total = clampInt(totalPresented, 0, 99999);
       const mistakeCount = Array.isArray(lastRun.mistakeIds) ? lastRun.mistakeIds.length : 0;
+      const fixedCount = clampInt(total - mistakeCount, 0, 99999);
+
+      let remainingBacklog = null;
+      try {
+        if (this.storage && typeof this.storage.getStatsByItem === "function") {
+          const stats = this.storage.getStatsByItem() || {};
+          let n = 0;
+
+          for (const k in stats) {
+            const s = stats[k];
+            if (!s || typeof s !== "object") continue;
+
+            const wc = clampNonNegativeInt(s.wrongCount);
+            const cc = clampNonNegativeInt(s.correctCount);
+
+            if (wc > 0 && cc === 0) n += 1;
+          }
+
+          remainingBacklog = clampInt(n, 0, 99999);
+        }
+      } catch (_) { remainingBacklog = null; }
+
+      vars.fixed = fixedCount;
+      if (remainingBacklog != null) vars.remaining = remainingBacklog;
+
+      // Optional coaching note by tier (fail-closed on config + remaining + wording)
+      let repeatNote = "";
+      practiceRepeatTierKey = "";
+      try {
+        const tiers = Array.isArray(cfg?.routing?.practiceRepeatTiers) ? cfg.routing.practiceRepeatTiers : null;
+
+        if (tiers && remainingBacklog != null && remainingBacklog >= 1) {
+          for (const t of tiers) {
+            const key = String(t?.key || "").trim();
+            const rawMin = Number(t?.minRemaining);
+            const min = (Number.isFinite(rawMin) && rawMin >= 1) ? Math.floor(rawMin) : null;
+            if (!key || min == null) continue;
+
+            if (remainingBacklog >= min) {
+              practiceRepeatTierKey = key;
+              break;
+            }
+          }
+        }
+
+        const tpl = practiceRepeatTierKey
+          ? String(practiceW?.endRepeatNoteByTier?.[practiceRepeatTierKey] || "").trim()
+          : "";
+
+        if (tpl) repeatNote = tpl;
+      } catch (_) {
+        repeatNote = "";
+        practiceRepeatTierKey = "";
+      }
+
+      endLineTpl = [
+        practiceEndLineTpl,
+        (practiceEndStatsTpl && remainingBacklog != null) ? practiceEndStatsTpl : "",
+        repeatNote
+      ].filter(Boolean).join(" ").trim();
+
+      // PRACTICE level: based on mistake ratio (not score — no score in practice)
       if (total > 0) {
         const correctRatio = (total - mistakeCount) / total;
         if (correctRatio >= 0.8) practiceLevel = "high";
@@ -5873,36 +6241,64 @@ ${landingHeaderRowHtml}
         endLineTpl = String(end.endLine || "").trim();
       }
 
-      if (bestStreakNum >= 20) runVerdictKey = "legendary";
-      else if (bestStreakNum >= 15) runVerdictKey = "elite";
-      else if (bestStreakNum >= 10) runVerdictKey = "strong";
-      else if (bestStreakNum >= 6) runVerdictKey = "building";
-      else if (bestStreakNum >= 3) runVerdictKey = "start";
-      else runVerdictKey = "none";
+      runVerdictKey = getRunVerdictKeyFromScore(cfg, bestStreakNum);
 
       runIdentityTpl = String(end?.identityByVerdict?.[runVerdictKey] || "").trim();
       runLensTpl = String(end?.lensByVerdict?.[runVerdictKey] || "").trim();
+    }
+
+    // Backlog (active mistakes): source of truth = StorageManager.getActiveMistakesCount()
+    let backlog = 0;
+    try {
+      if (this.storage && typeof this.storage.getActiveMistakesCount === "function") {
+        backlog = Number(this.storage.getActiveMistakesCount() || 0);
+      }
+    } catch (_) { backlog = 0; }
+
+    vars.backlog = clampInt(backlog, 0, 99999);
+
+    // Pool remaining (RUN context)
+    if (!Number.isFinite(Number(vars.remaining))) {
+      vars.remaining = (seen != null && poolSize > 0)
+        ? clampInt(poolSize - seen, 0, poolSize)
+        : 0;
     }
 
     const scoreLine = scoreLineTpl ? fillTemplate(scoreLineTpl, vars) : "";
     const newBestLine = newBestTpl ? fillTemplate(newBestTpl, vars) : "";
     const endLine = endLineTpl ? fillTemplate(endLineTpl, vars) : "";
 
-    // END "Record moment" display: during a short window, show the newBest line instead of the score line.
+    // END "Record moment" display (visual only): keep score line, but show burst/spark briefly.
     const recordUntil = Number(this._runtime?.endRecordMomentUntil || 0);
-    const recordActive = (premium && newBest && newBestLine) ? (Date.now() < recordUntil) : false;
-    const displayScoreLine = recordActive ? newBestLine : scoreLine;
+    const recordActive = (newBest && newBestLine) ? (Date.now() < recordUntil) : false;
 
+    // Always show the score (requested), never replace it.
+    const displayScoreLine = scoreLine;
+
+    // APRÈS (dans UI.prototype._renderEnd)
     const bestStreakTpl = String(end.bestStreakLine || "").trim();
     const bestStreakLine = (isRun && bestStreakTpl) ? fillTemplate(bestStreakTpl, vars) : "";
 
     const pbLineTpl = String(end.personalBestLine || "").trim();
+    const nearBestTpl = String(end.nearBestLine || "").trim();
     const pbPremiumHintTpl = String(end.personalBestPremiumHint || "").trim();
 
     // Personal best is RUN-only.
-    // - Premium: show actual best score line.
+    // - Premium: show actual best score line OR (if not a new best) the near-best delta line (replacement, not addition).
     // - Free: show a clear teaser line.
-    const pbLine = (isRun && premium && pbLineTpl) ? fillTemplate(pbLineTpl, vars) : "";
+    let pbLine = "";
+    if (isRun && premium) {
+      const best = clampInt(lastRun.bestScoreFP, 0, 99999);
+
+      // Replacement rule: if not a new best and best exists above current score, prefer delta line.
+      if (!newBest && nearBestTpl && best > scoreFP) {
+        const delta = clampInt(best - scoreFP, 0, 99999);
+        pbLine = fillTemplate(nearBestTpl, { delta: String(delta), fpLong: String(vars.fpLong || "").trim() });
+      } else if (!newBest && pbLineTpl) {
+        pbLine = fillTemplate(pbLineTpl, vars);
+      }
+    }
+
     const pbPremiumHint = (isRun && !premium && pbPremiumHintTpl) ? String(pbPremiumHintTpl).trim() : "";
 
     // Progress UI (RUN only): seen distinct items on this device vs pool size.
@@ -5913,9 +6309,9 @@ ${landingHeaderRowHtml}
       const tpl = String(end.progressLine || "").trim();
 
       const poolSizeRaw = Number(cfg?.game?.poolSize);
-      const poolSize = (Number.isFinite(poolSizeRaw) && poolSizeRaw >= 1) ? Math.floor(poolSizeRaw) : null;
+      const poolSizeSafe = (Number.isFinite(poolSizeRaw) && poolSizeRaw >= 1) ? Math.floor(poolSizeRaw) : null;
 
-      if (tpl && poolSize != null) {
+      if (tpl && poolSizeSafe != null) {
         let seenDistinct = 0;
         try {
           const ids = this.storage.getSeenItemIds();
@@ -5923,15 +6319,14 @@ ${landingHeaderRowHtml}
         } catch (_) { }
 
         if (!Number.isFinite(seenDistinct)) seenDistinct = 0;
-        seenDistinct = clampInt(seenDistinct, 0, poolSize);
+        seenDistinct = clampInt(seenDistinct, 0, poolSizeSafe);
 
-        const remaining = clampInt(poolSize - seenDistinct, 0, poolSize);
+        const remaining2 = clampInt(poolSizeSafe - seenDistinct, 0, poolSizeSafe);
 
-        const msg = fillTemplate(tpl, { seen: seenDistinct, poolSize, remaining });
+        const msg = fillTemplate(tpl, { seen: seenDistinct, poolSize: poolSizeSafe, remaining: remaining2 });
         if (msg) progressHtml = `<p class="wt-muted">${escapeHtml(msg)}</p>`;
       }
     }
-
 
     // Free runs hint: meaningful only on RUN end
     let freeRunMessage = "";
@@ -5957,12 +6352,10 @@ ${landingHeaderRowHtml}
 
       const recapW = isBonus ? (bonusW || {}) : (isPractice ? (practiceW || {}) : (end || {}));
 
-      // Wording priority:
-      // - mode-specific mistakes* if present
-      // - fallback to end.mistakes* (wording fallback only; no hardcoded copy)
       const noneMsg = String(recapW.mistakesNone || end.mistakesNone || "").trim();
       const toggleTpl = String(recapW.mistakesToggle || end.mistakesToggle || "").trim();
       const title = String(recapW.mistakesTitle || end.mistakesTitle || "").trim();
+
       if (!ids.length) {
         if (noneMsg) {
           mistakesRecapHtml = `<p class="wt-muted">${escapeHtml(noneMsg)}</p>`;
@@ -6010,7 +6403,6 @@ ${landingHeaderRowHtml}
 
             items.push(`<div class="wt-mistake-item">${pairHtml}${explHtml}</div>`);
           }
-
 
           const body = items.join("");
           mistakesRecapHtml = `
@@ -6068,10 +6460,16 @@ ${landingHeaderRowHtml}
       console.warn("[WT_UI] Missing required copy: WT_WORDING.end.ctaByVerdict[verdictKey]");
     }
 
-    const practiceAgain =
+    let practiceAgain =
       (isPractice && practiceLevel)
         ? String(practiceW?.ctaByLevel?.[practiceLevel] || "").trim()
         : String(practiceW.ctaPracticeAgain || "").trim();
+
+    // Optional CTA override (END PRACTICE) based on remaining tier (fail-closed)
+    if (isPractice && practiceRepeatTierKey) {
+      const tierCta = String(practiceW?.ctaRepeatByTier?.[practiceRepeatTierKey] || "").trim();
+      if (tierCta) practiceAgain = tierCta;
+    }
 
     if ((isPractice && practiceLevel) && !practiceAgain && this.config?.debug?.enabled) {
       console.warn("[WT_UI] Missing required copy: WT_WORDING.practice.ctaByLevel[level]");
@@ -6098,8 +6496,7 @@ ${landingHeaderRowHtml}
       console.warn("[WT_UI] Missing required copy: WT_WORDING.end.practiceCta / WT_WORDING.end.practiceCtaPremium");
     }
 
-
-    // End â†’ Paywall bridge (copy must come from WT_WORDING; no hardcoded fallback)
+    // End -> Paywall bridge (copy must come from WT_WORDING; no hardcoded fallback)
     const paywallBridgeTitle = String(w.paywall?.bridgeTitle || "").trim();
     const paywallBridgeBody = String(w.paywall?.bridgeBody || "").trim();
 
@@ -6176,26 +6573,8 @@ ${landingHeaderRowHtml}
     // Micro-lines (RUN-only): keep END sharp, keep status visible (not buried in Stats)
     const microLines = [];
 
-    // Words seen line: reuse existing UI template (short)
-    if (isRun) {
-      const seenTpl = String(ui.seenProgressTemplate || "").trim();
-      const poolSizeRaw = Number(cfg?.game?.poolSize);
-      const poolSizeSafe = (Number.isFinite(poolSizeRaw) && poolSizeRaw >= 1) ? Math.floor(poolSizeRaw) : null;
-
-      if (seenTpl && poolSizeSafe != null) {
-        let seenDistinct = 0;
-        try {
-          const ids = (this.storage && typeof this.storage.getSeenItemIds === "function") ? this.storage.getSeenItemIds() : null;
-          if (Array.isArray(ids)) seenDistinct = ids.length;
-        } catch (_) { }
-
-        if (!Number.isFinite(seenDistinct)) seenDistinct = 0;
-        seenDistinct = clampInt(seenDistinct, 0, poolSizeSafe);
-
-        const msg = fillTemplate(seenTpl, { seen: seenDistinct, poolSize: poolSizeSafe });
-        if (msg) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(msg)}</p>`);
-      }
-    }
+    // progressHtml: REMOVED (dead code — computed but never injected into HTML).
+    // Seen/poolSize info is now solely in runLensTpl (lens verdict).
 
     // False friends identified (RUN-only): tag === "false_friend" AND correctCount > 0
     if (isRun) {
@@ -6227,36 +6606,47 @@ ${landingHeaderRowHtml}
     }
 
     // Best streak (RUN-only): keep it in the same "scoreboard" block
-    if (isRun && bestStreakNum >= 2 && bestStreakLine) {
+    const rawMin = Number(cfg?.routing?.bestStreakLineMin);
+    const bestStreakLineMin = (Number.isFinite(rawMin) && rawMin >= 1) ? Math.floor(rawMin) : null;
+
+    if (bestStreakLineMin != null && isRun && bestStreakNum >= bestStreakLineMin && bestStreakLine) {
       microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(bestStreakLine)}</p>`);
     }
 
-    // Runs left (FREE + RUN only) â€” keep existing copy
+    // Personal best (RUN + premium only)
+    if (pbLine) {
+      microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbLine)}</p>`);
+    }
+
+    // Runs left (FREE + RUN only) — keep existing copy
     if (isRun && !premium && freeRunMessage) {
       microLines.push(String(freeRunMessage || ""));
     }
 
-    const microLinesHtml = microLines.length ? `<div class="wt-stack wt-stack--tight">${microLines.join("")}</div>` : "";
-
-
-
+    // END "table" layout (mobile-safe) — no icons, no new copy, keeps existing lines/CTA intact
+    const microLinesHtml = microLines.length
+      ? `
+    <div class="wt-end-table">
+      ${microLines.map((line) => `<div class="wt-end-table__row">${line}</div>`).join("")}
+    </div>
+  `
+      : "";
     // Stats & runs history (END) intentionally removed (too low value, adds density).
     const statsAccordionHtml = "";
-
 
     // Paywall bridge block (FREE exhausted): make it visible, not buried
     const paywallBridgeHtml =
       (runsExhausted && (paywallBridgeTitle || paywallBridgeBody))
         ? `
           <div class="wt-divider"></div>
-          <div >
+          <div>
             ${paywallBridgeTitle ? `<strong class="wt-meta">${escapeHtml(paywallBridgeTitle)}</strong>` : ``}
             ${paywallBridgeBody ? `<p class="wt-muted">${escapeHtml(paywallBridgeBody)}</p>` : ``}
           </div>
         `
         : "";
 
-    // HouseAd / Waitlist â€” move into accordion to avoid END scroll fatigue
+    // HouseAd / Waitlist — move into accordion to avoid END scroll fatigue
     const moreAccordionHtml = (() => {
       const unlocked =
         !!(this.storage && typeof this.storage.hasReachedHouseAdThreshold === "function" && this.storage.hasReachedHouseAdThreshold() === true);
@@ -6291,7 +6681,6 @@ ${landingHeaderRowHtml}
       const label = canOpenFull ? ctaFull : (wlTitle || "");
 
       if (!label) return ``;
-
 
       return `
         <details class="wt-accordion" style="margin-top:10px">
@@ -6346,8 +6735,7 @@ ${landingHeaderRowHtml}
             </summary>
 
             <div class="wt-accordion-content">
-                ${text ? `<p class="wt-muted" style="white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word;">${escapeHtml(text)}</p>` : ``}
-
+              ${text ? `<p class="wt-muted" style="white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word;">${escapeHtml(text)}</p>` : ``}
 
               ${(canCopy || canEmail) ? `
                 <div class="wt-actions">
@@ -6370,36 +6758,32 @@ ${landingHeaderRowHtml}
       })()}
     ` : ``;
 
-
     return `
 <div class="wt-card">
   ${endHeaderRowHtml}
 
-  <div class="wt-stack">
-    ${chestHintText ? `<p class="wt-muted wt-text-end" style="margin-top:4px">${escapeHtml(chestHintText)}</p>` : ``}
-     ${displayScoreLine ? `
-        <p class="wt-h2 wt-end-score">
-  <span class="wt-end-score__value">
-    ${escapeHtml(displayScoreLine)}
-  </span>
+  ${displayScoreLine ? `
+    <p class="wt-h2 wt-end-score${newBest ? " wt-end-score--newbest" : ""}">
+      <span class="wt-end-score__value">
+        ${escapeHtml(displayScoreLine)}
+      </span>
 
-  ${recordActive ? `
-    <span class="wt-end-score__burst" aria-hidden="true"></span>
-    <svg class="wt-end-score__spark" viewBox="0 0 36 14" width="36" height="14" aria-hidden="true" focusable="false">
-      <path d="M6 1 L7.6 5.2 L12 6.2 L7.6 7.2 L6 11.4 L4.4 7.2 L0 6.2 L4.4 5.2 Z" fill="currentColor" opacity="0.85"></path>
-      <path d="M18 2.2 L19.2 5.4 L22.6 6.4 L19.2 7.4 L18 10.6 L16.8 7.4 L13.4 6.4 L16.8 5.4 Z" fill="currentColor" opacity="0.6"></path>
-      <path d="M30 1 L31.4 4.6 L35 5.8 L31.4 7 L30 10.6 L28.6 7 L25 5.8 L28.6 4.6 Z" fill="currentColor" opacity="0.75"></path>
-    </svg>
+      ${(newBest && newBestLine) ? `<span class="wt-end-score__label">${escapeHtml(newBestLine)}</span>` : ``}
+
+      ${recordActive ? `
+        <span class="wt-end-score__burst" aria-hidden="true"></span>
+        <svg class="wt-end-score__spark" viewBox="0 0 36 14" width="36" height="14" aria-hidden="true" focusable="false">
+          <path d="M6 1 L7.6 5.2 L12 6.2 L7.6 7.2 L6 11.4 L4.4 7.2 L0 6.2 L4.4 5.2 Z" fill="currentColor" opacity="0.85"></path>
+          <path d="M18 2.2 L19.2 5.4 L22.6 6.4 L19.2 7.4 L18 10.6 L16.8 7.4 L13.4 6.4 L16.8 5.4 Z" fill="currentColor" opacity="0.6"></path>
+          <path d="M30 1 L31.4 4.6 L35 5.8 L31.4 7 L30 10.6 L28.6 7 L25 5.8 L28.6 4.6 Z" fill="currentColor" opacity="0.75"></path>
+        </svg>
+      ` : ``}
+    </p>
   ` : ``}
-</p>
 
-   ` : ``}
+  ${microLinesHtml}
 
-
-        ${microLinesHtml}
-
-
-    ${(() => {
+  ${(() => {
         if (isBonus || isPractice) {
           return endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``;
         }
@@ -6409,172 +6793,160 @@ ${landingHeaderRowHtml}
         return endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``;
       })()}
 
+  ${(isBonus && bonusIdentityTpl) ? `<p class="wt-muted">${escapeHtml(bonusIdentityTpl)}</p>` : ``}
+  ${(isBonus && bonusLensTpl) ? `<p class="wt-muted">${escapeHtml(bonusLensTpl)}</p>` : ``}
 
-    ${(isBonus && bonusIdentityTpl) ? `<p class="wt-muted">${escapeHtml(bonusIdentityTpl)}</p>` : ``}
-    ${(isBonus && bonusLensTpl) ? `<p class="wt-muted">${escapeHtml(bonusLensTpl)}</p>` : ``}
+  ${(isPractice && practiceIdentityTpl) ? `<p class="wt-muted">${escapeHtml(practiceIdentityTpl)}</p>` : ``}
+  ${(isPractice && practiceLensTpl) ? `<p class="wt-muted">${escapeHtml(practiceLensTpl)}</p>` : ``}
 
-    ${(isPractice && practiceIdentityTpl) ? `<p class="wt-muted">${escapeHtml(practiceIdentityTpl)}</p>` : ``}
-    ${(isPractice && practiceLensTpl) ? `<p class="wt-muted">${escapeHtml(practiceLensTpl)}</p>` : ``}
+  ${(isRun && runLensTpl) ? `<p class="wt-muted">${escapeHtml(fillTemplate(runLensTpl, vars))}</p>` : ``}
 
-    ${(isRun && runIdentityTpl) ? `<p class="wt-muted">${escapeHtml(runIdentityTpl)}</p>` : ``}
-    ${(isRun && runLensTpl) ? `<p class="wt-muted">${escapeHtml(runLensTpl)}</p>` : ``}
+  <div class="${endActionsClass}">
+    ${(() => {
+        const postW = w.postCompletion || {};
 
-    <div class="${endActionsClass}">
-      ${(() => {
-        const haCfg = cfg.houseAd || {};
-        const wlCfg = cfg.waitlist || {};
-
-        const canHouseAd =
-          !!(this.storage &&
-            typeof this.storage.shouldShowHouseAdNow === "function" &&
-            this.storage.shouldShowHouseAdNow({ inRun: false }) === true);
-
-        const canWaitlist =
-          !!(this.storage &&
-            typeof this.storage.shouldShowWaitlistNow === "function" &&
-            this.storage.shouldShowWaitlistNow({ inRun: false }) === true);
-
-        // Case 4 â€” Premium + unlocked â†’ post-completion routing (RUN only)
-        // KISS: never remove the main "play again" move.
-        // HouseAd / Waitlist live in the accordion (moreAccordionHtml) to avoid END feeling like a menu.
-        if (isRun && premium && (canHouseAd || canWaitlist)) {
-          if (!runPlayAgain) return ``;
-
-          return `
-            <button class="wt-btn wt-btn--primary" data-action="start-run" aria-label="${escapeHtml(playAriaRun)}">
-              ${escapeHtml(runPlayAgain)}
-            </button>
-          `;
-        }
-
-
-        // RUN exhausted â†’ paywall primary (+ never leave user with no move)
-        if (runsExhausted) {
-          return `
-            <button class="wt-btn wt-btn--primary" data-action="open-paywall">
-              ${escapeHtml(upgradeCta)}
-            </button>
-            ${homeLabel ? `
-              <button class="wt-btn wt-btn--secondary" data-action="go-home">
-                ${escapeHtml(homeLabel)}
-              </button>
-            ` : ``}
-            ${howToPlayTitle ? `
-              <button class="wt-btn wt-btn--ghost" data-action="open-howto">
-                ${escapeHtml(howToPlayTitle)}
-              </button>
-            ` : ``}
-          `;
-        }
-
-        // Pool complete (premium): primary = Practice (if available), but ALWAYS allow replay
-        if (isRun && premium && poolCompleteCelebration) {
-          if (canPractice && practiceCta) {
-            return `
-              <button class="wt-btn wt-btn--primary" data-action="start-practice">
-                ${escapeHtml(practiceCta)}
-              </button>
-              ${runPlayAgain ? `
-                <button class="wt-btn wt-btn--ghost" data-action="start-run" aria-label="${escapeHtml(playAriaRun)}">
-                  ${escapeHtml(runPlayAgain)}
-                </button>
-              ` : ``}
-            `;
-          }
-          // If Practice isn't available, fall back to normal RUN replay below.
-        }
-
-        if (isPractice) {
-          if (!practiceAgain) return ``;
-          return `
-            <button class="wt-btn wt-btn--primary" data-action="start-practice" aria-label="${escapeHtml(practiceAgain)}">
-              ${escapeHtml(practiceAgain)}
-            </button>
-            ${homeLabel ? `
-              <button class="wt-btn wt-btn--secondary" data-action="go-home">
-                ${escapeHtml(homeLabel)}
-              </button>
-            ` : ``}
-          `;
-        }
-
-        if (isBonus) {
-          if (!bonusAgain) return ``;
-          return `
-            <button class="wt-btn wt-btn--primary" data-action="start-secret-bonus" aria-label="${escapeHtml(bonusAgain)}">
-              ${escapeHtml(bonusAgain)}
-            </button>
-            ${homeLabel ? `
-              <button class="wt-btn wt-btn--ghost" data-action="go-home">
-                ${escapeHtml(homeLabel)}
-              </button>
-            ` : ``}
-          `;
-        }
-
-        if (!runPlayAgain) return ``;
-        return `
-          <button class="wt-btn wt-btn--primary" data-action="start-run" aria-label="${escapeHtml(playAriaRun)}">
-            ${escapeHtml(runPlayAgain)}
-          </button>
-        `;
-
-      })()}
-
-      ${(() => {
         const exhausted =
-          !!(this.storage &&
-            typeof this.storage.hasSeenAllWordTraps === "function" &&
-            this.storage.hasSeenAllWordTraps() === true);
+          !!(this.storage && typeof this.storage.isPoolExhausted === "function" && this.storage.isPoolExhausted() === true);
 
-        // Secondary CTAs only when the primary is RUN replay
-        if (!isRun) return ``;
-        if (!premium) return ``;
-        if (exhausted) return ``;
-        if (runsExhausted) return ``;
+        const mastered =
+          !!(this.storage && typeof this.storage.isMastered === "function" && this.storage.isMastered() === true);
 
-        // Only show Practice if the user actually has enough mistakes.
-        const minWrong = clampInt(Number(cfg?.mistakesOnly?.minWrongItemsToShowToggle), 1, 9999);
+        // backlog already computed into vars.backlog
+        const hasActiveMistakes = (clampInt(vars.backlog, 0, 99999) > 0);
 
-        let statsByItem = {};
-        if (this.storage && typeof this.storage.getStatsByItem === "function") {
-          try { statsByItem = this.storage.getStatsByItem() || {}; } catch (_) { statsByItem = {}; }
+        // Mastered block (always visible when mastered)
+        const masteredTitle = String(postW.masteredTitle || "").trim();
+        const masteredL1 = String(postW.masteredLine1 || "").trim();
+        const masteredL2 = String(postW.masteredLine2 || "").trim();
+
+        const masteredHtml =
+          (mastered && (masteredTitle || masteredL1 || masteredL2))
+            ? `
+            <div style="margin-top:6px">
+              ${masteredTitle ? `<p class="wt-meta"><strong>${escapeHtml(masteredTitle)}</strong></p>` : ``}
+              ${masteredL1 ? `<p class="wt-muted">${escapeHtml(masteredL1)}</p>` : ``}
+              ${masteredL2 ? `<p class="wt-muted">${escapeHtml(masteredL2)}</p>` : ``}
+            </div>
+          `
+            : ``;
+
+        // Primary/secondary CTAs (KISS)
+        let primaryAction = "";
+        let primaryLabel = "";
+        let secondaryAction = "";
+        let secondaryLabel = "";
+
+        if (mastered) {
+          primaryAction = "start-secret-bonus";
+          primaryLabel = String(postW.masteredCtaBonus || "").trim();
+
+          secondaryAction = "start-run";
+          secondaryLabel = String(postW.masteredCtaReplay || "").trim();
+
+        } else if (exhausted && hasActiveMistakes) {
+          primaryAction = premium ? "start-practice" : "open-paywall";
+          const tpl = premium ? String(end.practiceCtaCount || "").trim() : String(end.practiceCtaCountPremium || "").trim();
+          primaryLabel = tpl ? fillTemplate(tpl, { backlog: String(vars.backlog) }) : "";
+
+          secondaryAction = "start-run";
+          secondaryLabel = String(end.playAgain || "").trim();
+
+        } else {
+          if (isRun) {
+            // Routing: if active backlog >= practicePrimaryMinWrong, swap CTAs (Practice = primary).
+            const ppMinRaw = Number(cfg?.routing?.practicePrimaryMinWrong);
+            const ppMin = (Number.isFinite(ppMinRaw) && ppMinRaw >= 1) ? Math.floor(ppMinRaw) : null;
+            const shouldPromotePractice = (ppMin != null && canPractice && premium && vars.backlog >= ppMin);
+
+            const bonusEnabled = (cfg?.secretBonus?.enabled === true);
+            const strongOrMore =
+              (runVerdictKey === "strong" || runVerdictKey === "elite" || runVerdictKey === "legendary");
+
+            const bonusPrimaryLabel = String(end.bonusCtaPrimary || "").trim();
+            const shouldPromoteBonus = (!!bonusEnabled && strongOrMore && !!bonusPrimaryLabel);
+
+            if (shouldPromotePractice) {
+              primaryAction = "start-practice";
+              primaryLabel = String(practiceCta || "").trim();
+
+              secondaryAction = runsExhausted ? "open-paywall" : "start-run";
+              secondaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
+
+            } else if (shouldPromoteBonus) {
+              primaryAction = "start-secret-bonus";
+              primaryLabel = bonusPrimaryLabel;
+
+              secondaryAction = runsExhausted ? "open-paywall" : "start-run";
+              secondaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
+
+            } else {
+              primaryAction = runsExhausted ? "open-paywall" : "start-run";
+              primaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
+
+              if (canPractice) {
+                secondaryAction = premium ? "start-practice" : "open-paywall";
+                secondaryLabel = String(practiceCta || "").trim();
+              }
+            }
+          } else if (isPractice) {
+            const remaining = Number(vars.remaining);
+            const isZero = (Number.isFinite(remaining) && remaining <= 0);
+
+            if (isZero) {
+              primaryAction = "start-run";
+              primaryLabel = String(end.playAgain || "").trim();
+
+              secondaryAction = "";
+              secondaryLabel = "";
+            } else {
+              primaryAction = "start-practice";
+              primaryLabel = String(practiceAgain || "").trim();
+
+              secondaryAction = "start-run";
+              secondaryLabel = String(end.playAgain || "").trim();
+            }
+          } else if (isBonus) {
+            primaryAction = "start-secret-bonus";
+            primaryLabel = String(bonusAgain || "").trim();
+
+            secondaryAction = "start-run";
+            secondaryLabel = String(end.playAgain || "").trim();
+          }
         }
 
-        let mistakesCount = 0;
-        for (const k in statsByItem) {
-          const wc = clampInt(Number(statsByItem[k]?.wrongCount), 0, 999999);
-          if (wc > 0) mistakesCount += 1;
-        }
+        // Fail-closed: if primaryLabel missing, do not render broken buttons.
+        if (!primaryLabel || !primaryAction) return masteredHtml || ``;
 
-        if (!Number.isFinite(mistakesCount) || mistakesCount < minWrong) return ``;
-
-        return canPractice ? `
-  <button class="wt-btn wt-btn--secondary" data-action="start-practice">
-    ${escapeHtml(practiceCta)}
-  </button>
-` : ``;
-
-
-      })()}
-
-
-
-      ${(premium || runsExhausted || canPractice) ? `` : `
-        <button class="wt-btn wt-btn--ghost" data-action="open-paywall">
-          ${escapeHtml(upgradeCta)}
+        const primaryBtn = `
+        <button class="wt-btn wt-btn--primary" data-action="${escapeHtml(primaryAction)}" style="width:100%">
+          ${escapeHtml(primaryLabel)}
         </button>
-      `}
-    </div>
+      `;
 
-    ${paywallBridgeHtml}
+        const secondaryBtn =
+          (secondaryLabel && secondaryAction)
+            ? `
+            <button class="wt-btn wt-btn--secondary" data-action="${escapeHtml(secondaryAction)}" style="width:100%">
+              ${escapeHtml(secondaryLabel)}
+            </button>
+          `
+            : ``;
 
-    ${mistakesRecapHtml}
-
-    ${shareHtml}
-
-    ${moreAccordionHtml}
+        return `
+        ${masteredHtml}
+        ${primaryBtn}
+        ${secondaryBtn}
+      `;
+      })()}
   </div>
+
+  ${paywallBridgeHtml}
+
+  ${mistakesRecapHtml}
+
+  ${shareHtml}
+
+  ${moreAccordionHtml}
 </div>
 `;
   };
@@ -6688,9 +7060,38 @@ ${landingHeaderRowHtml}
     const modeNow = String(this._runtime?.runMode || "RUN").trim();
     const bonusBadge = String(this.wording?.secretBonus?.badge || "").trim();
 
+    // At-best (RUN + premium): one-shot pulse when you REACH the best during PLAYING.
+    // UI-only: driven by this._runtime.atBestPulseAt (timestamp). Fail-closed => false.
+    const atBestPulseAt = Number(this._runtime?.atBestPulseAt || 0);
+    const atBestOn =
+      (atBestPulseAt > 0) &&
+      Number.isFinite(pulseMs) &&
+      (pulseMs > 0) &&
+      ((Date.now() - atBestPulseAt) <= pulseMs);
+
+    // New best (RUN + premium): celebration pulse when you EXCEED personal best during PLAYING (best -> best+1).
+    const newBestPulseAt = Number(this._runtime?.newBestPulseAt || 0);
+    const newBestOn =
+      (newBestPulseAt > 0) &&
+      Number.isFinite(pulseMs) &&
+      (pulseMs > 0) &&
+      ((Date.now() - newBestPulseAt) <= pulseMs);
+
+    // Near-best tension (RUN + premium only): subtle pulse when within 2 FP of personal best.
+    // Priority: do NOT stack with score flash / at-best / new-best.
+    const nearBestOn =
+      (!scoreFlashOn) &&
+      (!atBestOn) &&
+      (!newBestOn) &&
+      (modeNow === "RUN") &&
+      (pbEnabled === true) &&
+      (premium === true) &&
+      (bestScoreFP != null) &&
+      (bestScoreFP > scoreFP) &&
+      ((bestScoreFP - scoreFP) <= 2);
+
     // HUD logo (fail-closed): only show if explicitly configured.
     const hudLogoUrl = String(cfg?.identity?.uiLogoUrl || "").trim();
-
     const seenOnlyLine = String(this.wording?.secretBonus?.seenOnlyLine || "").trim();
     const servedSoFar = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
 
@@ -6758,11 +7159,12 @@ ${landingHeaderRowHtml}
 	      </div>
 
 	       ${(modeNow !== "PRACTICE") ? `
-	               <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}"
-	           aria-label="${escapeHtml(scoreAriaFull)}">
-	        ${escapeHtml(scoreLabel)}: ${scoreFP}${scoreDeltaHtml}${bestHtml}
-	      </div>
-	        ` : ``}
+                           <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
+           aria-label="${escapeHtml(scoreAriaFull)}">
+        ${escapeHtml(scoreLabel)}: ${scoreFP}${scoreDeltaHtml}${bestHtml}
+      </div>
+        ` : ``}
+
 
 	    </div>
 
@@ -6843,14 +7245,8 @@ ${landingHeaderRowHtml}
 
     const bonusPrompt = String(this.wording?.secretBonus?.questionPrompt || "").trim();
 
-    const showMicroHowTo =
-      (modeNow === "RUN");
-
-    // microHowTo on every RUN; otherwise empty (no fallback)
-    const microHowTo = showMicroHowTo ? String(w.microHowTo || "").trim() : "";
-
     // PRACTICE: calm progress line instead of assertion
-    // RUN: assertion only when NOT showing microHowTo (to avoid double line)
+    // RUN: always show assertion
     // BONUS: no assertion
     let questionPrompt = "";
     if (modeNow === "PRACTICE") {
@@ -6860,14 +7256,10 @@ ${landingHeaderRowHtml}
         ? fillTemplate(progressTpl, { current: qNum, total: deckTotal })
         : "";
     } else if (modeNow !== window.WT_ENUMS.GAME_MODES.BONUS) {
-      questionPrompt = showMicroHowTo ? "" : String(w.assertion || "").trim();
+      questionPrompt = String(w.assertion || "").trim();
     }
+
     const questionHtml = `
-${microHowTo ? `
-  <p class="wt-meta" style="margin-bottom:8px; text-align:center; font-size:var(--fs-md); font-weight:700;">
-    ${escapeHtml(microHowTo)}
-  </p>
-` : ``}
 
 
 ${questionPrompt ? `
@@ -7171,7 +7563,8 @@ ${questionPrompt ? `
     const checkoutNote = String(pay.checkoutNote || "").trim();
     const deviceNote = String(pay.deviceNote || "").trim();
 
-    // Bullets: use existing .wt-list (better rhythm + less â€œpavÃ©â€)
+    // Bullets: use existing .wt-list (better rhythm + less "pavé"
+
     const renderBullets = (arr, muted) => {
       if (!arr.length) return "";
       const cls = `wt-list${muted ? " wt-muted" : ""}`;

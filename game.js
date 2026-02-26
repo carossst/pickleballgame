@@ -12,8 +12,7 @@
   // ============================================
   const INVALID_MAX_CHANCES = 0;
   const NO_FEEDBACK = "";
-  const EMPTY_STATS = Object.freeze({ seenCount: 0, wrongCount: 0, correctCount: 0, lastWrongAt: 0 });
-
+  const EMPTY_STATS = Object.freeze({ seenCount: 0, wrongCount: 0, correctCount: 0, lastSeenAt: 0, lastWrongAt: 0, lastCorrectAt: 0 });
 
   // ============================================
   // Helpers
@@ -114,10 +113,15 @@
         const idNum = safeIdNum(it && it.id);
         if (idNum == null) return false;
         const s = getStats(statsByItem, idNum);
-        return (Number(s.wrongCount) || 0) > 0 && (Number(s.correctCount) || 0) === 0;
+
+        const lw = Number(s.lastWrongAt) || 0;
+        const lc = Number(s.lastCorrectAt) || 0;
+
+        // Active mistake: last interaction is wrong
+        return lw > lc;
       });
 
-      const mistakesPool = mistakesPoolRaw.slice().sort((a, b) => {
+      let mistakesPool = mistakesPoolRaw.slice().sort((a, b) => {
         const ida = safeIdNum(a && a.id) || 0;
         const idb = safeIdNum(b && b.id) || 0;
         const sa = getStats(statsByItem, ida);
@@ -128,6 +132,13 @@
         return ida - idb;
       });
 
+      // Optional cap (config-driven, fail-closed: only applies if valid)
+      const rawMax = Number(config?.mistakesOnly?.maxItems);
+      const maxItems = (Number.isFinite(rawMax) && rawMax >= 1) ? Math.floor(rawMax) : null;
+      if (maxItems != null && mistakesPool.length > maxItems) {
+        mistakesPool = mistakesPool.slice(0, maxItems);
+      }
+
       const ids = [];
       for (const it of mistakesPool) {
         const idNum = safeIdNum(it && it.id);
@@ -137,8 +148,6 @@
 
       return { ids, byId };
     }
-
-
 
 
     const antiRepetitionUntilExhaustion =

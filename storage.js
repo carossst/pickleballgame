@@ -134,13 +134,14 @@
         draftIdea: ""
       },
 
-
-      // Counters
       // Counters
       counters: {
         runNumber: 0,
         runStarts: 0,
         runCompletes: 0,
+
+        // BONUS completes (device-local)
+        bonusCompletes: 0,
 
         // Secret bonus (teaser premium): free bonus runs used (lifetime, device-local)
         secretBonusFreeRunsUsed: 0,
@@ -161,8 +162,14 @@
 
 
 
-      // Personal best (V2 = best FP in a run)
+      // Personal best (V2 = best FP in a run) — RUN only
       personalBest: {
+        bestScoreFP: 0,
+        achievedAt: 0
+      },
+
+      // Bonus best (V1 = best FP in a bonus run) — BONUS only
+      bonusBest: {
         bestScoreFP: 0,
         achievedAt: 0
       },
@@ -182,16 +189,24 @@
         used: false
       },
 
-
       // Endgame flags
       postCompletion: {
         postCompletionShown: false,
         postCompletionAt: 0,
 
+        // Milestone: halfway through the pool (one-shot).
+        halfwayMilestoneShown: false,
+        halfwayMilestoneShownAt: 0,
+
         // One-shot: celebrate "seen all 200" once, then never again (even if user reaches 400+).
         poolCompleteCelebrated: false,
-        poolCompleteCelebratedAt: 0
+        poolCompleteCelebratedAt: 0,
+
+        // One-shot: celebrate "mastered" once (pool exhausted + 0 active mistakes)
+        masteredCelebrated: false,
+        masteredCelebratedAt: 0
       },
+
       endgame: {
         endgameShown: false,
         endgameShownAt: 0
@@ -265,6 +280,7 @@
     if (!this.data.history) this.data.history = deepCopy(this.defaultData.history);
     if (!this.data.statsByItem) this.data.statsByItem = {};
     if (!this.data.personalBest) this.data.personalBest = deepCopy(this.defaultData.personalBest);
+    if (!this.data.bonusBest) this.data.bonusBest = deepCopy(this.defaultData.bonusBest);
     if (!this.data.earlyPrice) this.data.earlyPrice = deepCopy(this.defaultData.earlyPrice);
     if (!this.data.postCompletion) this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     if (!this.data.endgame) this.data.endgame = deepCopy(this.defaultData.endgame);
@@ -367,11 +383,13 @@
     for (const k in this.defaultData.counters) {
       if (!Number.isFinite(c[k])) c[k] = 0;
     }
-
-    // Harden personal best
+    // Harden personal best (RUN)
     if (!Number.isFinite(this.data.personalBest.bestScoreFP)) this.data.personalBest.bestScoreFP = 0;
     if (!Number.isFinite(this.data.personalBest.achievedAt)) this.data.personalBest.achievedAt = 0;
 
+    // Harden bonus best (BONUS)
+    if (!Number.isFinite(this.data.bonusBest.bestScoreFP)) this.data.bonusBest.bestScoreFP = 0;
+    if (!Number.isFinite(this.data.bonusBest.achievedAt)) this.data.bonusBest.achievedAt = 0;
     // Harden early price (V2+)
     const ep = this.data.earlyPrice || {};
     if (!Number.isFinite(ep.startedAt)) ep.startedAt = 0;
@@ -824,6 +842,16 @@
     return total;
   };
 
+  // Unique pool coverage: number of distinct items where seenCount > 0.
+  StorageManager.prototype.getUniqueSeenCount = function () {
+    const stats = this.data?.statsByItem || {};
+    let seen = 0;
+    for (const k in stats) {
+      if (clampNonNegativeInt(stats[k]?.seenCount) > 0) seen += 1;
+    }
+    return seen;
+  };
+
   StorageManager.prototype.hasSeenAllItems = function (totalCount) {
     const stats = this.data?.statsByItem || {};
     const n = clampNonNegativeInt(totalCount);
@@ -836,13 +864,12 @@
     return seen >= n;
   };
 
+
   // Convenience getter: "pool exhausted" using config as source of truth.
   // UI/game should not invent a number; it comes from WT_CONFIG.game.poolSize.
   StorageManager.prototype.hasSeenAllWordTraps = function () {
-    const n = clampNonNegativeInt(this.config?.game?.poolSize);
-    return this.hasSeenAllItems(n);
+    return this.isPoolExhausted();
   };
-
 
   // Pool exhausted (single source of truth): seenDistinct >= config.game.poolSize
   StorageManager.prototype.isPoolExhausted = function () {
@@ -851,6 +878,31 @@
     if (total <= 0) return false;
     return this.hasSeenAllItems(total);
   };
+
+
+  // Active mistakes: items where the last interaction is wrong (lw > lc).
+  StorageManager.prototype.getActiveMistakesCount = function () {
+    const stats = this.data?.statsByItem || {};
+    let count = 0;
+
+    for (const k in stats) {
+      const s = stats[k];
+      if (!s || typeof s !== "object") continue;
+
+      const lw = Number(s.lastWrongAt || 0);
+      const lc = Number(s.lastCorrectAt || 0);
+
+      if (lw > lc) count += 1;
+    }
+
+    return count;
+  };
+
+
+  StorageManager.prototype.isMastered = function () {
+    return this.isPoolExhausted() && this.getActiveMistakesCount() === 0;
+  };
+
 
   // Persisted "revealed at least once" flag for post-completion UX (END -> LANDING)
   StorageManager.prototype.hasPostCompletionSeenOnce = function () {
@@ -870,6 +922,25 @@
     this._save();
   };
 
+  // One-shot: halfway milestone (pool midpoint)
+  StorageManager.prototype.hasHalfwayMilestoneShown = function () {
+    return !!(this.data?.postCompletion?.halfwayMilestoneShown);
+  };
+
+  StorageManager.prototype.markHalfwayMilestoneShown = function () {
+    if (!this.data) return;
+
+    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+      this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
+    }
+
+    if (this.data.postCompletion.halfwayMilestoneShown === true) return;
+
+    this.data.postCompletion.halfwayMilestoneShown = true;
+    this.data.postCompletion.halfwayMilestoneShownAt = now();
+    this._save();
+  };
+
   // One-shot: did we already celebrate "seen all 200"?
   StorageManager.prototype.hasPoolCompleteCelebrated = function () {
     return !!(this.data?.postCompletion?.poolCompleteCelebrated);
@@ -886,6 +957,25 @@
 
     this.data.postCompletion.poolCompleteCelebrated = true;
     this.data.postCompletion.poolCompleteCelebratedAt = now();
+    this._save();
+  };
+
+
+  StorageManager.prototype.hasMasteredCelebrated = function () {
+    return !!(this.data?.postCompletion?.masteredCelebrated);
+  };
+
+  StorageManager.prototype.markMasteredCelebrated = function () {
+    if (!this.data) return;
+
+    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+      this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
+    }
+
+    if (this.data.postCompletion.masteredCelebrated === true) return;
+
+    this.data.postCompletion.masteredCelebrated = true;
+    this.data.postCompletion.masteredCelebratedAt = now();
     this._save();
   };
 
@@ -1246,7 +1336,6 @@
   };
 
 
-
   // ============================================
   // Run completion (V2)
   // ============================================
@@ -1256,23 +1345,20 @@
     const score = clampNonNegativeInt(scoreFP);
     const rn = clampNonNegativeInt(runNumber);
 
+    // Capture completes BEFORE increment (source of truth)
+    const prevCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
+
     // Counters
     this.data.counters.runNumber = Math.max(this.data.counters.runNumber, rn);
-    this.data.counters.runCompletes = clampNonNegativeInt(this.data.counters.runCompletes) + 1;
+    this.data.counters.runCompletes = prevCompletes + 1;
 
     // Personal best
     const pb = this.data.personalBest || { bestScoreFP: 0, achievedAt: 0 };
     const prevBest = clampNonNegativeInt(pb.bestScoreFP);
 
-    // KISS/Robust: personal best updates ONLY in RUN mode.
-    // Any other mode (BONUS / PRACTICE / SECRET / etc.) must never touch PB.
     const mode = String(meta && meta.mode || "").trim().toUpperCase();
     const isRun = (mode === "RUN");
 
-    // "New best" must mean: strictly higher than previous best.
-    // Product rule: do NOT celebrate on the very first ever RUN completion.
-    // But DO celebrate beating a previous best of 0 on later runs.
-    let personalBestUpdated = false;
     let newBest = false;
 
     if (isRun && score > prevBest) {
@@ -1280,13 +1366,10 @@
       pb.achievedAt = now();
       this.data.personalBest = pb;
 
-      personalBestUpdated = true;
-
-      // rn <= 1 => first ever completion on device => no celebration
-      // rn >= 2 => celebrate any improvement, including prevBest === 0
-      newBest = (rn >= 2);
+      // Do NOT celebrate the very first completion on device
+      // Celebrate only if user had already completed at least 1 run before
+      newBest = (prevCompletes >= 1);
     }
-
 
 
     // Run history
@@ -1313,6 +1396,43 @@
   };
 
   // ============================================
+  // Bonus completion (V1)
+  // ============================================
+  StorageManager.prototype.recordBonusComplete = function (scoreFP, meta) {
+    if (!this.data) return { ok: false, newBest: false };
+
+    const score = clampNonNegativeInt(scoreFP);
+
+    // Capture completes BEFORE increment (source of truth)
+    const prevCompletes = clampNonNegativeInt(this.data?.counters?.bonusCompletes);
+
+    // Counters
+    this.data.counters.bonusCompletes = prevCompletes + 1;
+
+    // Bonus best
+    const bb = this.data.bonusBest || { bestScoreFP: 0, achievedAt: 0 };
+    const prevBest = clampNonNegativeInt(bb.bestScoreFP);
+
+    const mode = String(meta && meta.mode || "").trim().toUpperCase();
+    const isBonus = (mode === "BONUS");
+
+    let newBest = false;
+
+    if (isBonus && score > prevBest) {
+      bb.bestScoreFP = score;
+      bb.achievedAt = now();
+      this.data.bonusBest = bb;
+
+      // Do NOT celebrate the very first completion on device
+      newBest = (prevCompletes >= 1);
+    }
+
+    this._save();
+
+    return { ok: true, newBest, bestScoreFP: clampNonNegativeInt(this.data.bonusBest.bestScoreFP) };
+  };
+
+
   // ============================================
   // Paywall / Checkout counters
   // ============================================

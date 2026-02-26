@@ -201,7 +201,6 @@
   --fast: 120ms;
   --normal: 180ms;
 
-  /* APRES */
   /* Keyframe animation durations (single source of truth) */
   --wt-anim-fade-in: 120ms;
   --wt-anim-bonus-spawn: 220ms;
@@ -215,6 +214,7 @@
   --wt-anim-celebrate: 520ms;
   --wt-anim-pulse: 1s;
   --wt-anim-tease: 1600ms;
+  --wt-anim-near-best: 1200ms;
   --wt-anim-loading: 1.2s;
   --wt-anim-spin: 1s;
 
@@ -235,6 +235,7 @@
   --gap-2: 12px;
   --gap-3: 16px;
   --gap-4: 24px;
+  --gap-5: 32px;
 
   /* Micro spacing (single source of truth) */
   --space-1: 1px;
@@ -393,7 +394,9 @@ a:hover {
   margin: 0 auto;
 }
 
-/* Breathing room before footer (prevents â€œcard touches footerâ€ look) */
+/* Breathing room before footer (prevents "
+card touches footer"
+ look) */
 .wt-main .wt-container>.wt-card:last-child {
   margin-bottom: var(--gap-3);
 }
@@ -668,7 +671,9 @@ a:hover {
   color: rgb(var(--text));
 }
 
-/* Muted is COLOR ONLY (prevents â€œmulti-fontâ€ feel) */
+/* Muted is COLOR ONLY (prevents "
+multi-font"
+ feel) */
 .wt-muted {
   font-size: inherit;
   font-weight: inherit;
@@ -695,7 +700,7 @@ a:hover {
 .wt-tagline {
   margin-top: 10px !important;
   margin-bottom: 0;
-  font-weight: 200;
+  font-weight: 400;
   letter-spacing: 0.2px;
   color: rgb(var(--text-strong) / var(--wt-a-82));
 }
@@ -1363,6 +1368,40 @@ a:hover {
   white-space: nowrap;
 }
 
+/* New best (RUN + premium): celebration pulse when you EXCEED personal best during PLAYING. */
+.wt-pill--new-best {
+  animation: wtNearBestPulse var(--wt-anim-near-best) ease-in-out 2;
+  animation-fill-mode: both;
+}
+
+/* Near-best tension (RUN + premium): subtle pulse when within 2 FP of personal best. */
+.wt-pill--near-best {
+  animation: wtNearBestPulse var(--wt-anim-near-best) ease-in-out infinite;
+}
+
+@keyframes wtNearBestPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-2);
+    filter: none;
+  }
+
+  50% {
+    transform: scale(1.01);
+    box-shadow:
+      0 0 0 1px rgb(var(--success) / var(--wt-a-28)),
+      0 0 18px rgb(var(--success) / var(--wt-a-16)),
+      var(--shadow-2);
+    filter: saturate(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-2);
+    filter: none;
+  }
+}
+
 /* BONUS badge: same visual weight as HUD pills */
 .wt-pill--bonus {
   font-size: var(--fs-sm);
@@ -1727,14 +1766,13 @@ a:hover {
 .wt-toast--visible {
   opacity: 1;
 
-  /* reste non-bloquant mÃªme visible */
+  /* reste non-bloquant màªme visible */
   pointer-events: none;
 }
 
-
 /* ============================================
-CHANCE LOST OVERLAY
-===================================== */
+   CHANCE LOST / GAMEPLAY OVERLAY
+   ============================================ */
 
 .wt-chance-overlay {
   position: fixed;
@@ -1748,18 +1786,15 @@ CHANCE LOST OVERLAY
   padding:
     calc(env(safe-area-inset-top) + var(--pad)) var(--pad) calc(env(safe-area-inset-bottom) + var(--pad));
 
-  /* No blur: keep playing screen fully visible behind overlay */
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  /* Default accent MUST exist (gameplay overlay may not set a variant) */
+  --wt-overlay-accent: var(--shadow-color);
 
-  /* Default backdrop: very light scrim, no gradient */
+  /* Very light scrim */
   --wt-overlay-backdrop: rgb(var(--shadow-color) / var(--wt-a-08));
   background: var(--wt-overlay-backdrop);
 
   opacity: 0;
   visibility: hidden;
-
-  /* Hidden overlays must not intercept taps */
   pointer-events: none;
 
   transition:
@@ -1767,7 +1802,7 @@ CHANCE LOST OVERLAY
     visibility 0s linear var(--fast);
 }
 
-/* Visible overlays behave like a modal layer: they block taps underneath */
+/* Visible state */
 .wt-chance-overlay--visible {
   opacity: 1;
   visibility: visible;
@@ -1778,11 +1813,12 @@ CHANCE LOST OVERLAY
     visibility 0s linear 0s;
 }
 
-/* â€œTap to dismissâ€ affordance only when the JS enables it */
+/* "Tap to dismiss" affordance */
 .wt-chance-overlay--dismissible .wt-chance-overlay__content {
   cursor: pointer;
 }
 
+/* Variants */
 .wt-chance-overlay--danger {
   --wt-overlay-accent: var(--danger);
   --wt-overlay-backdrop: rgb(var(--danger) / var(--wt-a-12));
@@ -1795,9 +1831,15 @@ CHANCE LOST OVERLAY
 
 .wt-chance-overlay--success {
   --wt-overlay-accent: var(--success);
-  --wt-overlay-backdrop: rgb(var(--success) / var(--wt-a-08));
+  --wt-overlay-backdrop: rgb(var(--success) / var(--wt-a-10));
 }
 
+.wt-chance-overlay--success .wt-chance-overlay__text {
+  color: rgb(var(--success-dark));
+  font-weight: 700;
+}
+
+/* Content card */
 .wt-chance-overlay__content {
   position: relative;
   display: flex;
@@ -1806,14 +1848,18 @@ CHANCE LOST OVERLAY
   gap: var(--gap-2);
   padding: var(--gap-4) var(--space-18);
 
+  /* KISS: never full width */
+  width: min(var(--max), 92vw);
+
   background: rgb(var(--surface));
   border-radius: var(--r-card);
-
   border: 1px solid rgb(var(--wt-overlay-accent) / var(--wt-a-18));
+
   box-shadow:
     0 16px 36px rgb(var(--shadow-color) / var(--wt-a-16));
 
-  animation: wtOverlayPop var(--wt-anim-overlay-pop) cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation:
+    wtOverlayPop var(--wt-anim-overlay-pop) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .wt-chance-overlay__content::before {
@@ -1821,7 +1867,7 @@ CHANCE LOST OVERLAY
   display: none;
 }
 
-/* Danger: keep shake animation (content stays white via .wt-chance-overlay__content) */
+/* Danger shake */
 .wt-chance-overlay--danger .wt-chance-overlay__content {
   animation:
     wtOverlayPop var(--wt-anim-overlay-pop) cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -1887,8 +1933,11 @@ CHANCE LOST OVERLAY
 }
 
 /* Micro-breakpoint (361px)
-   Rationale: amÃ©liore la lisibilitÃ© de .wt-code sur petits Ã©crans dÃ¨s que la largeur
-   permet plus dâ€™aÃ©ration (Ã©vite rendu trop serrÃ© sans attendre le breakpoint tablet). */
+   Rationale: amé
+liore la lisibilité
+ de .wt-code sur petits à©crans dès que la largeur
+   permet plus d"
+™aà©ration (à©vite rendu trop serrà© sans attendre le breakpoint tablet). */
 @media (min-width: 361px) {
   .wt-code {
     font-size: var(--fs-2xl);
@@ -2088,7 +2137,9 @@ body.wt-state--playing .wt-footer {
   overflow: hidden;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
-  /* BONUS: reduce â€œblank pageâ€ feel (subtle top tint, tokenized) */
+  /* BONUS: reduce "
+blank page"
+ feel (subtle top tint, tokenized) */
   background:
     linear-gradient(180deg, rgb(var(--primary) / var(--wt-a-08)), rgb(var(--bg)) 240px),
     rgb(var(--bg));
@@ -2195,7 +2246,9 @@ body.wt-state--playing .wt-footer {
   animation: wtBonusSpawn var(--wt-anim-bonus-spawn) ease-out both;
 }
 
-/* Micro-juice: warning one-shot â€œhitâ€ when entering the zone */
+/* Micro-juice: warning one-shot "
+hit"
+ when entering the zone */
 .wt-bonus-chip--warning-once {
   animation: wtBonusWarningOnce var(--wt-anim-bonus-warning-once) ease-out both;
 }
@@ -2217,9 +2270,11 @@ body.wt-state--playing .wt-footer {
   }
 }
 
-/* min-height 501px: BONUS fall â€” seuil compact -> normal.
+/* min-height 501px: BONUS fall "
+” seuil compact -> normal.
    Objectif: garder des paddings compacts sur petits viewports (ex. paysage),
-   puis rÃ©-augmenter lÃ©gÃ¨rement dÃ¨s que la hauteur le permet (confort + lisibilitÃ©). */
+   puis réaugmenter légèrement dès que la hauteur le permet (confort + lisibilité
+). */
 @media (min-height: 501px) {
   .wt-bonus-chip {
     padding: var(--space-14) var(--gap-3);
@@ -2227,7 +2282,8 @@ body.wt-state--playing .wt-footer {
 }
 
 /* BONUS fall: typography/spacing tuned for a "Tetris-like" feel */
-/* Intentional: tighter type (17px/20px) for faster â€œarcadeâ€ feel; deviation from --fs-* scale is expected. */
+/* Intentional: tighter type (17px/20px) for faster "
+arcade" feel; deviation from --fs-* scale is expected. */
 .wt-container[data-wt-bonus="fall"] .wt-terms-box {
   padding: var(--space-10);
   margin: var(--space-6) 0;
@@ -2246,7 +2302,8 @@ body.wt-state--playing .wt-footer {
   border-color: rgb(var(--danger) / var(--wt-a-35));
   animation: wtChipPulse var(--wt-anim-chip-flash) ease-in-out infinite;
 
-  /* CohÃ©rence carte â†” zone danger */
+  /* Cohé
+rence carte â†” zone danger */
   box-shadow:
     0 0 22px rgb(var(--danger) / var(--wt-a-28)),
     var(--shadow-2);
@@ -2410,9 +2467,11 @@ body.wt-state--playing .wt-footer {
   }
 }
 
-/* min-height 501px: BONUS fall â€” seuil compact -> normal.
-   Sur petite hauteur, on limite les paddings pour prÃ©server le gameplay;
-   au-delÃ , on repasse sur --pad pour une UI plus confortable. */
+/* min-height 501px: BONUS fall "
+” seuil compact -> normal.
+   Sur petite hauteur, on limite les paddings pour pré
+server le gameplay;
+   au-delà , on repasse sur --pad pour une UI plus confortable. */
 @media (min-height: 501px) {
   .wt-container[data-wt-bonus="fall"] .wt-choices {
     padding: var(--pad);
@@ -2463,15 +2522,15 @@ body.wt-state--playing .wt-footer {
   30% {
     transform: scale(1.08);
     text-shadow:
-      0 10px 24px rgb(var(--success) / var(--wt-a-14)),
-      0 4px 10px rgb(var(--success) / var(--wt-a-10));
+      0 10px 24px rgb(var(--primary) / var(--wt-a-14)),
+      0 4px 10px rgb(var(--primary) / var(--wt-a-10));
     filter: saturate(1.08) contrast(1.02);
   }
 
   60% {
     transform: scale(0.99);
     text-shadow:
-      0 6px 16px rgb(var(--success) / var(--wt-a-10));
+      0 6px 16px rgb(var(--primary) / var(--wt-a-10));
   }
 
   100% {
@@ -2495,6 +2554,55 @@ body.wt-state--playing .wt-footer {
   line-height: 1.02;
 }
 
+.wt-end-score--newbest .wt-end-score__value {
+  color: rgb(var(--primary-dark));
+}
+
+.wt-end-score__label {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(var(--primary-dark));
+}
+
+/* ============================================
+   END — “TABLE” LAYOUT (no icons)
+   - Wraps existing END lines into rows (mobile-safe)
+   - Does not change wording (ui.js still generates the lines)
+   ============================================ */
+
+.wt-end-table {
+  margin-top: var(--space-14);
+  display: grid;
+  row-gap: var(--space-4);
+}
+
+.wt-end-table__row {
+  padding: 0;
+}
+
+.wt-end-table__row+.wt-end-table__row {
+  padding-top: var(--space-4);
+}
+
+
+.wt-end-table p {
+  margin: 0;
+}
+
+.wt-end-table__cell {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 481px) {
+  .wt-end-table {
+    row-gap: var(--space-6);
+  }
+}
+
 .wt-end-score--celebrate {
   animation: wtCelebrate var(--wt-anim-celebrate) ease-out both;
 }
@@ -2510,7 +2618,9 @@ body.wt-state--playing .wt-footer {
   animation: wtEndBurst var(--wt-anim-celebrate) ease-out 1;
 }
 
-/* Micro burst: 2 radial â€œparticle ringsâ€ (subtle, premium-arcade) */
+/* Micro burst: 2 radial "
+particle rings"
+ (subtle, premium-arcade) */
 .wt-end-score__burst::before,
 .wt-end-score__burst::after {
   content: "";
@@ -2582,7 +2692,8 @@ body.wt-state--playing .wt-footer {
   }
 }
 
-/* Bonus chip spawn pop â€” keep transform free (JS owns translate3d) */
+/* Bonus chip spawn pop "
+” keep transform free (JS owns translate3d) */
 @keyframes wtBonusSpawn {
   0% {
     opacity: 0;
@@ -2637,6 +2748,8 @@ body.wt-state--playing .wt-footer {
   .wt-loading-spinner,
   .wt-chance-overlay__content,
   .wt-pill--score-flash,
+  .wt-pill--near-best,
+  .wt-pill--new-best,
   .wt-pulse,
   .wt-bonus-chip--spawn,
   .wt-bonus-chip--warning,
@@ -2684,6 +2797,10 @@ body.wt-state--playing .wt-footer {
 
     /* Dark mode accessibility: links + focus rings must pass WCAG AA on --bg */
     --primary-dark: 64 176 224;
+
+    /* Success tokens: lighten for dark surfaces (WCAG AA on --surface) */
+    --success: 34 197 94;
+    --success-dark: 74 222 128;
   }
 
   body {

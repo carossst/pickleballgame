@@ -18,25 +18,27 @@
         root.innerHTML = `
       <div class="wt-container">
         <div class="wt-footer-inner">
+          <!-- Ligne 1 : Branding -->
           <div class="wt-footer-row wt-footer-row--brand">
             <span class="wt-footer-creator" data-wt-brand="creatorLine"></span>
           </div>
 
+          <!-- Ligne 2 : Liens utilitaires -->
           <div class="wt-footer-row wt-footer-row--links">
-            <a id="wt-contact-link" class="wt-footer-link" href="#"></a>
+            <a id="wt-contact-link" class="wt-footer-link" href="#" data-wt-wording="footer.contact"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
-
             <a id="wt-tyf-link" class="wt-footer-link" href="#" target="_blank" rel="noopener"></a>
             <span class="wt-footer-sep wt-footer-sep--tyf" aria-hidden="true">·</span>
-
-            <a id="wt-privacy-link" class="wt-footer-link" href="./privacy.html" target="_blank" rel="noopener" data-wt-wording="footer.privacy"></a>
+            <a id="wt-privacy-link" class="wt-footer-link" href="./privacy.html" target="_blank" rel="noopener"
+              data-wt-wording="footer.privacy"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
-
-            <a id="wt-terms-link" class="wt-footer-link" href="./terms.html" target="_blank" rel="noopener" data-wt-wording="footer.terms"></a>
+            <a id="wt-terms-link" class="wt-footer-link" href="./terms.html" target="_blank" rel="noopener"
+              data-wt-wording="footer.terms"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
-
             <span class="wt-footer-version" data-wt-version></span>
           </div>
+
+
         </div>
       </div>
     `;
@@ -133,11 +135,21 @@
 
         const contact = document.getElementById("wt-contact-link");
         if (contact) {
+            const isIndex = !!document.getElementById("app");
             const hasSupportHook = (typeof window.WT_SUPPORT_OPEN === "function");
             const txt = String(contact.textContent || "").trim();
             const looksLikeEmail = txt.includes("@");
 
-            if (!hasSupportHook || looksLikeEmail) {
+            // Fail-closed rules:
+            // - Never show raw email as visible text.
+            // - On secondary pages: remove Contact if the hook is missing.
+            // - On index: keep Contact while the app boots; main.js will define WT_SUPPORT_OPEN then re-run email wiring.
+            const shouldRemove =
+                looksLikeEmail ||
+                (!txt) ||
+                (!isIndex && !hasSupportHook);
+
+            if (shouldRemove) {
                 const sep = contact.nextElementSibling;
                 contact.remove();
                 if (sep && sep.classList && sep.classList.contains("wt-footer-sep")) {

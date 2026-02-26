@@ -33,6 +33,7 @@ const ASSETS_TO_CACHE = [
   "./ui.js",
   "./pwa.js",
   "./email.js",
+  "./footer.js",
   "./main.js",
   "./content.json",
   "./manifest.json",

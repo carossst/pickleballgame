@@ -2,8 +2,8 @@
   "version": "3.4",
   "totalItems": 200,
   "breakdown": {
-    "falseItems": 107,
-    "trueItems": 93
+    "falseItems": 106,
+    "trueItems": 94
   },
   "items": [
     {
@@ -67,7 +67,7 @@
       "termFr": "caméra",
       "termEn": "camera",
       "correctAnswer": false,
-      "explanationShort": "caméra (FR) usually means a video camera.\ncamera (EN) usually means a device for taking photos or videos.\nFrench uses \"appareil photo\" for a photo camera.\nSo the everyday use is not exactly the same.",
+      "explanationShort": "caméra (FR) = a device for recording video.\ncamera (EN) = a device for taking photos; many can also record video.\nThey overlap for recording video, but caméra (FR) does not primarily mean photo-taking, which is central to camera (EN).",
       "tag": "false_friend"
     },
     {
@@ -99,7 +99,7 @@
       "termFr": "monnaie",
       "termEn": "money",
       "correctAnswer": false,
-      "explanationShort": "monnaie (FR) usually means currency or change (coins), and sometimes money in general.\nmoney (EN) means money in general.\nFrench often points to currency/change.\nEnglish is the broader default.",
+      "explanationShort": "monnaie (FR) = currency or legal means of payment, especially coins and small change.\nmoney (EN) = money in general, including cash, wealth, or financial resources.\nThey overlap in referring to cash, but monnaie (FR) does not cover wealth or financial resources, which are central to money (EN).",
       "tag": "false_friend"
     },
     {
@@ -179,7 +179,7 @@
       "termFr": "charger",
       "termEn": "charge",
       "correctAnswer": false,
-      "explanationShort": "charger (FR) = to load or fill — a truck, a weapon, a phone.\ncharge (EN) = to bill for payment, accuse of a crime, or rush forward.\nBoth share the battery sense (charger/charge a phone), but the rest is different.\nSo in everyday use, different meaning.",
+      "explanationShort": "charger (FR) = to load something, or to charge a device (battery).\ncharge (EN) = to ask for payment, to accuse someone officially, or to charge a device.\nThey overlap for batteries, but charger (FR) does not mean to ask for payment or to accuse someone, which are central meanings of charge (EN).",
       "tag": "false_friend"
     },
     {
@@ -315,7 +315,7 @@
       "termFr": "adresser",
       "termEn": "address",
       "correctAnswer": false,
-      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with a problem, or to speak to a group.\nBoth share the postal sense (une adresse/an address), but the verbs mean different things.\nSo in everyday use, different meaning.",
+      "explanationShort": "adresser (FR) = to send or direct something to someone, or to speak to someone formally.\naddress (EN) = to deal with a problem or issue, or to speak formally to a person or group.\nThey overlap in speaking to someone, but address (EN) is mainly used for dealing with problems, not adresser (FR).",
       "tag": "false_friend"
     },
     {
@@ -339,7 +339,7 @@
       "termFr": "engager",
       "termEn": "engage",
       "correctAnswer": false,
-      "explanationShort": "engager (FR) = to hire someone, or to commit (s'engager).\nengage (EN) = to interact with, participate in, or attract attention.\nBoth can mean \"to hire,\" but in everyday use, different meaning.",
+      "explanationShort": "engager (FR) = to hire someone, or to commit oneself to something.\nengage (EN) = to involve, attract attention, or take part in something.\nThey overlap in the idea of involvement, but engager (FR) does not mean to attract attention, which is central to engage (EN).",
       "tag": "false_friend"
     },
     {
@@ -1291,7 +1291,7 @@
       "termFr": "issue",
       "termEn": "issue",
       "correctAnswer": false,
-      "explanationShort": "issue (FR) usually means an exit or way out.\nissue (EN) usually means a problem or topic to discuss.\nFrench can also use it to mean outcome.\nBut the dominant meanings are different.",
+      "explanationShort": "issue (FR) = an exit or a way out.\nissue (EN) = a problem, topic, or matter under discussion.\nThey share the same spelling, but issue (FR) does not mean a problem or topic, which is central to issue (EN).",
       "tag": "false_friend"
     },
     {
@@ -1376,10 +1376,10 @@
     },
     {
       "id": 172,
-      "termFr": "abus",
-      "termEn": "abuse",
+      "termFr": "bibliothèque",
+      "termEn": "bibliography",
       "correctAnswer": false,
-      "explanationShort": "abus (FR) = an excess, misuse, or an over-the-top situation.\nabuse (EN) = misuse, but very often harm or mistreatment (especially people).\nKey difference: French often means \"too much/excess\"; English often implies harm.",
+      "explanationShort": "bibliothèque (FR) = a library, a place where you borrow books.\nbibliography (EN) = a list of books or sources cited in a work.\nBuilding in French; list in English.",
       "tag": "false_friend"
     },
     {
@@ -1459,7 +1459,7 @@
       "termFr": "esprit",
       "termEn": "spirit",
       "correctAnswer": false,
-      "explanationShort": "esprit (FR) usually means mind, intellect, or wit.\nspirit (EN) usually means soul, ghost, or an alcoholic drink.\nSome expressions overlap, like \"team spirit.\"\nBut the common meaning is not the same.",
+      "explanationShort": "esprit (FR) = mind, intellect, attitude; it can also mean a spirit/ghost in some contexts.\nspirit (EN) = a ghost/supernatural being, a general attitude, or alcohol.\nThey overlap for ghost/spirit, but esprit (FR) does not mean alcohol, which is central to spirit (EN).",
       "tag": "false_friend"
     },
     {
@@ -1483,7 +1483,7 @@
       "termFr": "caractère",
       "termEn": "character",
       "correctAnswer": false,
-      "explanationShort": "caractère (FR) usually means temperament or personality.\ncharacter (EN) often means a person in a story, but it can also mean personality or moral qualities.\nSo there is overlap.\nBut the common default meaning is different depending on context.",
+      "explanationShort": "caractère (FR) = personality, temperament, or a distinctive trait.\ncharacter (EN) = a person in a story, or the qualities that define someone.\nThey overlap in describing personal qualities, but caractère (FR) does not mean a fictional person in a story, which is central to character (EN).",
       "tag": "false_friend"
     },
     {
