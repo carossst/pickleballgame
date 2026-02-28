@@ -13,7 +13,14 @@
 
     function injectIntoFooterRoot(root) {
         if (!root) return;
-        if (hasNonEmptyContent(root)) return;
+
+        // Upgrade-safe guard:
+        // - If footer already exists BUT is missing the Press link, we re-inject.
+        // - If Press exists, we keep current DOM (do not overwrite).
+        if (hasNonEmptyContent(root)) {
+            const hasPress = !!(root.querySelector && root.querySelector("#wt-press-link"));
+            if (hasPress) return;
+        }
 
         root.innerHTML = `
       <div class="wt-container">
@@ -35,10 +42,11 @@
             <a id="wt-terms-link" class="wt-footer-link" href="./terms.html" target="_blank" rel="noopener"
               data-wt-wording="footer.terms"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-press-link" class="wt-footer-link" href="./press.html" target="_blank" rel="noopener"
+              data-wt-wording="footer.press"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
             <span class="wt-footer-version" data-wt-version></span>
           </div>
-
-
         </div>
       </div>
     `;

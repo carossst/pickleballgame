@@ -537,9 +537,9 @@
     footer: {
       contact: "Contact",
       privacy: "Privacy",
-      terms: "Terms"
+      terms: "Terms",
+      press: "Press"
     },
-
 
     success: {
       title: "Payment successful",
