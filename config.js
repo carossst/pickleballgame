@@ -109,7 +109,7 @@
     routing: {
       // If backlog >= this threshold, END (after RUN) promotes PRACTICE as primary CTA.
       // Backlog model: number of items with wrongCount > 0.
-      practicePrimaryMinWrong: 10,
+      practicePrimaryMinWrong: 4,
 
       // PRACTICE repeat guidance tiers (based on remaining backlog after PRACTICE).
       // UI picks the FIRST matching tier in the array (top-down).
@@ -616,12 +616,11 @@
     },
 
     firstRun: {
-      framingLines: [
+      fframingLines: [
         "This isn't about streaks.",
         "It's about whether you're actually improving.",
         "",
-        "By the end of this set, you'll know.",
-        "You have {freeRuns} free runs."
+        "By the end of this set, you'll know."
       ],
 
       trustLines: [
@@ -700,13 +699,13 @@
 
     secretBonus: {
       chestAria: "Secret bonus chest",
-      chestHint: "A secret mode is waiting.",
+      chestHint: "High focus mode is ready for you.",
       noSeenWordsToast: "No secret bonus yet. Play a normal run first.",
-      badge: "SECRET BONUS",
+      badge: "HIGH FOCUS BONUS",
 
       // END screen (BONUS)
       endTitle: "",
-      endLine: "Nice one. Want another secret run?",
+      endLine: "Nice one. Want another High Focus run?",
 
       // BONUS new best label (END)
       newBest: "NEW BEST SCORE.",
@@ -742,16 +741,16 @@
 
       // BONUS END - emotionally congruent CTA label
       ctaByLevel: {
-        low: "Give it another shot",
-        medium: "Go again",
-        high: "Ride the momentum"
+        low: "Try High Focus again",
+        medium: "Stay in High Focus",
+        high: "Push your focus further"
       },
 
 
       // Start overlay (same component as FREE runs)
-      startOverlayLine1: "Faster pace. No downtime.",
+      startOverlayLine1: "High focus mode. Faster pace.",
       startOverlayLine2: "Only words you've already seen in normal runs.",
-      startOverlayLine3: "Play normal runs to add more words to the bonus deck.",
+      startOverlayLine3: "Keep playing RUN to expand your bonus deck.",
 
       // Teaser premium (filled by ui.js): {remaining}, {limit}
       startOverlayFreeRunsLimitLine: "",
@@ -765,7 +764,7 @@
 
       // Minimal entry (autoporteur)
       title: "Word Traps",
-      subtitle: "Secret Bonus",
+      subtitle: "High Focus Mode",
       questionPrompt: "Same meaning in French and English?",
       dangerLineLabel: "TIMEOUT LINE",
       dangerLineAria: "Timeout line. If the card reaches this line, the item is lost.",
@@ -780,9 +779,9 @@
 
 
       // Keep existing (even if you later stop using the modal)
-      modalTitle: "You unlocked a secret bonus",
-      modalBody: "Well spotted. This secret bonus is faster, more focused, and more intense - using only words you've already seen. Optional and free.",
-      modalCta: "Start secret bonus"
+      modalTitle: "High Focus Mode",
+      modalBody: "You unlocked High Focus mode. It is faster and more demanding, using only words you've already seen. It tests speed and precision.",
+      modalCta: "Start High Focus mode"
     },
 
 
@@ -935,12 +934,12 @@
       },
 
       lensByVerdict: {
-        none: "You have {backlog} mistakes to work on. That's where real improvement starts.",
-        start: "You have {backlog} mistakes to fix. Practice them and you'll feel the difference.",
-        building: "{seen} words seen out of {poolSize}. You're improving — keep closing the gap.",
-        strong: "{seen}/{poolSize} words covered. You're improving faster than you think.",
-        elite: "{seen}/{poolSize} words covered. The traps that used to catch you don't anymore.",
-        legendary: "{seen}/{poolSize} mastered. You've proven it: you are improving."
+        none: "You have {backlog} mistakes to fix. Practice targets your weak spots directly.",
+        start: "You have {backlog} mistakes to fix. Practice targets your weak spots directly.",
+        building: "{seen} words seen out of {poolSize}. You are building consistency.",
+        strong: "{seen}/{poolSize} words covered. You are ready for High Focus mode.",
+        elite: "{seen}/{poolSize} words covered. Your decisions are becoming automatic.",
+        legendary: "{seen}/{poolSize} mastered. You control the traps now."
       },
 
 
@@ -994,7 +993,7 @@
       practiceCtaPremium: "Fix your weak spots (Premium)",
 
       // RUN routing: when score reaches the "strong" tier, END can promote BONUS as primary CTA.
-      bonusCtaPrimary: "Test Bonus Mode",
+      bonusCtaPrimary: "Enter High Focus Mode",
 
       // Post-completion routing (pool exhausted + mistakes)
       // Vars: {backlog}
@@ -1009,15 +1008,15 @@
 
     paywall: {
       // Default headline
-      headline: "Play without limits.",
+      headline: "You're getting better. Don't stop now.",
 
       // LAST FREE RUN - stronger but factual
       headlineLastFree: "This was your last free run.",
 
       // Projection personnalisée (PAYWALL only)
       // Vars: {seen} {poolSize} {remaining}
-      progressLine1: "You've already seen {seen}/{poolSize} word traps.",
-      progressLine2: "{remaining} words left to complete the full set.",
+      progressLine1: "You scored {score} French Points in {runs} runs. There's more to discover.",
+      progressLine2: "",
 
       // Section headers (anti “mur de mots”)
       valueTitle: "Unlock everything",
@@ -1025,9 +1024,9 @@
 
       valueBullets: [
         "Access the full set of word traps",
-        "Play unlimited runs - same rules, no limits",
-        "Unlock a new mode: practice your mistakes and fix your weak spots",
-        "Enjoy unlimited bonus mode - even better once all word traps are unlocked"
+        "Unlock High Focus Mode - a faster, more intense challenge",
+        "Practice your mistakes and fix your weak spots",
+        "Play unlimited runs - same rules, no limits"
       ],
 
       // Shared bridge copy (LANDING post-paywall + END runs exhausted)
@@ -1045,9 +1044,9 @@
 
       // PW1: Social proof (optional - do not invent numbers/claims)
       // If all are empty, nothing is rendered.
-      socialProofTitle: "",
-      socialProofQuote: "",
-      socialProofAuthor: "",
+      socialProofTitle: "What players say",
+      socialProofQuote: "Great for self-learning. The explanations after each answer make it even better.",
+      socialProofAuthor: "Babé, Educational Coordinator",
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)
       // Vars: {saveAmount} {earlyPrice} {standardPrice}
@@ -1113,8 +1112,8 @@
       // Mastered (pool exhausted + 0 active mistakes)
       masteredTitle: "Bravo ! You've mastered all 200 word traps.",
       masteredLine1: "Zero active mistakes. Every trap identified correctly.",
-      masteredLine2: "Come back in a few weeks. See if it still holds.",
-      masteredCtaBonus: "Challenge yourself in Bonus Mode",
+      masteredLine2: "Now test your focus under pressure. Then come back in a few weeks and see if it still holds.",
+      masteredCtaBonus: "Challenge yourself in High Focus Mode",
       masteredCtaReplay: "Replay in a new order",
 
       waitlistTitle: "Stay in the loop",

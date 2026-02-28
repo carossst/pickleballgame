@@ -6863,7 +6863,10 @@ ${landingHeaderRowHtml}
               (runVerdictKey === "strong" || runVerdictKey === "elite" || runVerdictKey === "legendary");
 
             const bonusPrimaryLabel = String(end.bonusCtaPrimary || "").trim();
-            const shouldPromoteBonus = (!!bonusEnabled && strongOrMore && !!bonusPrimaryLabel);
+
+            // Option C: promote BONUS only if strong+ AND backlog is below the Practice-push threshold.
+            const bonusBacklogOk = (ppMin != null) ? (vars.backlog < ppMin) : true;
+            const shouldPromoteBonus = (!!bonusEnabled && strongOrMore && bonusBacklogOk && !!bonusPrimaryLabel);
 
             if (shouldPromotePractice) {
               primaryAction = "start-practice";
@@ -7516,9 +7519,17 @@ ${questionPrompt ? `
     const progressLine1Tpl = String(pay.progressLine1 || "").trim();
     const progressLine2Tpl = String(pay.progressLine2 || "").trim();
 
+    const lastRunScore = clampInt(Number(this._runtime?.lastRun?.scoreFP), 0, 99999);
+    let payRunCount = 0;
+    try {
+      if (this.storage && typeof this.storage.getStats === "function") {
+        payRunCount = clampInt(Number(this.storage.getStats()?.runs), 0, 999);
+      }
+    } catch (_) { payRunCount = 0; }
+
     const progressLine1 =
-      (progressLine1Tpl && Number.isFinite(seen) && Number.isFinite(poolSize))
-        ? fillTemplate(progressLine1Tpl, { seen, poolSize })
+      progressLine1Tpl
+        ? fillTemplate(progressLine1Tpl, { seen, poolSize, remaining, score: lastRunScore, runs: payRunCount })
         : "";
 
     const progressLine2Raw =
