@@ -96,20 +96,21 @@
       freeRuns: 2
     },
 
-    // Practice mode (Mistakes only) - premium
+    // Practice mode (Mistakes only)
     // PRODUCT DECISION (kept):
     // - Returns ALL wrong items (variable length) in mistakesOnly mode
     mistakesOnly: {
       enabled: true,
       minWrongItemsToShowToggle: 1,
-      premiumOnly: true,
+      premiumOnly: false,
+      freeRunsLimit: 2,
       maxItems: 10
     },
 
     routing: {
       // If backlog >= this threshold, END (after RUN) promotes PRACTICE as primary CTA.
       // Backlog model: number of items with wrongCount > 0.
-      practicePrimaryMinWrong: 4,
+      practicePrimaryMinWrong: 9,
 
       // PRACTICE repeat guidance tiers (based on remaining backlog after PRACTICE).
       // UI picks the FIRST matching tier in the array (top-down).
@@ -117,7 +118,8 @@
       practiceRepeatTiers: [
         { key: "direct", minRemaining: 7 },
         { key: "firm", minRemaining: 4 },
-        { key: "light", minRemaining: 1 }
+        { key: "light", minRemaining: 2 },
+        { key: "last", minRemaining: 1 }
       ],
 
       // END RUN verdict thresholds (config-driven).
@@ -176,7 +178,7 @@
     houseAd: {
       enabled: true,
       premiumOnly: false,
-      url: "https://app.testyourfrench.com/",
+      url: "https://dailyfrench.testyourfrench.com/",
       showAfterEnd: true,
 
       // Unlock threshold (unique seen items)
@@ -222,7 +224,7 @@
         // Default bucket for gameplay overlays/toasts
         default: {
           delayMs: 0,
-          durationMs: 1400
+          durationMs: 1900
         },
 
         // Timing bucket for micro-pics / micro-satisfaction
@@ -247,31 +249,24 @@
       // Overlays (PLAYING)
       // - chanceLostOverlayMs: -1 chance + "Game over" window
       // - runStartOverlayMs: start-of-run + BONUS rules
-      chanceLostOverlayMs: 2000,
-      runStartOverlayMs: 2400,
+      chanceLostOverlayMs: 1800,
+      runStartOverlayMs: 3000,
 
 
       // Pulses (HUD) + extension window for last-chance overlay
-      gameplayPulseMs: 950,
+      gameplayPulseMs: 1000,
 
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.
       endRecordMomentMs: 1600,
 
+      // END: delay before opening automatic modals.
+      // Goal: let the score and CTA breathe first.
+      endAutoModalDelayMs: 1800,
+
       // PLAYING: toast duration when you beat your best score (RUN/BONUS).
       // No fallback in UI: if missing/invalid => no toast.
       newBestScoreToastMs: 1200,
-
-      // PLAYING micro-howto policy (UI-only, fail-closed)
-      // enabled: allows displaying WT_WORDING.playing.microHowTo
-      // oncePerDevice: show only until firstRunFramingSeen is set on this device
-      // hideAssertionWhenShown: avoids double-line stacking on small screens
-      playingMicroHowTo: {
-        enabled: true,
-        oncePerDevice: true,
-        hideAssertionWhenShown: true
-      },
-
 
 
       // Paywall ticker (UI-only, no silent fallback)
@@ -291,25 +286,20 @@
       // splitRegex: first match becomes the line break boundary (used by ui.js)
       explanationDisplay: {
         enabled: true,
-        maxLines: 2,
-        splitRegex: "\\.\\s+" // first sentence boundary
+        maxLines: 3,
+        splitRegex: "\\.\\s+|\\n+" // sentence boundary OR explicit line break
       }
     },
 
-
-    // LANDING stats micro-graphs (UI-only; no copy here)
     landingStats: {
       enabled: true,
-
-      // FP spark bars: show last N run scores (RUN mode only)
-      sparkRunsCount: 5
+      paceRunsCount: 8,
+      showBeforeFirstRun: false
     },
-
-
 
     // Secret bonus mode
     secretBonus: {
-      minDeckSize: 5,
+      minDeckSize: 1,
       enabled: true,
 
       // Teaser premium: free users can start only N bonus runs (lifetime, device-local)
@@ -320,12 +310,12 @@
       // LANDING: show chest after N completed runs (0 = always show on LANDING)
       gates: {
         endAfterRuns: 0,
-        landingAfterRuns: 2
+        landingAfterRuns: 1
       },
 
       // Gesture: single tap (simple, no “secret handshake”)
       tapWindowMs: 900,
-      tapsRequired: 1,
+      tapsRequired: 0,
 
 
 
@@ -353,8 +343,30 @@
 
         // Danger zone threshold (0..1 ratio of lane height)
         dangerThreshold: 0.86
-      }
+      },
 
+      // Visual flash on terms-box after each answer (BONUS only)
+      // Fall is frozen during this window, then render + restart.
+      feedbackFlashMs: 400,
+
+      // END screen personalization tiers (accuracy = scoreFP / totalPresented)
+      // Evaluated top-down: first match wins. Key must match WT_WORDING keys.
+      endTiers: [
+        { key: "perfect", minAccuracy: 1.0 },
+        { key: "high", minAccuracy: 0.75 },
+        { key: "medium", minAccuracy: 0.40 },
+        { key: "low", minAccuracy: 0 }
+      ],
+
+      // Deck-size buckets (seen count). Evaluated top-down: first match wins.
+      endDeckTiers: [
+        { key: "large", minSeen: 50 },
+        { key: "medium", minSeen: 16 },
+        { key: "small", minSeen: 0 }
+      ],
+
+      // CTA override action when accuracy=low + deck=small (technical routing)
+      ctaLowSmallAction: "start-run"
 
 
 
@@ -523,15 +535,15 @@
 
       youChosePrefix: "You chose:",
 
-      playAria: "Start a new run",
+      playAria: "Play a new game",
       shareAria: "Share the game",
       resultGridAria: "Result grid",
       scoreAria: "Score",
       endActionsAria: "End screen actions",
       shareCardAria: "Share the game",
-      premiumUnlockedToast: "Premium unlocked",
+      premiumUnlockedToast: "Full access unlocked",
       storageSaveFailedToast: "Saving is disabled in this browser mode. Your progress may be lost if you refresh.",
-      confirmLeaveRun: "Leave the current run? Your progress will be lost."
+      confirmLeaveRun: "Leave the current game? Your progress will be lost."
     },
 
     footer: {
@@ -583,73 +595,79 @@
     landing: {
       title: "Word Traps",
       tagline: "",
-      subtitle: "Faux amis or true friends?\n{poolSize} French words.\n{maxChances} mistakes allowed.\nLooks obvious. It isn't.",
-      microFun: "No signup - Play in under 2 minutes - Free to start",
-      microTrust: "",
+      subtitle: "Faux amis or true friends?\n200 French-English words to train your brain.",
+      microFun: "No signup · Quick games · Free to try",
+      microTrust: "Spot the traps. Think in French.",
 
-
-      runsLabel: "Runs",
-      runsFreeMode: "free to try",
+      runsLabel: "",
+      runsFreeMode: "",
 
       ctaPlay: "Test your French",
-      ctaPlayAfterFirstRun: "Start a new run",
+      ctaPlayAfterFirstRun: "Play again",
       ctaHow: "How to play",
-
       // Required for LANDING stat to render
       statsSeenLabel: "Words seen",
 
       // Before completion (goal gradient) 
-      statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} word traps · {remaining} to go",
+      statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} word traps",
+      statsPaceSummaryTemplate: "About {runsLeft} more game{pluralS} to see all {poolSize} traps.",
+      statsPhaseBadgeDiscovery: "Phase 1/3: Discovery",
+      statsPhaseBadgeCorrection: "Phase 2/3: Integrating",
+      statsPhaseBadgeConsolidation: "Phase 3/3: Consolidating",
 
       // After completion (fail-closed: required for the post-200 line)
-      statsSeenCompleteLabel: "You've seen all {poolSize} word traps.",
-      statsMistakesLabel: "Mistakes to fix",
+      statsSeenCompleteLabel: "French-English Faux Amis Mastery",
+      statsMistakesLabel: "Mistakes",
       statsMistakesSummaryTemplate: "{mistakes}",
+      statsMasterySummaryTemplate: "{mastered}/{poolSize} traps mastered",
 
-
-      postPaywallTitle: "Free runs completed. Ready for more?",
-      postPaywallBody: "Unlock unlimited runs anytime and keep your progress on this device.",
-      postPaywallCta: "See Premium options",
+      postPaywallTitle: "Free games completed. Ready for more?",
+      postPaywallBody: "Unlock unlimited games anytime and keep your progress on this device.",
+      practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
+      postPaywallCta: "Unlock full access",
 
       postPaywallSbTitle: "Before you decide...",
-      postPaywallSbBody: "You still have a secret bonus to try. Tap 🎁."
+      postPaywallSbBody: "You still have High Focus mode to try. Tap 🎯."
     },
-
     firstRun: {
-      fframingLines: [
+      titleRun2: "Quick reminder",
+      titleRun3: "Last tip before you play",
+
+      framingLines: [
         "This isn't about streaks.",
         "It's about whether you're actually improving.",
-        "",
-        "By the end of this set, you'll know."
+        "Explore all 200 French-English word traps.",
+        "Free games to try. Then decide",
+
       ],
 
       trustLines: [
         "No ads. No tricks.",
-        "Just thoughtful French."
+        "Spot the traps. Think in French.",
       ],
 
-      ctaLabel: "Begin"
+      ctaLabel: "Play"
     },
+
     milestones: {
       halfway: {
         title: "Halfway milestone.",
         bodyLines: [
-          "You reached 100/200.",
-          "Now keep going. This is where improving becomes real.",
-          "Practice when mistakes pile up. Bonus when your score is strong."
+          "Halfway there: 100/200 traps explored.",
+          "You are now seeing the real patterns.",
+          "Keep going. This is where mastery starts."
         ],
         cta: "Next"
       }
     },
-
 
     ui: {
       chancesLabel: "Chances",
       mistakesLabel: "Mistakes",
       scoreLabel: "Score",
       scoreAriaTemplate: "Score: {score} {fpShort}",
-      fpShort: "FP",
-      fpLong: "French Points",
+      fpShort: "",
+      fpLong: "",
       trueLabel: "Same meaning",
       falseLabel: "Different meaning",
       gameOverTitle: "Game over",
@@ -665,18 +683,17 @@
 
       // Start-of-run overlay (economy)
       // Visible uniquement pour FREE et LAST_FREE
-      startRunTypeFree: "FREE RUN",
-      startRunTypeLastFree: "Final free run. Make it count.",
+      startRunTypeFree: "Your first free game",
+      startRunTypeLastFree: "Last free game. Make it count",
       startRunTypeUnlimited: "",
-      startRunTypePractice: "Your past mistakes, one more time.",
-
+      startRunTypePractice: "Mistakes mode",
 
       // Start-of-run overlay (education)
       // Ligne unique, lien mental avec le HUD
-      startRunChancesOverlay: "{maxChances} mistakes per run.",
+      startRunChancesOverlay: "Up to {maxChances} mistakes.",
 
       // Chance state overlays (no \"-1\" text)
-      lastChanceOverlay: "Last chance.",
+      lastChanceOverlay: "One mistake left. Choose carefully.",
       gameOverOverlay: "Game over.",
 
       // HUD deltas (PLAYING)
@@ -696,68 +713,84 @@
 
 
 
-
     secretBonus: {
-      chestAria: "Secret bonus chest",
-      chestHint: "High focus mode is ready for you.",
-      noSeenWordsToast: "No secret bonus yet. Play a normal run first.",
+      chestAria: "High Focus mode",
+      chestHint: "",
+      noSeenWordsToast: "High Focus is empty for now. Play a normal game to build your deck.",
       badge: "HIGH FOCUS BONUS",
 
       // END screen (BONUS)
       endTitle: "",
-      endLine: "Nice one. Want another High Focus run?",
+      endDeckSizeLine: "High Focus pool: {count} words.",
+      endDeckSizeLineOne: "High Focus pool: 1 word.",
+      endDeckExhaustedToast: "All words available played.",
 
       // BONUS new best label (END)
       newBest: "NEW BEST SCORE.",
 
-      // END BONUS - cognitive mirror (HIGH / MEDIUM / LOW)
+      // END BONUS — cognitive mirror by accuracy tier
       // Contract: arrays MUST contain exactly 2 sentences each. No fallback in UI.
-      endByLevel: {
-        low: [
-          "The timing was tight.",
-          "This mode reacts faster than memory."
-        ],
-        medium: [
-          "You adjusted on the fly.",
-          "Instinct matters more than recall here."
+      endByTier: {
+        perfect: [
+          "Flawless under pressure.",
+          "You read those traps instantly."
         ],
         high: [
           "You stayed in control.",
-          "This mode rewards fast intuition."
+          "Your instincts were doing the work."
+        ],
+        medium: [
+          "You adjusted quickly.",
+          "This mode asks for instinct, not hesitation."
+        ],
+        low: [
+          "The pace got ahead of you.",
+          "Here, memory alone is not enough."
         ]
       },
-      // BONUS END - identity (no "streak" wording)
-      identityByLevel: {
-        low: "",
-        medium: "",
-        high: "You moved fast and stayed precise."
+
+      // END BONUS — personalized recommendation (accuracy × deck size)
+      // Keys: "{accuracyTier}_{deckTier}" — must cover all combinations
+      endRecoByTier: {
+        perfect_small: "Nailed it. Play normal games to grow your High Focus deck.",
+        perfect_medium: "No mistakes. Replay to keep that edge.",
+        perfect_large: "Impressive. Your High Focus deck is deep: push further.",
+
+        high_small: "Strong game. A few more normal games will expand your deck.",
+        high_medium: "Solid accuracy. Try again to lock in the ones you missed.",
+        high_large: "Almost there. Stay in High Focus: you're close to flawless.",
+
+        medium_small: "Build your deck first: play normal games to strengthen your base.",
+        medium_medium: "Good pace. Try another High Focus game to sharpen your reflexes.",
+        medium_large: "Keep going. Speed and accuracy will come with repetition.",
+
+        low_small: "Slow down. Normal games will help build the muscle memory you need here.",
+        low_medium: "Take a normal game to rebuild confidence before coming back.",
+        low_large: "This mode is demanding. Try again: speed comes with practice."
       },
 
-      lensByLevel: {
-        low: "",
-        medium: "",
-        high: ""
+      // BONUS END — emotionally congruent CTA label by accuracy tier
+      ctaByTier: {
+        perfect: "Push your focus further",
+        high: "Stay in High Focus",
+        medium: "Try High Focus again",
+        low: "Try High Focus again"
       },
 
-      // BONUS END - emotionally congruent CTA label
-      ctaByLevel: {
-        low: "Try High Focus again",
-        medium: "Stay in High Focus",
-        high: "Push your focus further"
-      },
-
+      // CTA override: when accuracy is low AND deck is small, primary = go to RUN
+      ctaLowSmallOverride: "Play a normal game",
 
       // Start overlay (same component as FREE runs)
       startOverlayLine1: "High focus mode. Faster pace.",
-      startOverlayLine2: "Only words you've already seen in normal runs.",
-      startOverlayLine3: "Keep playing RUN to expand your bonus deck.",
+      startOverlayLine2: "Only words you've already seen in normal games.",
+      startOverlayLine3: "Keep playing normal games to expand your High Focus deck.",
 
       // Teaser premium (filled by ui.js): {remaining}, {limit}
       startOverlayFreeRunsLimitLine: "",
 
       // Block modal when free limit reached
       freeLimitReachedTitle: "That was intense.",
-      freeLimitReachedBody: "You've used your {limit} free bonus runs.\n\nPremium unlocks unlimited bonus mode. Same speed. No limits.",
+      freeLimitReachedBody: "You've used your {limit} free High Focus games.\n\nFull access unlocks unlimited High Focus games. Same speed. No limits.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
       startOverlayTapAnywhere: "Tap anywhere to start",
@@ -768,86 +801,88 @@
       questionPrompt: "Same meaning in French and English?",
       dangerLineLabel: "TIMEOUT LINE",
       dangerLineAria: "Timeout line. If the card reaches this line, the item is lost.",
-      seenOnlyLine: "Only words you've already seen in normal runs. Play more runs to expand the bonus deck.",
-
+      seenOnlyLine: "Only words you've already seen in normal games. Play more games to expand the High Focus deck.",
 
       // End toasts (BONUS ends by returning to END screen)
-      endGameOverToast: "Game over",
-      endDeckExhaustedToast: "Secret bonus complete",
-      ctaPlayAgain: "Play bonus again",
-
-
-
       // Keep existing (even if you later stop using the modal)
       modalTitle: "High Focus Mode",
       modalBody: "You unlocked High Focus mode. It is faster and more demanding, using only words you've already seen. It tests speed and precision.",
-      modalCta: "Start High Focus mode"
+      modalCta: "Play High Focus mode"
     },
 
 
-
-
-
     practice: {
-      title: "Practice mode (Mistakes only)",
+      title: "Mistakes mode",
       on: "On",
       off: "Off",
 
-      premiumOnly: "Premium only",
+      premiumOnly: "Full access only",
       descLocked: "Replay only the word traps that still trip you up.",
       valueLine: "Focus on the words that still trip you up.",
       descUnlocked: "Only items you previously got wrong.",
 
+      freeLimitReachedTitle: "End of Free Games.",
+      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes mode. Keep fixing your mistakes without limits.",
+      freeLimitReachedCta: "Keep playing",
+      freeLimitReachedClose: "Not now",
+
       // END screen (PRACTICE)
-      endTitle: "Practice complete",
+      endTitle: "Mistakes complete",
       endLine: "Good work. You tightened the weak spots.",
+      // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
+      endLineByTier: {
+        last: "Almost there. Just one trap left.",
+        light: "Good pass. The weak spots are becoming clearer.",
+        firm: "Useful game. A few traps are still catching you.",
+        direct: "Tough game. These traps need another pass."
+      },
       endStatsLine: "Mistakes fixed: {fixed}. Mistakes remaining: {remaining}.",
 
       // Repeat guidance by tier (selected via WT_CONFIG.routing.practiceRepeatTiers)
       // Fail-closed: missing tier key => no note
       endRepeatNoteByTier: {
-        light: "Tip: You still have {remaining} mistakes left. One more Practice run will help.",
-        firm: "Tip: You still have {remaining} mistakes left. Run Practice again to clear your weak spots.",
-        direct: "Tip: You still have {remaining} mistakes left. Stay in Practice until these traps stop catching you."
+        last: "One trap left. Clear it now.",
+        light: "Only a few traps left to clear.",
+        firm: "A few traps still need another pass.",
+        direct: "Stay in Mistakes mode. These are the ones that need the work."
       },
 
-      scoreLine: "Reviewed: {total} words",
+      scoreLine: "Words reviewed: {total}",
 
       // PLAYING: calm progress line (replaces assertion in PRACTICE)
       playingProgressLine: "{current}/{total}",
 
       // Start overlay (PRACTICE): explain the mode (2 lines shown via typeLine + msg)
-      startRunChancesOverlayPractice: "Practice focuses on your active mistakes.\nUp to 10 words per session.\nFix a word and it leaves the list.\nMake a mistake again, and it comes back.",
-
+      startRunChancesOverlayPractice: "Mistakes mode focuses on your active mistakes.\nUp to 10 words per game.\nFix a word and it leaves the list.\nMake a mistake again, and it comes back.",
+      startOverlayTapAnywhere: "Tap anywhere to start",
       // Backward compat (still used as fallback wording-only)
       ctaPracticeAgain: "Practice again",
 
       // PRACTICE END - identity + lens + CTA by level (low/medium/high)
       identityByLevel: {
-        low: "You're rebuilding the basics.",
-        medium: "You're tightening the weak spots.",
-        high: "You're making these traps feel automatic."
+        low: "",
+        medium: "",
+        high: ""
       },
 
-
       lensByLevel: {
-        low: "The patterns will feel clearer next time.",
-        medium: "Consistency is forming.",
-        high: "This is turning into muscle memory."
+        low: "Next time the traps will look easier to spot.",
+        medium: "You're starting to read the pattern.",
+        high: "This is becoming automatic now."
       },
 
       ctaByLevel: {
-        low: "Try another practice run",
-        medium: "Practice again",
-        high: "Keep the rhythm"
+        low: "Fix your mistakes again",
+        medium: "Fix your mistakes again",
+        high: "Fix your mistakes again"
       },
 
       // Optional CTA override (END PRACTICE) based on remaining tier
       // Fail-closed: missing tier key => keep existing CTA (ctaByLevel / ctaPracticeAgain)
       ctaRepeatByTier: {
-        light: "One more Practice run",
-        firm: "Run Practice again",
-        direct: "Stay in Practice"
+        light: "Fix your mistakes one more time",
+        firm: "Play mistakes mode again",
+        direct: "Stay in mistakes mode"
       }
 
 
@@ -856,7 +891,7 @@
 
     playing: {
       questionLabel: "Word",
-      assertion: "Does this mean the same thing in French and English?",
+      assertion: "Do the French and English words mean the same thing?",
       answersAria: "Answer choices",
       questionHeadingTemplate: "",
       feedbackTitleOk: "",
@@ -872,34 +907,32 @@
       feedbackRelationDifferentTemplate: "{termFr} (FR) \u2260 {termEn} (EN)"
     },
 
-
-
     micropics: {
-      runContinues: "Good work. Keep going.",
+      runContinues: "You saw it. Keep going.",
 
 
       // Near-miss (END-only highlight)
-      nearMiss: "Close one. Keep going.",
+      nearMiss: "Close call. That trap was waiting for you.",
 
 
       // Repeated mistakes (END-only highlight)
-      repeatMistake: "This trap keeps getting you. Take a second and reread the word.",
+      repeatMistake: "This one keeps pulling you in. Slow down and read it again.",
 
 
-      // First time reaching the tier in this RUN
-      streakStart: "3 good words in a row. Good start.",
-      streakBuilding: "6 good words in a row. Keep going.",
-      streakStrong: "10 good words in a row. Strong focus.",
-      streakElite: "15 good words in a row. Very steady.",
-      streakLegendary: "20 good words in a row. Excellent focus.",
+      // First time reaching the tier in this game
+      streakStart: "3 in a row. You're seeing the traps.",
+      streakBuilding: "6 in a row. The pattern is starting to click.",
+      streakStrong: "10 in a row. Sharp reading.",
+      streakElite: "15 in a row. Very little gets past you now.",
+      streakLegendary: "20 in a row. You read the traps before they land.",
 
 
-      // Reaching a tier again in the same RUN (after a mistake)
+      // Reaching a tier again in the same game (after a mistake)
       // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
-      streakAgainTemplate: "{streak} good words in a row again. Back on track.",
+      streakAgainTemplate: "{streak} in a row again. Back in rhythm.",
 
       // First non-chiffré micro-pic after a mistake (one-shot)
-      recovery: "Good job!",
+      recovery: "There you go. Back in rhythm.",
 
       runEndedAllChancesUsed: ""
     },
@@ -912,9 +945,14 @@
       poolCompleteTitle: "Bravo ! All 200 word traps complete.",
       poolCompleteLine1: "This isn't about streaks. It's about whether you're actually improving. By the end of this set, you'll know.",
       poolCompleteLine2: "Now we find out what you actually know. Come back in a few weeks. See if it still holds.",
-      poolCompleteScoreLine: "This run: {score} {fpShort}",
+      poolCompleteScoreLine: "This game: {score} {fpShort}",
       poolCompleteCtaPrimary: "Replay in a new order",
       poolCompleteCtaPractice: "Fix your mistakes",
+
+      freeLimitReachedTitle: "Nice game.",
+      freeLimitReachedBody: "You've used your {limit} free normal games.\n\nFull access unlocks unlimited normal games. Keep training without limits.",
+      freeLimitReachedCta: "Keep playing",
+      freeLimitReachedClose: "Not now",
 
       // No redundancy: do not mention chances on END (player already knows).
       endLine: "",
@@ -934,22 +972,22 @@
       },
 
       lensByVerdict: {
-        none: "You have {backlog} mistakes to fix. Practice targets your weak spots directly.",
-        start: "You have {backlog} mistakes to fix. Practice targets your weak spots directly.",
-        building: "{seen} words seen out of {poolSize}. You are building consistency.",
-        strong: "{seen}/{poolSize} words covered. You are ready for High Focus mode.",
-        elite: "{seen}/{poolSize} words covered. Your decisions are becoming automatic.",
-        legendary: "{seen}/{poolSize} mastered. You control the traps now."
+        none: "You have {backlog} traps to revisit. Practice targets the weak spots directly.",
+        start: "Good start. Try to reach 6+ in your next game.",
+        building: "{seen}/{poolSize} words seen. The pattern is becoming clearer.",
+        strong: "{seen}/{poolSize} words covered. You're reading these faster now.",
+        elite: "{seen}/{poolSize} words covered. More of this is becoming automatic.",
+        legendary: "{seen}/{poolSize} mastered. These traps rarely fool you now.",
       },
 
 
       ctaByVerdict: {
-        none: "Reset and go again",
-        start: "Go again - aim for 6+",
-        building: "Go again - aim for 10+",
-        strong: "Go again - aim for 15+",
-        elite: "Go again - aim for 20+",
-        legendary: "Run it back"
+        none: "Play again",
+        start: "Play again: aim for 6+",
+        building: "Play again: aim for 10+",
+        strong: "Play again: push your score higher",
+        elite: "Play again: master the remaining traps",
+        legendary: "Play again"
       },
 
       // Explicit best sequence surfacing (RUN only)
@@ -963,12 +1001,11 @@
       // False friends identified (RUN only)
       // Definition: distinct items with tag === "false_friend" and correctCount > 0
       // Vars: {count}
-      falseFriendsIdentifiedLine: "",
+      falseFriendsIdentifiedLine: "{count} false friends identified so far.",
 
 
       // END secondary content toggles
-      statsToggle: "Stats & runs history",
-
+      statsToggle: "Stats & games history",
 
       // Fallback for non-RUN modes (PRACTICE, BONUS)
       effortLine: "Well played.",
@@ -979,64 +1016,62 @@
       personalBestLine: "Best score: {best} {fpLong}",
       nearBestLine: "{delta} {fpLong} away from your best.",
       // Free runs hint (RUN-only; shown only when remaining > 0)
-      freeRunLeft: "{remaining} free run{pluralS} available.",
+      freeRunLeft: "{remaining} free game{pluralS} left.",
 
       // RUN END - mistakes recap (free + premium)
-      mistakesTitle: "Mistakes",
+      mistakesTitle: "You missed these traps",
       mistakesNone: "No mistakes.",
-      mistakesToggle: "Show mistakes ({count})",
+      mistakesToggle: "{count} mistakes",
 
-      newBest: "NEW PERSONAL BEST - You beat your previous score.",
-      playAgain: "Keep improving your French",
+      newBest: "NEW PERSONAL BEST",
+      houseAdSummaryLabel: "Keep going with another game",
+      playAgain: "See more traps. Think in French.",
 
-      practiceCta: "Fix your weak spots",
-      practiceCtaPremium: "Fix your weak spots (Premium)",
+      practiceCta: "Fix your mistakes",
+      practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
 
       // RUN routing: when score reaches the "strong" tier, END can promote BONUS as primary CTA.
       bonusCtaPrimary: "Enter High Focus Mode",
 
       // Post-completion routing (pool exhausted + mistakes)
       // Vars: {backlog}
-      practiceCtaCount: "Fix your {backlog} remaining mistakes",
-      practiceCtaCountPremium: "Fix your {backlog} remaining mistakes (Premium)",
-
+      practiceCtaCountPremium: "Fix your {backlog} remaining mistakes",
       shareTitle: "Share"
     },
 
 
-
-
     paywall: {
       // Default headline
-      headline: "You're getting better. Don't stop now.",
+      headline: "Think in French. Master all 200 traps.",
 
       // LAST FREE RUN - stronger but factual
-      headlineLastFree: "This was your last free run.",
+      headlineLastFree: "You've started spotting the traps. Finish the set.",
 
       // Projection personnalisée (PAYWALL only)
       // Vars: {seen} {poolSize} {remaining}
-      progressLine1: "You scored {score} French Points in {runs} runs. There's more to discover.",
+      progressLine1: "You've already spotted {seen} traps. {remaining} more to master.",
       progressLine2: "",
 
       // Section headers (anti “mur de mots”)
-      valueTitle: "Unlock everything",
+      valueTitle: "Unlock full access",
       trustTitle: "No surprises",
 
       valueBullets: [
-        "Access the full set of word traps",
-        "Unlock High Focus Mode - a faster, more intense challenge",
-        "Practice your mistakes and fix your weak spots",
-        "Play unlimited runs - same rules, no limits"
+        "200 hand-picked traps with explanations after each answer",
+        "Fix your mistakes in a dedicated practice mode",
+        "Train your speed in High Focus Mode",
+        "Unlimited games, reshuffled every time"
       ],
 
       // Shared bridge copy (LANDING post-paywall + END runs exhausted)
-      bridgeTitle: "That was the end of the free path.",
-      bridgeBody: "Unlock unlimited runs and Practice mode on this device.",
+      bridgeTitle: "Keep spotting the traps.",
+      bridgeBody: "Practice your mistakes, train your focus, and master all 200 French word traps.",
 
-      trustLine: "One-time purchase. Same rules. No limits.",
+      trustLine: "One-time unlock",
       trustBullets: [
         "Lifetime access, no recurring fees",
-        "No ads, ever",
+        "Works offline after first load",
+        "No subscription",
         "No signup needed, ever",
         "Secure payment through Stripe"
       ],
@@ -1045,24 +1080,26 @@
       // PW1: Social proof (optional - do not invent numbers/claims)
       // If all are empty, nothing is rendered.
       socialProofTitle: "What players say",
-      socialProofQuote: "Great for self-learning. The explanations after each answer make it even better.",
-      socialProofAuthor: "Babé, Educational Coordinator",
+      socialProofQuotes: [
+        { quote: "Great for self-learning. The explanations after each answer make it even better.", author: "Babé, Educational Coordinator" },
+        { quote: "I kept confusing librairie and library. After a few rounds, it just clicked.", author: "Tom, preparing for life in France" }
+      ],
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)
       // Vars: {saveAmount} {earlyPrice} {standardPrice}
-      savingsLineTemplate: "Save {saveAmount} today - early price.",
+      savingsLineTemplate: "Save {saveAmount} today. Early price.",
       // Micro reassurance under CTA (optional, no fallback)
-      checkoutNote: "Secure checkout via Stripe - takes about 30 seconds.",
+      checkoutNote: "Secure checkout via Stripe. Takes about 30 seconds.",
 
       // Primary CTA changes with price phase (EARLY vs STANDARD)
-      ctaEarly: "Unlock all 200 word traps - $4.99",
-      ctaStandard: "Get unlimited runs - $6.99",
+      ctaEarly: "Unlock all 200 traps for $4.99",
+      ctaStandard: "Unlock all 200 traps for $6.99",
 
       // Backward compat (still used in a few places)
-      cta: "Get unlimited runs",
+      cta: "Get unlimited games",
 
       alreadyHaveCode: "Already have a code? Activate it here.",
-      deviceNote: "Premium stays unlocked on this device. No account needed.",
+      deviceNote: "Full access stays unlocked on this device. No account needed.",
 
       // PW2: EARLY visual badge (copy visible)
       earlyBadgeLabel: "Early bird",
@@ -1074,20 +1111,29 @@
       timerLabel: "Price increases in:",
 
       postEarlyLine1: "The early price has ended.",
-      postEarlyLine2: "{standardPrice} - One-time purchase. Yours forever."
+      postEarlyLine2: "{standardPrice}. One-time purchase. Yours forever."
     },
+
 
     howto: {
       title: "How to play",
       howToPlayLine1: "You see a French word or expression.",
       howToPlayLine2: "Is it a faux ami or a true friend?",
       howToPlayLine3: "Choose Same meaning or Different meaning.",
+
+      modesTitle: "Game modes",
+      modesBullets: [
+        "Normal Mode: a full game across the word pool. Build your best score.",
+        "High Focus Mode: faster and more demanding. Uses only words you've already seen.",
+        "Mistakes Mode: replay your active mistakes (up to 10 words)."
+      ],
+
       ruleTitle: "Rule",
-      ruleSentence: "Each correct answer adds +1 French Point. A wrong answer adds one mistake.",
-      premiumTitle: "Premium",
-      alreadyPremium: "Premium is already enabled on this device.",
+      ruleSentence: "Each correct answer adds +1 point. A wrong answer adds one mistake.",
+      premiumTitle: "Full access",
+      alreadyPremium: "Full access is already enabled on this device.",
       activateTitle: "Activate with a code",
-      activateLine1: "Already have a premium code? Activate it here.",
+      activateLine1: "Already have an activation code? Activate it here.",
       activateLine2: "No account needed. Your code stays on this device.",
       activationCodeLabel: "Activation code",
       activationCodePlaceholder: "WT-XXXX-XXXX",
@@ -1096,18 +1142,19 @@
       activateCta: "Activate",
       codeInvalid: "Invalid code format.",
       codeUsed: "This device already used a code.",
-      codeOk: "Premium enabled on this device.",
-      premiumOnlyHint: "",
+      codeOk: "Full access enabled on this device.",
 
-      autoActivateTitle: "Premium code ready",
-      autoActivateLine1: "Your premium code is already saved on this device.",
-      autoActivateLine2: "Activate Premium now?",
-      autoActivateCta: "Activate now",
+
+      autoActivateTitle: "Activation code ready",
+      autoActivateLine1: "Your activation code is already saved on this device.",
+      autoActivateLine2: "Unlock full access now?",
+      autoActivateCta: "Unlock now",
       autoActivateLater: "Not now"
     },
+
     postCompletion: {
       title: "You've seen everything.",
-      body: "Now make it stick. Practice your mistakes, explore Bonus Mode, or replay full runs.",
+      body: "Now make it stick. Practice your mistakes, explore High Focus Mode, or replay full games.",
 
       // Mastered (pool exhausted + 0 active mistakes)
       masteredTitle: "Bravo ! You've mastered all 200 word traps.",
@@ -1185,7 +1232,7 @@ Find out 😄
         `Can you guess? Does "{termFr}" (FR) really mean "{termEn}"? 🤔`
       ],
       funFactTemplatesTrue: [
-        `Can you guess? "{termFr}" (FR) and "{termEn}" (EN) - same meaning or trap? 🤔`
+        `Can you guess? "{termFr}" (FR) and "{termEn}" (EN) : same meaning or trap? 🤔`
       ],
 
 
@@ -1208,7 +1255,7 @@ Find out 😄
       // Lightweight prompt (shown at milestones)
       promptTitle: "Help improve Word Traps",
       promptBodyTemplate: "You have reached {thresholdPct}% of the pool (unique words). Share anonymous stats to help improve the game. You can review everything before sending.",
-      promptBodyLastFree: "That was your last free run. Share anonymous stats to help improve the game. You can review everything before sending.",
+      promptBodyLastFree: "That was your last free game. Share anonymous stats to help improve the game. You can review everything before sending.",
       promptBodyPowerUser: "You're clearly a power player. Share anonymous stats to help improve the game. You can review everything before sending.",
       promptCtaPrimary: "Preview & share",
       promptCtaSecondary: "Not now",
@@ -1255,92 +1302,10 @@ Thanks!`
       title: "Lost in translation?",
       line1: "This page doesn't exist - or it no longer does.",
       line2: "The good news: the game is right where you left it.",
-      cta: "Start a new run"
+      cta: "Play a new game"
     },
 
   };
-
-  // 9.5 Brand injection (DOM)
-  function applyBrandText() {
-    try {
-      // Creator line (single source of truth):
-      // - prefer WT_WORDING.brand.creatorLineHtml (allows link)
-      // - else WT_WORDING.brand.creatorLine (plain text)
-      const brandHtml = String(
-        (window.WT_WORDING && window.WT_WORDING.brand && window.WT_WORDING.brand.creatorLineHtml) ||
-        ""
-      ).trim();
-
-      const brandText = String(
-        (window.WT_WORDING && window.WT_WORDING.brand && window.WT_WORDING.brand.creatorLine) ||
-        ""
-      ).trim();
-
-      if (brandHtml || brandText) {
-        const brandNodes = document.querySelectorAll('[data-wt-brand="creatorLine"]');
-        brandNodes.forEach((node) => {
-          if (!node) return;
-          if (brandHtml) node.innerHTML = brandHtml;
-          else node.textContent = brandText;
-        });
-      }
-
-      // Version
-      const version = String(window.WT_CONFIG?.version || "").trim();
-      const versionPrefix = String(window.WT_WORDING?.system?.versionPrefix || "").trim();
-
-      if (version) {
-        const versionNodes = document.querySelectorAll("[data-wt-version]");
-        versionNodes.forEach((node) => {
-          if (node) node.textContent = `${versionPrefix}${version}`;
-        });
-      }
-
-      // Parent link (Test Your French)
-      const tyf = document.getElementById("wt-tyf-link");
-      const tyfSep = document.querySelector(".wt-footer-sep--tyf");
-      const parentUrl = String(window.WT_CONFIG?.identity?.parentUrl || "").trim();
-
-      if (tyf && parentUrl) {
-        tyf.setAttribute("href", parentUrl);
-
-        // KISS label: derive from URL host (no hard-coded copy)
-        let label = parentUrl;
-        try { label = new URL(parentUrl).hostname.replace(/^www\./i, ""); } catch (_) { /* keep url */ }
-        tyf.textContent = label;
-
-        if (tyfSep) tyfSep.style.display = "";
-      } else {
-        if (tyf) {
-          tyf.textContent = "";
-          tyf.removeAttribute("href");
-        }
-        if (tyfSep) tyfSep.style.display = "none";
-      }
-
-      // Footer link labels (Privacy / Terms)
-      const fw = window.WT_WORDING?.footer || {};
-      const privacy = document.getElementById("wt-privacy-link");
-      const terms = document.getElementById("wt-terms-link");
-
-      if (privacy) privacy.textContent = String(fw.privacy || "").trim();
-      if (terms) terms.textContent = String(fw.terms || "").trim();
-
-      // Hide orphan separators (prevents "·" stacking when labels are empty/hidden)
-      const seps = document.querySelectorAll(".wt-footer-row--links .wt-footer-sep");
-      seps.forEach((sep) => {
-        if (!sep) return;
-        const prev = sep.previousElementSibling;
-        const next = sep.nextElementSibling;
-        const prevText = prev ? String(prev.textContent || "").trim() : "";
-        const nextText = next ? String(next.textContent || "").trim() : "";
-        sep.style.display = (prevText && nextText) ? "" : "none";
-      });
-
-    } catch (_) {
-      // silent
-    }
-  }
 
 
 
@@ -1447,21 +1412,16 @@ Thanks!`
       });
 
     }
-
     if (!uiCfg) {
       warn("ui is missing (required for UI timing)");
     } else {
       const cl = Number(uiCfg.chanceLostOverlayMs);
       const rs = Number(uiCfg.runStartOverlayMs);
       const pulse = Number(uiCfg.gameplayPulseMs);
-      const endCountUp = Number(uiCfg.endScoreCountUpMs);
 
       if (!Number.isFinite(cl) || cl < 200 || cl > 3000) warn("ui.chanceLostOverlayMs must be a number in [200..3000]");
       if (!Number.isFinite(rs) || rs < 200 || rs > 3000) warn("ui.runStartOverlayMs must be a number in [200..3000]");
       if (!Number.isFinite(pulse) || pulse < 0 || pulse > 2000) warn("ui.gameplayPulseMs must be a number in [0..2000]");
-
-      if (!Number.isFinite(endCountUp) || endCountUp < 200 || endCountUp > 3000) warn("ui.endScoreCountUpMs must be a number in [200..3000]");
-
 
 
       // Secret bonus mode (mechanics)
@@ -1505,8 +1465,8 @@ Thanks!`
           if (!Number.isFinite(initialSpeed) || initialSpeed <= 0) warn("secretBonus.fall.initialSpeed missing/invalid");
           if (!Number.isFinite(maxSpeed) || maxSpeed <= 0) warn("secretBonus.fall.maxSpeed missing/invalid");
           if (!Number.isFinite(speedIncrement) || speedIncrement < 0) warn("secretBonus.fall.speedIncrement missing/invalid");
-          if (!Number.isFinite(dangerThreshold) || dangerThreshold <= 0 || dangerThreshold > 1) {
-            warn("secretBonus.fall.dangerThreshold missing/invalid (must be in (0..1])");
+          if (!Number.isFinite(dangerThreshold) || dangerThreshold <= 0 || dangerThreshold >= 1) {
+            warn("secretBonus.fall.dangerThreshold missing/invalid (must be in (0..1))");
           }
           if (Number.isFinite(initialSpeed) && Number.isFinite(maxSpeed) && maxSpeed < initialSpeed) {
             warn("secretBonus.fall.maxSpeed must be >= initialSpeed");
@@ -1533,11 +1493,9 @@ Thanks!`
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       validateConfigSoft();
-      applyBrandText();
     });
   } else {
     validateConfigSoft();
-    applyBrandText();
   }
 
 

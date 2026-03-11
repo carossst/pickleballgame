@@ -1,7 +1,6 @@
 // footer.js — Word Traps shared footer injection (uses email.js)
 // Responsibility: inject Word Traps footer markup into #wt-footer-root when needed.
-// Branding/version/labels are handled by config.js. Contact is handled by email.js.
-
+// Branding, version, labels and parent link are hydrated here. Contact is handled by email.js.
 (() => {
     "use strict";
 
@@ -55,13 +54,13 @@
     function hydrateFooter(root) {
         if (!root) return;
 
-        const cfg = window.WT_CONFIG || {};
-        const w = window.WT_WORDING || {};
+        const cfg = window.WT_CONFIG;
+        const w = window.WT_WORDING;
+        if (!cfg || typeof cfg !== "object" || !w || typeof w !== "object") return;
 
         // Apply wording (scoped to footer only)
         try {
-            const nodes = root.querySelectorAll("[data-wt-wording]");
-            nodes.forEach((el) => {
+            const nodes = root.querySelectorAll("[data-wt-wording]"); nodes.forEach((el) => {
                 const key = String(el.getAttribute("data-wt-wording") || "").trim();
                 if (!key) return;
 
@@ -127,15 +126,13 @@
     }
 
     function tryInject() {
-        const existing = document.querySelector("footer.wt-footer");
-        const root = document.getElementById("wt-footer-root") || existing;
+        const root = document.getElementById("wt-footer-root");
         if (!root) return;
 
         injectIntoFooterRoot(root);
         hydrateFooter(root);
 
         // Let email.js wire the contact link, but enforce FAIL-CLOSED here:
-        // - If the support hook is missing, remove Contact entry.
         // - If Contact text looks like an email (contains "@"), remove it (anti-leak).
         if (window.WT_Email && typeof window.WT_Email.initEmailLinks === "function") {
             window.WT_Email.initEmailLinks();
@@ -144,22 +141,20 @@
         const contact = document.getElementById("wt-contact-link");
         if (contact) {
             const isIndex = !!document.getElementById("app");
-            const hasSupportHook = (typeof window.WT_SUPPORT_OPEN === "function");
             const txt = String(contact.textContent || "").trim();
             const looksLikeEmail = txt.includes("@");
 
             // Fail-closed rules:
             // - Never show raw email as visible text.
-            // - On secondary pages: remove Contact if the hook is missing.
-            // - On index: keep Contact while the app boots; main.js will define WT_SUPPORT_OPEN then re-run email wiring.
+            // - On secondary pages: remove Contact.
+            // - On app page: keep Contact if wording exists; email.js will wire behavior.
             const shouldRemove =
                 looksLikeEmail ||
                 (!txt) ||
-                (!isIndex && !hasSupportHook);
+                (!isIndex);
 
             if (shouldRemove) {
-                const sep = contact.nextElementSibling;
-                contact.remove();
+                const sep = contact.nextElementSibling; contact.remove();
                 if (sep && sep.classList && sep.classList.contains("wt-footer-sep")) {
                     sep.remove();
                 }

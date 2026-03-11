@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Terms of Service for Word Traps (Test Your French).">
     <title>Terms of Service - Word Traps</title>
@@ -78,7 +77,6 @@
                 </div>
             </div>
         </main>
-        </main>
 
         <footer id="wt-footer-root" class="wt-footer" role="contentinfo"></footer>
 
@@ -93,19 +91,11 @@
             "use strict";
 
             function openSupportEmail() {
-                const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
-                if (!email) return;
-                window.location.href = `mailto:${encodeURIComponent(email)}`;
+                if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
+                    window.WT_Email.openSupportEmail();
+                }
             }
 
-            function applyVersion() {
-                try {
-                    const version = String(window.WT_CONFIG?.version || "").trim();
-                    const prefix = String(window.WT_WORDING?.system?.versionPrefix || "").trim();
-                    const el = document.querySelector(".wt-footer-version");
-                    if (el) el.textContent = version ? `${prefix}${version}` : "";
-                } catch (_) { }
-            }
 
             document.addEventListener("DOMContentLoaded", () => {
                 const a = document.getElementById("wt-terms-contact");
@@ -116,7 +106,7 @@
                     });
                 }
 
-                applyVersion();
+
             });
         })();
     </script>

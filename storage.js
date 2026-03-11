@@ -32,10 +32,12 @@
   function safeBool(x) {
     return (x === true || x === false) ? x : null;
   }
-
   function safeIdNum(x) {
     const n = Number(x);
-    return Number.isFinite(n) ? n : null;
+    if (!Number.isFinite(n)) return null;
+    if (!Number.isInteger(n)) return null;
+    if (n < 0) return null;
+    return n;
   }
 
   function deepCopy(obj) {
@@ -57,8 +59,14 @@
       throw new Error("StorageManager: missing or invalid config (no fallback to window.WT_CONFIG)");
     }
 
-    const resolvedStorageKey = String(config?.storage?.storageKey || "").trim();
-    if (!resolvedStorageKey) throw new Error("StorageManager: missing config.storage.storageKey");
+    const rawStorageKey = config?.storage?.storageKey;
+    if (typeof rawStorageKey !== "string") {
+      throw new Error("StorageManager: missing config.storage.storageKey");
+    }
+    const resolvedStorageKey = rawStorageKey.trim();
+    if (!resolvedStorageKey) {
+      throw new Error("StorageManager: empty config.storage.storageKey");
+    }
 
     this.config = config;
     this.storageKey = resolvedStorageKey;
@@ -72,13 +80,14 @@
     // Cache compiled regex (premium codes)
     this._premiumCodeRe = undefined;
 
-    const schemaVersion = String(
-      (config.storageSchemaVersion != null ? config.storageSchemaVersion : "") ||
-      (config.version != null ? config.version : "")
-    ).trim();
-
-    if (!schemaVersion) throw new Error("StorageManager: missing config.storageSchemaVersion (or config.version)");
-
+    const rawSchemaVersion = config.storageSchemaVersion;
+    if (typeof rawSchemaVersion !== "string" && typeof rawSchemaVersion !== "number") {
+      throw new Error("StorageManager: missing config.storageSchemaVersion");
+    }
+    const schemaVersion = String(rawSchemaVersion).trim();
+    if (!schemaVersion) {
+      throw new Error("StorageManager: empty config.storageSchemaVersion");
+    }
     // INVARIANT (intentional):
     // freeRuns is read from WT_CONFIG.limits.freeRuns at initialization time.
     // If WT_CONFIG changes AFTER init, StorageManager does NOT live-sync it.
@@ -121,6 +130,13 @@
         houseAdHiddenUntil: 0
       },
 
+      // UI device-only flags
+      uiDeviceFlags: {
+        firstRunFramingSeen: false,
+        premiumFirstRunFramingSeen: false,
+        secretChestHintSolved: false,
+        secretChestWelcomeShown: false
+      },
 
       // House Ad (post-completion) — persisted state
       houseAd: {
@@ -146,6 +162,9 @@
         // Secret bonus (teaser premium): free bonus runs used (lifetime, device-local)
         secretBonusFreeRunsUsed: 0,
 
+        // Practice (Mistakes only): free practice runs used (lifetime, device-local)
+        practiceFreeRunsUsed: 0,
+
         // Funnel (local-only, aggregated)
         landingViewed: 0,
         landingPlayClicked: 0,
@@ -156,7 +175,8 @@
         checkoutStarted: 0,
         codeRedeemed: 0,
         houseAdShown: 0,
-        houseAdClicked: 0
+        houseAdClicked: 0,
+        premiumUnlockedCount: 0
       },
 
 
@@ -230,7 +250,12 @@
         statsSharingPromptFlags: 0,
 
         // New: "Show me later" snooze (do not reprompt until at least this many runCompletes)
-        statsSharingSnoozeUntilRunCompletes: 0
+        statsSharingSnoozeUntilRunCompletes: 0,
+
+        // Checkout / premium analytics
+        checkoutStartedAt: 0,
+        checkoutPriceKey: "",
+        premiumUnlockedAt: 0
       }
 
 
@@ -243,12 +268,10 @@
 
     const cfg = this.config || {};
     const schemaVersion = String(
-      (cfg.storageSchemaVersion != null ? cfg.storageSchemaVersion : "") ||
-      (cfg.version != null ? cfg.version : "")
+      cfg.storageSchemaVersion != null ? cfg.storageSchemaVersion : ""
     ).trim();
 
-    if (!schemaVersion) throw new Error("StorageManager: missing config.storageSchemaVersion (or config.version)");
-
+    if (!schemaVersion) throw new Error("StorageManager: missing config.storageSchemaVersion");
 
     const loaded = this._load();
 
@@ -274,6 +297,7 @@
     // Harden required blocks (V2 shapes)
     if (!this.data.runs) this.data.runs = deepCopy(this.defaultData.runs);
     if (!this.data.settings) this.data.settings = deepCopy(this.defaultData.settings);
+    if (!this.data.uiDeviceFlags) this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
     if (!this.data.houseAd) this.data.houseAd = deepCopy(this.defaultData.houseAd);
     if (!this.data.waitlist) this.data.waitlist = deepCopy(this.defaultData.waitlist);
     if (!this.data.counters) this.data.counters = deepCopy(this.defaultData.counters);
@@ -286,6 +310,9 @@
     if (!this.data.endgame) this.data.endgame = deepCopy(this.defaultData.endgame);
     if (!this.data.analytics) this.data.analytics = deepCopy(this.defaultData.analytics);
 
+    if (this._migrateUiDeviceFlagsFromLegacyKeys()) {
+      this._save();
+    }
     if (!Number.isFinite(Number(this.data.analytics.statsSharingPromptStage))) {
       this.data.analytics.statsSharingPromptStage = -1;
     } else {
@@ -302,6 +329,22 @@
       this.data.analytics.statsSharingSnoozeUntilRunCompletes = 0;
     } else {
       this.data.analytics.statsSharingSnoozeUntilRunCompletes = Math.floor(Number(this.data.analytics.statsSharingSnoozeUntilRunCompletes));
+    }
+
+    if (!Number.isFinite(Number(this.data.analytics.checkoutStartedAt))) {
+      this.data.analytics.checkoutStartedAt = 0;
+    } else {
+      this.data.analytics.checkoutStartedAt = Math.floor(Number(this.data.analytics.checkoutStartedAt));
+    }
+
+    if (typeof this.data.analytics.checkoutPriceKey !== "string") {
+      this.data.analytics.checkoutPriceKey = "";
+    }
+
+    if (!Number.isFinite(Number(this.data.analytics.premiumUnlockedAt))) {
+      this.data.analytics.premiumUnlockedAt = 0;
+    } else {
+      this.data.analytics.premiumUnlockedAt = Math.floor(Number(this.data.analytics.premiumUnlockedAt));
     }
 
     // Legacy migration: UI used to bypass StorageManager and write localStorage directly.
@@ -376,13 +419,14 @@
     if (wl.status !== "not_seen" && wl.status !== "seen" && wl.status !== "joined") {
       wl.status = "not_seen";
     }
+    if (typeof wl.draftIdea !== "string") wl.draftIdea = "";
     this.data.waitlist = wl;
-
     // Harden counters
     const c = this.data.counters;
     for (const k in this.defaultData.counters) {
       if (!Number.isFinite(c[k])) c[k] = 0;
     }
+    c.premiumUnlockedCount = clampNonNegativeInt(c.premiumUnlockedCount);
     // Harden personal best (RUN)
     if (!Number.isFinite(this.data.personalBest.bestScoreFP)) this.data.personalBest.bestScoreFP = 0;
     if (!Number.isFinite(this.data.personalBest.achievedAt)) this.data.personalBest.achievedAt = 0;
@@ -486,8 +530,19 @@
     window.addEventListener("storage", (event) => {
       if (!event || event.key !== this.storageKey) return;
 
+      if (event.newValue == null) {
+        this.data = deepCopy(this.defaultData);
+        this.data.createdAt = now();
+        this.data.updatedAt = now();
+        this.data.analytics.firstSeenAt = now();
+        this.data.analytics.lastSeenAt = now();
+        this._emit();
+        return;
+      }
+
       const updatedData = safeJsonParse(event.newValue);
       if (!updatedData || typeof updatedData !== "object") return;
+      if (String(updatedData.version || "") !== String(this.defaultData.version || "")) return;
 
       // Mise à jour locale uniquement (ne jamais _save() ici)
       this.data = updatedData;
@@ -498,7 +553,6 @@
 
     this._storageListenerAdded = true;
   };
-
 
 
 
@@ -614,11 +668,41 @@
 
     cd.code = vanity;
     this.data.codes = cd;
+
+    try { window.localStorage.removeItem(vanityKey); } catch (_) { }
+
     return true;
+  };
+
+  StorageManager.prototype.getVanityCode = function () {
+    this._compileCodeRegex();
+    const re = this._premiumCodeRe;
+    if (!re) return "";
+
+    const stored = String(this.data?.codes?.code || "").trim();
+    try { re.lastIndex = 0; } catch (_) { }
+    if (stored && re.test(stored)) return stored;
+
+    const cfg = this.config || {};
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || "").trim();
+    if (!vanityKey) return "";
+
+    let code = "";
+    try {
+      code = String(window.localStorage.getItem(vanityKey) || "").trim();
+    } catch (_) {
+      code = "";
+    }
+
+    try { re.lastIndex = 0; } catch (_) { }
+    if (!code || !re.test(code)) return "";
+
+    return code;
   };
 
   // Legacy migration: stats sharing prompt stage was previously stored outside StorageManager.
   // Old key: `${storageKey}:statsSharingPromptStage`
+
   StorageManager.prototype._syncLegacyStatsSharingPromptStage = function () {
     if (!this.data) return false;
 
@@ -643,6 +727,127 @@
     return true;
   };
 
+  StorageManager.prototype._getUiDeviceFlagKey = function (suffix) {
+    const base = String(this.storageKey || "").trim();
+    const s = String(suffix || "").trim();
+    if (!base || !s) return "";
+    return `${base}:${s}`;
+  };
+
+  StorageManager.prototype._readLegacyUiDeviceFlag = function (suffix) {
+    const key = this._getUiDeviceFlagKey(suffix);
+    if (!key) return false;
+    try { return window.localStorage.getItem(key) === "1"; } catch (_) { return false; }
+  };
+
+  StorageManager.prototype._readUiDeviceFlag = function (suffix) {
+    const s = String(suffix || "").trim();
+    if (!s) return false;
+
+    if (!this.data || !this.data.uiDeviceFlags || typeof this.data.uiDeviceFlags !== "object") {
+      return false;
+    }
+
+    return this.data.uiDeviceFlags[s] === true;
+  };
+
+  StorageManager.prototype._writeUiDeviceFlag = function (suffix) {
+    const s = String(suffix || "").trim();
+    if (!s || !this.data) return;
+
+    if (!this.data.uiDeviceFlags || typeof this.data.uiDeviceFlags !== "object") {
+      this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
+    }
+
+    if (this.data.uiDeviceFlags[s] === true) return;
+
+    this.data.uiDeviceFlags[s] = true;
+    this._save();
+  };
+
+  StorageManager.prototype._migrateUiDeviceFlagsFromLegacyKeys = function () {
+    if (!this.data) return false;
+
+    if (!this.data.uiDeviceFlags || typeof this.data.uiDeviceFlags !== "object") {
+      this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
+    }
+
+    const map = [
+      "firstRunFramingSeen",
+      "premiumFirstRunFramingSeen",
+      "secretChestHintSolved",
+      "secretChestWelcomeShown"
+    ];
+
+    let changed = false;
+
+    map.forEach((suffix) => {
+      if (this.data.uiDeviceFlags[suffix] === true) return;
+      if (this._readLegacyUiDeviceFlag(suffix) !== true) return;
+
+      this.data.uiDeviceFlags[suffix] = true;
+      changed = true;
+    });
+
+    map.forEach((suffix) => {
+      const key = this._getUiDeviceFlagKey(suffix);
+      if (!key) return;
+      try { window.localStorage.removeItem(key); } catch (_) { }
+    });
+
+    return changed;
+  };
+
+  StorageManager.prototype.hasSeenFirstRunFraming = function () {
+    return this._readUiDeviceFlag("firstRunFramingSeen");
+  };
+
+  StorageManager.prototype.markSeenFirstRunFraming = function () {
+    this._writeUiDeviceFlag("firstRunFramingSeen");
+  };
+
+  StorageManager.prototype.hasSeenPremiumFirstRunFraming = function () {
+    return this._readUiDeviceFlag("premiumFirstRunFramingSeen");
+  };
+
+  StorageManager.prototype.markSeenPremiumFirstRunFraming = function () {
+    this._writeUiDeviceFlag("premiumFirstRunFramingSeen");
+  };
+
+  StorageManager.prototype.hasSolvedSecretChestHint = function () {
+    return this._readUiDeviceFlag("secretChestHintSolved");
+  };
+
+  StorageManager.prototype.markSolvedSecretChestHint = function () {
+    this._writeUiDeviceFlag("secretChestHintSolved");
+  };
+
+  StorageManager.prototype.hasShownSecretChestWelcome = function () {
+    return this._readUiDeviceFlag("secretChestWelcomeShown");
+  };
+
+  StorageManager.prototype.markShownSecretChestWelcome = function () {
+    this._writeUiDeviceFlag("secretChestWelcomeShown");
+  };
+
+  StorageManager.prototype.resetUiDeviceFlags = function () {
+    if (!this.data) return;
+
+    this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
+    this._save();
+
+    const keys = [
+      this._getUiDeviceFlagKey("firstRunFramingSeen"),
+      this._getUiDeviceFlagKey("premiumFirstRunFramingSeen"),
+      this._getUiDeviceFlagKey("secretChestHintSolved"),
+      this._getUiDeviceFlagKey("secretChestWelcomeShown")
+    ];
+
+    keys.forEach((key) => {
+      if (!key) return;
+      try { window.localStorage.removeItem(key); } catch (_) { }
+    });
+  };
 
 
   // ============================================
@@ -768,12 +973,16 @@
 
 
   StorageManager.prototype.getCounters = function () {
-    return this.data?.counters || {};
+    return deepCopy(this.data?.counters || {});
+  };
+
+  StorageManager.prototype.getStoredPremiumCode = function () {
+    return String(this.data?.codes?.code || "").trim();
   };
 
 
   StorageManager.prototype.getData = function () {
-    return this.data || {};
+    return deepCopy(this.data || {});
   };
 
   // Return a defensive copy (prevents accidental mutation outside storage.js)
@@ -1060,6 +1269,42 @@
     return { ok: false, reason: "NO_RUNS", balance: 0 };
   };
 
+  // PRACTICE (Mistakes only) economy gate (separate from RUN economy)
+  StorageManager.prototype.consumePracticeOrBlock = function () {
+    if (!this.data) return { ok: false, reason: "NO_DATA", used: 0, limit: 0 };
+
+    const limit = clampNonNegativeInt(this.config?.mistakesOnly?.freeRunsLimit);
+    const used = clampNonNegativeInt(this.data.counters.practiceFreeRunsUsed);
+
+    if (this.isPremium()) {
+      this.data.counters.practiceFreeRunsUsed = used + 1;
+      this._save();
+      return { ok: true, reason: "PREMIUM", used: used + 1, limit };
+    }
+
+    if (limit > 0 && used < limit) {
+      this.data.counters.practiceFreeRunsUsed = used + 1;
+      this._save();
+      return { ok: true, reason: "CONSUMED", used: used + 1, limit };
+    }
+
+    this._save();
+    return { ok: false, reason: "NO_RUNS", used, limit };
+  };
+
+  StorageManager.prototype.getPracticeRunsRemaining = function () {
+    if (!this.data) return 0;
+    if (this.isPremium()) return Infinity;
+
+    const limit = clampNonNegativeInt(this.config?.mistakesOnly?.freeRunsLimit);
+    const used = clampNonNegativeInt(this.data?.counters?.practiceFreeRunsUsed);
+    return Math.max(0, limit - used);
+  };
+
+  StorageManager.prototype.getPracticeFreeRunsUsed = function () {
+    return clampNonNegativeInt(this.data?.counters?.practiceFreeRunsUsed);
+  };
+
 
   // ============================================
   // Settings
@@ -1335,6 +1580,13 @@
     this._save();
   };
 
+  StorageManager.prototype.getBonusBest = function () {
+    const bb = this.data?.bonusBest || {};
+    return {
+      bestScoreFP: clampNonNegativeInt(bb.bestScoreFP),
+      achievedAt: clampNonNegativeInt(bb.achievedAt)
+    };
+  };
 
   // ============================================
   // Run completion (V2)
@@ -1534,6 +1786,14 @@
   };
 
 
+  StorageManager.prototype.clearVanityCode = function () {
+    const cfg = this.config || {};
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || "").trim();
+    if (!vanityKey) return;
+
+    try { window.localStorage.removeItem(vanityKey); } catch (_) { }
+  };
+
   StorageManager.prototype.tryRedeemPremiumCode = function (codeInput) {
     if (!this.data) return { ok: false, reason: "NO_DATA" };
 
@@ -1610,10 +1870,10 @@
   // ============================================
   StorageManager.prototype.getAnonymousStatsPayload = function () {
     if (!this.data) return null;
-
     const cfg = this.config || {};
-    const maxTop = clampNonNegativeInt(cfg?.statsSharing?.maxTopMistakes);
-    const schemaVersion = String(cfg?.statsSharing?.schemaVersion);
+    const schemaVersion = String(
+      cfg?.statsSharing?.schemaVersion != null ? cfg.statsSharing.schemaVersion : ""
+    ).trim();
 
     // Gather top mistakes
     const stats = this.data.statsByItem || {};
@@ -1628,7 +1888,7 @@
       }
     }
     mistakes.sort((a, b) => b.wrongCount - a.wrongCount);
-    const topMistakes = mistakes.slice(0, maxTop);
+    const topMistakes = mistakes;
 
     // Total mistakes
     let totalMistakes = 0;
@@ -1692,7 +1952,13 @@
         landingViewed: clampNonNegativeInt(this.data.counters?.landingViewed),
         landingPlayClicked: clampNonNegativeInt(this.data.counters?.landingPlayClicked),
         paywallShown: clampNonNegativeInt(this.data.counters?.paywallShown),
-        checkoutStarted: clampNonNegativeInt(this.data.counters?.checkoutStarted)
+        checkoutStarted: clampNonNegativeInt(this.data.counters?.checkoutStarted),
+        runStarts: clampNonNegativeInt(this.data.counters?.runStarts),
+        runCompletes: clampNonNegativeInt(this.data.counters?.runCompletes),
+        bonusCompletes: clampNonNegativeInt(this.data.counters?.bonusCompletes),
+        shareClicked: clampNonNegativeInt(this.data.counters?.shareClicked),
+        installPromptShown: clampNonNegativeInt(this.data.counters?.installPromptShown),
+        codeRedeemed: clampNonNegativeInt(this.data.counters?.codeRedeemed)
       }
     };
   };

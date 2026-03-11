@@ -9,17 +9,11 @@
       ? window.WT_UTILS.escapeHtml
       : null;
 
-    if (fn) {
-      try { return String(fn(s)); } catch (_) { /* fall through */ }
+    if (!fn) {
+      throw new Error("WT_UTILS.escapeHtml missing. config.js must load before main.js.");
     }
 
-    try { console.warn("[WT Warning]", "WT_UTILS.escapeHtml missing or failed; using internal escapeHtmlSafe"); } catch (_) { }
-    return s
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    return String(fn(s));
   }
 
 
@@ -76,6 +70,9 @@
   // ============================================
   window.addEventListener("error", (event) => {
     Logger.error("Global error:", event.error || event);
+
+    if (window.__WT_APP_BOOTED__ === true) return;
+
     const isDev = window.WT_CONFIG?.debug?.enabled;
     const errorMsg = event.message || event.error?.message || "Unknown error";
     showFatal(
@@ -87,6 +84,9 @@
 
   window.addEventListener("unhandledrejection", (event) => {
     Logger.error("Unhandled promise rejection:", event.reason);
+
+    if (window.__WT_APP_BOOTED__ === true) return;
+
     const isDev = window.WT_CONFIG?.debug?.enabled;
     const errorMsg = event.reason?.message || "Promise rejection";
     showFatal(
@@ -95,13 +95,21 @@
         : "An unexpected issue occurred. Please refresh the page."
     );
   });
-
   // ============================================
   // Content loader
   // ============================================
   async function loadJson(url) {
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to load ${url}: ${res.status}`);
+
+    if (!res.ok) {
+      throw new Error(`Failed to load ${url}: ${res.status}`);
+    }
+
+    const contentType = res.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(`Invalid JSON response for ${url} (content-type: ${contentType})`);
+    }
+
     return await res.json();
   }
 
@@ -112,7 +120,8 @@
   // ============================================
   function initServiceWorker() {
     const cfg = window.WT_CONFIG;
-    if (!cfg?.serviceWorker?.enabled) return;
+    if (!cfg || typeof cfg !== "object") return;
+    if (cfg?.serviceWorker?.enabled !== true) return;
     if (cfg.environment === "development") return;
 
     if (!("serviceWorker" in navigator)) {
@@ -139,7 +148,7 @@
 
 
     window.addEventListener("load", () => {
-      const version = String(cfg?.version || "").trim();
+      const version = String(cfg.version || "").trim();
       if (!version) {
         Logger.warn("WT_CONFIG.version missing/empty: skipping Service Worker registration (fail-closed)");
         return;
@@ -155,15 +164,18 @@
 
           // Auto-update check
           if (cfg.serviceWorker.autoUpdate) {
-            setInterval(() => {
+            if (window.__WT_SW_AUTO_UPDATE_INTERVAL__) {
+              window.clearInterval(window.__WT_SW_AUTO_UPDATE_INTERVAL__);
+            }
+
+            window.__WT_SW_AUTO_UPDATE_INTERVAL__ = window.setInterval(() => {
               registration.update().catch(() => { });
             }, 10 * 60 * 1000); // Every 10 min
-
           }
 
           // Update notification (config: showUpdateNotifications)
           // IMPORTANT: never auto-reload (can kill an active run). User-controlled reload only.
-          if (cfg?.serviceWorker?.showUpdateNotifications) {
+          if (cfg.serviceWorker.showUpdateNotifications) {
             registration.addEventListener("updatefound", () => {
               const newWorker = registration.installing;
               if (!newWorker) return;
@@ -196,8 +208,21 @@
       return false;
     }
 
-    if (!window.localStorage) {
-      Logger.error("localStorage not supported");
+    let storageOk = false;
+    try {
+      const ls = window.localStorage;
+      if (ls) {
+        const probeKey = "__wt_storage_probe__";
+        ls.setItem(probeKey, "1");
+        ls.removeItem(probeKey);
+        storageOk = true;
+      }
+    } catch (_) {
+      storageOk = false;
+    }
+
+    if (!storageOk) {
+      Logger.error("localStorage not supported or unavailable");
       showFatal("Your browser doesn't support local storage. Please use a modern browser.");
       return false;
     }
@@ -236,18 +261,24 @@
     const root = document.getElementById("app");
     if (!root) return;
 
-    const sys = (window.WT_WORDING && window.WT_WORDING.system) ? window.WT_WORDING.system : {};
+    const wording = window.WT_WORDING;
+    const sys = (wording && typeof wording === "object" && wording.system && typeof wording.system === "object")
+      ? wording.system
+      : null;
+
+    if (!sys) return;
+
     const title = String(sys.loadingTitle || "").trim();
     const hint = String(sys.loadingHint || "").trim();
 
     root.innerHTML = `
-      <div class="wt-loading">
-        <div class="wt-loading-icon">🇫🇷</div>
-        <div class="wt-loading-spinner"></div>
-        <h2 class="wt-h2">${escapeHtmlSafe(title)}</h2>
-        <p class="wt-muted">${escapeHtmlSafe(hint)}</p>
-      </div>
-    `;
+    <div class="wt-loading">
+      <div class="wt-loading-icon">🇫🇷</div>
+      <div class="wt-loading-spinner"></div>
+      <h2 class="wt-h2">${escapeHtmlSafe(title)}</h2>
+      <p class="wt-muted">${escapeHtmlSafe(hint)}</p>
+    </div>
+  `;
   }
 
 
@@ -264,7 +295,13 @@
       const root = document.getElementById("app");
       if (!root) return;
 
-      const sys = (window.WT_WORDING && window.WT_WORDING.system) ? window.WT_WORDING.system : {};
+      const wording = window.WT_WORDING;
+      const sys = (wording && typeof wording === "object" && wording.system && typeof wording.system === "object")
+        ? wording.system
+        : null;
+
+      if (!sys) return;
+
       const slowHint = String(sys.loadingSlowHint || "").trim();
       if (!slowHint) return;
 
@@ -278,9 +315,16 @@
     try {
 
       const config = window.WT_CONFIG;
+      if (!config || typeof config !== "object") {
+        clearTimeout(slowLoadTimer);
+        Logger.error("WT_CONFIG missing or invalid");
+        showFatal("Configuration error: Application settings not loaded.");
+        return;
+      }
 
       const wording = window.WT_WORDING;
       if (!wording || typeof wording !== "object") {
+        clearTimeout(slowLoadTimer);
         Logger.error("WT_WORDING missing or invalid");
         showFatal("Configuration error: UI wording not loaded.");
         return;
@@ -302,10 +346,19 @@
       // Contract (intentional): StorageManager emits a single global event "storage-updated".
       // UI refresh strategy is FULL re-render on any mutation (no granular diffs).
       // Reason: preserve inter-module coherence and avoid partial UI desync bugs.
-      window.addEventListener("storage-updated", () => ui.onStorageUpdated());
-      window.addEventListener("storage-save-failed", () => {
+      if (window.__WT_ON_STORAGE_UPDATED__) {
+        window.removeEventListener("storage-updated", window.__WT_ON_STORAGE_UPDATED__);
+      }
+      window.__WT_ON_STORAGE_UPDATED__ = () => ui.onStorageUpdated();
+      window.addEventListener("storage-updated", window.__WT_ON_STORAGE_UPDATED__);
+
+      if (window.__WT_ON_STORAGE_SAVE_FAILED__) {
+        window.removeEventListener("storage-save-failed", window.__WT_ON_STORAGE_SAVE_FAILED__);
+      }
+      window.__WT_ON_STORAGE_SAVE_FAILED__ = () => {
         if (ui && typeof ui.onStorageSaveFailed === "function") ui.onStorageSaveFailed();
-      });
+      };
+      window.addEventListener("storage-save-failed", window.__WT_ON_STORAGE_SAVE_FAILED__);
 
       ui.init();
 
@@ -316,7 +369,7 @@
       }
 
 
-      // Load content in parallel (required only at run start)
+      // Load content in parallel during boot
       loadJson(config.contentUrl)
 
         .then((content) => {
@@ -325,6 +378,7 @@
           const items = Array.isArray(content.items) ? content.items : [];
 
           if (!items.length) {
+            if (ui && typeof ui.setContentLoading === "function") ui.setContentLoading(false);
             showFatal("Content not available. Please check your connection and reload.");
             return;
           }
@@ -333,9 +387,11 @@
           if (ui && typeof ui.setContentLoading === "function") ui.setContentLoading(false);
           ui.render();
 
+          window.__WT_APP_BOOTED__ = true;
           Logger.log(`Content loaded: ${items.length} items`);
         })
         .catch((error) => {
+          clearTimeout(slowLoadTimer);
           Logger.error("Content load error:", error);
           showFatal(
             `Unable to load game data. Please check your connection and refresh. ${window.WT_CONFIG?.debug?.enabled ? `Error: ${error.message}` : ""
@@ -345,7 +401,18 @@
 
       // Secret bonus (END chest) - orchestration lives in main.js (KISS)
       // ui.js dispatches: "wt-secret-bonus-requested"
-      window.addEventListener("wt-secret-bonus-requested", (e) => {
+      if (window.__WT_ON_OPEN_SUPPORT__) {
+        document.removeEventListener("wt-open-support", window.__WT_ON_OPEN_SUPPORT__);
+      }
+      window.__WT_ON_OPEN_SUPPORT__ = () => {
+        try { ui.openSupportModal(); } catch (_) { /* silent */ }
+      };
+      document.addEventListener("wt-open-support", window.__WT_ON_OPEN_SUPPORT__);
+
+      if (window.__WT_ON_SECRET_BONUS_REQUESTED__) {
+        window.removeEventListener("wt-secret-bonus-requested", window.__WT_ON_SECRET_BONUS_REQUESTED__);
+      }
+      window.__WT_ON_SECRET_BONUS_REQUESTED__ = () => {
         try {
           // The UI owns gameplay screens; main.js just triggers the entry point.
           if (ui && typeof ui.startSecretBonusRun === "function") {
@@ -355,12 +422,8 @@
         } catch (_) {
           // Never break gameplay for a hidden bonus hook
         }
-      });
-
-      // Footer support link needs a bridge (footer is outside #app)
-      window.WT_SUPPORT_OPEN = () => {
-        try { ui.openSupportModal(); } catch (_) { /* silent */ }
       };
+      window.addEventListener("wt-secret-bonus-requested", window.__WT_ON_SECRET_BONUS_REQUESTED__);
 
       // Init email links
       if (window.WT_Email && typeof window.WT_Email.initEmailLinks === "function") {
@@ -374,6 +437,7 @@
 
       Logger.log(`✅ Word Traps v${config.version} started successfully`);
     } catch (error) {
+      clearTimeout(slowLoadTimer);
       Logger.error("Startup error:", error);
       showFatal(
         `Unable to load game data. Please check your connection and refresh. ${window.WT_CONFIG?.debug?.enabled ? `Error: ${error.message}` : ""
@@ -419,18 +483,9 @@
       wording: window.WT_WORDING,
       get storage() { return window.storageManager; },
       resetStorage() {
-        const cfg = window.WT_CONFIG || {};
-        const storageKey = String(cfg?.storage?.storageKey || cfg.storageKey || "").trim();
-        if (storageKey) {
-          localStorage.removeItem(storageKey);
-          // UI-owned flags (outside StorageManager, derived from storageKey)
-          localStorage.removeItem(storageKey + ":firstRunFramingSeen");
-          localStorage.removeItem(storageKey + ":secretChestHintSolved");
-          localStorage.removeItem(storageKey + ":secretChestWelcomeShown");
+        if (window.storageManager && typeof window.storageManager.resetAll === "function") {
+          window.storageManager.resetAll();
         }
-
-        // Legacy key cleanup (optional, harmless if absent)
-        localStorage.removeItem("wt:codeUsed");
 
         location.reload();
       }

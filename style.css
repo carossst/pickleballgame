@@ -137,6 +137,7 @@
   --wt-a-14: 0.14;
   --wt-a-16: 0.16;
   --wt-a-18: 0.18;
+  --wt-a-20: 0.20;
   --wt-a-25: 0.25;
   --wt-a-28: 0.28;
   --wt-a-30: 0.30;
@@ -187,7 +188,7 @@
 
   /* Font scale (single source of truth) */
   --fs-xs: 13px;
-  --fs-sm: 14px;
+  --fs-sm: 15px;
   --fs-md: 16px;
   --fs-base: 16px;
   --fs-lg: 18px;
@@ -242,6 +243,7 @@
   --space-2: 2px;
   --space-4: 4px;
   --space-6: 6px;
+  --space-8: 8px;
   --space-10: 10px;
   --space-14: 14px;
   --space-18: 18px;
@@ -256,7 +258,7 @@
 
 @media (min-width: 481px) {
   :root {
-    --wt-title-size: 24px;
+    --wt-title-size: 36px;
     --wt-logo-scale: 1.42;
   }
 }
@@ -268,8 +270,8 @@
     --fs-sm: 15px;
 
     /* Branding desktop boost */
-    --wt-title-size: 40px;
-    --wt-logo-scale: 1.55;
+    --wt-title-size: 56px;
+    --wt-logo-scale: 2.2;
   }
 }
 
@@ -367,8 +369,12 @@ a:hover {
 }
 
 .wt-main {
-  flex: 1 0 auto;
-  padding: var(--gap-2) var(--pad) calc(var(--gap-2) + var(--gap-3) + env(safe-area-inset-bottom, 0px));
+  flex: 1 1 auto;
+  padding: var(--gap-2) var(--pad) calc(var(--gap-2) + var(--gap-2) + env(safe-area-inset-bottom, 0px));
+}
+
+body.wt-state--playing .wt-main {
+  display: flex;
 }
 
 @media (min-height: 661px) {
@@ -379,13 +385,7 @@ a:hover {
 
 @media (min-height: 741px) {
   .wt-main {
-    padding: var(--gap-4) var(--pad) calc(var(--gap-4) + var(--gap-3) + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-@media (min-width: 900px) {
-  .wt-main {
-    padding: 36px var(--pad) calc(36px + var(--gap-3) + env(safe-area-inset-bottom, 0px));
+    padding: var(--gap-4) var(--pad) calc(var(--gap-2) + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -394,16 +394,26 @@ a:hover {
   margin: 0 auto;
 }
 
-/* Breathing room before footer (prevents "
-card touches footer"
- look) */
+body.wt-state--playing .wt-container {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .wt-main .wt-container>.wt-card:last-child {
-  margin-bottom: var(--gap-3);
+  margin-bottom: 0;
+}
+
+body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 900px) {
-  .wt-main .wt-container>.wt-card:last-child {
-    margin-bottom: var(--gap-4);
+  .wt-main {
+    padding: 36px var(--pad) calc(var(--gap-3) + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -430,8 +440,8 @@ card touches footer"
 }
 
 .wt-branding-logo {
-  width: calc(var(--wt-title-size) * var(--wt-logo-scale));
-  height: calc(var(--wt-title-size) * var(--wt-logo-scale));
+  width: calc(var(--wt-title-size, 32px) * var(--wt-logo-scale));
+  height: calc(var(--wt-title-size, 32px) * var(--wt-logo-scale));
   object-fit: contain;
   flex-shrink: 0;
   background: rgb(var(--surface));
@@ -454,22 +464,88 @@ card touches footer"
    CARD
    ============================================ */
 .wt-card {
-  position: relative;
-
-  /* Slight translucency helps card lift off the background gradients */
-  background: rgb(var(--surface) / var(--wt-a-95));
-
-  /* Boundary is a touch clearer without looking “outlined” */
-  border: 1px solid rgb(var(--border) / var(--wt-a-90));
-
+  background: rgb(var(--surface));
   border-radius: var(--r-card);
+  border: 1px solid rgb(var(--border));
+  box-shadow: var(--shadow-1);
+  padding: var(--gap-3);
+  transition:
+    box-shadow var(--normal),
+    transform var(--normal);
+}
 
-  /* A bit more separation vs bg, still calm */
+.wt-card--mistakeflash {
+  border-color: rgb(var(--danger) / var(--wt-a-90));
   box-shadow:
-    var(--shadow-1),
-    0 1px 0 rgb(var(--text-strong) / var(--wt-a-05));
+    0 0 0 2px rgb(var(--danger) / var(--wt-a-35)),
+    0 0 32px rgb(var(--danger) / var(--wt-a-28)),
+    var(--shadow-1);
+  animation: wtMistakeFlash 520ms ease;
+}
 
-  padding: var(--space-14);
+.wt-card--successflash {
+  border-color: rgb(var(--success) / var(--wt-a-85));
+  box-shadow:
+    0 0 0 2px rgb(var(--success) / var(--wt-a-25)),
+    0 0 24px rgb(var(--success) / var(--wt-a-16)),
+    var(--shadow-1);
+  animation: wtSuccessFlash 420ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wt-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-2);
+  }
+
+  /* Disable hover lift for paywall cards (prevents jitter with timer rerenders) */
+  .wt-card--hero:hover {
+    transform: none;
+    box-shadow: var(--shadow-1);
+  }
+}
+
+@keyframes wtMistakeFlash {
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(6px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes wtSuccessFlash {
+  0% {
+    transform: scale(1);
+    filter: none;
+  }
+
+  45% {
+    transform: scale(1.01);
+    filter: saturate(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
 }
 
 @media (min-width: 481px) {
@@ -541,17 +617,73 @@ card touches footer"
 
 .wt-card--landing {
   position: relative;
+  min-height: clamp(420px, 58vh, 720px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-height: 741px) {
+  .wt-card--landing {
+    min-height: clamp(520px, 62vh, 780px);
+  }
+}
+
+.wt-landing-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap-2);
+  min-width: 0;
+}
+
+.wt-landing-header__brand {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding-right: calc(44px + var(--gap-2));
+}
+
+.wt-landing-header__tagline {
+  margin: var(--space-2) 0 0;
+}
+
+.wt-landing-top-right {
+  position: absolute;
+  top: var(--gap-2);
+  right: var(--gap-2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+@media (max-width: 360px) {
+  .wt-landing-header__brand {
+    padding-right: calc(88px + var(--gap-2));
+  }
+
+  .wt-landing-top-right {
+    gap: var(--gap-1);
+  }
 }
 
 /* ======================
    LANDING STATS
    ====================== */
+.wt-landing-stats {
+  margin-top: var(--gap-3);
+}
+
+.wt-landing-stat__badge {
+  margin: 0 0 var(--space-6) 0;
+}
+
 .wt-landing-stat {
   display: grid;
   grid-template-columns: 1fr;
   row-gap: var(--space-6);
   align-items: start;
-  margin-top: var(--gap-3);
   padding: var(--gap-1) var(--space-10);
   border-radius: var(--r-md);
   background: rgb(var(--surface-muted));
@@ -576,23 +708,29 @@ card touches footer"
   line-height: 1.2;
   color: rgb(var(--text-strong));
 
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
 }
 
 /* Wide layouts: KPI à droite sur la même ligne que le titre */
 @media (min-width: 481px) {
   .wt-landing-stat__sub {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    white-space: normal;
+  }
+
+  .wt-landing-stat__badge {
+    margin-bottom: var(--space-10);
   }
 }
 
 .wt-progress {
   grid-column: 1 / -1;
-  grid-row: 2;
-  margin-top: var(--space-2);
+  grid-row: 3;
+  margin-top: var(--space-6);
 
   width: 100%;
   height: var(--space-6);
@@ -615,15 +753,15 @@ card touches footer"
   transition: width var(--normal) ease;
 }
 
+/* Consolidation phase — mastery progress */
+.wt-progress--mastery .wt-progress__fill {
+  background: rgb(var(--success));
+}
+
 /* Hover polish */
 @media (hover: hover) and (pointer: fine) {
   .wt-card {
     transition: transform var(--fast), box-shadow var(--fast), border-color var(--fast);
-  }
-
-  .wt-card:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-2);
   }
 }
 
@@ -664,6 +802,11 @@ card touches footer"
   }
 }
 
+.wt-meta.wt-meta--strong {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
 .wt-meta {
   font-size: inherit;
   font-weight: inherit;
@@ -671,9 +814,7 @@ card touches footer"
   color: rgb(var(--text));
 }
 
-/* Muted is COLOR ONLY (prevents "
-multi-font"
- feel) */
+/* Muted is COLOR ONLY (prevents multi-font feel) */
 .wt-muted {
   font-size: inherit;
   font-weight: inherit;
@@ -694,6 +835,10 @@ multi-font"
   font-size: inherit;
   font-weight: 400;
   color: rgb(var(--text));
+}
+
+.wt-landing-subtitle {
+  margin-top: var(--space-6);
 }
 
 /* Tagline: calmer, less “grey corporate”, better rhythm (overrides inline margin) */
@@ -795,7 +940,7 @@ multi-font"
   font-size: var(--fs-sm);
   line-height: 1.45;
   color: rgb(var(--text));
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .wt-mistake-item {
@@ -1044,6 +1189,11 @@ multi-font"
   box-shadow: var(--shadow-1);
 }
 
+.wt-paywall-timer {
+  margin: var(--space-4) 0 0;
+  color: rgb(var(--primary-dark));
+}
+
 .wt-box--strike .wt-muted {
   text-decoration: line-through;
   text-decoration-color: rgb(var(--text-muted) / var(--wt-a-45));
@@ -1122,6 +1272,10 @@ multi-font"
   font-weight: 700;
 }
 
+.wt-postpaywall-body {
+  margin-top: var(--space-6);
+}
+
 /* Truncate — single-line overflow ellipsis */
 .wt-truncate {
   white-space: nowrap;
@@ -1144,9 +1298,18 @@ multi-font"
   white-space: normal;
 }
 
+.wt-playing-seenonly {
+  margin: -6px 0 12px;
+  text-align: center;
+}
+
 /* Actions: single-column variant */
 .wt-actions--stack {
   grid-template-columns: 1fr;
+}
+
+.wt-actions--postpaywall {
+  margin-top: 12px;
 }
 
 @media (min-width: 481px) {
@@ -1222,11 +1385,21 @@ multi-font"
   }
 }
 
-/* Tease: gentle pulsing glow (unsolved secret) */
+.wt-btn-icon:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: var(--shadow-press);
+}
+
+/* Tease: visible enough to be noticed on landing, without looking noisy */
 .wt-btn-icon--tease {
+  color: rgb(var(--primary-dark));
+  border-color: rgb(var(--primary) / var(--wt-a-40));
+  background: rgb(var(--primary) / var(--wt-a-10));
   animation: wtBtnIconTease var(--wt-anim-tease) ease-in-out infinite;
-  will-change: transform, filter;
-  filter: drop-shadow(0 6px 14px rgb(var(--primary) / var(--wt-a-25)));
+  will-change: transform;
+  box-shadow:
+    var(--shadow-1),
+    0 0 0 1px rgb(var(--primary) / var(--wt-a-25));
 }
 
 @keyframes wtBtnIconTease {
@@ -1234,12 +1407,16 @@ multi-font"
   0%,
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 6px 14px rgb(var(--primary) / var(--wt-a-18)));
+    box-shadow:
+      var(--shadow-1),
+      0 0 0 1px rgb(var(--primary) / var(--wt-a-18));
   }
 
   50% {
-    transform: scale(1.06);
-    filter: drop-shadow(0 10px 22px rgb(var(--primary) / var(--wt-a-30)));
+    transform: scale(1.08);
+    box-shadow:
+      var(--shadow-1),
+      0 0 0 4px rgb(var(--primary) / var(--wt-a-25));
   }
 }
 
@@ -1259,6 +1436,16 @@ multi-font"
   will-change: transform, filter;
 }
 
+.wt-choice--flash-ok {
+  border-color: rgb(var(--success) / var(--wt-a-85));
+  background: rgb(var(--success) / var(--wt-a-10));
+}
+
+.wt-choice--flash-bad {
+  border-color: rgb(var(--danger) / var(--wt-a-85));
+  background: rgb(var(--danger) / var(--wt-a-12));
+}
+
 @keyframes wtChoiceFlash {
   0% {
     transform: translateY(0) scale(1);
@@ -1276,6 +1463,14 @@ multi-font"
   }
 }
 
+/* PLAYING: question prompt (assertion / progress) */
+.wt-question-prompt {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+
 /* ============================================
    TERMS BOX
    ============================================ */
@@ -1285,6 +1480,23 @@ multi-font"
   border-radius: var(--r-card);
   padding: var(--gap-2) var(--gap-3);
   margin: var(--gap-1) 0;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.wt-terms-box--mistakeflash {
+  border-color: rgb(var(--danger) / var(--wt-a-90));
+  box-shadow:
+    0 0 0 2px rgb(var(--danger) / var(--wt-a-35)),
+    0 0 24px rgb(var(--danger) / var(--wt-a-20));
+  animation: wtMistakeFlash 520ms ease;
+}
+
+.wt-terms-box--successflash {
+  border-color: rgb(var(--success) / var(--wt-a-85));
+  box-shadow:
+    0 0 0 2px rgb(var(--success) / var(--wt-a-25)),
+    0 0 16px rgb(var(--success) / var(--wt-a-12));
+  animation: wtSuccessFlash 420ms ease;
 }
 
 .wt-term-row {
@@ -1314,6 +1526,25 @@ multi-font"
   background: rgb(var(--primary) / var(--wt-a-10));
   border-radius: var(--r-sm);
 }
+
+/* PLAYING: HUD bar (mistakes + score) */
+.wt-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.wt-hud__left {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  min-width: 0;
+}
+
 
 /* ============================================
    PILLS
@@ -1356,7 +1587,6 @@ multi-font"
   font-size: var(--fs-sm);
   transform: scale(1);
   filter: none;
-  will-change: transform, filter, box-shadow;
   font-weight: 700;
   letter-spacing: 0.2px;
   padding: var(--space-6) var(--space-10);
@@ -1370,13 +1600,34 @@ multi-font"
 
 /* New best (RUN + premium): celebration pulse when you EXCEED personal best during PLAYING. */
 .wt-pill--new-best {
+  animation: wtNewBestPulse var(--wt-anim-near-best) ease-out 2;
+  animation-fill-mode: both;
+}
+
+/* Near-best tension (RUN + premium): short pulse when within 2 FP of personal best. */
+.wt-pill--near-best {
   animation: wtNearBestPulse var(--wt-anim-near-best) ease-in-out 2;
   animation-fill-mode: both;
 }
 
-/* Near-best tension (RUN + premium): subtle pulse when within 2 FP of personal best. */
-.wt-pill--near-best {
-  animation: wtNearBestPulse var(--wt-anim-near-best) ease-in-out infinite;
+@keyframes wtNewBestPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-2);
+    filter: none;
+  }
+
+  35% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 4px rgba(var(--primary), 0.18), var(--shadow-3);
+    filter: brightness(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-2);
+    filter: none;
+  }
 }
 
 @keyframes wtNearBestPulse {
@@ -1492,76 +1743,39 @@ multi-font"
 }
 
 /* HUD pill danger pulse (when losing a chance) */
-.wt-pill--danger-pulse {
-  transform-origin: center;
-  will-change: transform, filter, box-shadow;
-  animation: wtPillPulse var(--wt-anim-danger-pulse) cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes wtPillPulse {
-  0% {
-    transform: scale(1);
-    filter: none;
-    box-shadow: var(--shadow-2);
-    border-color: rgb(var(--border) / var(--wt-a-90));
-    background: var(--glass-72);
-  }
-
-  28% {
-    transform: scale(1.06);
-    filter: saturate(1.08) contrast(1.03);
-    box-shadow:
-      0 10px 22px rgb(var(--danger) / var(--wt-a-14)),
-      0 0 0 3px rgb(var(--danger) / var(--wt-a-10));
-    border-color: rgb(var(--danger) / var(--wt-a-55));
-    background: rgb(var(--danger) / var(--wt-a-08));
-  }
-
-  100% {
-    transform: scale(1);
-    filter: none;
-    box-shadow: var(--shadow-2);
-    border-color: rgb(var(--border) / var(--wt-a-90));
-    background: var(--glass-72);
-  }
-}
 
 .wt-pill--score-flash {
   transform-origin: center;
-  will-change: transform, filter, box-shadow;
+  will-change: transform, box-shadow;
   animation: wtScorePulse var(--wt-anim-score-flash) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes wtScorePulse {
   0% {
     transform: scale(1);
-    filter: none;
     box-shadow: var(--shadow-2);
     border-color: rgb(var(--border) / var(--wt-a-90));
     background: var(--glass-72);
   }
 
-  28% {
-    transform: scale(1.06);
-    filter: saturate(1.10) contrast(1.03);
+  24% {
+    transform: scale(1.07);
     box-shadow:
-      0 10px 22px rgb(var(--success) / var(--wt-a-14)),
-      0 0 0 3px rgb(var(--success) / var(--wt-a-10));
+      0 0 0 3px rgb(var(--success) / var(--wt-a-12)),
+      var(--shadow-2);
     border-color: rgb(var(--success) / var(--wt-a-55));
-    background: rgb(var(--success) / var(--wt-a-08));
+    background: rgb(var(--success) / var(--wt-a-10));
   }
 
-  56% {
+  52% {
     transform: scale(1.02);
-    filter: saturate(1.06) contrast(1.02);
     box-shadow:
-      0 8px 18px rgb(var(--success) / var(--wt-a-12)),
-      0 0 0 2px rgb(var(--success) / var(--wt-a-08));
+      0 0 0 2px rgb(var(--success) / var(--wt-a-08)),
+      var(--shadow-2);
   }
 
   100% {
     transform: scale(1);
-    filter: none;
     box-shadow: var(--shadow-2);
     border-color: rgb(var(--border) / var(--wt-a-90));
     background: var(--glass-72);
@@ -1582,14 +1796,14 @@ multi-font"
 }
 
 .wt-feedback--ok {
-  border-left-color: rgb(var(--success));
   border-color: rgb(var(--success) / var(--wt-a-30));
+  border-left-color: rgb(var(--success));
   background: rgb(var(--success) / var(--wt-a-06));
 }
 
 .wt-feedback--bad {
-  border-left-color: rgb(var(--danger));
   border-color: rgb(var(--danger) / var(--wt-a-30));
+  border-left-color: rgb(var(--danger));
   background: rgb(var(--danger) / var(--wt-a-06));
 }
 
@@ -1766,7 +1980,7 @@ multi-font"
 .wt-toast--visible {
   opacity: 1;
 
-  /* reste non-bloquant màªme visible */
+  /* reste non-bloquant meme visible */
   pointer-events: none;
 }
 
@@ -1867,6 +2081,17 @@ multi-font"
   display: none;
 }
 
+@media (min-width: 900px) {
+  .wt-chance-overlay {
+    align-items: flex-start;
+
+    padding-top: calc(env(safe-area-inset-top) + clamp(24px, 4vh, 48px));
+    padding-right: var(--pad);
+    padding-left: var(--pad);
+    padding-bottom: calc(env(safe-area-inset-bottom) + var(--pad));
+  }
+}
+
 /* Danger shake */
 .wt-chance-overlay--danger .wt-chance-overlay__content {
   animation:
@@ -1933,11 +2158,9 @@ multi-font"
 }
 
 /* Micro-breakpoint (361px)
-   Rationale: amé
-liore la lisibilité
- de .wt-code sur petits à©crans dès que la largeur
-   permet plus d"
-™aà©ration (à©vite rendu trop serrà© sans attendre le breakpoint tablet). */
+   Rationale: améliore la lisibilite de .wt-code sur petits ecrans
+   des que la largeur permet plus d'aeration
+   (evite un rendu trop serre sans attendre le breakpoint tablet). */
 @media (min-width: 361px) {
   .wt-code {
     font-size: var(--fs-2xl);
@@ -1945,7 +2168,6 @@ liore la lisibilité
     padding: var(--gap-2);
   }
 }
-
 
 /* ==========================================
    FOOTER
@@ -1956,10 +2178,11 @@ body.wt-state--playing .wt-footer {
 }
 
 .wt-footer {
-  margin-top: var(--gap-5);
-  padding: var(--gap-3) var(--pad);
-  color: rgb(var(--text-muted));
-  font-size: var(--fs-sm);
+  margin-top: var(--gap-2);
+  padding: var(--gap-2) var(--pad) var(--gap-3);
+  color: rgb(var(--text-muted) / var(--wt-a-85));
+  font-size: var(--fs-md);
+  line-height: var(--lh-relaxed);
   text-align: center;
 
   background: transparent;
@@ -1969,7 +2192,7 @@ body.wt-state--playing .wt-footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--gap-2);
+  gap: var(--gap-1);
 }
 
 /* Row base */
@@ -2009,11 +2232,11 @@ body.wt-state--playing .wt-footer {
   text-decoration: underline;
 }
 
-/* Touch targets on mobile only */
+/* Footer links: keep compact visually, but restore touch-friendly height on mobile */
 .wt-footer-row--links a {
   display: inline-flex;
   align-items: center;
-  padding: var(--gap-1) var(--space-4);
+  padding: 0 var(--space-4);
   min-height: 44px;
   line-height: 1.2;
 }
@@ -2087,11 +2310,14 @@ body.wt-state--playing .wt-footer {
   background: rgb(var(--primary-dark));
   color: rgb(var(--on-primary));
   padding: var(--gap-1) var(--gap-3);
-  z-index: 100;
+  z-index: 1000;
   border-radius: 0 0 8px 0;
+  text-decoration: none;
+  box-shadow: var(--shadow-2);
 }
 
-.wt-skip-link:focus {
+.wt-skip-link:focus,
+.wt-skip-link:focus-visible {
   transform: translateY(0);
 }
 
@@ -2103,6 +2329,7 @@ body.wt-state--playing .wt-footer {
   margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -2137,9 +2364,7 @@ body.wt-state--playing .wt-footer {
   overflow: hidden;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 
-  /* BONUS: reduce "
-blank page"
- feel (subtle top tint, tokenized) */
+  /* BONUS: reduce blank-page feel (subtle top tint, tokenized) */
   background:
     linear-gradient(180deg, rgb(var(--primary) / var(--wt-a-08)), rgb(var(--bg)) 240px),
     rgb(var(--bg));
@@ -2167,6 +2392,10 @@ blank page"
 /* In BONUS, ui.js may add an optional subtitle as a <p> right after .wt-branding */
 .wt-container[data-wt-bonus="fall"] .wt-branding+p {
   display: none;
+}
+
+.wt-bonus-subtitle {
+  margin: -10px 0 12px;
 }
 
 .wt-container[data-wt-bonus="fall"] .wt-card {
@@ -2238,7 +2467,7 @@ blank page"
   text-align: center;
   line-height: var(--lh-tight);
   color: rgb(var(--text-strong));
-  transition: box-shadow var(--fast), border-color var(--fast), filter var(--fast), opacity var(--fast);
+  transition: border-color var(--fast), opacity var(--fast);
 }
 
 /* Micro-juice: spawn pop (no transform conflict with JS translate3d) */
@@ -2246,35 +2475,32 @@ blank page"
   animation: wtBonusSpawn var(--wt-anim-bonus-spawn) ease-out both;
 }
 
-/* Micro-juice: warning one-shot "
-hit"
- when entering the zone */
+/* Micro-juice: warning one-shot "hit" when entering the zone */
 .wt-bonus-chip--warning-once {
   animation: wtBonusWarningOnce var(--wt-anim-bonus-warning-once) ease-out both;
 }
 
 @keyframes wtBonusWarningOnce {
   0% {
-    box-shadow: var(--shadow-2);
-    filter: none;
+    border-color: rgb(var(--border));
+    opacity: 1;
   }
 
   45% {
-    box-shadow: 0 0 26px rgb(var(--danger) / var(--wt-a-28));
-    filter: contrast(1.04);
+    border-color: rgb(var(--danger) / var(--wt-a-55));
+    opacity: var(--wt-a-95);
   }
 
   100% {
-    box-shadow: var(--shadow-2);
-    filter: none;
+    border-color: rgb(var(--border));
+    opacity: 1;
   }
 }
 
-/* min-height 501px: BONUS fall "
-” seuil compact -> normal.
+/* min-height 501px: BONUS fall - seuil compact -> normal.
    Objectif: garder des paddings compacts sur petits viewports (ex. paysage),
-   puis réaugmenter légèrement dès que la hauteur le permet (confort + lisibilité
-). */
+   puis reaugmenter legerement des que la hauteur le permet
+   (confort + lisibilite). */
 @media (min-height: 501px) {
   .wt-bonus-chip {
     padding: var(--space-14) var(--gap-3);
@@ -2301,39 +2527,22 @@ arcade" feel; deviation from --fs-* scale is expected. */
 .wt-bonus-chip--warning {
   border-color: rgb(var(--danger) / var(--wt-a-35));
   animation: wtChipPulse var(--wt-anim-chip-flash) ease-in-out infinite;
-
-  /* Cohé
-rence carte â†” zone danger */
-  box-shadow:
-    0 0 22px rgb(var(--danger) / var(--wt-a-28)),
-    var(--shadow-2);
 }
 
 @keyframes wtChipPulse {
 
   0%,
   100% {
-    box-shadow: var(--shadow-2);
+    opacity: 1;
+    border-color: rgb(var(--danger) / var(--wt-a-35));
   }
 
   50% {
-    box-shadow: 0 0 20px rgb(var(--danger) / var(--wt-a-25));
+    opacity: var(--wt-a-92);
+    border-color: rgb(var(--danger) / var(--wt-a-55));
   }
 }
 
-.wt-bonus-chip--pulse-ok {
-  animation-name: wtChipFlashOk;
-  animation-duration: var(--wt-anim-chip-flash);
-  animation-timing-function: ease-out;
-  animation-fill-mode: both;
-}
-
-.wt-bonus-chip--pulse-bad {
-  animation-name: wtChipFlashBad;
-  animation-duration: var(--wt-anim-chip-flash);
-  animation-timing-function: ease-out;
-  animation-fill-mode: both;
-}
 
 @keyframes wtChipFlashOk {
   0% {
@@ -2467,11 +2676,9 @@ rence carte â†” zone danger */
   }
 }
 
-/* min-height 501px: BONUS fall "
-” seuil compact -> normal.
-   Sur petite hauteur, on limite les paddings pour pré
-server le gameplay;
-   au-delà , on repasse sur --pad pour une UI plus confortable. */
+/* min-height 501px: BONUS fall - seuil compact -> normal.
+     Sur petite hauteur, on limite les paddings pour preserver le gameplay;
+     au-dela, on repasse sur --pad pour une UI plus confortable. */
 @media (min-height: 501px) {
   .wt-container[data-wt-bonus="fall"] .wt-choices {
     padding: var(--pad);
@@ -2542,7 +2749,7 @@ server le gameplay;
 
 .wt-end-score {
   position: relative;
-  margin: var(--space-10) 0 2px;
+  margin: var(--space-8) 0 0;
   text-align: center;
 }
 
@@ -2551,7 +2758,7 @@ server le gameplay;
   font-size: var(--fs-3xl);
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.02;
+  line-height: 1.0;
 }
 
 .wt-end-score--newbest .wt-end-score__value {
@@ -2560,7 +2767,7 @@ server le gameplay;
 
 .wt-end-score__label {
   display: block;
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: var(--fs-sm);
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -2575,9 +2782,9 @@ server le gameplay;
    ============================================ */
 
 .wt-end-table {
-  margin-top: var(--space-14);
+  margin-top: var(--space-10);
   display: grid;
-  row-gap: var(--space-4);
+  row-gap: var(--space-2);
 }
 
 .wt-end-table__row {
@@ -2585,12 +2792,12 @@ server le gameplay;
 }
 
 .wt-end-table__row+.wt-end-table__row {
-  padding-top: var(--space-4);
+  padding-top: var(--space-2);
 }
-
 
 .wt-end-table p {
   margin: 0;
+  line-height: 1.35;
 }
 
 .wt-end-table__cell {
@@ -2599,7 +2806,12 @@ server le gameplay;
 
 @media (min-width: 481px) {
   .wt-end-table {
-    row-gap: var(--space-6);
+    margin-top: var(--space-14);
+    row-gap: var(--space-4);
+  }
+
+  .wt-end-table__row+.wt-end-table__row {
+    padding-top: var(--space-4);
   }
 }
 
@@ -2704,24 +2916,20 @@ particle rings"
   }
 }
 
-/* Bonus chip spawn pop "
-” keep transform free (JS owns translate3d) */
+/* Bonus chip spawn pop - keep transform free (JS owns translate3d) */
 @keyframes wtBonusSpawn {
   0% {
     opacity: 0;
-    filter: saturate(1.03);
     box-shadow: var(--shadow-1);
   }
 
   60% {
     opacity: 1;
-    filter: saturate(1.02);
     box-shadow: var(--shadow-2);
   }
 
   100% {
     opacity: 1;
-    filter: none;
     box-shadow: var(--shadow-2);
   }
 }
@@ -2766,11 +2974,11 @@ particle rings"
   .wt-bonus-chip--spawn,
   .wt-bonus-chip--warning,
   .wt-bonus-chip--warning-once,
-  .wt-bonus-chip--pulse-ok,
-  .wt-bonus-chip--pulse-bad,
   .wt-bonus-fail-line--pulse,
   .wt-bonus-fail-label--pulse,
   .wt-choice--flash,
+  .wt-card--mistakeflash,
+  .wt-card--successflash,
   .wt-end-score--celebrate {
     animation: none !important;
   }
@@ -2808,6 +3016,7 @@ particle rings"
     --shadow-color: 2 6 23;
 
     /* Dark mode accessibility: links + focus rings must pass WCAG AA on --bg */
+    --primary: 56 189 248;
     --primary-dark: 64 176 224;
 
     /* Success tokens: lighten for dark surfaces (WCAG AA on --surface) */
@@ -2817,8 +3026,7 @@ particle rings"
 
   body {
     background:
-      radial-gradient(900px 420px at 50% -120px, rgb(var(--primary) / var(--wt-a-13)), transparent 70%),
-      radial-gradient(520px 260px at 18% 160px, rgb(var(--success) / var(--wt-a-08)), transparent 70%),
+      radial-gradient(760px 360px at 50% -120px, rgb(var(--primary) / var(--wt-a-12)), transparent 70%),
       linear-gradient(180deg, rgb(var(--primary) / var(--wt-a-06)), rgb(var(--bg)) 260px),
       rgb(var(--bg));
   }

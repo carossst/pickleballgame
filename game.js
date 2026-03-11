@@ -10,6 +10,11 @@
   // - Centralized to avoid scattered implicit fallbacks.
   // - These are NOT product defaults; they are engine invariants.
   // ============================================
+  const MODES = window.WT_ENUMS && window.WT_ENUMS.GAME_MODES;
+  if (!MODES || !MODES.RUN || !MODES.PRACTICE || !MODES.BONUS) {
+    throw new Error("WT_ENUMS.GAME_MODES missing or incomplete. config.js must load before game.js.");
+  }
+
   const INVALID_MAX_CHANCES = 0;
   const NO_FEEDBACK = "";
   const EMPTY_STATS = Object.freeze({ seenCount: 0, wrongCount: 0, correctCount: 0, lastSeenAt: 0, lastWrongAt: 0, lastCorrectAt: 0 });
@@ -37,7 +42,7 @@
 
   function safeIdNum(x) {
     const n = Number(x);
-    return Number.isFinite(n) ? n : null;
+    return Number.isInteger(n) && n >= 0 ? n : null;
   }
 
   function normalizePool(items) {
@@ -94,10 +99,10 @@
   //   - Always draw from full pool
   //
   // Practice (mistakesOnly):
-  // - select ONLY items with wrongCount > 0 AND correctCount === 0
-  //   (items answered correctly at least once are considered "fixed" and excluded)
+  // - select ONLY active mistakes where lastWrongAt > lastCorrectAt
+  //   (items are excluded once their latest interaction is a correct answer)
   // - order = most recent wrong first (lastWrongAt desc, id asc)
-  // - size = EXACTLY mistakes count (no padding, no caps)
+  // - size = exact active-mistake count, optionally capped by config.mistakesOnly.maxItems
   function buildDeck({ items, statsByItem, mistakesOnly, config }) {
     const normalized = normalizePool(items);
     const poolAll = normalized.pool;
@@ -180,6 +185,7 @@
   // BONUS mode:
   // - deck = ONLY items already seen by the player (seenCount > 0)
   // - respects poolSize
+  // - respects secretBonus.minDeckSize
   // - ends when deck ends (no reshuffle, no loop)
   // - uses RUN chances if secretBonus.useRunChances is true
   function buildSeenDeck({ items, statsByItem, config }) {
@@ -199,6 +205,13 @@
       const s = getStats(statsByItem, idNum);
       const seenCount = Number(s.seenCount) || 0;
       if (seenCount > 0) seenIds.push(idNum);
+    }
+
+    const rawMinDeck = Number(config?.secretBonus?.minDeckSize);
+    const minDeckSize = (Number.isFinite(rawMinDeck) && rawMinDeck >= 1) ? Math.floor(rawMinDeck) : null;
+
+    if (minDeckSize != null && seenIds.length < minDeckSize) {
+      return { ids: [], byId };
     }
 
     return { ids: shuffleCopy(seenIds), byId };
@@ -238,10 +251,27 @@
     //   mode: "RUN" | "PRACTICE" | "BONUS"
     // }
     start(payload) {
-      const p = (payload && typeof payload === "object") ? payload : {};
-      const items = Array.isArray(p.items) && p.items.length > 0 ? p.items : [];
-      const statsByItem = (p.statsByItem && typeof p.statsByItem === "object" && Object.keys(p.statsByItem).length > 0) ? p.statsByItem : {};
-      const getStatsByItem = (typeof p.getStatsByItem === "function") ? p.getStatsByItem : () => ({});
+      if (!payload || typeof payload !== "object") {
+        throw new Error("WT_Game.GameEngine.start(): payload object is required.");
+      }
+
+      const p = payload;
+
+      if (!Array.isArray(p.items) || p.items.length <= 0) {
+        throw new Error("WT_Game.GameEngine.start(): payload.items must be a non-empty array.");
+      }
+      const items = p.items;
+
+      if (!p.statsByItem || typeof p.statsByItem !== "object") {
+        throw new Error("WT_Game.GameEngine.start(): payload.statsByItem is required.");
+      }
+      const statsByItem = p.statsByItem;
+
+      if (typeof p.getStatsByItem !== "function") {
+        throw new Error("WT_Game.GameEngine.start(): payload.getStatsByItem is required.");
+      }
+      const getStatsByItem = p.getStatsByItem;
+
       if (!p.config || typeof p.config !== "object") {
         throw new Error('WT_Game.GameEngine.start(): payload.config is required (WT_CONFIG). Wiring error: pass { config } from main/UI when starting a run.');
       }
@@ -254,48 +284,29 @@
       // No legacy fallback: p.mistakesOnly is ignored by design.
       const modeRaw = String(p.mode || "").trim().toUpperCase();
 
-      const VALID_MODES = ["RUN", "PRACTICE", "BONUS"];
+      const VALID_MODES = [MODES.RUN, MODES.PRACTICE, MODES.BONUS];
 
-      // Normalize + validate mode (fail closed)
-      // - invalid non-empty mode => log (dev) + fallback RUN (never silent)
-      // - empty mode => default RUN
-      let requestedMode = "RUN";
-
-      if (modeRaw) {
-        if (VALID_MODES.includes(modeRaw)) {
-          requestedMode = modeRaw;
-        } else {
-          if (window.Logger && Logger.error) {
-            Logger.error(`Invalid game mode "${modeRaw}". Falling back to RUN.`);
-          }
-          requestedMode = "RUN";
-        }
-      } else {
-        requestedMode = "RUN";
+      if (!modeRaw) {
+        throw new Error('WT_Game.GameEngine.start(): payload.mode is required ("RUN" | "PRACTICE" | "BONUS").');
       }
+
+      if (!VALID_MODES.includes(modeRaw)) {
+        throw new Error(`WT_Game.GameEngine.start(): invalid payload.mode "${modeRaw}".`);
+      }
+
+      const requestedMode = modeRaw;
 
       // Coherence: PRACTICE => mistakesOnly (engine-level authority)
       // KISS: allow PRACTICE only if enabled in config (premium gating remains elsewhere)
       const practiceEnabled = !!(config.mistakesOnly && config.mistakesOnly.enabled);
+      const mistakesOnly = (requestedMode === MODES.PRACTICE);
 
-      let mistakesOnly = false;
-
-      if (requestedMode === "PRACTICE") {
-        if (!practiceEnabled) {
-          if (window.Logger && Logger.error) {
-            Logger.error(`PRACTICE requested but config.mistakesOnly.enabled is false. Falling back to RUN.`);
-          }
-          requestedMode = "RUN";
-        } else {
-          mistakesOnly = true;
-        }
+      if (mistakesOnly && !practiceEnabled) {
+        throw new Error('WT_Game.GameEngine.start(): PRACTICE requested but config.mistakesOnly.enabled is false.');
       }
 
-
-
-      const bonusMode = (requestedMode === "BONUS");
-      const effectiveMode = bonusMode ? "BONUS" : (mistakesOnly ? "PRACTICE" : "RUN");
-
+      const bonusMode = (requestedMode === MODES.BONUS);
+      const effectiveMode = bonusMode ? MODES.BONUS : (mistakesOnly ? MODES.PRACTICE : MODES.RUN);
       // Config-first: WT_CONFIG.game.maxChances
       // V2 strict: NO fallback. If wiring is broken, fail-closed (RUN cannot start).
       const maxChancesCfg = Number(config && config.game && config.game.maxChances);
@@ -303,29 +314,9 @@
       const maxChances = maxChancesValid ? Math.floor(maxChancesCfg) : INVALID_MAX_CHANCES;
 
 
-      // If maxChances is invalid, do not start a runnable run (RUN / PRACTICE / BONUS).
+      // maxChances is required for runnable modes.
       if (!maxChancesValid) {
-        this.run = {
-          mode: effectiveMode,
-          items,
-          statsByItem,
-          config,
-          byId: {},
-          ids: [],
-          idx: 0,
-          maxChances: INVALID_MAX_CHANCES,
-          chancesLeft: INVALID_MAX_CHANCES,
-          scoreFP: 0,
-          last: {
-            itemId: null,
-            choice: null,
-            correctAnswer: null,
-            isCorrect: null,
-            feedbackLine: NO_FEEDBACK
-          },
-          done: true
-        };
-        return this.getState();
+        throw new Error("WT_Game.GameEngine.start(): config.game.maxChances must be a positive integer.");
       }
 
       const deck = bonusMode
@@ -344,11 +335,14 @@
         ids: Array.isArray(deck.ids) ? deck.ids.slice() : [],
         idx: 0,
         // Chances: RUN + BONUS use maxChances; PRACTICE has no chances (revision mode)
-        maxChances: (effectiveMode === "PRACTICE") ? null : maxChances,
-        chancesLeft: (effectiveMode === "PRACTICE") ? null : maxChances,
+        maxChances: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
+        chancesLeft: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
 
         // Single score across all modes (KISS)
         scoreFP: 0,
+
+        // Mistakes made during this run (END screen)
+        runMistakeIds: [],
 
         last: {
           itemId: null,
@@ -363,8 +357,6 @@
 
         done: false
       };
-
-
 
 
 
@@ -413,7 +405,7 @@
 
       const ids = Array.isArray(this.run.ids) ? this.run.ids : [];
       const idx = Number(this.run.idx || 0);
-      const isBonus = (this.run.mode === "BONUS");
+      const isBonus = (this.run.mode === MODES.BONUS);
 
       // Contract: items-served signal is derived (no mutable counter).
       // - counts the currently displayed item as "served"
@@ -422,7 +414,7 @@
         ? (ids.length > 0 ? Math.min(ids.length, Math.max(0, idx) + 1) : 0)
         : null;
 
-      const poolReshuffled = (this.run.mode === "RUN" && this.run.justReshuffled === true);
+      const poolReshuffled = (this.run.mode === MODES.RUN && this.run.justReshuffled === true);
 
       // one-shot: consume the flag as soon as UI reads state
       if (poolReshuffled) {
@@ -432,13 +424,20 @@
       return {
         mode: this.run.mode,
         done: !!this.run.done,
-        scoreFP: Number(this.run.scoreFP || 0),
+        scoreFP: Number.isFinite(this.run.scoreFP) ? Number(this.run.scoreFP) : 0,
         chancesLeft: (this.run.chancesLeft == null) ? null : Number(this.run.chancesLeft || 0),
         maxChances: (this.run.maxChances == null) ? null : Number(this.run.maxChances),
         idx,
         itemsServed,
 
-        // UI-only signal
+        runMistakesCount: Array.isArray(this.run.runMistakeIds)
+          ? this.run.runMistakeIds.length
+          : 0,
+
+        deckSize: Array.isArray(this.run.ids)
+          ? this.run.ids.length
+          : 0,
+
         poolReshuffled
       };
 
@@ -466,18 +465,33 @@
       // Fail-closed: content bug should not corrupt the run.
       // Treat as a wrong answer: consume 1 chance, and end if it hits 0.
       if (idNum == null || correct == null) {
-        const left = Number(this.run.chancesLeft || 0);
-        this.run.chancesLeft = Math.max(0, left - 1);
+        if (this.run.chancesLeft != null) {
+          const left = Number(this.run.chancesLeft || 0);
+          this.run.chancesLeft = Math.max(0, left - 1);
+        }
+
+        // Track mistake for this run (END screen)
+        try {
+          if (
+            idNum != null &&
+            Array.isArray(this.run.runMistakeIds) &&
+            !this.run.runMistakeIds.includes(idNum)
+          ) {
+            this.run.runMistakeIds.push(idNum);
+          }
+        } catch (_) { /* silent */ }
 
         this.run.last = {
           itemId: idNum,
           choice: (choiceBool === true),
           correctAnswer: correct,
           isCorrect: false,
-          feedbackLine: String(item.explanationShort || "")
+          feedbackLine: (typeof item.explanationShort === "string")
+            ? item.explanationShort
+            : NO_FEEDBACK
         };
 
-        if (Number(this.run.chancesLeft || 0) <= 0) {
+        if (this.run.chancesLeft != null && Number(this.run.chancesLeft || 0) <= 0) {
           this.run.done = true;
           return {
             done: true,
@@ -510,16 +524,24 @@
       // scoring commun à tous les modes (BONUS / RUN / PRACTICE)
       if (isCorrect) {
         this.run.scoreFP = Number(this.run.scoreFP || 0) + 1;
-      } else if (this.run.chancesLeft != null) {
-        // PRACTICE has chancesLeft === null → no chance consumed
-        const left = Number(this.run.chancesLeft || 0);
-        this.run.chancesLeft = Math.max(0, left - 1);
+      } else {
+        // Track mistake for this run (END screen)
+        try {
+          if (idNum != null && Array.isArray(this.run.runMistakeIds) && !this.run.runMistakeIds.includes(idNum)) this.run.runMistakeIds.push(idNum);
+        } catch (_) { /* silent */ }
+
+        if (this.run.chancesLeft != null) {
+          // PRACTICE has chancesLeft === null → no chance consumed
+          const left = Number(this.run.chancesLeft || 0);
+          this.run.chancesLeft = Math.max(0, left - 1);
+        }
       }
 
       // feedback spécifique au mode
-      const feedbackLine = (this.run.mode === "BONUS")
-        ? NO_FEEDBACK
-        : String(item.explanationShort || "");
+      const feedbackLine = (this.run.mode === MODES.BONUS) ? NO_FEEDBACK
+        : (typeof item.explanationShort === "string"
+          ? item.explanationShort
+          : NO_FEEDBACK);
 
       this.run.last = {
         itemId: idNum,
@@ -567,29 +589,30 @@
       }
 
       // PRACTICE ends when list ends
-      if (this.run.mode === "PRACTICE") {
+      if (this.run.mode === MODES.PRACTICE) {
         this.run.done = true;
         return;
       }
 
       // BONUS ends when deck ends (no reshuffle, no loop).
-      if (this.run.mode === "BONUS") {
+      if (this.run.mode === MODES.BONUS) {
         this.run.done = true;
         return;
       }
 
       // RUN: rebuild a fresh deck at the end (reshuffle)
-      if (this.run.mode === "RUN") {
-        let freshStats = {};
-        try {
-          freshStats = (this.run.getStatsByItem && typeof this.run.getStatsByItem === "function")
-            ? (this.run.getStatsByItem() || {})
-            : {};
-        } catch (_) {
-          freshStats = {};
+      if (this.run.mode === MODES.RUN) {
+        if (typeof this.run.getStatsByItem !== "function") {
+          throw new Error("WT_Game.GameEngine._advanceAfterAnswer(): getStatsByItem is missing.");
         }
 
-        this.run.statsByItem = (freshStats && typeof freshStats === "object") ? freshStats : {};
+        const freshStats = this.run.getStatsByItem();
+
+        if (!freshStats || typeof freshStats !== "object") {
+          throw new Error("WT_Game.GameEngine._advanceAfterAnswer(): getStatsByItem() must return an object.");
+        }
+
+        this.run.statsByItem = freshStats;
 
         const deck = buildDeck({
           items: this.run.items,
@@ -597,7 +620,6 @@
           mistakesOnly: false,
           config: this.run.config
         });
-
         this.run.byId = deck.byId || this.run.byId || {};
         this.run.ids = Array.isArray(deck.ids) ? deck.ids.slice() : [];
         this.run.idx = 0;

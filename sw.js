@@ -1,6 +1,6 @@
+/* global self, caches */
 /* sw.js - Service Worker v2.1 for Word Traps */
 /* Spec section 8: PWA / Offline / Service Worker */
-
 /**
  * Single source of truth for version:
  * - sw.js is registered with a query string ?v=<WT_CONFIG.version>
@@ -9,23 +9,23 @@
 const SW_VERSION = (() => {
   try {
     const v = new URL(self.location.href).searchParams.get("v");
-    const s = String(v || "").trim();
-    if (!s) return "dev";
-    if (!/^[a-zA-Z0-9._-]{1,32}$/.test(s)) return "dev";
+    if (typeof v !== "string" || !v.trim()) return "";
+    const s = v.trim();
+    if (!s) return "";
+    if (!/^[a-zA-Z0-9._-]{1,32}$/.test(s)) return "";
     return s;
   } catch (_) {
-    return "dev";
+    return "";
   }
 })();
 
 const CACHE_PREFIX = "wt";
-const CACHE_NAME = `${CACHE_PREFIX}-cache-${SW_VERSION}`;
+const CACHE_NAME = SW_VERSION ? `${CACHE_PREFIX}-cache-${SW_VERSION}` : "";
 
 // 8.1 Assets to cache (spec section 8.1)
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
-  "./success.html",
   "./style.css",
   "./config.js",
   "./storage.js",
@@ -44,7 +44,6 @@ const ASSETS_TO_CACHE = [
   "./icons/icon512x512-rond.png"
 ];
 
-
 // Critical assets: if any of these fail to pre-cache, do NOT force-activate immediately.
 const CRITICAL_ASSETS = [
   "./",
@@ -59,24 +58,25 @@ const CRITICAL_ASSETS = [
 ];
 // Install event: cache app shell (resilient: one missing asset must not brick install)
 self.addEventListener("install", (event) => {
+  if (!CACHE_NAME) return;
+
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
 
       // Bust HTTP cache on install: force fresh copies from server.
       // Without this, GitHub Pages' aggressive caching serves stale files.
-      const results = await Promise.allSettled(
-        ASSETS_TO_CACHE.map(async (url) => {
+      const okByUrl = new Map();
+
+      for (const url of ASSETS_TO_CACHE) {
+        try {
           const res = await fetch(url, { cache: "no-store" });
           if (!res.ok) throw new Error(`${url}: ${res.status}`);
-          await cache.put(url, res);
-        })
-      );
-
-      // Only force-activate if the critical shell is safely cached.
-      const okByUrl = new Map();
-      for (let i = 0; i < ASSETS_TO_CACHE.length; i++) {
-        okByUrl.set(ASSETS_TO_CACHE[i], results[i]?.status === "fulfilled");
+          await cache.put(url, res.clone());
+          okByUrl.set(url, true);
+        } catch (_) {
+          okByUrl.set(url, false);
+        }
       }
       const criticalOk = CRITICAL_ASSETS.every((u) => okByUrl.get(u) === true);
       if (criticalOk) {
@@ -91,6 +91,8 @@ self.addEventListener("install", (event) => {
 
 // Activate event: clean old caches
 self.addEventListener("activate", (event) => {
+  if (!CACHE_NAME) return;
+
   event.waitUntil(
     (async () => {
       const keys = await caches.keys();
@@ -114,6 +116,8 @@ function isContentJson(pathname) {
 }
 
 self.addEventListener("fetch", (event) => {
+  if (!CACHE_NAME) return;
+
   const req = event.request;
   if (req.method !== "GET") return;
 
@@ -135,19 +139,28 @@ self.addEventListener("fetch", (event) => {
 
         // Background revalidation (fire-and-forget)
         const fetchPromise = fetch(req)
-          .then((res) => {
-            if (res && res.ok) cache.put(req, res.clone());
+          .then(async (res) => {
+            if (res && res.ok) await cache.put(req, res.clone());
             return res;
           })
           .catch(() => null);
-
         // Stale: return cache immediately if available
         if (cached) return cached;
 
         // Cold start (first visit, no cache): wait for network
         const res = await fetchPromise;
         if (res && res.ok) return res;
-        return new Response("Offline", { status: 503 });
+
+        return new Response(
+          JSON.stringify({ error: "CONTENT_UNAVAILABLE" }),
+          {
+            status: 503,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store"
+            }
+          }
+        );
       })()
     );
     return;
@@ -170,7 +183,9 @@ self.addEventListener("fetch", (event) => {
       } catch (_) {
         if (req.mode === "navigate") {
           const shell = await caches.match("./index.html");
-          return shell || new Response("Offline", { status: 503 });
+          if (shell) return shell;
+
+          return new Response("Offline", { status: 503 });
         }
         return new Response("", { status: 504 });
       }

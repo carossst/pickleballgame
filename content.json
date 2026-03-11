@@ -11,7 +11,7 @@
       "termFr": "librairie",
       "termEn": "library",
       "correctAnswer": false,
-      "explanationShort": "librairie (FR) = a bookstore, a shop that sells books.\nlibrary (EN) = a place where you borrow books.\nBoth trace back to Latin 'liber' (book), but French kept the selling side.",
+      "explanationShort": "librairie (FR) = a bookstore.\nlibrary (EN) = a place where you borrow books.\nFrench sells books; English lends them.",
       "tag": "false_friend"
     },
     {
@@ -19,7 +19,7 @@
       "termFr": "actuellement",
       "termEn": "actually",
       "correctAnswer": false,
-      "explanationShort": "actuellement (FR) = currently, right now.\nactually (EN) = in truth, in fact, for emphasis or correction.",
+      "explanationShort": "actuellement (FR) = currently, at the present time.\nactually (EN) = in fact, really, contrary to what was expected.\nFrench speaks about time; English corrects a statement.",
       "tag": "false_friend"
     },
     {
@@ -59,7 +59,7 @@
       "termFr": "chair",
       "termEn": "chair",
       "correctAnswer": false,
-      "explanationShort": "chair (FR) = flesh, the soft tissue of the body.\nchair (EN) = a piece of furniture you sit on.\nCompletely different Latin roots: French from 'caro' (flesh), English from 'cathedra' (seat).",
+      "explanationShort": "chair (FR) = flesh, the soft tissue of the body.\nchair (EN) = a seat or piece of furniture.\nFrench is flesh; English is furniture.",
       "tag": "false_friend"
     },
     {
@@ -67,7 +67,7 @@
       "termFr": "caméra",
       "termEn": "camera",
       "correctAnswer": false,
-      "explanationShort": "caméra (FR) = a device for recording video.\ncamera (EN) = a device for taking photos; many can also record video.\nThey overlap for recording video, but caméra (FR) does not primarily mean photo-taking, which is central to camera (EN).",
+      "explanationShort": "caméra (FR) = a device for recording video.\ncamera (EN) = a device for taking photos.\nThere can be overlap in some contexts, but the main everyday meanings differ.",
       "tag": "false_friend"
     },
     {
@@ -83,7 +83,7 @@
       "termFr": "raisin",
       "termEn": "raisin",
       "correctAnswer": false,
-      "explanationShort": "raisin (FR) = a grape, the fresh fruit on the vine.\nraisin (EN) = a dried grape.\nEnglish borrowed the word from Old French when it still meant fresh grape, then applied it only to the dried version.",
+      "explanationShort": "raisin (FR) = a grape.\nraisin (EN) = a dried grape.\nFrench is fresh; English is dried.",
       "tag": "false_friend"
     },
     {
@@ -99,7 +99,7 @@
       "termFr": "monnaie",
       "termEn": "money",
       "correctAnswer": false,
-      "explanationShort": "monnaie (FR) = currency or legal means of payment, especially coins and small change.\nmoney (EN) = money in general, including cash, wealth, or financial resources.\nThey overlap in referring to cash, but monnaie (FR) does not cover wealth or financial resources, which are central to money (EN).",
+      "explanationShort": "monnaie (FR) = coins, change, or currency in circulation.\nmoney (EN) = money in general, including cash or wealth.\nFrench counts the change; English counts the wealth.",
       "tag": "false_friend"
     },
     {
@@ -107,7 +107,7 @@
       "termFr": "pétrole",
       "termEn": "petrol",
       "correctAnswer": false,
-      "explanationShort": "pétrole (FR) = crude oil, the raw resource from the ground.\npetrol (EN) = refined fuel for cars (gasoline in American English).",
+      "explanationShort": "pétrole (FR) = crude oil in its natural state.\npetrol (EN) = gasoline used as fuel in cars.\nFrench names the raw oil; English names the fuel.",
       "tag": "false_friend"
     },
     {
@@ -147,7 +147,7 @@
       "termFr": "demander",
       "termEn": "demand",
       "correctAnswer": false,
-      "explanationShort": "demander (FR) = to ask or request, with no aggressive tone.\ndemand (EN) = to insist forcefully, with authority.",
+      "explanationShort": "demander (FR) = to ask or request, with no aggressive tone.\ndemand (EN) = to insist forcefully, with authority.\nFrench asks; English insists.",
       "tag": "false_friend"
     },
     {
@@ -155,7 +155,7 @@
       "termFr": "quitter",
       "termEn": "quit",
       "correctAnswer": false,
-      "explanationShort": "quitter (FR) = to leave a place or a person.\nquit (EN) = to stop doing something, especially a job or a habit.",
+      "explanationShort": "quitter (FR) = to leave a place or a person.\nquit (EN) = to stop doing something, especially a job or a habit.\nFrench leaves; English stops.",
       "tag": "false_friend"
     },
     {
@@ -163,7 +163,7 @@
       "termFr": "avertir",
       "termEn": "avert",
       "correctAnswer": false,
-      "explanationShort": "avertir (FR) = to warn or notify someone in advance.\navert (EN) = to prevent or turn away from danger.",
+      "explanationShort": "avertir (FR) = to warn or notify someone in advance.\navert (EN) = to prevent or turn away from danger.\nFrench warns first; English blocks danger.",
       "tag": "false_friend"
     },
     {
@@ -179,7 +179,7 @@
       "termFr": "charger",
       "termEn": "charge",
       "correctAnswer": false,
-      "explanationShort": "charger (FR) = to load something, or to charge a device (battery).\ncharge (EN) = to ask for payment, to accuse someone officially, or to charge a device.\nThey overlap for batteries, but charger (FR) does not mean to ask for payment or to accuse someone, which are central meanings of charge (EN).",
+      "explanationShort": "charger (FR) = to load something or charge a battery.\ncharge (EN) = to ask for payment or accuse someone.\nThere can be overlap in some contexts, but the main everyday meanings differ.",
       "tag": "false_friend"
     },
     {
@@ -187,7 +187,7 @@
       "termFr": "exiger",
       "termEn": "exigent",
       "correctAnswer": false,
-      "explanationShort": "exiger (FR) = a common verb meaning to require or demand.\nexigent (EN) = a rare adjective meaning urgent or pressing.",
+      "explanationShort": "exiger (FR) = to demand something firmly.\nexigent (EN) = very demanding or hard to satisfy.\nFrench demands; English describes someone demanding.",
       "tag": "false_friend"
     },
     {
@@ -203,7 +203,7 @@
       "termFr": "lecture",
       "termEn": "lecture",
       "correctAnswer": false,
-      "explanationShort": "lecture (FR) = reading, the act of reading a book or text.\nlecture (EN) = a spoken presentation to an audience.\nFrom Latin 'lectura' (reading); English shifted it from reading aloud to formal speaking.",
+      "explanationShort": "lecture (FR) = reading.\nlecture (EN) = a talk or spoken presentation.\nFrench reads; English speaks.",
       "tag": "false_friend"
     },
     {
@@ -211,7 +211,7 @@
       "termFr": "journal",
       "termEn": "journal",
       "correctAnswer": false,
-      "explanationShort": "journal (FR) = a newspaper, or the TV news broadcast.\njournal (EN) = a personal diary, or an academic publication.\nFrom 'jour' (day) — originally a daily record; French defaulted to the daily paper, English to the private diary.",
+      "explanationShort": "journal (FR) = a newspaper or TV news bulletin.\njournal (EN) = a diary or academic publication.\nFrench reports the news; English records it.",
       "tag": "false_friend"
     },
     {
@@ -219,7 +219,7 @@
       "termFr": "cave",
       "termEn": "cave",
       "correctAnswer": false,
-      "explanationShort": "cave (FR) = a cellar or basement, often used for wine.\ncave (EN) = a natural underground cavern.\nStorage space in French.\nRock formation in English.",
+      "explanationShort": "cave (FR) = a cellar or basement, often used for wine.\ncave (EN) = a natural underground cavern.\nFrench stores wine; English explores rock caves.",
       "tag": "false_friend"
     },
     {
@@ -235,7 +235,7 @@
       "termFr": "travail",
       "termEn": "travel",
       "correctAnswer": false,
-      "explanationShort": "travail (FR) = work or labour.\ntravel (EN) = the act of going on a journey.\nThe French word is often linked to Latin \"tripalium,\" a device associated with hardship, though the exact origin is debated.\nThe meanings later diverged completely.",
+      "explanationShort": "travail (FR) = work or labour.\ntravel (EN) = going on a journey.\nFrench works; English moves.",
       "tag": "false_friend"
     },
     {
@@ -256,10 +256,10 @@
     },
     {
       "id": 32,
-      "termFr": "entrée",
-      "termEn": "entrée",
+      "termFr": "chat",
+      "termEn": "chat",
       "correctAnswer": false,
-      "explanationShort": "entrée (FR) usually means the starter or first course.\nentrée (EN, American English) usually means the main dish.\nIn British English, it can still mean starter.\nSo the meaning changes depending on the country.",
+      "explanationShort": "chat (FR) = a cat.\nchat (EN) = an online written conversation.\nFrench purrs; English messages.",
       "tag": "false_friend"
     },
     {
@@ -267,7 +267,7 @@
       "termFr": "supporter",
       "termEn": "support",
       "correctAnswer": false,
-      "explanationShort": "supporter (FR) = to tolerate or endure something unpleasant.\nsupport (EN) = to help, encourage, or hold something up.",
+      "explanationShort": "supporter (FR) = to tolerate or endure something unpleasant.\nsupport (EN) = to help, encourage, or hold something up.\nFrench endures; English helps.",
       "tag": "false_friend"
     },
     {
@@ -275,7 +275,7 @@
       "termFr": "résumer",
       "termEn": "resume",
       "correctAnswer": false,
-      "explanationShort": "résumer (FR) = to summarize or condense.\nresume (EN) = to continue after a pause.",
+      "explanationShort": "résumer (FR) = to summarize or condense.\nresume (EN) = to continue after a pause.\nFrench shortens; English starts again.",
       "tag": "false_friend"
     },
     {
@@ -283,7 +283,7 @@
       "termFr": "actuel",
       "termEn": "actual",
       "correctAnswer": false,
-      "explanationShort": "actuel (FR) = current, present-day.\nactual (EN) = real, true, not imagined.",
+      "explanationShort": "actuel (FR) = current, present-day.\nactual (EN) = real, true, not imagined.\nFrench is current; English is real.",
       "tag": "false_friend"
     },
     {
@@ -299,7 +299,7 @@
       "termFr": "assumer",
       "termEn": "assume",
       "correctAnswer": false,
-      "explanationShort": "assumer (FR) = to take responsibility for something, to own it.\nassume (EN) = to suppose or take for granted.",
+      "explanationShort": "assumer (FR) = to take responsibility for something, to own it.\nassume (EN) = to suppose or take for granted.\nFrench owns it; English guesses it.",
       "tag": "false_friend"
     },
     {
@@ -307,7 +307,7 @@
       "termFr": "prétendre",
       "termEn": "pretend",
       "correctAnswer": false,
-      "explanationShort": "prétendre (FR) = to claim or assert something as true.\npretend (EN) = to fake or act as if something is true when it is not.",
+      "explanationShort": "prétendre (FR) = to claim or assert something as true.\npretend (EN) = to fake or act as if something is true when it is not.\nFrench claims; English fakes.",
       "tag": "false_friend"
     },
     {
@@ -315,7 +315,7 @@
       "termFr": "adresser",
       "termEn": "address",
       "correctAnswer": false,
-      "explanationShort": "adresser (FR) = to send or direct something to someone, or to speak to someone formally.\naddress (EN) = to deal with a problem or issue, or to speak formally to a person or group.\nThey overlap in speaking to someone, but address (EN) is mainly used for dealing with problems, not adresser (FR).",
+      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with a problem or issue.\nThere can be overlap in some contexts, but the main everyday meanings differ.",
       "tag": "false_friend"
     },
     {
@@ -323,7 +323,7 @@
       "termFr": "délai",
       "termEn": "delay",
       "correctAnswer": false,
-      "explanationShort": "délai (FR) usually means a time limit, timeframe, or period allowed.\ndelay (EN) means lateness or postponement.\nFrench is about the allowed time window.\nEnglish is about being late or postponing.",
+      "explanationShort": "délai (FR) = a time limit or allowed period.\ndelay (EN) = lateness or postponement.\nFrench gives you time; English makes you late.",
       "tag": "false_friend"
     },
     {
@@ -331,7 +331,7 @@
       "termFr": "étiquette",
       "termEn": "etiquette",
       "correctAnswer": false,
-      "explanationShort": "étiquette (FR) = a label or price tag on an object.\netiquette (EN) = rules of polite social behaviour.\nHistorically linked to the idea of a \"label/ticket\" used to mark things, then extended to social rules and proper conduct.",
+      "explanationShort": "étiquette (FR) = a label or price tag.\netiquette (EN) = rules of polite behaviour.\nFrench sticks on objects; English guides behaviour.",
       "tag": "false_friend"
     },
     {
@@ -339,7 +339,7 @@
       "termFr": "engager",
       "termEn": "engage",
       "correctAnswer": false,
-      "explanationShort": "engager (FR) = to hire someone, or to commit oneself to something.\nengage (EN) = to involve, attract attention, or take part in something.\nThey overlap in the idea of involvement, but engager (FR) does not mean to attract attention, which is central to engage (EN).",
+      "explanationShort": "engager (FR) = to hire someone or commit yourself.\nengage (EN) = to involve, attract attention, or take part.\nFrench hires; English grabs attention.",
       "tag": "false_friend"
     },
     {
@@ -347,7 +347,7 @@
       "termFr": "formation",
       "termEn": "formation",
       "correctAnswer": false,
-      "explanationShort": "formation (FR) = training or professional development.\nformation (EN) = an arrangement or structure, like a rock formation.",
+      "explanationShort": "formation (FR) = training or education.\nformation (EN) = an arrangement or structure of things.\nFrench trains people; English arranges things.",
       "tag": "false_friend"
     },
     {
@@ -387,7 +387,7 @@
       "termFr": "sympathique",
       "termEn": "sympathetic",
       "correctAnswer": false,
-      "explanationShort": "sympathique (FR) = friendly, nice, likeable.\nsympathetic (EN) = feeling compassion for someone's suffering.",
+      "explanationShort": "sympathique (FR) = nice, friendly, pleasant.\nsympathetic (EN) = showing compassion or understanding.\nFrench means friendly; English means compassionate.",
       "tag": "false_friend"
     },
     {
@@ -771,7 +771,7 @@
       "termFr": "organisation",
       "termEn": "organization",
       "correctAnswer": true,
-      "explanationShort": "organisation = a structured group of people with a shared purpose.\nFrom Greek 'organon' (tool, instrument), both describe coordinated bodies.",
+      "explanationShort": "organisation = a structured group of people working together.\nSame meaning in both languages.",
       "tag": "true_friend"
     },
     {
@@ -819,7 +819,7 @@
       "termFr": "veste",
       "termEn": "vest",
       "correctAnswer": false,
-      "explanationShort": "veste (FR) = a jacket, a garment with sleeves.\nvest (EN) = a sleeveless undergarment or waistcoat.",
+      "explanationShort": "veste (FR) = a jacket, a garment with sleeves.\nvest (EN) = a sleeveless undergarment or waistcoat.\nFrench wears a jacket; English wears an undershirt.",
       "tag": "false_friend"
     },
     {
@@ -827,7 +827,7 @@
       "termFr": "réclamer",
       "termEn": "reclaim",
       "correctAnswer": false,
-      "explanationShort": "réclamer (FR) = to demand or ask for something.\nreclaim (EN) = to take something back or recover it.\nFrench is about demanding.\nEnglish is about recovering.",
+      "explanationShort": "réclamer (FR) = to demand or ask for something.\nreclaim (EN) = to take something back or recover it.\nFrench demands; English takes back.",
       "tag": "false_friend"
     },
     {
@@ -835,7 +835,7 @@
       "termFr": "formidable",
       "termEn": "formidable",
       "correctAnswer": false,
-      "explanationShort": "formidable (FR) usually means wonderful or fantastic.\nformidable (EN) often means impressive, powerful, or sometimes intimidating.\nFrom Latin \"formidabilis\" (fear-inspiring).\nModern usage differs between the two languages.",
+      "explanationShort": "formidable (FR) = wonderful or fantastic.\nformidable (EN) = impressive, powerful, or intimidating.\nFrench praises; English warns.",
       "tag": "false_friend"
     },
     {
@@ -843,7 +843,7 @@
       "termFr": "crier",
       "termEn": "cry",
       "correctAnswer": false,
-      "explanationShort": "crier (FR) = to shout or yell.\ncry (EN) = to weep or shed tears.",
+      "explanationShort": "crier (FR) = to shout loudly.\ncry (EN) = to shed tears.\nFrench shouts; English weeps.",
       "tag": "false_friend"
     },
     {
@@ -851,7 +851,7 @@
       "termFr": "portrait",
       "termEn": "portrait",
       "correctAnswer": true,
-      "explanationShort": "portrait = an image, painting, or description of a person.\nAlso used for a written character description in both languages.",
+      "explanationShort": "portrait = an image or artistic depiction of a person.\nBoth languages use it the same way.",
       "tag": "true_friend"
     },
     {
@@ -891,7 +891,7 @@
       "termFr": "regarder",
       "termEn": "regard",
       "correctAnswer": false,
-      "explanationShort": "regarder (FR) = to watch or look at something.\nregard (EN) = esteem, respect, or consideration.",
+      "explanationShort": "regarder (FR) = to look at or watch.\nregard (EN) = respect or consideration.\nFrench looks; English respects.",
       "tag": "false_friend"
     },
     {
@@ -904,10 +904,10 @@
     },
     {
       "id": 113,
-      "termFr": "réaliser",
-      "termEn": "realize",
+      "termFr": "pet",
+      "termEn": "pet",
       "correctAnswer": false,
-      "explanationShort": "réaliser (FR) usually means to accomplish or carry out something.\nrealize (EN) usually means to become aware of something.\nModern French sometimes uses the awareness meaning.\nBut the main meaning in French is about doing, not understanding.",
+      "explanationShort": "pet (FR) = a fart, gas released from the body.\npet (EN) = a domesticated animal kept for companionship.\nFlatulence in French; furry friend in English.",
       "tag": "false_friend"
     },
     {
@@ -923,7 +923,7 @@
       "termFr": "pièce",
       "termEn": "piece",
       "correctAnswer": false,
-      "explanationShort": "pièce (FR) = a room in a home, or a coin.\npiece (EN) = a part, fragment, or single item.",
+      "explanationShort": "pièce (FR) = a room, coin, or theatrical play.\npiece (EN) = a part of something.\nFrench enters a room; English takes a part.",
       "tag": "false_friend"
     },
     {
@@ -971,7 +971,7 @@
       "termFr": "défaut",
       "termEn": "default",
       "correctAnswer": false,
-      "explanationShort": "défaut (FR) = a flaw, defect, or shortcoming.\ndefault (EN) = the standard setting, or a failure to meet an obligation.",
+      "explanationShort": "défaut (FR) = a flaw or imperfection.\ndefault (EN) = the preset option or a failure to pay.\nFrench points to a flaw; English points to a preset.",
       "tag": "false_friend"
     },
     {
@@ -987,7 +987,7 @@
       "termFr": "propre",
       "termEn": "proper",
       "correctAnswer": false,
-      "explanationShort": "propre (FR) = clean, or one's own (as in my own).\nproper (EN) = correct, appropriate, or fitting.",
+      "explanationShort": "propre (FR) = clean, or one's own.\nproper (EN) = correct or appropriate.\nFrench washes things; English approves them.",
       "tag": "false_friend"
     },
     {
@@ -1003,7 +1003,7 @@
       "termFr": "course",
       "termEn": "course",
       "correctAnswer": false,
-      "explanationShort": "course (FR) = an errand, a race, or the act of running.\ncourse (EN) = a series of lessons, the direction of movement, or part of a meal.",
+      "explanationShort": "course (FR) = an errand, a shopping trip, or a race.\ncourse (EN) = a class, a direction, or a part of a meal.\nFrench runs errands; English runs classes.",
       "tag": "false_friend"
     },
     {
@@ -1011,7 +1011,7 @@
       "termFr": "train",
       "termEn": "train",
       "correctAnswer": true,
-      "explanationShort": "train = a railway vehicle that carries passengers or freight on tracks.\nFrom Old French, both adopted the same transport meaning.",
+      "explanationShort": "train (FR/EN) = a railway vehicle that carries passengers or freight.\nSame word, same meaning in both languages.\nOne track, two languages.",
       "tag": "true_friend"
     },
     {
@@ -1019,7 +1019,7 @@
       "termFr": "dialogue",
       "termEn": "dialogue",
       "correctAnswer": true,
-      "explanationShort": "dialogue = a conversation between two or more people.\nFrom Greek 'dialogos' (through-speech), both kept the conversational meaning.",
+      "explanationShort": "dialogue (FR/EN) = a conversation between two or more people.\nBoth languages kept the same meaning from Greek 'dialogos'.\nSame conversation, same word.",
       "tag": "true_friend"
     },
     {
@@ -1059,7 +1059,7 @@
       "termFr": "joli",
       "termEn": "jolly",
       "correctAnswer": false,
-      "explanationShort": "joli (FR) = pretty or attractive in appearance.\njolly (EN) = cheerful, merry, full of good spirits.",
+      "explanationShort": "joli (FR) = pretty or attractive in appearance.\njolly (EN) = cheerful, merry, full of good spirits.\nFrench looks pretty; English feels cheerful.",
       "tag": "false_friend"
     },
     {
@@ -1067,7 +1067,7 @@
       "termFr": "retirer",
       "termEn": "retire",
       "correctAnswer": false,
-      "explanationShort": "retirer (FR) = to withdraw or remove — especially money from a bank.\nretire (EN) = to stop working permanently at the end of a career.",
+      "explanationShort": "retirer (FR) = to withdraw or remove — especially money from a bank.\nretire (EN) = to stop working permanently at the end of a career.\nFrench withdraws; English stops working.",
       "tag": "false_friend"
     },
     {
@@ -1083,7 +1083,7 @@
       "termFr": "heurter",
       "termEn": "hurt",
       "correctAnswer": false,
-      "explanationShort": "heurter (FR) = to bump into or collide with something.\nhurt (EN) = to feel pain, or to cause someone pain.",
+      "explanationShort": "heurter (FR) = to bump into or collide with something.\nhurt (EN) = to feel pain, or to cause someone pain.\nFrench bumps into things; English feels pain.",
       "tag": "false_friend"
     },
     {
@@ -1131,7 +1131,7 @@
       "termFr": "limon",
       "termEn": "lemon",
       "correctAnswer": false,
-      "explanationShort": "limon (FR) = silt, fine sediment deposited by rivers.\nlemon (EN) = a sour yellow citrus fruit.\nDespite the similar spelling, the words come from different origins and are unrelated in meaning.",
+      "explanationShort": "limon (FR) = silt, fine sediment deposited by rivers.\nlemon (EN) = a sour yellow citrus fruit.\nRiver mud in French; sour fruit in English.",
       "tag": "false_friend"
     },
     {
@@ -1139,7 +1139,7 @@
       "termFr": "carte",
       "termEn": "cart",
       "correctAnswer": false,
-      "explanationShort": "carte (FR) = a map, a card, or a restaurant menu.\ncart (EN) = a wheeled vehicle for carrying goods.",
+      "explanationShort": "carte (FR) = a map, a card, or a restaurant menu.\ncart (EN) = a wheeled vehicle for carrying goods.\nFrench reads maps; English pushes carts.",
       "tag": "false_friend"
     },
     {
@@ -1147,7 +1147,7 @@
       "termFr": "supplier",
       "termEn": "supply",
       "correctAnswer": false,
-      "explanationShort": "supplier (FR) = to beg or plead desperately for mercy.\nsupply (EN) = to provide goods or resources.",
+      "explanationShort": "supplier (FR) = to beg or plead desperately for mercy.\nsupply (EN) = to provide goods or resources.\nFrench begs; English provides.",
       "tag": "false_friend"
     },
     {
@@ -1240,10 +1240,10 @@
     },
     {
       "id": 155,
-      "termFr": "assurance",
-      "termEn": "assurance",
+      "termFr": "crayon",
+      "termEn": "crayon",
       "correctAnswer": false,
-      "explanationShort": "assurance (FR) usually means insurance.\nassurance (EN) usually means confidence or a guarantee.\nFrench can also use it to mean confidence, but that is less common.\nSo in everyday use, \"assurance\" in French refers to insurance, not confidence.",
+      "explanationShort": "crayon (FR) = a pencil.\ncrayon (EN) = a wax colouring stick.\nFrench writes homework; English colours it.",
       "tag": "false_friend"
     },
     {
@@ -1291,15 +1291,15 @@
       "termFr": "issue",
       "termEn": "issue",
       "correctAnswer": false,
-      "explanationShort": "issue (FR) = an exit or a way out.\nissue (EN) = a problem, topic, or matter under discussion.\nThey share the same spelling, but issue (FR) does not mean a problem or topic, which is central to issue (EN).",
+      "explanationShort": "issue (FR) = an exit or way out.\nissue (EN) = a problem, topic, or matter.\nFrench leaves the room; English starts the discussion.",
       "tag": "false_friend"
     },
     {
       "id": 162,
-      "termFr": "achever",
-      "termEn": "achieve",
+      "termFr": "pull",
+      "termEn": "pull",
       "correctAnswer": false,
-      "explanationShort": "achever (FR) = to finish or complete something.\nachieve (EN) = to accomplish or succeed at something.\nIn French, the word can also mean \"to finish off\" (a wounded animal), but the core meaning is simply \"to finish.\"",
+      "explanationShort": "pull (FR) = a sweater or jumper.\npull (EN) = to draw something toward you.\nFrench wears it; English tugs it.",
       "tag": "false_friend"
     },
     {
@@ -1307,7 +1307,7 @@
       "termFr": "billet",
       "termEn": "billet",
       "correctAnswer": false,
-      "explanationShort": "billet (FR) = a ticket or a banknote.\nbillet (EN) = temporary military lodging assigned to soldiers.",
+      "explanationShort": "billet (FR) = a ticket or banknote.\nbillet (EN) = temporary lodging assigned to soldiers.\nFrench buys tickets; English houses soldiers.",
       "tag": "false_friend"
     },
     {
@@ -1315,7 +1315,7 @@
       "termFr": "attirer",
       "termEn": "attire",
       "correctAnswer": false,
-      "explanationShort": "attirer (FR) = to attract or draw attention toward something.\nattire (EN) = clothing or dress.",
+      "explanationShort": "attirer (FR) = to attract or draw toward.\nattire (EN) = clothing or dress.\nFrench attracts; English dresses.",
       "tag": "false_friend"
     },
     {
@@ -1387,7 +1387,7 @@
       "termFr": "forfait",
       "termEn": "forfeit",
       "correctAnswer": false,
-      "explanationShort": "forfait (FR) = a flat-rate package, like a phone plan or ski pass.\nforfeit (EN) = to lose something as a penalty.",
+      "explanationShort": "forfait (FR) = a flat-rate package like a phone plan or ski pass.\nforfeit (EN) = to lose something as a penalty.\nFrench sells packages; English takes them away.",
       "tag": "false_friend"
     },
     {
@@ -1395,7 +1395,7 @@
       "termFr": "rapport",
       "termEn": "rapport",
       "correctAnswer": false,
-      "explanationShort": "rapport (FR) = a written report or official account.\nrapport (EN) = a friendly, trusting relationship between people.\nPaperwork in French, personal chemistry in English.",
+      "explanationShort": "rapport (FR) = a written report or official account.\nrapport (EN) = a relationship of trust or harmony.\nFrench writes reports; English builds connections.",
       "tag": "false_friend"
     },
     {
@@ -1459,7 +1459,7 @@
       "termFr": "esprit",
       "termEn": "spirit",
       "correctAnswer": false,
-      "explanationShort": "esprit (FR) = mind, intellect, attitude; it can also mean a spirit/ghost in some contexts.\nspirit (EN) = a ghost/supernatural being, a general attitude, or alcohol.\nThey overlap for ghost/spirit, but esprit (FR) does not mean alcohol, which is central to spirit (EN).",
+      "explanationShort": "esprit (FR) = mind, intellect, or attitude.\nspirit (EN) = a ghost, strong attitude, or alcohol.\nFrench thinks; English haunts or drinks.",
       "tag": "false_friend"
     },
     {
@@ -1472,10 +1472,10 @@
     },
     {
       "id": 184,
-      "termFr": "délivrer",
-      "termEn": "deliver",
+      "termFr": "slip",
+      "termEn": "slip",
       "correctAnswer": false,
-      "explanationShort": "délivrer (FR) usually means to set free or liberate.\ndeliver (EN) usually means to bring goods or packages.\nFrench can also use it for issuing documents (a passport or certificate).\nBut the dominant meanings are different.",
+      "explanationShort": "slip (FR) = briefs or underwear.\nslip (EN) = to slide or make a mistake.\nFrench puts it on; English loses balance.",
       "tag": "false_friend"
     },
     {
@@ -1483,7 +1483,7 @@
       "termFr": "caractère",
       "termEn": "character",
       "correctAnswer": false,
-      "explanationShort": "caractère (FR) = personality, temperament, or a distinctive trait.\ncharacter (EN) = a person in a story, or the qualities that define someone.\nThey overlap in describing personal qualities, but caractère (FR) does not mean a fictional person in a story, which is central to character (EN).",
+      "explanationShort": "caractère (FR) = personality or temperament.\ncharacter (EN) = a fictional person or someone's qualities.\nFrench describes temperament; English can enter the story.",
       "tag": "false_friend"
     },
     {
@@ -1531,7 +1531,7 @@
       "termFr": "liège",
       "termEn": "liege",
       "correctAnswer": false,
-      "explanationShort": "liège (FR) = cork, the material used to seal wine bottles.\nliege (EN) = a feudal lord or sovereign.",
+      "explanationShort": "liège (FR) = cork, the bark used for bottle stoppers.\nliege (EN) = a feudal lord or sovereign.\nFrench seals bottles; English rules vassals.",
       "tag": "false_friend"
     },
     {
@@ -1555,7 +1555,7 @@
       "termFr": "bague",
       "termEn": "bag",
       "correctAnswer": false,
-      "explanationShort": "bague (FR) = a ring, jewellery worn on a finger.\nbag (EN) = a container for carrying things.",
+      "explanationShort": "bague (FR) = a ring worn on a finger.\nbag (EN) = a container used to carry items.\nFrench wears rings; English carries bags.",
       "tag": "false_friend"
     },
     {
@@ -1579,7 +1579,7 @@
       "termFr": "promotion",
       "termEn": "promotion",
       "correctAnswer": true,
-      "explanationShort": "promotion = a career advancement, or a commercial discount offer.\nIn French universities, the word also means a graduating class.",
+      "explanationShort": "promotion = a career advancement or marketing campaign.\nIn French universities, it can also mean a graduating class.",
       "tag": "true_friend"
     },
     {
@@ -1595,7 +1595,7 @@
       "termFr": "latitude",
       "termEn": "latitude",
       "correctAnswer": true,
-      "explanationShort": "latitude = a geographical coordinate measuring distance north or south of the equator.\nFrom Latin 'latitudo' (breadth), scientific mapping kept both languages aligned.",
+      "explanationShort": "latitude = a geographic coordinate showing how far north or south a place is.\nSame meaning in both languages.",
       "tag": "true_friend"
     },
     {

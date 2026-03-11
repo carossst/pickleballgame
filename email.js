@@ -80,22 +80,41 @@
     return `mailto:${to}${q.length ? `?${q.join("&")}` : ""}`;
   }
 
+  function openSupportEmail(options) {
+    const email = getSupportEmailDecoded();
+    if (!email) return;
+
+    const opts = (options && typeof options === "object") ? options : {};
+    const subjectPrefix = sanitize(opts.subjectPrefix);
+    const subjectSuffix = sanitize(opts.subjectSuffix);
+    const bodyTemplate = String(opts.bodyTemplate || "").trim();
+
+    const subjectText = [subjectPrefix, subjectSuffix].filter(Boolean).join(" ").trim();
+
+    const q = [];
+    if (subjectText) q.push(`subject=${encodeURIComponent(subjectText)}`);
+    if (bodyTemplate) q.push(`body=${encodeURIComponent(bodyTemplate)}`);
+
+    window.location.href = `mailto:${email}${q.length ? `?${q.join("&")}` : ""}`;
+  }
+
   // ── Exported: initEmailLinks ───────────────────────────────────
   // Wires all email-related links in the DOM. Called by footer.js and main.js.
 
   function initEmailLinks() {
     try {
-      const cfg = window.WT_CONFIG || {};
-      const wording = window.WT_WORDING || {};
+      const wording = window.WT_WORDING;
+      if (!wording || typeof wording !== "object") return;
 
       // ─── 1) Footer contact link (#wt-contact-link) ───
       // Display: label from WT_WORDING.support.label (never raw email).
-      // Click: delegates to WT_SUPPORT_OPEN hook (set by main.js).
+      // Click on app pages: dispatch "wt-open-support".
       // Fail-closed: no label → skip entirely (footer.js removes empty links).
 
       const supportLink = document.getElementById("wt-contact-link");
       if (supportLink) {
         const label = String(wording.support?.label || "").trim();
+        const isAppPage = !!document.getElementById("app");
 
         // Fail-closed: no label configured → leave link empty, footer.js cleans up.
         if (!label) {
@@ -107,9 +126,10 @@
           // Accessibility: explicit intent label
           supportLink.setAttribute("aria-label", label);
 
-          // Fail-closed contract:
-          // - If WT_SUPPORT_OPEN is missing, do not attach handler AND do not expose mailto.
-          if (typeof window.WT_SUPPORT_OPEN !== "function") {
+          // Reset previous wiring before re-applying it
+          supportLink.onclick = null;
+
+          if (!isAppPage) {
             supportLink.removeAttribute("href");
             supportLink.removeAttribute("target");
             supportLink.removeAttribute("rel");
@@ -120,14 +140,17 @@
             if (email) {
               supportLink.href = `mailto:${email}`;
             } else {
-              // No email -> no href (still clickable via modal hook, but hook can decide what to do)
               supportLink.removeAttribute("href");
             }
 
-            supportLink.addEventListener("click", (e) => {
+            supportLink.onclick = (e) => {
               e.preventDefault();
-              window.WT_SUPPORT_OPEN();
-            });
+              try {
+                document.dispatchEvent(new CustomEvent("wt-open-support"));
+              } catch (_) {
+                // silent
+              }
+            };
           }
         }
       }
@@ -160,7 +183,8 @@
     buildMailto,
     decodeObfuscated: decodeHtmlEntities,
     getSupportEmailDecoded,
-    initEmailLinks
+    initEmailLinks,
+    openSupportEmail
   };
 
 })();

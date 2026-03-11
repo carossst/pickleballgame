@@ -72,11 +72,15 @@
           <p class="wt-muted" style="margin-top:var(--space-6)" data-wt-wording="success.clearDataWarning"></p>
         </div>
 
-        <!-- Cheat Sheet order bump (serverless trust-by-design via ConvertKit) â€” moved up -->
+        <!-- Cheat Sheet order bump (serverless trust-by-design via ConvertKit) - moved up -->
         <div class="wt-card" id="cheatsheet-card">
           <div class="wt-meta"><strong data-wt-wording="success.cheatSheetTitle"></strong></div>
           <p class="wt-muted" style="margin-top:var(--space-10)" data-wt-wording="success.cheatSheetBody"></p>
           <div id="cheatsheet-ck" style="margin-top:var(--gap-2)"></div>
+          <p class="wt-muted" style="margin-top:var(--space-10); font-size:var(--fs-xs)">
+            Optional: enter your email to receive this bonus content. The form is handled by our email provider. See our
+            <a href="./privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+          </p>
         </div>
 
         <!-- How to activate -->
@@ -153,14 +157,12 @@
         <p class="wt-muted" style="text-align:center; margin-top:var(--gap-3)" data-wt-wording="success.thankYouLine">
         </p>
 
-        <!-- Support (obfuscated, consistent with email.js) -->
+        <!-- Support (single source of truth via WT_Email / WT_CONFIG.support) -->
         <p class="wt-muted" style="text-align:center; margin-top:var(--gap-2); font-size:var(--fs-xs)">
           <span data-wt-wording="success.supportLabel"></span>
-          <a href="#" data-user="bonjour" data-domain="testyourfrench.com">Contact us</a>
+          <a href="#" id="wt-success-support-link">Contact us</a>
         </p>
-
       </div>
-    </main>
 
     </main>
 
@@ -173,25 +175,24 @@
   <script src="./config.js"></script>
   <script src="./email.js"></script>
   <script src="./footer.js"></script>
-
   <script>
+
     // success.js inline - Word Traps
     (() => {
-      const cfg = window.WT_CONFIG || {};
-      const STORAGE_KEY = String(
-        (cfg && cfg.storage && cfg.storage.vanityCodeStorageKey) ||
-        cfg?.vanityCodeStorageKey ||
-        ""
-      ).trim();
+      const cfg = window.WT_CONFIG;
+      if (!cfg || typeof cfg !== "object") return;
 
-      const COUNTER_KEY = String(
-        (cfg && cfg.storage && cfg.storage.storageKey) ||
-        cfg?.storageKey ||
-        ""
-      ).trim();
+      const rawStorageKey = cfg?.storage?.vanityCodeStorageKey;
 
-      if (!STORAGE_KEY || !COUNTER_KEY) return;
+      if (typeof rawStorageKey !== "string") {
+        throw new Error("success page: missing config.storage.vanityCodeStorageKey");
+      }
 
+      const STORAGE_KEY = rawStorageKey.trim();
+
+      if (!STORAGE_KEY) {
+        throw new Error("success page: empty config.storage.vanityCodeStorageKey");
+      }
       function rand4() {
         return Math.random()
           .toString(36)
@@ -202,7 +203,9 @@
       }
 
       function generateCode() {
-        return `WT-${rand4()}-${rand4()}`;
+        const prefix = String(window.WT_CONFIG?.premiumCodePrefix || "").trim();
+        if (!prefix) return "";
+        return `${prefix}-${rand4()}-${rand4()}`;
       }
 
       function getOrCreateCode() {
@@ -213,7 +216,12 @@
         try { re = new RegExp(rawRe); } catch (_) { re = null; }
         if (!re) return "";
 
-        let code = String(localStorage.getItem(STORAGE_KEY) || "").trim();
+        let code = "";
+        try {
+          code = String(window.localStorage.getItem(STORAGE_KEY) || "").trim();
+        } catch (_) {
+          code = "";
+        }
 
         // If storage is polluted, regenerate (fail-closed + self-heal)
         if (!code || !re.test(code)) {
@@ -222,32 +230,24 @@
           // Safety: ensure generated code matches config regex (should always be true)
           if (!re.test(code)) return "";
 
-          try { localStorage.setItem(STORAGE_KEY, code); } catch (_) { return ""; }
+          try {
+            window.localStorage.setItem(STORAGE_KEY, code);
+          } catch (_) {
+            return "";
+          }
         }
 
         return code;
       }
 
-      // Best-effort counter (only if main storage object exists)
-      function markCodeGeneratedBestEffort() {
-        try {
-          const raw = localStorage.getItem(COUNTER_KEY);
-          const data = raw ? JSON.parse(raw) : null;
-          if (!data || typeof data !== "object") return;
-
-          data.counters = data.counters || {};
-          data.counters.codeGenerated = Number(data.counters.codeGenerated || 0) + 1;
-          data.updatedAt = Date.now();
-          localStorage.setItem(COUNTER_KEY, JSON.stringify(data));
-        } catch (_) {
-          // silent
-        }
-      }
+      // No direct writes to the main app storage blob from success.html.
 
       function renderCode(code) {
         const codeEl = document.getElementById("code");
         if (codeEl) codeEl.textContent = code;
       }
+
+      let statusHideTimer = 0;
 
       function showStatus(msg) {
         const statusEl = document.getElementById("copy-status");
@@ -259,11 +259,17 @@
         // Fail closed: if timing is invalid, do not show a status that would never dismiss.
         if (!Number.isFinite(dur) || dur < 600 || dur > 4000) return;
 
+        if (statusHideTimer) {
+          window.clearTimeout(statusHideTimer);
+          statusHideTimer = 0;
+        }
+
         statusEl.textContent = msg;
         statusEl.classList.remove("wt-hidden");
 
-        window.setTimeout(() => {
+        statusHideTimer = window.setTimeout(() => {
           statusEl.classList.add("wt-hidden");
+          statusHideTimer = 0;
         }, Math.floor(dur));
       }
 
@@ -448,14 +454,6 @@
         } catch (_) { }
       }
 
-      function applyVersion() {
-        try {
-          const version = String(window.WT_CONFIG?.version || "").trim();
-          const prefix = String(window.WT_WORDING?.system?.versionPrefix || "").trim();
-          const el = document.querySelector(".wt-footer-version");
-          if (el) el.textContent = version ? `${prefix}${version}` : "";
-        } catch (_) { }
-      }
 
       function applyCheatSheetOrderBump() {
         try {
@@ -498,13 +496,11 @@
         }
 
         renderCode(code);
-        markCodeGeneratedBestEffort();
 
         applyPoolSize();
         applyWording();
         applyBrand();
         applySuccessBranding();
-        applyVersion();
         applyCheatSheetOrderBump();
 
         const copyBtn = document.getElementById("copy-btn");
@@ -514,6 +510,16 @@
         if (copyBtn) copyBtn.addEventListener("click", copyCode);
         if (copyAgain) copyAgain.addEventListener("click", copyCode);
         if (downloadBtn) downloadBtn.addEventListener("click", downloadCodeTxt);
+
+        const successSupportLink = document.getElementById("wt-success-support-link");
+        if (successSupportLink) {
+          successSupportLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
+              window.WT_Email.openSupportEmail();
+            }
+          });
+        }
 
         // Obfuscated email links (Contact us)
         if (window.WT_Email && typeof window.WT_Email.initEmailLinks === "function") {
