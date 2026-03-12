@@ -831,10 +831,10 @@
       endLine: "Good work. You tightened the weak spots.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
-        last: "Almost there. Just one trap left.",
-        light: "Good pass. The weak spots are becoming clearer.",
-        firm: "Useful game. A few traps are still catching you.",
-        direct: "Tough game. These traps need another pass."
+        last: "",
+        light: "",
+        firm: "",
+        direct: ""
       },
       endStatsLine: "Mistakes fixed: {fixed}. Mistakes remaining: {remaining}.",
 
