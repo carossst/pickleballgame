@@ -224,13 +224,13 @@
         // Default bucket for gameplay overlays/toasts
         default: {
           delayMs: 0,
-          durationMs: 1900
+          durationMs: 2200
         },
 
         // Timing bucket for micro-pics / micro-satisfaction
         positive: {
           delayMs: 0,
-          durationMs: 1200
+          durationMs: 1000
         },
 
         // Timing bucket for "+1" after a correct answer (no fallback in UI)
@@ -514,7 +514,7 @@
     system: {
       close: "Close",
       home: "Home",
-      versionPrefix: "v",
+      versionPrefix: "",
 
       loadingTitle: "Loading Word Traps...",
       loadingHint: "Preparing your French word challenge",
@@ -636,9 +636,7 @@
       framingLines: [
         "This isn't about streaks.",
         "It's about whether you're actually improving.",
-        "Explore all 200 French-English word traps.",
-        "Free games to try. Then decide",
-
+        "Explore 200 French-English word traps.",
       ],
 
       trustLines: [
@@ -723,6 +721,7 @@
       endTitle: "",
       endDeckSizeLine: "High Focus pool: {count} words.",
       endDeckSizeLineOne: "High Focus pool: 1 word.",
+      endPoolProgressTemplate: "{cleared} out of {shown} correct this round.",
       endDeckExhaustedToast: "All words available played.",
 
       // BONUS new best label (END)
@@ -752,21 +751,21 @@
       // END BONUS — personalized recommendation (accuracy × deck size)
       // Keys: "{accuracyTier}_{deckTier}" — must cover all combinations
       endRecoByTier: {
-        perfect_small: "Nailed it. Play normal games to grow your High Focus deck.",
-        perfect_medium: "No mistakes. Replay to keep that edge.",
-        perfect_large: "Impressive. Your High Focus deck is deep: push further.",
+        perfect_small: "Play normal games to grow your High Focus deck.",
+        perfect_medium: "Replay to keep that edge.",
+        perfect_large: "Your High Focus deck is deep: push further.",
 
-        high_small: "Strong game. A few more normal games will expand your deck.",
-        high_medium: "Solid accuracy. Try again to lock in the ones you missed.",
-        high_large: "Almost there. Stay in High Focus: you're close to flawless.",
+        high_small: "A few more normal games will expand your deck.",
+        high_medium: "Try again to lock in the ones you missed.",
+        high_large: "Stay in High Focus: you're close to flawless.",
 
         medium_small: "Build your deck first: play normal games to strengthen your base.",
-        medium_medium: "Good pace. Try another High Focus game to sharpen your reflexes.",
+        medium_medium: "Try another High Focus game to sharpen your reflexes.",
         medium_large: "Keep going. Speed and accuracy will come with repetition.",
 
-        low_small: "Slow down. Normal games will help build the muscle memory you need here.",
+        low_small: "Normal games will help build the muscle memory you need here.",
         low_medium: "Take a normal game to rebuild confidence before coming back.",
-        low_large: "This mode is demanding. Try again: speed comes with practice."
+        low_large: "Try again: speed comes with practice."
       },
 
       // BONUS END — emotionally congruent CTA label by accuracy tier
@@ -801,7 +800,7 @@
       questionPrompt: "Same meaning in French and English?",
       dangerLineLabel: "TIMEOUT LINE",
       dangerLineAria: "Timeout line. If the card reaches this line, the item is lost.",
-      seenOnlyLine: "Only words you've already seen in normal games. Play more games to expand the High Focus deck.",
+      seenOnlyLine: "{count} words in your High Focus deck. Only words you've already seen in regular games.",
 
       // End toasts (BONUS ends by returning to END screen)
       // Keep existing (even if you later stop using the modal)
@@ -831,10 +830,10 @@
       endLine: "Good work. You tightened the weak spots.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
-        last: "",
-        light: "",
-        firm: "",
-        direct: ""
+        last: "Nice recovery.",
+        light: "Nice recovery.",
+        firm: "Good progress.",
+        direct: "You tightened some weak spots."
       },
       endStatsLine: "Mistakes fixed: {fixed}. Mistakes remaining: {remaining}.",
 
@@ -847,7 +846,7 @@
         direct: "Stay in Mistakes mode. These are the ones that need the work."
       },
 
-      scoreLine: "Words reviewed: {total}",
+      scoreLine: "{total} words reviewed.",
 
       // PLAYING: calm progress line (replaces assertion in PRACTICE)
       playingProgressLine: "{current}/{total}",
@@ -855,90 +854,70 @@
       // Start overlay (PRACTICE): explain the mode (2 lines shown via typeLine + msg)
       startRunChancesOverlayPractice: "Mistakes mode focuses on your active mistakes.\nUp to 10 words per game.\nFix a word and it leaves the list.\nMake a mistake again, and it comes back.",
       startOverlayTapAnywhere: "Tap anywhere to start",
-      // Backward compat (still used as fallback wording-only)
+      // Fallback CTA when no repeat tier is selected
       ctaPracticeAgain: "Practice again",
 
-      // PRACTICE END - identity + lens + CTA by level (low/medium/high)
-      identityByLevel: {
-        low: "",
-        medium: "",
-        high: ""
-      },
-
-      lensByLevel: {
-        low: "Next time the traps will look easier to spot.",
-        medium: "You're starting to read the pattern.",
-        high: "This is becoming automatic now."
-      },
-
-      ctaByLevel: {
-        low: "Fix your mistakes again",
-        medium: "Fix your mistakes again",
-        high: "Fix your mistakes again"
-      },
-
       // Optional CTA override (END PRACTICE) based on remaining tier
-      // Fail-closed: missing tier key => keep existing CTA (ctaByLevel / ctaPracticeAgain)
+      // Fail-closed: missing tier key => keep ctaPracticeAgain
       ctaRepeatByTier: {
+        last: "Clear the last trap",
         light: "Fix your mistakes one more time",
         firm: "Play mistakes mode again",
         direct: "Stay in mistakes mode"
+      },
+
+
+      playing: {
+        questionLabel: "Word",
+        assertion: "Do the French and English words mean the same thing?",
+        answersAria: "Answer choices",
+        questionHeadingTemplate: "",
+        feedbackTitleOk: "",
+        feedbackTitleBad: "",
+
+        // New best score (PLAYING)
+        newBestScore: "New best score.",
+
+        // Feedback truth line (used inline after Correct/Incorrect):
+        // "Correct - {termFr} (FR) = {termEn} (EN)"
+        // "Incorrect - {termFr} (FR) ≠ {termEn} (EN)"
+        feedbackRelationSameTemplate: "{termFr} (FR) = {termEn} (EN)",
+        feedbackRelationDifferentTemplate: "{termFr} (FR) \u2260 {termEn} (EN)"
+      },
+
+      micropics: {
+        runContinues: "You saw it. Keep going.",
+
+
+        // Near-miss (END-only highlight)
+        nearMiss: "Close call. That trap was waiting for you.",
+
+
+        // Repeated mistakes (END-only highlight)
+        repeatMistake: "This one keeps pulling you in. Slow down and read it again.",
+
+
+        // First time reaching the tier in this game
+        streakStart: "3 in a row. You're seeing the traps.",
+        streakBuilding: "6 in a row. The pattern is starting to click.",
+        streakStrong: "10 in a row. Sharp reading.",
+        streakElite: "15 in a row. Very little gets past you now.",
+        streakLegendary: "20 in a row. You read the traps before they land.",
+
+
+        // Reaching a tier again in the same game (after a mistake)
+        // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
+        streakAgainTemplate: "{streak} in a row again. Back in rhythm.",
+
+        // First non-chiffré micro-pic after a mistake (one-shot)
+        recovery: "There you go. Back in rhythm.",
+
+        runEndedAllChancesUsed: ""
       }
-
-
-    },
-
-
-    playing: {
-      questionLabel: "Word",
-      assertion: "Do the French and English words mean the same thing?",
-      answersAria: "Answer choices",
-      questionHeadingTemplate: "",
-      feedbackTitleOk: "",
-      feedbackTitleBad: "",
-
-      // New best score (PLAYING)
-      newBestScore: "New best score.",
-
-      // Feedback truth line (used inline after Correct/Incorrect):
-      // "Correct - {termFr} (FR) = {termEn} (EN)"
-      // "Incorrect - {termFr} (FR) ≠ {termEn} (EN)"
-      feedbackRelationSameTemplate: "{termFr} (FR) = {termEn} (EN)",
-      feedbackRelationDifferentTemplate: "{termFr} (FR) \u2260 {termEn} (EN)"
-    },
-
-    micropics: {
-      runContinues: "You saw it. Keep going.",
-
-
-      // Near-miss (END-only highlight)
-      nearMiss: "Close call. That trap was waiting for you.",
-
-
-      // Repeated mistakes (END-only highlight)
-      repeatMistake: "This one keeps pulling you in. Slow down and read it again.",
-
-
-      // First time reaching the tier in this game
-      streakStart: "3 in a row. You're seeing the traps.",
-      streakBuilding: "6 in a row. The pattern is starting to click.",
-      streakStrong: "10 in a row. Sharp reading.",
-      streakElite: "15 in a row. Very little gets past you now.",
-      streakLegendary: "20 in a row. You read the traps before they land.",
-
-
-      // Reaching a tier again in the same game (after a mistake)
-      // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
-      streakAgainTemplate: "{streak} in a row again. Back in rhythm.",
-
-      // First non-chiffré micro-pic after a mistake (one-shot)
-      recovery: "There you go. Back in rhythm.",
-
-      runEndedAllChancesUsed: ""
     },
 
     end: {
-      title: "Well done.",
+      title: "",
 
 
       // Pool complete (one-shot celebration when 200/200 reached)
@@ -950,7 +929,7 @@
       poolCompleteCtaPractice: "Fix your mistakes",
 
       freeLimitReachedTitle: "Nice game.",
-      freeLimitReachedBody: "You've used your {limit} free normal games.\n\nFull access unlocks unlimited normal games. Keep training without limits.",
+      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks unlimited normal games. Keep training without limits.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -963,7 +942,7 @@
       // RUN END — identity + lens + CTA by verdict tier
       // Keys must match UI mapping: none/start/building/strong/elite/legendary
       identityByVerdict: {
-        none: "",
+        none: "A few traps are still catching you.",
         start: "",
         building: "",
         strong: "",
@@ -972,7 +951,7 @@
       },
 
       lensByVerdict: {
-        none: "You have {backlog} traps to revisit. Practice targets the weak spots directly.",
+        none: "You have {backlog} traps to revisit. Fix your mistakes.",
         start: "Good start. Try to reach 6+ in your next game.",
         building: "{seen}/{poolSize} words seen. The pattern is becoming clearer.",
         strong: "{seen}/{poolSize} words covered. You're reading these faster now.",
@@ -1038,7 +1017,6 @@
       practiceCtaCountPremium: "Fix your {backlog} remaining mistakes",
       shareTitle: "Share"
     },
-
 
     paywall: {
       // Default headline
@@ -1309,7 +1287,6 @@ Thanks!`
 
 
 
-
   // 9.6 Soft validation (debug only)
   function validateConfigSoft() {
     const cfg = window.WT_CONFIG;
@@ -1430,9 +1407,8 @@ Thanks!`
         const taps = Number(cfg.secretBonus.tapsRequired);
 
         if (!Number.isFinite(tw) || tw <= 0) warn("secretBonus.enabled true but tapWindowMs is missing/invalid");
-        if (!Number.isFinite(taps) || taps < 1) warn("secretBonus.enabled true but tapsRequired is missing/invalid");
+        if (!Number.isFinite(taps) || taps < 0) warn("secretBonus.enabled true but tapsRequired is missing/invalid");
         if (!cfg.game || !Number.isFinite(Number(cfg.game.maxChances)) || Number(cfg.game.maxChances) <= 0) {
-          warn("secretBonus.enabled true but game.maxChances must be valid (used for chances)");
         }
 
         // Gates (canonical)

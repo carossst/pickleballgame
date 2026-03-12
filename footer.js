@@ -117,10 +117,8 @@
         // Version
         try {
             const vEl = root.querySelector("[data-wt-version]");
-            const v = String(cfg.version || "").trim();
-            const prefix = String(w.system?.versionPrefix || "").trim();
             if (vEl) {
-                vEl.textContent = (v && prefix) ? `${prefix}${v}` : "";
+                vEl.textContent = "";
             }
         } catch (_) { /* silent */ }
     }

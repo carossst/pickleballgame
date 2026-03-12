@@ -3243,7 +3243,7 @@ void function () {
       this.setState(STATES.PLAYING);
       return;
     }
-    // RUN normal: no start overlay.
+    // RUN normal: overlay only for LAST_FREE.
     if (!this._beforeUnloadHandler) {
       this._beforeUnloadHandler = (e) => {
         if (this.state !== STATES.PLAYING) return;
@@ -3253,6 +3253,12 @@ void function () {
     }
 
     this.setState(STATES.PLAYING);
+
+    if (runType === "LAST_FREE") {
+      showRunStartOverlay(cfg, this.wording, this.game, "LAST_FREE", null, () => {
+        // overlay dismissed — game already visible, nothing else needed
+      });
+    }
   };
 
 
@@ -4049,6 +4055,22 @@ void function () {
 
     this._runtime.feedbackReveal = true;
     this.render();
+
+    try {
+      const normalFlashClass = (res.isCorrect === true)
+        ? "wt-terms-box--successflash"
+        : "wt-terms-box--mistakeflash";
+
+      window.requestAnimationFrame(() => {
+        const root = this.appEl || document.getElementById("app");
+        const tb = root ? root.querySelector(".wt-terms-box") : null;
+        if (!tb) return;
+
+        tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+        void tb.offsetWidth;
+        tb.classList.add(normalFlashClass);
+      });
+    } catch (_) { /* silent */ }
   };
 
 
@@ -4698,16 +4720,26 @@ void function () {
     const w = this.wording || {};
     const end = w.end || {};
     const sys = w.system || {};
+    const lastRun = (this._runtime && this._runtime.lastRun) ? this._runtime.lastRun : {};
 
     const title = String(end.poolCompleteTitle || "").trim();
     const line1 = String(end.poolCompleteLine1 || "").trim();
     const line2 = String(end.poolCompleteLine2 || "").trim();
+    const scoreLineTpl = String(end.poolCompleteScoreLine || "").trim();
     const cta = String(sys.continue || "").trim();
 
     // Fail-closed: if required copy is missing, do nothing.
     if (!title || !cta) return;
 
+    const scoreLine = scoreLineTpl
+      ? fillTemplate(scoreLineTpl, {
+        score: String(clampInt(Number(lastRun.scoreFP), 0, 99999)),
+        fpShort: ""
+      })
+      : "";
+
     const html = `
+      ${scoreLine ? `<p class="wt-hero-kpi" style="margin:0 0 10px 0">${escapeHtml(scoreLine)}</p>` : ``}
       ${line1 ? `<p>${escapeHtml(line1)}</p>` : ``}
       ${line2 ? `<p class="wt-muted">${escapeHtml(line2)}</p>` : ``}
 
@@ -6542,15 +6574,29 @@ ${(() => {
       return fillTemplate(tpl, { count: String(seen) });
     })();
 
+    const bonusPoolProgressLine = (() => {
+      if (!isBonus) return "";
+
+      const tpl = String(bonusW.endPoolProgressTemplate || "").trim();
+      if (!tpl) return "";
+
+      const shown = clampInt(totalPresented, 0, 99999);
+      if (shown <= 0) return "";
+
+      const cleared = clampInt(scoreFP, 0, shown);
+
+      return fillTemplate(tpl, {
+        cleared: String(cleared),
+        shown: String(shown)
+      });
+    })();
+
     let endLineTpl = "";
 
     let bonusLevel = "";
     let bonusIdentityTpl = "";
     let bonusLensTpl = "";
 
-    let practiceLevel = "";
-    let practiceIdentityTpl = "";
-    let practiceLensTpl = "";
     let practiceRepeatTierKey = "";
     let practiceStatsLineTpl = "";
     let practiceRepeatNoteTpl = "";
@@ -6630,7 +6676,9 @@ ${(() => {
         : clampInt(backlogAtStart - remainingBacklog, 0, backlogAtStart);
 
       vars.fixed = fixedCount;
-      if (remainingBacklog != null) vars.remaining = remainingBacklog;      // Optional coaching note by tier (fail-closed on config + remaining + wording)
+      if (remainingBacklog != null) vars.remaining = remainingBacklog;
+
+      // Optional coaching note by tier (fail-closed on config + remaining + wording)
       let repeatNote = "";
       practiceRepeatTierKey = "";
       try {
@@ -6644,6 +6692,11 @@ ${(() => {
             if (!key || min == null) continue;
 
             if (remainingBacklog >= min) {
+
+              // "last" must be literal: only when exactly 1 mistake remains.
+              if (key === "last" && remainingBacklog !== 1) {
+                continue;
+              }
 
               // Guard for optimistic "light" tier:
               // only allow when the player actually reduced the backlog enough
@@ -6666,7 +6719,6 @@ ${(() => {
         repeatNote = "";
         practiceRepeatTierKey = "";
       }
-
       // Override endLine if a tier-specific version exists
       if (practiceRepeatTierKey) {
         const tierLine = String(practiceW?.endLineByTier?.[practiceRepeatTierKey] || "").trim();
@@ -6675,18 +6727,6 @@ ${(() => {
       endLineTpl = practiceEndLineTpl;
       practiceStatsLineTpl = (practiceEndStatsTpl && remainingBacklog != null) ? practiceEndStatsTpl : "";
       practiceRepeatNoteTpl = repeatNote;
-
-      // PRACTICE level: based on remaining mistake ratio after the run
-      if (total > 0 && remainingBacklog != null) {
-        const remainingRatio = Math.max(0, Math.min(remainingBacklog, total)) / total;
-        if (remainingRatio <= 0.2) practiceLevel = "high";
-        else if (remainingRatio <= 0.6) practiceLevel = "medium";
-        else practiceLevel = "low";
-      }
-
-      practiceIdentityTpl = String(practiceW?.identityByLevel?.[practiceLevel] || "").trim();
-      practiceLensTpl = String(practiceW?.lensByLevel?.[practiceLevel] || "").trim();
-
     } else {
       if (isRun && !!lastRun.poolCompleteCelebration) {
         endLineTpl = String(end.poolCompleteLine1 || "").trim();
@@ -6909,10 +6949,7 @@ ${(() => {
       console.warn("[WT_UI] Missing required copy: WT_WORDING.end.ctaByVerdict[verdictKey]");
     }
 
-    let practiceAgain =
-      (isPractice && practiceLevel)
-        ? String(practiceW?.ctaByLevel?.[practiceLevel] || "").trim()
-        : String(practiceW.ctaPracticeAgain || "").trim();
+    let practiceAgain = String(practiceW.ctaPracticeAgain || "").trim();
 
     // Optional CTA override (END PRACTICE) based on remaining tier (fail-closed)
     if (isPractice && practiceRepeatTierKey) {
@@ -7226,6 +7263,8 @@ ${(() => {
 <div class="wt-card">
   ${endHeaderRowHtml}
 
+  ${endTitle ? `<p class="wt-h1">${escapeHtml(endTitle)}</p>` : ``}
+
   ${displayScoreLine ? `
     <p class="wt-h2 wt-end-score${newBest ? " wt-end-score--newbest" : ""}">
       <span class="wt-end-score__value">
@@ -7263,14 +7302,15 @@ ${(() => {
         return endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``;
       })()}
 
-  ${(isRun && runPoolCompleteLine2Tpl) ? `<p class="wt-meta">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
+    ${(isRun && runPoolCompleteLine2Tpl) ? `<p class="wt-meta">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
+
+  ${(isBonus && bonusIdentityTpl) ? `<p class="wt-muted">${escapeHtml(bonusIdentityTpl)}</p>` : ``}
+  ${(isBonus && bonusLensTpl) ? `<p class="wt-muted">${escapeHtml(bonusLensTpl)}</p>` : ``}
   ${(isBonus && bonusDeckSizeLine) ? `<p class="wt-muted">${escapeHtml(bonusDeckSizeLine)}</p>` : ``}
+  ${(isBonus && bonusPoolProgressLine) ? `<p class="wt-muted">${escapeHtml(bonusPoolProgressLine)}</p>` : ``}
   ${(isBonus && bonusDecisionLine) ? `<p class="wt-meta">${escapeHtml(bonusDecisionLine)}</p>` : ``}
 
-   ${(isBonus && bonusIdentityTpl) ? `<p class="wt-muted">${escapeHtml(bonusIdentityTpl)}</p>` : ``}
-  ${(isBonus && bonusLensTpl) ? `<p class="wt-muted">${escapeHtml(bonusLensTpl)}</p>` : ``}
-  ${(isPractice && practiceIdentityTpl) ? `<p class="wt-muted">${escapeHtml(practiceIdentityTpl)}</p>` : ``}
-  ${(isPractice && practiceLensTpl) ? `<p class="wt-muted">${escapeHtml(practiceLensTpl)}</p>` : ``}
+  ${``}
 
   <div class="${endActionsClass}">
     ${(() => {
@@ -7585,7 +7625,19 @@ ${(() => {
 
     // HUD logo (fail-closed): only show if explicitly configured.
     const hudLogoUrl = String(cfg?.identity?.uiLogoUrl || "").trim();
-    const seenOnlyLine = String(this.wording?.secretBonus?.seenOnlyLine || "").trim();
+    const deckSizeRaw = Number(gameState?.deckSize);
+
+    const secretBonusDeckCount =
+      Number.isFinite(deckSizeRaw) && deckSizeRaw > 0
+        ? Math.floor(deckSizeRaw)
+        : null;
+
+    const seenOnlyLine = secretBonusDeckCount != null
+      ? fillTemplate(
+        String(this.wording?.secretBonus?.seenOnlyLine || "").trim(),
+        { count: secretBonusDeckCount }
+      )
+      : "";
     const servedSoFar = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
 
     let seenProgressHtml = "";

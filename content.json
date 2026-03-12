@@ -67,7 +67,7 @@
       "termFr": "caméra",
       "termEn": "camera",
       "correctAnswer": false,
-      "explanationShort": "caméra (FR) = a device for recording video.\ncamera (EN) = a device for taking photos.\nThere can be overlap in some contexts, but the main everyday meanings differ.",
+      "explanationShort": "caméra (FR) = a device mainly used to record video.\ncamera (EN) = a device used to take photographs or record images.\nFrench usually distinguishes photo ('appareil photo') and video ('caméra'); English often uses 'camera' for both.",
       "tag": "false_friend"
     },
     {
@@ -171,7 +171,7 @@
       "termFr": "blesser",
       "termEn": "bless",
       "correctAnswer": false,
-      "explanationShort": "blesser (FR) = to injure or wound someone.\nbless (EN) = to give a holy or divine favour.\nEnglish 'bless' comes from Old English 'blētsian' (to consecrate), possibly linked to \"blood\" in early usage — no relation to the French word.",
+      "explanationShort": "injure (FR) = an insult or offensive remark.\ninjury (EN) = physical harm or damage to the body.\nFrench wounds with words; English wounds the body.",
       "tag": "false_friend"
     },
     {
@@ -475,7 +475,7 @@
       "termFr": "table",
       "termEn": "table",
       "correctAnswer": true,
-      "explanationShort": "table = a flat surface used for eating, working, or placing objects.\nFrom Latin 'tabula', both languages kept the everyday furniture meaning.",
+      "explanationShort": "table (FR) = a piece of furniture used for eating, working, or placing objects.\ntable (EN) = the same: a piece of furniture for eating or working.\nSame word, same everyday meaning.",
       "tag": "true_friend"
     },
     {
@@ -483,7 +483,7 @@
       "termFr": "orange",
       "termEn": "orange",
       "correctAnswer": true,
-      "explanationShort": "orange = the citrus fruit and the colour.\nThe word came from Sanskrit through Arabic \"naranj\"; European languages dropped the initial \"n\" by confusing it with the article.",
+      "explanationShort": "orange (FR) = the fruit and the colour.\norange (EN) = the same: the fruit and the colour.\nThe word came from Sanskrit through Arabic \"naranj\"; European languages dropped the initial \"n\" by confusing it with the article.",
       "tag": "true_friend"
     },
     {
@@ -491,7 +491,7 @@
       "termFr": "chocolat",
       "termEn": "chocolate",
       "correctAnswer": true,
-      "explanationShort": "chocolat = the food and flavour made from cacao beans.\nFrom Nahuatl 'xocolatl,' brought to Europe by Spanish conquistadors in the 1500s.",
+      "explanationShort": "chocolat (FR) = the food made from cacao beans.\nchocolate (EN) = the same: the cacao-based food or flavour.\nFrom Nahuatl 'xocolatl,' brought to Europe by Spanish conquistadors in the 1500s.",
       "tag": "true_friend"
     },
     {
@@ -499,7 +499,7 @@
       "termFr": "fruit",
       "termEn": "fruit",
       "correctAnswer": true,
-      "explanationShort": "fruit = edible produce from a plant.\nFrom Latin 'fructus,' both languages preserved the botanical and culinary sense.",
+      "explanationShort": "fruit (FR) = edible produce from a plant.\nfruit (EN) = the same: edible produce from a plant.\nFrom Latin 'fructus,' both languages preserved the botanical meaning.",
       "tag": "true_friend"
     },
     {
@@ -507,7 +507,7 @@
       "termFr": "restaurant",
       "termEn": "restaurant",
       "correctAnswer": true,
-      "explanationShort": "restaurant = a place where meals are prepared and served to customers.\nFrom French 'restaurer' (to restore): originally linked to food meant to \"restore\" strength (restorative nourishment).",
+      "explanationShort": "restaurant (FR) = a place where meals are prepared and served.\nrestaurant (EN) = the same: a place where meals are served to customers.\nFrom French 'restaurer' (to restore strength).",
       "tag": "true_friend"
     },
     {
@@ -539,7 +539,7 @@
       "termFr": "information",
       "termEn": "information",
       "correctAnswer": true,
-      "explanationShort": "information = facts or knowledge about a subject.\nSame core meaning in French and English.\nIn French, \"les informations\" can also mean the TV news, but the base meaning stays \"information.\"",
+      "explanationShort": "information (FR) = facts or knowledge about a subject.\ninformation (EN) = the same: facts or knowledge.\nIn French, \"les informations\" can also mean the TV news.",
       "tag": "true_friend"
     },
     {
@@ -667,7 +667,7 @@
       "termFr": "culture",
       "termEn": "culture",
       "correctAnswer": true,
-      "explanationShort": "culture = the arts, customs, and beliefs of a society.\nAlso used in science for growing organisms in a controlled setting — from Latin 'cultura' (tending).",
+      "explanationShort": "culture (FR) = the arts, customs, and beliefs of a society.\nculture (EN) = the same: the arts, customs, and beliefs of a society.\nAlso used in science for growing organisms in a controlled setting — from Latin 'cultura'.",
       "tag": "true_friend"
     },
     {
@@ -683,7 +683,7 @@
       "termFr": "seconde",
       "termEn": "second",
       "correctAnswer": true,
-      "explanationShort": "seconde = a unit of time, or a position after first in a sequence.\nFrom Latin 'secunda' (following), both kept the time and ordering meanings.",
+      "explanationShort": "seconde (FR) = a unit of time or second position.\nsecond (EN) = the same: a unit of time or position after first.\nFrom Latin 'secunda' (following).",
       "tag": "true_friend"
     },
     {
@@ -731,7 +731,7 @@
       "termFr": "valeur",
       "termEn": "value",
       "correctAnswer": true,
-      "explanationShort": "valeur = worth in money, importance, or moral principles.\nFrom Latin 'valere' (to be strong), both kept economic and moral meanings.",
+      "explanationShort": "valeur (FR) = worth in money, importance, or moral principles.\nvalue (EN) = the same general ideas of worth or importance.\nBoth come from Latin 'valere' (to be strong), though each language uses it in slightly different contexts.",
       "tag": "true_friend"
     },
     {
@@ -747,7 +747,7 @@
       "termFr": "responsable",
       "termEn": "responsible",
       "correctAnswer": true,
-      "explanationShort": "responsable = in charge or accountable.\nIn French, the noun form also means manager or person in charge.",
+      "explanationShort": "responsable (FR) = in charge or accountable.\nresponsible (EN) = the same: accountable or in charge.\nIn French the noun can also mean a manager.",
       "tag": "true_friend"
     },
     {
@@ -795,7 +795,7 @@
       "termFr": "historique",
       "termEn": "historical",
       "correctAnswer": true,
-      "explanationShort": "historique = relating to past events.\nSame everyday meaning as \"historical\".\nFrench can also mean \"historic\" (important in history), where English often uses \"historic.\"",
+      "explanationShort": "historique (FR) = relating to history or past events.\nhistorical (EN) = relating to history or past events.\nFrench 'historique' can also mean 'historic' (important in history), while English usually distinguishes 'historic' and 'historical'.",
       "tag": "true_friend"
     },
     {
@@ -851,7 +851,7 @@
       "termFr": "portrait",
       "termEn": "portrait",
       "correctAnswer": true,
-      "explanationShort": "portrait = an image or artistic depiction of a person.\nBoth languages use it the same way.",
+      "explanationShort": "portrait (FR) = an artistic depiction of a person.\nportrait (EN) = the same: an artistic depiction of a person.\nBoth languages use it the same way.",
       "tag": "true_friend"
     },
     {
@@ -1403,7 +1403,7 @@
       "termFr": "buffet",
       "termEn": "buffet",
       "correctAnswer": true,
-      "explanationShort": "buffet = a self-service meal where people serve themselves.\nThe word can also refer to a sideboard or piece of furniture in both languages.\nThe core meanings overlap clearly.",
+      "explanationShort": "buffet (FR) = a self-service meal where people serve themselves.\nbuffet (EN) = the same: a self-service meal.\nThe word can also mean a sideboard or dining-room cabinet in both languages.",
       "tag": "true_friend"
     },
     {
