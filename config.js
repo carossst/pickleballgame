@@ -195,7 +195,7 @@
     // microPics garde uniquement les règles propres aux micro-pics.
     // IMPORTANT: streakThresholds est couplé au wording (ex: "3 in a row", "6 in a row", etc.).
     microPics: {
-      cooldownItems: 3, // nb d'items minimum entre deux micro-pics
+      cooldownItems: 1, // nb d'items minimum entre deux micro-pics
 
       // Seuils de streak (mécanique). La copy correspondante reste dans WT_WORDING.micropics.*
       streakThresholds: {
@@ -230,7 +230,7 @@
         // Timing bucket for micro-pics / micro-satisfaction
         positive: {
           delayMs: 0,
-          durationMs: 1000
+          durationMs: 1600
         },
 
         // Timing bucket for "+1" after a correct answer (no fallback in UI)
@@ -883,37 +883,37 @@
         // "Incorrect - {termFr} (FR) ≠ {termEn} (EN)"
         feedbackRelationSameTemplate: "{termFr} (FR) = {termEn} (EN)",
         feedbackRelationDifferentTemplate: "{termFr} (FR) \u2260 {termEn} (EN)"
-      },
-
-      micropics: {
-        runContinues: "You saw it. Keep going.",
-
-
-        // Near-miss (END-only highlight)
-        nearMiss: "Close call. That trap was waiting for you.",
-
-
-        // Repeated mistakes (END-only highlight)
-        repeatMistake: "This one keeps pulling you in. Slow down and read it again.",
-
-
-        // First time reaching the tier in this game
-        streakStart: "3 in a row. You're seeing the traps.",
-        streakBuilding: "6 in a row. The pattern is starting to click.",
-        streakStrong: "10 in a row. Sharp reading.",
-        streakElite: "15 in a row. Very little gets past you now.",
-        streakLegendary: "20 in a row. You read the traps before they land.",
-
-
-        // Reaching a tier again in the same game (after a mistake)
-        // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
-        streakAgainTemplate: "{streak} in a row again. Back in rhythm.",
-
-        // First non-chiffré micro-pic after a mistake (one-shot)
-        recovery: "There you go. Back in rhythm.",
-
-        runEndedAllChancesUsed: ""
       }
+    },
+
+    micropics: {
+      runContinues: "You saw it. Keep going.",
+
+
+      // Near-miss (END-only highlight)
+      nearMiss: "Close call. That trap was waiting for you.",
+
+
+      // Repeated mistakes (END-only highlight)
+      repeatMistake: "This one keeps pulling you in. Slow down and read it again.",
+
+
+      // First time reaching the tier in this game
+      streakStart: "3 in a row. You're seeing the traps.",
+      streakBuilding: "6 in a row. The pattern is starting to click.",
+      streakStrong: "10 in a row. Sharp reading.",
+      streakElite: "15 in a row. Very little gets past you now.",
+      streakLegendary: "20 in a row. You read the traps before they land.",
+
+
+      // Reaching a tier again in the same game (after a mistake)
+      // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
+      streakAgainTemplate: "{streak} in a row again. Back in rhythm.",
+
+      // First non-chiffré micro-pic after a mistake (one-shot)
+      recovery: "There you go. Back in rhythm.",
+
+      runEndedAllChancesUsed: ""
     },
 
     end: {

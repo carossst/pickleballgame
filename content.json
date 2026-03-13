@@ -1,5 +1,5 @@
 {
-  "version": "3.4",
+  "version": "3.5",
   "totalItems": 200,
   "breakdown": {
     "falseItems": 106,
@@ -147,7 +147,7 @@
       "termFr": "demander",
       "termEn": "demand",
       "correctAnswer": false,
-      "explanationShort": "demander (FR) = to ask or request, with no aggressive tone.\ndemand (EN) = to insist forcefully, with authority.\nFrench asks; English insists.",
+      "explanationShort": "demander (FR) = to ask.\ndemand (EN) = to insist on receiving something.\nFrench asks; English insists.",
       "tag": "false_friend"
     },
     {
@@ -171,7 +171,7 @@
       "termFr": "blesser",
       "termEn": "bless",
       "correctAnswer": false,
-      "explanationShort": "injure (FR) = an insult or offensive remark.\ninjury (EN) = physical harm or damage to the body.\nFrench wounds with words; English wounds the body.",
+      "explanationShort": "blesser (FR) = to injure or wound someone.\nbless (EN) = to give a holy or divine favour.\nFrench injures; English blesses.",
       "tag": "false_friend"
     },
     {
@@ -179,7 +179,7 @@
       "termFr": "charger",
       "termEn": "charge",
       "correctAnswer": false,
-      "explanationShort": "charger (FR) = to load something or charge a battery.\ncharge (EN) = to ask for payment or accuse someone.\nThere can be overlap in some contexts, but the main everyday meanings differ.",
+      "explanationShort": "charger (FR) = to load something or charge a battery.\ncharge (EN) = to ask for payment or accuse someone.\nSome overlap exists, but French usually means to load.",
       "tag": "false_friend"
     },
     {
@@ -315,7 +315,7 @@
       "termFr": "adresser",
       "termEn": "address",
       "correctAnswer": false,
-      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with a problem or issue.\nThere can be overlap in some contexts, but the main everyday meanings differ.",
+      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with a problem or issue.\nSome overlap exists, but French usually means to send or direct.",
       "tag": "false_friend"
     },
     {
@@ -363,7 +363,7 @@
       "termFr": "éventuel",
       "termEn": "eventual",
       "correctAnswer": false,
-      "explanationShort": "éventuel (FR) = possible, potential, not certain.\neventual (EN) = final, happening at the end, ultimate.\nKey difference: French is uncertainty; English is end result.",
+      "explanationShort": "éventuel (FR) = possible, potential, not certain.\neventual (EN) = final, happening at the end, ultimate.\nFrench is uncertainty; English is end result.",
       "tag": "false_friend"
     },
     {
@@ -371,7 +371,7 @@
       "termFr": "journée",
       "termEn": "journey",
       "correctAnswer": false,
-      "explanationShort": "journée (FR) = the span of a full day.\njourney (EN) = a trip from one place to another.\nIn medieval French, a 'journée' was the distance you could cover in one day — English kept only the travel part.",
+      "explanationShort": "journée (FR) = the span of a full day.\njourney (EN) = a trip from one place to another.\nFrench refers to a day; English refers to travel.",
       "tag": "false_friend"
     },
     {
@@ -379,7 +379,7 @@
       "termFr": "rester",
       "termEn": "rest",
       "correctAnswer": false,
-      "explanationShort": "rester (FR) = to stay or remain somewhere.\nrest (EN) = to relax or stop working.\nStaying in French; relaxing in English.",
+      "explanationShort": "rester (FR) = to stay or remain somewhere.\nrest (EN) = to relax or stop working.\nFrench stays; English relaxes.",
       "tag": "false_friend"
     },
     {
@@ -387,7 +387,7 @@
       "termFr": "sympathique",
       "termEn": "sympathetic",
       "correctAnswer": false,
-      "explanationShort": "sympathique (FR) = nice, friendly, pleasant.\nsympathetic (EN) = showing compassion or understanding.\nFrench means friendly; English means compassionate.",
+      "explanationShort": "sympathique (FR) = nice, friendly, pleasant.\nsympathetic (EN) = showing compassion or understanding.\nFrench is friendly; English shows compassion.",
       "tag": "false_friend"
     },
     {
@@ -730,9 +730,9 @@
       "id": 91,
       "termFr": "valeur",
       "termEn": "value",
-      "correctAnswer": true,
-      "explanationShort": "valeur (FR) = worth in money, importance, or moral principles.\nvalue (EN) = the same general ideas of worth or importance.\nBoth come from Latin 'valere' (to be strong), though each language uses it in slightly different contexts.",
-      "tag": "true_friend"
+      "correctAnswer": false,
+      "explanationShort": "valeur (FR) = worth, importance, moral principle.\nvalue (EN) = numerical or economic amount.\nFrench can mean importance; English usually means a quantity.",
+      "tag": "false_friend"
     },
     {
       "id": 92,
@@ -794,9 +794,9 @@
       "id": 99,
       "termFr": "historique",
       "termEn": "historical",
-      "correctAnswer": true,
-      "explanationShort": "historique (FR) = relating to history or past events.\nhistorical (EN) = relating to history or past events.\nFrench 'historique' can also mean 'historic' (important in history), while English usually distinguishes 'historic' and 'historical'.",
-      "tag": "true_friend"
+      "correctAnswer": false,
+      "explanationShort": "historique (FR) = historic, significant in history.\nhistorical (EN) = related to history in general.\nFrench often means important; English simply relates to history.",
+      "tag": "false_friend"
     },
     {
       "id": 100,
@@ -1211,7 +1211,7 @@
       "termFr": "assiette",
       "termEn": "asset",
       "correctAnswer": false,
-      "explanationShort": "assiette (FR) = a plate, a dish used for eating.\nasset (EN) = a valuable resource or property.\nKey difference: dining object vs. valuable resource.",
+      "explanationShort": "assiette (FR) = a plate, a dish used for eating.\nasset (EN) = a valuable resource or property.\nFrench holds food; English holds value.",
       "tag": "false_friend"
     },
     {
@@ -1219,7 +1219,7 @@
       "termFr": "chef",
       "termEn": "chef",
       "correctAnswer": false,
-      "explanationShort": "chef (FR) = a leader, boss, or head of any group or department.\nchef (EN) = a professional cook, especially in a restaurant kitchen.\nEnglish borrowed the word from French but narrowed it to cooking only.",
+      "explanationShort": "chef (FR) = a leader, boss, or head of a group.\nchef (EN) = a professional cook in a restaurant.\nFrench means a leader; English means a professional cook.",
       "tag": "false_friend"
     },
     {
@@ -1227,7 +1227,7 @@
       "termFr": "parcours",
       "termEn": "parkour",
       "correctAnswer": false,
-      "explanationShort": "parcours (FR) = a route, path, or career journey.\nparkour (EN) = an urban acrobatic sport of jumping over obstacles.\nEnglish borrowed the word specifically for the sport that emerged from French military obstacle training.",
+      "explanationShort": "parcours (FR) = a route, path, or career journey.\nparkour (EN) = an urban acrobatic sport of jumping over obstacles.\nFrench means a route; English names a sport.",
       "tag": "false_friend"
     },
     {
@@ -1323,7 +1323,7 @@
       "termFr": "robe",
       "termEn": "robe",
       "correctAnswer": false,
-      "explanationShort": "robe (FR) = a dress, an everyday garment.\nrobe (EN) = a bathrobe or a ceremonial gown, like a judge wears.\nFrom Germanic 'rauba' (spoils, garments taken in war); French kept everyday dress, English kept formal or private wear.",
+      "explanationShort": "robe (FR) = a dress worn by women.\nrobe (EN) = a gown or bathrobe.\nFrench means a dress; English means a robe or gown.",
       "tag": "false_friend"
     },
     {
@@ -1371,7 +1371,7 @@
       "termFr": "lunettes",
       "termEn": "lunatic",
       "correctAnswer": false,
-      "explanationShort": "lunettes (FR) = glasses or spectacles for seeing better.\nlunatic (EN) = a crazy or insane person.\nBoth trace to Latin \"luna\" (moon): French named the round lens shape, English linked the moon to madness.",
+      "explanationShort": "lunettes (FR) = glasses for seeing better.\nlunatic (EN) = a crazy or insane person.\nFrench means glasses; English means a crazy person.",
       "tag": "false_friend"
     },
     {
@@ -1467,7 +1467,7 @@
       "termFr": "gentil",
       "termEn": "gentle",
       "correctAnswer": false,
-      "explanationShort": "gentil (FR) = kind, nice, friendly.\ngentle (EN) = soft, mild, not rough.\nThe words look close, but in everyday use, different meaning.",
+      "explanationShort": "gentil (FR) = kind, nice, friendly.\ngentle (EN) = soft, mild, not rough.\nFrench is kind; English is gentle.",
       "tag": "false_friend"
     },
     {
@@ -1563,7 +1563,7 @@
       "termFr": "dot",
       "termEn": "dot",
       "correctAnswer": false,
-      "explanationShort": "dot (FR) = a dowry, money or property a bride brings to a marriage.\ndot (EN) = a small round mark or point.\nFrom Latin 'dotem' (gift); the marriage tradition shaped European alliances for centuries.",
+      "explanationShort": "dot (FR) = a dowry brought to marriage.\ndot (EN) = a small round point.\nFrench means a dowry; English means a small point.",
       "tag": "false_friend"
     },
     {

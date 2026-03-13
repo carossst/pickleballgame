@@ -2743,7 +2743,13 @@ void function () {
     const mpCfg = (cfg && cfg.microPics) ? cfg.microPics : null;
     if (!mpCfg) return;
 
-    const answeredCount = Array.isArray(this._runtime.runItemIds) ? this._runtime.runItemIds.length : 0;
+    let answeredCount = 0;
+    try {
+      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      const idx = Number(gs.idx);
+      if (Number.isFinite(idx)) answeredCount = idx + 1;
+    } catch (_) { /* keep 0 */ }
+
     const isCorrect = (res && res.isCorrect === true);
 
     // Live state after engine answer
@@ -2870,30 +2876,8 @@ void function () {
     // Flow highlight (highest tier wins)
     const s = clampInt(mp.correctStreak, 0, 9999);
 
-    // Guarantee at least one positive micro-pic early in the run
-    if (isCorrect && s === 1 && clampInt(mp.flowTierShown, 0, 9999) === 0) {
-      const msg = String(mpc.runContinues || "").trim();
-      if (tryShowRunOverlay(msg, "info")) {
-        mp.flowTierShown = 1;
-      }
-    }
-    // KISS: light flow confirmation before the first configured tier.
-    // Goal: avoid long silent stretches in short games.
-    // Uses existing wording only; still respects cooldown / anti-collision.
-    if (
-      isCorrect &&
-      s === 2 &&
-      mp.justRecoveredFromMistake !== true &&
-      clampInt(mp.flowTierShown, 0, 9999) < 2
-    ) {
-      const msg = String(mpc.runContinues || "").trim();
-      if (tryShowRunOverlay(msg, "info")) {
-        mp.flowTierShown = 2;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
-      }
-      setEndHighlight(msg, "success", 60);
-      return;
-    }
+
+
 
     // No fallback: thresholds must exist in WT_CONFIG.microPics.streakThresholds.
     const th = cfg?.microPics?.streakThresholds;
@@ -2933,10 +2917,6 @@ void function () {
       }
       return;
     }
-
-    // #4 RaretÃ© intelligente: streak micropics uniquement si nouveau record "récompensé"
-    const shownMax = clampInt(mp.maxCorrectStreakDisplayed, 0, 9999);
-    if (s <= shownMax) return;
 
     if (s >= tLegendary && mp.flowTierShown < tLegendary) {
       const already = !!(tierOnce && tierOnce.legendary === true);
@@ -2995,8 +2975,7 @@ void function () {
       return;
     }
 
-    // #2 Cooldown adaptatif aprÃ¨s erreur: ignorer le palier "start" une fois
-    if (mp.justRecoveredFromMistake !== true && s >= tStart && mp.flowTierShown < tStart) {
+    if (s >= tStart && mp.flowTierShown < tStart) {
       const already = !!(tierOnce && tierOnce.start === true);
       const baseMsg = String(mpc.streakStart || "").trim();
       const msg = (already ? againMsgFor(tStart) : "") || baseMsg;
@@ -3010,18 +2989,6 @@ void function () {
       mp.justRecoveredFromMistake = false;
       return;
     }
-
-    if (s >= tStart && mp.flowTierShown < tStart) {
-      const already = !!(tierOnce && tierOnce.start === true);
-      const baseMsg = String(mpc.streakStart || "").trim();
-      const msg = (already ? againMsgFor(tStart) : "") || baseMsg;
-
-      if (tryShowRunOverlay(msg, "info")) mp.flowTierShown = tStart;
-      if (tierOnce) tierOnce.start = true;
-      setEndHighlight(msg, "success", 65);
-      return;
-    }
-
 
     // End-of-run highlight (only meaningful if the run ended)
     const done = (res && res.done === true);
@@ -4043,18 +4010,11 @@ void function () {
       return;
     }
 
-    // PRACTICE: when the deck is exhausted, go straight to END.
-    // Keeping the last card in "feedback + Continue" blocks the natural Practice exit.
     if (runMode === MODES.PRACTICE && res.done === true) {
-      this._runtime.feedbackPending = false;
-      this._runtime.feedbackReveal = true;
-      this._runtime.lastAnswer = null;
-      this._runtime.frozenItem = null;
-      this._runtime.finishAfterFeedback = false;
-      this._runtime.answerLocked = false;
-      this._finishRun();
-      return;
+      this._runtime.feedbackPending = true;
+      this._runtime.finishAfterFeedback = true;
     }
+
 
     this._runtime.feedbackPending = true;
     // If last item, do NOT end immediately. End after Continue.
@@ -6895,14 +6855,14 @@ ${(() => {
 
             const rel =
               (t.correctAnswer === true) ? "=" :
-                (t.correctAnswer === false) ? "\u2260" :
+                (t.correctAnswer === false) ? "≠" :
                   "";
 
             if (!rel) continue;
 
             const expl = String(t.explanationShort || "").trim();
             const pairHtml = `<span class="wt-mistake-pair">${escapeHtml(fr)} (FR) ${rel} ${escapeHtml(en)} (EN)</span>`;
-            const explHtml = expl ? `<span class="wt-mistake-expl">\u2192 ${formatExplanationForDisplay(expl, cfg)}</span>` : "";
+            const explHtml = expl ? `<span class="wt-mistake-expl">${formatExplanationForDisplay(expl, cfg)}</span>` : "";
 
             items.push(`<div class="wt-mistake-item">${pairHtml}${explHtml}</div>`);
           }
