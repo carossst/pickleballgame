@@ -593,6 +593,15 @@ void function () {
       gameplayOverlayShowTimer = null;
     }
 
+    if (Math.floor(delayMs) <= 0) {
+      showGameplayOverlay(text, {
+        durationMs: Math.floor(durationMs),
+        variant,
+        cfg
+      });
+      return;
+    }
+
     gameplayOverlayShowTimer = setTimeout(() => {
       gameplayOverlayShowTimer = null;
       showGameplayOverlay(text, {
@@ -687,12 +696,14 @@ void function () {
     // Priority: do not override chance-lost overlay
     if (isOverlayVisible("wt-chance-lost-overlay")) return;
 
-    // Deconflict: do not stack a centered overlay on top of a visible toast (ex: "+1 score")
+    // Gameplay overlay wins over the standard toast shell.
+    // Otherwise positive micro-pics get silently dropped whenever #toast is still visible.
     const toast = el("toast");
-    if (toast && toast.classList.contains("wt-toast--visible")) return;
+    if (toast && toast.classList.contains("wt-toast--visible")) {
+      toast.classList.remove("wt-toast--visible");
+    }
 
     hideRunStartOverlay();
-
 
     if (gameplayOverlayTimer) {
       clearTimeout(gameplayOverlayTimer);
@@ -725,7 +736,7 @@ void function () {
     else if (variant === "danger") overlay.classList.add("wt-chance-overlay--danger");
     else if (variant === "success") overlay.classList.add("wt-chance-overlay--success");
 
-    // Gameplay overlays: block taps by default (avoid "looks modal but click-through")
+    // Gameplay overlays: block taps by default (avoid "looks modal but click-through")
     overlay.classList.add("wt-chance-overlay--blocking");
 
     overlay.innerHTML = `
@@ -736,9 +747,9 @@ void function () {
       </div>
     `;
 
-    // Tap-to-dismiss (faster): only if enabled in config (now allowed for all variants, including danger)
-    const dismissEnabled = (cfg?.ui?.toastDismissOnTap === true); const dismissAllowed = dismissEnabled;
-    if (dismissAllowed) {
+    // Tap-to-dismiss (faster): only if enabled in config
+    const dismissEnabled = (cfg?.ui?.toastDismissOnTap === true);
+    if (dismissEnabled) {
       overlay.classList.add("wt-chance-overlay--dismissible");
       gameplayOverlayTapHandler = (e) => {
         const el = document.getElementById("wt-gameplay-overlay");
@@ -751,7 +762,6 @@ void function () {
       document.addEventListener("pointerdown", gameplayOverlayTapHandler, true);
     }
 
-
     overlay.classList.add("wt-chance-overlay--visible");
     overlay.setAttribute("aria-hidden", "false");
 
@@ -759,7 +769,6 @@ void function () {
       hideGameplayOverlay();
     }, Math.floor(durationMs));
   }
-
 
 
   function hideGameplayOverlay() {
@@ -2782,17 +2791,20 @@ void function () {
       // 1 message per answer (even if cooldownItems=0)
       if (answeredCount === clampInt(mp.lastToastAtCount, -9999, 9999)) return false;
 
-      // Anti-collision: block positives while danger overlay may still be visible
-      const dangerMs = Number(cfg?.ui?.chanceLostOverlayMs);
-      const lastDangerAtMs = Number(mp.lastDangerAtMs);
-      if (Number.isFinite(dangerMs) && dangerMs > 0 && Number.isFinite(lastDangerAtMs) && lastDangerAtMs > 0) {
-        if ((Date.now() - lastDangerAtMs) < dangerMs) return false;
-      }
+      // Do not show a positive overlay on the exact same answer as a danger event.
+      // Once the next valid answer lands, positives may resume normally.
+      const lastDangerAtCount = clampInt(mp.lastDangerAtCount, -9999, 9999);
+      if (answeredCount === lastDangerAtCount) return false;
 
       const canShowNow = (answeredCount - clampInt(mp.lastToastAtCount, -9999, 9999)) >= Math.floor(cooldownItems);
       if (!canShowNow) return false;
 
-      scheduleGameplayOverlay(m, { delayMs: timing.delayMs, durationMs: timing.durationMs, variant: String(variant || "info") });
+      scheduleGameplayOverlay(m, {
+        delayMs: timing.delayMs,
+        durationMs: timing.durationMs,
+        variant: String(variant || "info"),
+        cfg
+      });
       mp.lastToastAtCount = answeredCount;
       return true;
     }
@@ -2850,15 +2862,21 @@ void function () {
       const msg = String(mpc.runContinues || "").trim();
       if (tryShowRunOverlay(msg, "info")) {
         mp.survivalShown = true;
-        setEndHighlight(msg, "info", 40);
-        return;
       }
       setEndHighlight(msg, "info", 40);
+      return;
     }
 
     // Flow highlight (highest tier wins)
     const s = clampInt(mp.correctStreak, 0, 9999);
 
+    // Guarantee at least one positive micro-pic early in the run
+    if (isCorrect && s === 1 && clampInt(mp.flowTierShown, 0, 9999) === 0) {
+      const msg = String(mpc.runContinues || "").trim();
+      if (tryShowRunOverlay(msg, "info")) {
+        mp.flowTierShown = 1;
+      }
+    }
     // KISS: light flow confirmation before the first configured tier.
     // Goal: avoid long silent stretches in short games.
     // Uses existing wording only; still respects cooldown / anti-collision.
@@ -4025,9 +4043,20 @@ void function () {
       return;
     }
 
+    // PRACTICE: when the deck is exhausted, go straight to END.
+    // Keeping the last card in "feedback + Continue" blocks the natural Practice exit.
+    if (runMode === MODES.PRACTICE && res.done === true) {
+      this._runtime.feedbackPending = false;
+      this._runtime.feedbackReveal = true;
+      this._runtime.lastAnswer = null;
+      this._runtime.frozenItem = null;
+      this._runtime.finishAfterFeedback = false;
+      this._runtime.answerLocked = false;
+      this._finishRun();
+      return;
+    }
 
     this._runtime.feedbackPending = true;
-
     // If last item, do NOT end immediately. End after Continue.
     this._runtime.finishAfterFeedback = (res.done === true);
 
@@ -6670,7 +6699,10 @@ ${(() => {
         }
       } catch (_) { remainingBacklog = null; }
 
-      const backlogAtStart = clampInt(this._runtime?.practiceBacklogAtStart, 0, 99999);
+      let backlogAtStart = clampInt(this._runtime?.practiceBacklogAtStart, 0, 99999);
+      if (!backlogAtStart && remainingBacklog != null) {
+        backlogAtStart = remainingBacklog + mistakeCount;
+      }
       const fixedCount = (remainingBacklog == null)
         ? 0
         : clampInt(backlogAtStart - remainingBacklog, 0, backlogAtStart);
@@ -6957,7 +6989,7 @@ ${(() => {
       if (tierCta) practiceAgain = tierCta;
     }
 
-    if ((isPractice && practiceLevel) && !practiceAgain && this.config?.debug?.enabled) {
+    if ((isPractice && practiceRepeatTierKey) && !practiceAgain && this.config?.debug?.enabled) {
       console.warn("[WT_UI] Missing required copy: WT_WORDING.practice.ctaByLevel[level]");
     }
 
@@ -7490,7 +7522,7 @@ ${(() => {
     const w = wAll.playing || {};
     const ui = wAll.ui || {};
     const cfg = this.config || {};
-
+    const premium = (this.storage && typeof this.storage.isPremium === "function") ? (this.storage.isPremium() === true) : false;
     // Get live state from game engine
     const gameState = this.game.getState ? this.game.getState() : {};
 

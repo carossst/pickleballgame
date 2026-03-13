@@ -826,7 +826,7 @@
       freeLimitReachedClose: "Not now",
 
       // END screen (PRACTICE)
-      endTitle: "Mistakes complete",
+      endTitle: "",
       endLine: "Good work. You tightened the weak spots.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
@@ -1004,7 +1004,7 @@
 
       newBest: "NEW PERSONAL BEST",
       houseAdSummaryLabel: "Keep going with another game",
-      playAgain: "See more traps. Think in French.",
+      playAgain: "Build your deck. Think in French.",
 
       practiceCta: "Fix your mistakes",
       practiceCtaTemplate: "Fix your {count} mistake{pluralS}",

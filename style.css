@@ -620,7 +620,7 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   min-height: clamp(420px, 58vh, 720px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 @media (min-height: 741px) {

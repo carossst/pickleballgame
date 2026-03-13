@@ -197,9 +197,9 @@
             "use strict";
 
             function openSupportEmail() {
-                const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
-                if (!email) return;
-                window.location.href = `mailto:${encodeURIComponent(email)}`;
+                if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
+                    window.WT_Email.openSupportEmail();
+                }
             }
 
             function applyVersion() {
