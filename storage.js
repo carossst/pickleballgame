@@ -196,7 +196,11 @@
 
       // Run history (lightweight, local-only)
       history: {
-        lastRuns: []
+        lastRuns: [],
+        runPaceTotals: {
+          runCount: 0,
+          totalNewSeen: 0
+        }
       },
 
       // Per-item stats (anti-repetition + practice)
@@ -1217,6 +1221,18 @@
     });
   };
 
+  StorageManager.prototype.getRunPaceTotals = function () {
+    const rp = (this.data?.history && this.data.history.runPaceTotals && typeof this.data.history.runPaceTotals === "object")
+      ? this.data.history.runPaceTotals
+      : {};
+
+    return {
+      runCount: clampNonNegativeInt(rp.runCount),
+      totalNewSeen: clampNonNegativeInt(rp.totalNewSeen)
+    };
+  };
+
+
   StorageManager.prototype.getEarlyPriceState = function () {
     const ep = this.data?.earlyPrice || {};
     const startedAt = clampNonNegativeInt(ep.startedAt);
@@ -1641,6 +1657,18 @@
 
     this.data.history = this.data.history || {};
     this.data.history.lastRuns = list;
+
+    const runMode = String(entry?.meta?.mode || "").trim().toUpperCase();
+    const newSeenCount = clampNonNegativeInt(entry?.meta?.newSeenCount);
+
+    const prevPaceTotals = (this.data.history.runPaceTotals && typeof this.data.history.runPaceTotals === "object")
+      ? this.data.history.runPaceTotals
+      : { runCount: 0, totalNewSeen: 0 };
+
+    this.data.history.runPaceTotals = {
+      runCount: clampNonNegativeInt(prevPaceTotals.runCount) + (runMode === "RUN" ? 1 : 0),
+      totalNewSeen: clampNonNegativeInt(prevPaceTotals.totalNewSeen) + (runMode === "RUN" ? newSeenCount : 0)
+    };
 
     this._save();
 

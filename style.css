@@ -1623,7 +1623,9 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 
   35% {
     transform: scale(1.06);
-    box-shadow: 0 0 0 4px rgba(var(--primary), 0.18), var(--shadow-3);
+    box-shadow:
+      0 0 0 4px rgb(var(--primary) / var(--wt-a-18)),
+      var(--shadow-2);
     filter: brightness(1.03);
   }
 
@@ -1694,6 +1696,82 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   font-weight: 500;
   color: rgb(var(--text-muted));
   opacity: var(--wt-a-92);
+}
+
+.wt-momentum-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-2);
+  margin-top: 8px;
+  min-width: 0;
+}
+
+.wt-momentum {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.wt-momentum__seg {
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(var(--border) / var(--wt-a-90));
+  box-shadow: inset 0 0 0 1px rgb(var(--border) / var(--wt-a-90));
+  transition:
+    background-color var(--fast) ease,
+    box-shadow var(--fast) ease,
+    transform var(--fast) ease,
+    filter var(--fast) ease;
+}
+
+.wt-momentum__seg--on,
+.wt-momentum__seg--max {
+  background: rgb(var(--success) / var(--wt-a-85));
+  box-shadow:
+    inset 0 0 0 1px rgb(var(--success-dark) / var(--wt-a-30)),
+    0 0 14px rgb(var(--success) / var(--wt-a-25));
+}
+
+.wt-momentum__seg--max {
+  filter: saturate(1.04);
+}
+
+.wt-momentum__combo {
+  flex: 0 0 auto;
+  min-width: 36px;
+  padding: 4px 8px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgb(var(--border));
+  background: rgb(var(--surface-muted));
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1;
+  color: rgb(var(--text-strong));
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 360px) {
+  .wt-momentum-wrap {
+    gap: var(--gap-1);
+    margin-top: 6px;
+  }
+
+  .wt-momentum {
+    gap: 5px;
+  }
+
+  .wt-momentum__seg {
+    height: 5px;
+  }
+
+  .wt-momentum__combo {
+    min-width: 32px;
+    padding: 4px 6px;
+    font-size: 12px;
+  }
 }
 
 /* Trigger animation only. Keyframes handle show + fade-out. */

@@ -159,7 +159,6 @@ void function () {
   function isOnline() {
     return navigator.onLine !== false;
   }
-
   function fillTemplate(str, vars) {
     let out = String(str || "");
     const v = (vars && typeof vars === "object") ? vars : {};
@@ -167,6 +166,57 @@ void function () {
       out = out.replaceAll(`{${k}}`, String(v[k]));
     }
     return out;
+  }
+
+  function getMomentumMeterState(cfg, streak, modeNow, currentLevel) {
+    const mm = (cfg?.ui?.momentumMeter && typeof cfg.ui.momentumMeter === "object")
+      ? cfg.ui.momentumMeter
+      : null;
+
+    if (!mm || mm.enabled !== true) return null;
+    if (String(mm.mode || "").trim() !== String(modeNow || "").trim()) return null;
+
+    const segments = Number(mm.segments);
+    if (!Number.isFinite(segments) || Math.floor(segments) !== 6) return null;
+
+    const th = (mm.thresholds && typeof mm.thresholds === "object") ? mm.thresholds : null;
+    if (!th) return null;
+
+    const s1 = Number(th.s1);
+    const s2 = Number(th.s2);
+    const s3 = Number(th.s3);
+    const s4 = Number(th.s4);
+    const s5 = Number(th.s5);
+    const s6 = Number(th.s6);
+
+    const ok =
+      Number.isFinite(s1) &&
+      Number.isFinite(s2) &&
+      Number.isFinite(s3) &&
+      Number.isFinite(s4) &&
+      Number.isFinite(s5) &&
+      Number.isFinite(s6);
+
+    if (!ok) return null;
+
+    const safeStreak = clampInt(streak, 0, 9999);
+    const safeLevel = clampInt(currentLevel, 0, 6);
+
+    let target = 0;
+    if (safeStreak >= s1) target = 1;
+    if (safeStreak >= s2) target = 2;
+    if (safeStreak >= s3) target = 3;
+    if (safeStreak >= s4) target = 4;
+    if (safeStreak >= s5) target = 5;
+    if (safeStreak >= s6) target = 6;
+
+    return {
+      target,
+      filled: Math.max(target, safeLevel),
+      segments: 6,
+      streak: safeStreak,
+      overflow: Math.max(0, safeStreak - 6)
+    };
   }
 
 
@@ -1143,6 +1193,7 @@ void function () {
       microPics: {
         correctStreak: 0,
         maxCorrectStreak: 0,
+        momentumLevel: 0,
 
         // #3/#4 runtime flags (UI-only)
         justRecoveredFromMistake: false,
@@ -2766,13 +2817,38 @@ void function () {
     // Update prev snapshot ASAP
     mp.prevChancesLeft = chancesLeft;
 
-    // Maintain streak (flow stops immediately on first error)
+    // Maintain streak + momentum meter
     if (isCorrect) {
       mp.correctStreak = clampInt(mp.correctStreak + 1, 0, 9999);
       mp.maxCorrectStreak = Math.max(clampInt(mp.maxCorrectStreak, 0, 9999), mp.correctStreak);
+
+      const momentumState = getMomentumMeterState(cfg, mp.correctStreak, runMode, mp.momentumLevel);
+      if (momentumState) {
+        const current = clampInt(mp.momentumLevel, 0, 6);
+        const target = clampInt(momentumState.target, 0, 6);
+
+        // Recovery must feel immediate:
+        // after a loss, each correct answer rebuilds +1 visible segment
+        // instead of waiting for the new streak to "catch up".
+        mp.momentumLevel = Math.min(6, Math.max(target, current + 1));
+      }
     } else {
+      const currentLevel = clampInt(mp.momentumLevel, 0, 6);
+
       mp.correctStreak = 0;
       mp.flowTierShown = 0;
+
+      // Progressive drop:
+      // 1-3 -> 0
+      // 4-5 -> 2
+      // 6+  -> 3
+      if (currentLevel >= 6) {
+        mp.momentumLevel = 3;
+      } else if (currentLevel >= 4) {
+        mp.momentumLevel = 2;
+      } else {
+        mp.momentumLevel = 0;
+      }
     }
 
     // Danger overlays are handled centrally (no micro-pic overlay on chance loss)
@@ -3133,6 +3209,7 @@ void function () {
     if (this._runtime.microPics) {
       this._runtime.microPics.correctStreak = 0;
       this._runtime.microPics.maxCorrectStreak = 0;
+      this._runtime.microPics.momentumLevel = 0;
       this._runtime.microPics.flowTierShown = 0;
       this._runtime.microPics.twoChancesShown = false;
       this._runtime.microPics.survivalShown = false;
@@ -3364,6 +3441,7 @@ void function () {
     if (this._runtime.microPics) {
       this._runtime.microPics.correctStreak = 0;
       this._runtime.microPics.maxCorrectStreak = 0;
+      this._runtime.microPics.momentumLevel = 0;
       this._runtime.microPics.flowTierShown = 0;
       this._runtime.microPics.survivalShown = false;
       this._runtime.microPics.lastToastAtCount = -999;
@@ -6052,8 +6130,8 @@ void function () {
       const enabled = (statsCfg?.enabled === true);
 
       const paceNRaw = Number(statsCfg?.paceRunsCount);
-      const sparkN = (Number.isFinite(paceNRaw) && paceNRaw >= 1 && paceNRaw <= 20) ? Math.floor(paceNRaw) : null;
-      if (enabled && sparkN != null && Number.isFinite(runCompletes) && runCompletes >= 1) {
+      const minRunsToShow = (Number.isFinite(paceNRaw) && paceNRaw >= 1 && paceNRaw <= 999) ? Math.floor(paceNRaw) : null;
+      if (enabled && minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= 1) {
         const seenTpl = String(landing.statsSeenSummaryTemplate || "").trim();
         const paceTpl = String(landing.statsPaceSummaryTemplate || "").trim();
 
@@ -6135,45 +6213,26 @@ void function () {
               seen < poolSizeSafe &&
               paceTpl &&
               this.storage &&
-              typeof this.storage.getLastRuns === "function"
+              typeof this.storage.getRunPaceTotals === "function"
             ) {
-              const history = this.storage.getLastRuns(20) || [];
-              const runOnly = Array.isArray(history)
-                ? history.filter((entry) => String(entry?.meta?.mode || "").trim().toUpperCase() === "RUN")
-                : [];
+              const totals = this.storage.getRunPaceTotals();
+              const totalRunCount = clampInt(Number(totals?.runCount), 0, 999999);
+              const totalNewSeen = clampInt(Number(totals?.totalNewSeen), 0, 999999);
 
-              const recentRuns = runOnly.slice(0, sparkN);
-
-              if (recentRuns.length >= sparkN) {
-                let totalNewSeen = 0;
-                let valid = true;
-
-                for (const entry of recentRuns) {
-                  const n = Number(entry?.meta?.newSeenCount);
-                  if (!Number.isFinite(n) || n < 0) {
-                    valid = false;
-                    break;
-                  }
-                  totalNewSeen += Math.floor(n);
-                }
-
-                if (valid && sparkN > 0) {
-                  const avgNewSeen = totalNewSeen / sparkN;
-                  if (avgNewSeen >= 1 && remaining > 0) {
-                    const runsLeft = Math.ceil(remaining / avgNewSeen);
-                    paceLine = fillTemplate(paceTpl, {
-                      poolSize: poolSizeSafe,
-                      remaining,
-                      runsLeft,
-                      pluralS: runsLeft === 1 ? "" : "s"
-                    });
-                  }
+              if (totalRunCount >= minRunsToShow && totalRunCount >= 1) {
+                const avgNewSeen = totalNewSeen / totalRunCount;
+                if (avgNewSeen >= 1 && remaining > 0) {
+                  const runsLeft = Math.ceil(remaining / avgNewSeen);
+                  paceLine = fillTemplate(paceTpl, {
+                    poolSize: poolSizeSafe,
+                    remaining,
+                    runsLeft,
+                    pluralS: runsLeft === 1 ? "" : "s"
+                  });
                 }
               }
             }
-          } catch (_) {
-            paceLine = "";
-          }
+          } catch (_) { paceLine = ""; }
 
           sub = seenLine;
 
@@ -7645,7 +7704,7 @@ ${(() => {
       (this._runtime?.feedbackPending !== true) &&
       !!seenOnlyLine;
 
-    // --- NEW: Mistakes model ---
+    // --- Mistakes model ---
     const mistakesLabel = String(ui.mistakesLabel || "").trim();
 
     const mcInt = (Number.isFinite(maxChances) && maxChances > 0)
@@ -7676,6 +7735,25 @@ ${(() => {
       mistakeTierClass = " wt-pill--warning";
     }
 
+    const correctStreak = clampInt(this._runtime?.microPics?.correctStreak, 0, 9999);
+    const momentumLevel = clampInt(this._runtime?.microPics?.momentumLevel, 0, 6);
+    const momentumState = getMomentumMeterState(cfg, correctStreak, modeNow, momentumLevel);
+
+    const momentumHtml = momentumState
+      ? `
+        <div class="wt-momentum-wrap">
+          <div class="wt-momentum" aria-label="Momentum ${momentumState.filled}/${momentumState.segments}">
+            ${Array(momentumState.segments).fill(null).map((_, i) => `
+              <span class="wt-momentum__seg${i < momentumState.filled ? " wt-momentum__seg--on" : ""}${momentumState.filled === momentumState.segments && i === momentumState.segments - 1 ? " wt-momentum__seg--max" : ""}" aria-hidden="true"></span>
+            `).join("")}
+          </div>
+          ${momentumState.streak > momentumState.segments ? `
+            <span class="wt-momentum__combo" aria-hidden="true">${momentumState.streak}</span>
+          ` : ``}
+        </div>
+      `
+      : "";
+
     const headerHtml = `
 	   <div class="wt-hud">
           <div class="wt-hud__left">
@@ -7703,6 +7781,8 @@ ${(() => {
 
 
 	    </div>
+
+      ${momentumHtml}
 
 	  	    ${showSeenOnlyRule ? `
 	      <p class="wt-muted wt-playing-seenonly">

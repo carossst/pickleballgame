@@ -256,6 +256,21 @@
       // Pulses (HUD) + extension window for last-chance overlay
       gameplayPulseMs: 1000,
 
+      // Momentum meter (HUD, UI-only)
+      momentumMeter: {
+        enabled: true,
+        mode: "RUN",
+        segments: 6,
+        thresholds: {
+          s1: 1,
+          s2: 2,
+          s3: 3,
+          s4: 4,
+          s5: 5,
+          s6: 6
+        }
+      },
+
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.
       endRecordMomentMs: 1600,
@@ -293,7 +308,7 @@
 
     landingStats: {
       enabled: true,
-      paceRunsCount: 8,
+      paceRunsCount: 4,
       showBeforeFirstRun: false
     },
 
