@@ -1342,9 +1342,19 @@ void function () {
           const startedFromModal =
             !!(self.modalEl && !self.modalEl.classList.contains("wt-hidden"));
 
-          // First-run framing must open only from the LANDING screen itself.
-          // If the click already comes from the first-run modal CTA, we must start the run.
-          if (!startedFromModal && self.state === STATES.LANDING && self._canShowFirstRunFraming()) {
+          const bypassFirstRunFramingOnTouch =
+            (!startedFromModal) &&
+            (self.state === STATES.LANDING) &&
+            shouldTapToContinue() === true;
+
+          // First-run framing stays on non-touch flows.
+          // On touch devices, start directly to avoid fragile modal-first behavior.
+          if (
+            !bypassFirstRunFramingOnTouch &&
+            !startedFromModal &&
+            self.state === STATES.LANDING &&
+            self._canShowFirstRunFraming()
+          ) {
             self._openFirstRunFraming();
             break;
           }
@@ -1671,10 +1681,10 @@ void function () {
 
       const appActionHandler = (e) => {
         const t = e && e.target ? e.target : null;
-        if (!t) return;
+        if (!t) return false;
 
         // KISS: if user toggles the Share <details> near the bottom of the viewport,
-        // keep the summary visible to avoid the "opens upward" feel caused by layout jump.
+        // keep the summary visible to avoid the "opens upward" feel caused by layout jump.
         const shareSummary = (t.closest && t.closest("summary.wt-share-toggle")) ? t.closest("summary.wt-share-toggle") : null;
         if (shareSummary) {
           // Let native <details>/<summary> toggle happen (no preventDefault).
@@ -1683,43 +1693,46 @@ void function () {
               shareSummary.scrollIntoView({ block: "nearest", inline: "nearest" });
             } catch (_) { /* ignore */ }
           }, 0);
-          return;
+          return false;
         }
 
         // If a modal is open and the click is inside it, let modal handler own it
         if (self.modalEl && !self.modalEl.classList.contains("wt-hidden")) {
           try {
-            if (self.modalEl.contains(t)) return;
+            if (self.modalEl.contains(t)) return false;
           } catch (_) { /* ignore */ }
         }
 
         const btn = (t.closest && t.closest("[data-action]")) ? t.closest("[data-action]") : null;
-        if (!btn) return;
+        if (!btn) return false;
 
         const action = String(btn.getAttribute("data-action") || "").trim();
-        if (!action) return;
+        if (!action) return false;
+
         e.preventDefault();
-        dispatchAction(action);
+        dispatchAction(action, e);
+        return true;
       };
 
       this.appEl.addEventListener(pointerEvt, appActionHandler);
 
       // Mobile safety: also listen on "click" when primary is "pointerup".
       // Some iOS Safari + PWA combos silently swallow pointerup on buttons.
-      // The dedup guard (same timestamp check) prevents double-fire.
+      // The dedup guard blocks click only if pointerup really handled an action.
       if (pointerEvt !== "click") {
         let lastHandledTs = 0;
-        const origHandler = appActionHandler;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - lastHandledTs < 400) return; // already handled by pointerup
-          origHandler(e);
+          if (now - lastHandledTs < 400) return;
+          appActionHandler(e);
         };
-        // Patch original to track timestamp
+
         this.appEl.removeEventListener(pointerEvt, appActionHandler);
         this.appEl.addEventListener(pointerEvt, (e) => {
-          lastHandledTs = e.timeStamp || Date.now();
-          appActionHandler(e);
+          const handled = appActionHandler(e);
+          if (handled) {
+            lastHandledTs = e.timeStamp || Date.now();
+          }
         });
         this.appEl.addEventListener("click", dedupHandler);
       }
