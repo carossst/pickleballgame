@@ -5225,11 +5225,31 @@ void function () {
   // ============================================
   // Install prompt (minimal)
   // ============================================
-  UI.prototype.promptInstall = function () {
+  UI.prototype.promptInstall = async function () {
     // pwa.js owns the native prompt + storage counter (single source of truth)
+    if (!window.WT_PWA || typeof window.WT_PWA.promptInstall !== "function") return;
 
-    if (window.WT_PWA && typeof window.WT_PWA.promptInstall === "function") {
-      window.WT_PWA.promptInstall(this.storage);
+    const res = await window.WT_PWA.promptInstall(this.storage);
+    if (!res || typeof res !== "object") return;
+
+    if (res.reason === "IOS_NO_NATIVE_PROMPT") {
+      const ip = this.wording?.installPrompt || {};
+
+      const title = String(ip.title || "").trim();
+      const body = String(ip.body || "").trim();
+      const ctaSecondary = String(ip.ctaSecondary || "").trim();
+
+      // Fail-closed: no dedicated visible copy => no modal.
+      if (!title || !body || !ctaSecondary) return;
+
+      const html = `
+      <p>${escapeHtml(body)}</p>
+      <div class="wt-actions">
+        <button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(ctaSecondary)}</button>
+      </div>
+    `;
+
+      this.openModal(html, title);
     }
   };
 
