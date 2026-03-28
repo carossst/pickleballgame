@@ -1777,10 +1777,16 @@ void function () {
         } catch (_) { /* silent */ }
       });
 
-      // Browser Back => always go to Home (LANDING) for in-app history entries
+      // Browser Back => prefer LANDING for internal app navigation,
+      // even if history state is degraded on mobile / PWA.
       window.addEventListener("popstate", (e) => {
         const st = e && e.state ? e.state : null;
-        if (!st || st.wt !== true) return;
+        const hash = String(window.location.hash || "").trim().toLowerCase();
+
+        const isKnownInternalState = !!(st && st.wt === true);
+        const isKnownInternalHash = (hash === "#home" || hash === "#app");
+
+        if (!isKnownInternalState && !isKnownInternalHash) return;
 
         self.closeModal();
 
@@ -1788,7 +1794,18 @@ void function () {
           cleanupPlayingExit(self, { keepChanceOverlayVisible: false });
         }
 
-        if (self.state !== STATES.LANDING) self.setState(STATES.LANDING);
+        if (hash === "#home") {
+          if (self.state !== STATES.LANDING) self.setState(STATES.LANDING);
+          return;
+        }
+
+        if (self.state !== STATES.LANDING) {
+          self.setState(STATES.LANDING);
+          try {
+            const baseUrl = location.pathname + location.search;
+            history.replaceState({ wt: true, screen: STATES.LANDING }, "", baseUrl + "#home");
+          } catch (_) { /* silent */ }
+        }
       });
 
       // Secret Bonus: resize/rotation => recalibrate fall lane (never fail the item)
@@ -7530,11 +7547,38 @@ ${(() => {
             ? `<p class="wt-muted">${escapeHtml(fillTemplate(runLensTpl, vars))}</p>`
             : ``;
 
+        let installBtn = ``;
+        try {
+          const installW = w.installPrompt || {};
+          const installLabel = String(installW.ctaPrimary || "").trim();
+
+          let runCompletes = 0;
+          if (this.storage && typeof this.storage.getCounters === "function") {
+            const counters = this.storage.getCounters() || {};
+            runCompletes = Number(counters.runCompletes || 0);
+          }
+
+          const shouldShowInstall =
+            isRun &&
+            runCompletes === 1 &&
+            !!installLabel &&
+            !!(window.WT_PWA && typeof window.WT_PWA.canPrompt === "function" && window.WT_PWA.canPrompt(cfg, this.storage) === true);
+
+          if (shouldShowInstall) {
+            installBtn = `
+            <button class="wt-btn wt-btn--ghost" data-action="install-app" style="width:100%">
+              ${escapeHtml(installLabel)}
+            </button>
+          `;
+          }
+        } catch (_) { /* silent */ }
+
         return `
   ${masteredHtml}
   ${runLensHtml}
   ${primaryBtn}
   ${secondaryBtn}
+  ${installBtn}
 `;
       })()}
   </div>
