@@ -162,6 +162,12 @@
         .then((registration) => {
           Logger.log("✅ Service Worker registered:", registration.scope);
 
+          // Boot check: update already waiting (missed by updatefound)
+          if (cfg.serviceWorker.showUpdateNotifications && registration.waiting) {
+            const msg = String(window.WT_WORDING?.system?.updateAvailable || "").trim();
+            if (msg) showUpdateToast(msg);
+          }
+
           // Auto-update check
           if (cfg.serviceWorker.autoUpdate) {
             if (window.__WT_SW_AUTO_UPDATE_INTERVAL__) {
