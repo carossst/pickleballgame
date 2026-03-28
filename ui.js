@@ -1672,7 +1672,9 @@ void function () {
     }
 
 
-    const pointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
+    const pointerEvt = ("PointerEvent" in window)
+      ? (shouldTapToContinue() ? "pointerdown" : "pointerup")
+      : "click";
 
     // Main app event delegation (LANDING / PLAYING / END / PAYWALL)
     // Without this, buttons like data-action="start-run" never fire.
