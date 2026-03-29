@@ -1,5 +1,5 @@
 /* global self, caches */
-/* sw.js - Service Worker v2.1 for Word Traps */
+/* sw.js - Service Worker for Word Traps */
 /* Spec section 8: PWA / Offline / Service Worker */
 /**
  * Single source of truth for version:
@@ -26,6 +26,11 @@ const CACHE_NAME = SW_VERSION ? `${CACHE_PREFIX}-cache-${SW_VERSION}` : "";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
+  "./404.html",
+  "./success.html",
+  "./privacy.html",
+  "./terms.html",
+  "./press.html",
   "./style.css",
   "./config.js",
   "./storage.js",
@@ -48,6 +53,10 @@ const ASSETS_TO_CACHE = [
 const CRITICAL_ASSETS = [
   "./",
   "./index.html",
+  "./success.html",
+  "./privacy.html",
+  "./terms.html",
+  "./press.html",
   "./style.css",
   "./config.js",
   "./storage.js",
@@ -89,6 +98,15 @@ self.addEventListener("install", (event) => {
 });
 
 
+// Allow app shell to activate an already-installed update on user intent.
+self.addEventListener("message", (event) => {
+  const data = event && event.data ? event.data : null;
+  const type = data && typeof data.type === "string" ? data.type.trim() : "";
+  if (type !== "SKIP_WAITING") return;
+
+  self.skipWaiting();
+});
+
 // Activate event: clean old caches
 self.addEventListener("activate", (event) => {
   if (!CACHE_NAME) return;
@@ -113,6 +131,27 @@ function isStripeRequest(href) {
 
 function isContentJson(pathname) {
   return pathname.endsWith("/content.json") || pathname.endsWith("content.json");
+}
+
+function getOfflineDocumentFallback(pathname) {
+  const p = String(pathname || "").trim();
+  switch (p) {
+    case "/":
+    case "/index.html":
+      return "./index.html";
+    case "/success.html":
+      return "./success.html";
+    case "/privacy.html":
+      return "./privacy.html";
+    case "/terms.html":
+      return "./terms.html";
+    case "/press.html":
+      return "./press.html";
+    case "/404.html":
+      return "./404.html";
+    default:
+      return "";
+  }
 }
 
 self.addEventListener("fetch", (event) => {
@@ -182,8 +221,14 @@ self.addEventListener("fetch", (event) => {
         return res;
       } catch (_) {
         if (req.mode === "navigate") {
+          const fallbackUrl = getOfflineDocumentFallback(url.pathname);
+          if (fallbackUrl) {
+            const doc = await caches.match(fallbackUrl);
+            if (doc) return doc;
+          }
+
           const shell = await caches.match("./index.html");
-          if (shell) return shell;
+          if (shell && (url.pathname === "/" || url.pathname === "/index.html")) return shell;
 
           return new Response("Offline", { status: 503 });
         }
@@ -194,4 +239,3 @@ self.addEventListener("fetch", (event) => {
 });
 
 // No message-based skipWaiting: SW activates via install skipWaiting().
-

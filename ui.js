@@ -5262,7 +5262,36 @@ void function () {
     // If an update is ready, user intent = apply it now.
     if (window.__WT_SW_UPDATE_READY__ === true) {
       try { window.__WT_SW_UPDATE_READY__ = false; } catch (_) { }
-      location.reload();
+
+      const regPromise = ("serviceWorker" in navigator && navigator.serviceWorker.getRegistration)
+        ? navigator.serviceWorker.getRegistration()
+        : Promise.resolve(null);
+
+      regPromise
+        .then((registration) => {
+          const waiting = registration && registration.waiting ? registration.waiting : null;
+
+          // Fail-closed: no waiting worker => just hide the toast, no blind reload.
+          if (!waiting) {
+            node.classList.remove("wt-toast--visible");
+            return;
+          }
+
+          let reloaded = false;
+          const onControllerChange = () => {
+            if (reloaded) return;
+            reloaded = true;
+            navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+            location.reload();
+          };
+
+          navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+          waiting.postMessage({ type: "SKIP_WAITING" });
+        })
+        .catch(() => {
+          node.classList.remove("wt-toast--visible");
+        });
+
       return;
     }
 
