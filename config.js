@@ -591,7 +591,7 @@
 
       ctaBackToGame: "Back to game",
       ctaDownload: "Download code (.txt)",
-      shortcutHint: "Shortcut: How to play -> Activate with a code."
+      shortcutHint: "Shortcut: How to play -> Activate with a code.",
 
       thankYouLine: "Thank you for supporting an independent game 🇫🇷",
       supportLabel: "Need help?",
