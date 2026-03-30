@@ -570,10 +570,10 @@
 
     success: {
       title: "Payment successful",
-      subtitle: "Your activation code is ready. Save it, then activate it in the game.",
+      subtitle: "Your activation code is ready. Save it, then use it to unlock full access on this device.",
 
       codeLabel: "Your activation code",
-      clearDataWarning: "If you clear site data or switch device/browser, you will need this code again.",
+      clearDataWarning: "If you clear site data or switch device or browser, you will need this code again.",
 
       howToActivateTitle: "How to activate",
       howToActivateStep1: "Return to the game.",
@@ -587,11 +587,11 @@
       benefitFullAccessPrefix: "Full access to all",
       benefitFullAccessStrongSuffix: " word traps",
       benefitFullAccessSuffix: " in this game.",
-      benefitUnlimited: "Unlimited play after code activation.",
+      benefitUnlimited: "Unlimited play after activation on this device.",
 
       ctaBackToGame: "Back to game",
       ctaDownload: "Download code (.txt)",
-      shortcutHint: "Shortcut: How to play - Activate with a code.",
+      shortcutHint: "Shortcut: How to play -> Activate with a code."
 
       thankYouLine: "Thank you for supporting an independent game 🇫🇷",
       supportLabel: "Need help?",
@@ -610,9 +610,9 @@
     landing: {
       title: "Word Traps",
       tagline: "",
-      subtitle: "Faux amis or true friends?\n200 French-English words to train your brain.",
+      subtitle: "Same meaning or different meaning?\n200 French-English word traps to test your judgment.",
       microFun: "No signup · Quick games · Free to try",
-      microTrust: "Spot the traps. Think in French.",
+      microTrust: "Practice meaning, not just vocabulary recall.",
 
       runsLabel: "",
       runsFreeMode: "",
@@ -625,7 +625,7 @@
 
       // Before completion (goal gradient) 
       statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} word traps",
-      statsPaceSummaryTemplate: "About {runsLeft} more game{pluralS} to see all {poolSize} traps.",
+      statsPaceSummaryTemplate: "About {runsLeft} more game{pluralS} to see all {poolSize} word traps.",
       statsPhaseBadgeDiscovery: "Phase 1/3: Discovery",
       statsPhaseBadgeCorrection: "Phase 2/3: Integrating",
       statsPhaseBadgeConsolidation: "Phase 3/3: Consolidating",
@@ -636,7 +636,7 @@
       statsMistakesSummaryTemplate: "{mistakes}",
       statsMasterySummaryTemplate: "{mastered}/{poolSize} traps mastered",
 
-      postPaywallTitle: "Free games completed. Ready for more?",
+      postPaywallTitle: "Free games used. Keep going?",
       postPaywallBody: "Unlock unlimited games anytime and keep your progress on this device.",
       practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
       postPaywallCta: "Unlock full access",
@@ -836,7 +836,7 @@
       descUnlocked: "Only items you previously got wrong.",
 
       freeLimitReachedTitle: "End of Free Games.",
-      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes mode. Keep fixing your mistakes without limits.",
+      freeLimitReachedBody: "You've used your {limit} free Mistakes Mode games.\n\nFull access unlocks unlimited Mistakes Mode. Keep fixing your mistakes without limits.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -936,7 +936,7 @@
 
 
       // Pool complete (one-shot celebration when 200/200 reached)
-      poolCompleteTitle: "Bravo ! All 200 word traps complete.",
+      poolCompleteTitle: "All 200 word traps complete.",
       poolCompleteLine1: "This isn't about streaks. It's about whether you're actually improving. By the end of this set, you'll know.",
       poolCompleteLine2: "Now we find out what you actually know. Come back in a few weeks. See if it still holds.",
       poolCompleteScoreLine: "This game: {score} {fpShort}",
@@ -1038,7 +1038,7 @@
       headline: "Think in French. Master all 200 traps.",
 
       // LAST FREE RUN - stronger but factual
-      headlineLastFree: "You've started spotting the traps. Finish the set.",
+      headlineLastFree: "You've started spotting the traps. Keep going.",
 
       // Projection personnalisée (PAYWALL only)
       // Vars: {seen} {poolSize} {remaining}
@@ -1095,7 +1095,7 @@
       deviceNote: "Full access stays unlocked on this device. No account needed.",
 
       // PW2: EARLY visual badge (copy visible)
-      earlyBadgeLabel: "Early bird",
+      earlyBadgeLabel: "Early price",
 
       earlyLabel: "Early price",
       standardLabel: "Standard price",
@@ -1111,12 +1111,12 @@
     howto: {
       title: "How to play",
       howToPlayLine1: "You see a French word or expression.",
-      howToPlayLine2: "Is it a faux ami or a true friend?",
+      howToPlayLine2: "Do the French and English words mean the same thing?",
       howToPlayLine3: "Choose Same meaning or Different meaning.",
 
       modesTitle: "Game modes",
       modesBullets: [
-        "Normal Mode: a full game across the word pool. Build your best score.",
+        "Normal game: a full game across the word pool. Build your best score.",
         "High Focus Mode: faster and more demanding. Uses only words you've already seen.",
         "Mistakes Mode: replay your active mistakes (up to 10 words)."
       ],
@@ -1208,15 +1208,14 @@ Thanks!`
 
 
     share: {
-      ctaLabel: "Copy text",
-      emailLabel: "Send email",
+      ctaLabel: "Copy message",
+      emailLabel: "Send to a friend",
       emailSubject: "Word Traps",
       previewLabel: "Preview message",
       toastCopied: "Copied.",
-      template: `Hey!
-I just played a cool French word game 🇫🇷
+      template: `I just played Word Traps.
 {funFact}
-Find out 😄
+Try it here:
 {url}`,
 
       teaserTrap: "Looks obvious... until it isn't.",
@@ -1225,7 +1224,7 @@ Find out 😄
         `Can you guess? Does "{termFr}" (FR) really mean "{termEn}"? 🤔`
       ],
       funFactTemplatesTrue: [
-        `Can you guess? "{termFr}" (FR) and "{termEn}" (EN) : same meaning or trap? 🤔`
+        `Can you guess? Do "{termFr}" (FR) and "{termEn}" (EN) mean the same thing?`
       ],
 
 
@@ -1249,7 +1248,7 @@ Find out 😄
       promptTitle: "Help improve Word Traps",
       promptBodyTemplate: "You have reached {thresholdPct}% of the pool (unique words). Share anonymous stats to help improve the game. You can review everything before sending.",
       promptBodyLastFree: "That was your last free game. Share anonymous stats to help improve the game. You can review everything before sending.",
-      promptBodyPowerUser: "You're clearly a power player. Share anonymous stats to help improve the game. You can review everything before sending.",
+      promptBodyPowerUser: "You've spent real time with the game. Share anonymous stats to help improve it. You can review everything before sending.",
       promptCtaPrimary: "Preview & share",
       promptCtaSecondary: "Not now",
 
