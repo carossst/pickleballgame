@@ -53,10 +53,6 @@ const ASSETS_TO_CACHE = [
 const CRITICAL_ASSETS = [
   "./",
   "./index.html",
-  "./success.html",
-  "./privacy.html",
-  "./terms.html",
-  "./press.html",
   "./style.css",
   "./config.js",
   "./storage.js",
