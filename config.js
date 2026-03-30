@@ -1165,15 +1165,15 @@
     },
 
     houseAd: {
-      eyebrow: "After {poolSize} word traps",
-      title: "You've seen all {poolSize} word traps.",
+      eyebrow: "Keep going with another game",
+      title: "Want another French game?",
       bodyLine1: "Word Traps is a mini-game by Test Your French.",
       bodyLine2: "We have other games.",
       ctaPrimary: "Try a new game by Test Your French",
       ctaRemindLater: "Remind later",
 
       // Landing presence (same meaning, same tone)
-      landingTitle: "You've seen all {poolSize} word traps.",
+      landingTitle: "Want another French game?",
       landingBodyLine1: "Word Traps is a mini-game by Test Your French.",
       landingBodyLine2: "We have other games.",
       landingCtaPrimary: "Try Daily French",
