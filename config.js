@@ -169,7 +169,11 @@
       cheatSheetOrderBump: {
         enabled: true,
         convertKitUid: "ed7df33449",
-        convertKitScriptSrc: "https://onlinenewsletter.kit.com/ed7df33449/index.js"
+        convertKitEmbedScriptSrc: "https://f.convertkit.com/ckjs/ck.5.js",
+        convertKitFormId: "9074664",
+        convertKitFormAction: "https://app.kit.com/forms/9074664/subscriptions",
+        convertKitRedirectUrl: "https://testyourfrench.com/your-cheat-sheet-is-ready/",
+        submitLabel: "Send me the Wordtraps Cheat Sheet"
       }
     },
 
@@ -605,6 +609,7 @@
 
       cheatSheetTitle: "Cheat Sheet (PDF)",
       cheatSheetBody: "If you added the Cheat Sheet to your order, enter your email below to receive the download link.",
+      cheatSheetLinkCta: "Open the Cheat Sheet form",
 
     },
     landing: {
