@@ -299,7 +299,7 @@ body {
     rgb(var(--bg));
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
+  overscroll-behavior-y: auto;
 }
 
 a {
@@ -1962,6 +1962,7 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   width: min(560px, 92vw);
   max-height: 86vh;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
   background: rgb(var(--surface));

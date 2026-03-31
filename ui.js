@@ -1648,32 +1648,58 @@ void function () {
     if (this.modalEl && !this._wtBoundModalActions) {
       this._wtBoundModalActions = true;
 
-      this.modalEl.addEventListener("click", (e) => {
-        const t = e.target;
-        if (!t) return;
+      const modalActionHandler = (e) => {
+        const t = e && e.target ? e.target : null;
+        if (!t) return false;
 
-        // Backdrop click: close modal even if overlay has no data-action
+        // Backdrop click/tap: close modal even if overlay has no data-action
         if (t === self.modalEl) {
           e.preventDefault();
           self.closeModal();
-          return;
+          return true;
         }
 
         // Only trigger actions from explicit buttons/links inside the modal
-        const btn = t.closest("button[data-action], a[data-action]");
-        if (!btn) return;
+        const btn = t.closest ? t.closest("button[data-action], a[data-action]") : null;
+        if (!btn) return false;
 
         const action = String(btn.getAttribute("data-action") || "").trim();
-        if (!action) return;
+        if (!action) return false;
 
         e.preventDefault();
         dispatchAction(action, e);
-      });
+        return true;
+      };
+
+      const modalPointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
+      this.modalEl.addEventListener(modalPointerEvt, modalActionHandler);
+
+      if (modalPointerEvt !== "click") {
+        let lastHandledTs = 0;
+        const modalDedupHandler = (e) => {
+          const now = e.timeStamp || Date.now();
+          if (now - lastHandledTs < 400) return;
+          modalActionHandler(e);
+        };
+
+        this.modalEl.removeEventListener(modalPointerEvt, modalActionHandler);
+        this.modalEl.addEventListener("click", modalDedupHandler);
+        this.modalEl.addEventListener(modalPointerEvt, (e) => {
+          const handled = modalActionHandler(e);
+          if (handled) {
+            lastHandledTs = e.timeStamp || Date.now();
+          }
+        });
+      }
     }
 
 
+    // App-level actions should not fire on touchstart/pointerdown:
+    // on mobile, that steals gestures before the browser can decide between
+    // tap and scroll, which makes END harder to scroll and top-right icon
+    // taps feel unreliable. Use pointerup, keep click as iOS fallback below.
     const pointerEvt = ("PointerEvent" in window)
-      ? (shouldTapToContinue() ? "pointerdown" : "pointerup")
+      ? "pointerup"
       : "click";
 
     // Main app event delegation (LANDING / PLAYING / END / PAYWALL)

@@ -184,10 +184,10 @@
     },
     {
       "id": 23,
-      "termFr": "exiger",
-      "termEn": "exigent",
+      "termFr": "sort",
+      "termEn": "sort",
       "correctAnswer": false,
-      "explanationShort": "exiger (FR) = to demand something firmly.\nexigent (EN) = very demanding or hard to satisfy.\nFrench demands; English describes someone demanding.",
+      "explanationShort": "sort (FR) = goes out, comes out, gets out; as a noun, it can also mean fate or a spell.\nsort (EN) = to classify, arrange, or put into order.",
       "tag": "false_friend"
     },
     {
@@ -539,7 +539,7 @@
       "termFr": "information",
       "termEn": "information",
       "correctAnswer": true,
-      "explanationShort": "information (FR) = facts or knowledge about a subject.\ninformation (EN) = the same: facts or knowledge.\nIn French, \"les informations\" can also mean the TV news.",
+      "explanationShort": "information (FR) = facts or knowledge about a subject; in the plural, it can also mean the TV news.\ninformation (EN) = facts or knowledge about a subject.",
       "tag": "true_friend"
     },
     {
@@ -667,7 +667,7 @@
       "termFr": "culture",
       "termEn": "culture",
       "correctAnswer": true,
-      "explanationShort": "culture (FR) = the arts, customs, and beliefs of a society.\nculture (EN) = the same: the arts, customs, and beliefs of a society.\nAlso used in science for growing organisms in a controlled setting — from Latin 'cultura'.",
+      "explanationShort": "culture (FR) = the arts, customs, and beliefs of a society; it can also mean the cultivation of living organisms in science.\nculture (EN) = the same: the arts, customs, and beliefs of a society; it can also mean the cultivation of living organisms in science.",
       "tag": "true_friend"
     },
     {
@@ -1011,7 +1011,7 @@
       "termFr": "train",
       "termEn": "train",
       "correctAnswer": true,
-      "explanationShort": "train (FR/EN) = a railway vehicle that carries passengers or freight.\nSame word, same meaning in both languages.\nOne track, two languages.",
+      "explanationShort": "train (FR) = a railway vehicle that carries passengers or freight.\ntrain (EN) = the same: a railway vehicle that carries passengers or freight.\nSame word, same meaning in both languages.",
       "tag": "true_friend"
     },
     {
@@ -1019,7 +1019,7 @@
       "termFr": "dialogue",
       "termEn": "dialogue",
       "correctAnswer": true,
-      "explanationShort": "dialogue (FR/EN) = a conversation between two or more people.\nBoth languages kept the same meaning from Greek 'dialogos'.\nSame conversation, same word.",
+      "explanationShort": "dialogue (FR) = a conversation between two or more people.\ndialogue (EN) = the same: a conversation between two or more people.\nBoth languages kept the same meaning from Greek 'dialogos'.",
       "tag": "true_friend"
     },
     {
@@ -1579,7 +1579,7 @@
       "termFr": "promotion",
       "termEn": "promotion",
       "correctAnswer": true,
-      "explanationShort": "promotion = a career advancement or marketing campaign.\nIn French universities, it can also mean a graduating class.",
+      "explanationShort": "promotion (FR) = a career advancement or a marketing campaign; in universities, it can also mean a graduating class.\npromotion (EN) = a career advancement or a marketing campaign.",
       "tag": "true_friend"
     },
     {
