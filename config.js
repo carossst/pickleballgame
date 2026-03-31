@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "2.2",
+    version: "2.3",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -540,6 +540,7 @@
       loadingSlowHint: "Still loading... Check your connection if this takes too long.",
       updateAvailable: "Update available.",
       dismiss: "Dismiss",
+      reload: "Update",
       closeIcon: "✕",
 
       offlinePayment: "Payment requires an internet connection.",
