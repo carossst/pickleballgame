@@ -1,4 +1,4 @@
-// main.js v2.0 - Word Traps
+// main.js v2.0 - App bootstrap
 
 (() => {
   "use strict";
@@ -48,10 +48,11 @@
     if (!root) return;
 
     const safeMsg = escapeHtmlSafe(message);
+    const appName = escapeHtmlSafe(String(window.WT_CONFIG?.identity?.appName || "Game").trim());
 
     root.innerHTML = `
       <div class="wt-card wt-card--error">
-        <h1 class="wt-h1">Word Traps</h1>
+        <h1 class="wt-h1">${appName}</h1>
         <p class="wt-muted">${safeMsg}</p>
         <button id="wtFatalReloadBtn" class="wt-btn wt-btn--secondary" type="button">Reload</button>
       </div>
@@ -137,7 +138,7 @@
       const node = document.getElementById("update-toast");
       if (!node) return;
 
-      // Mark update ready so UI can decide when to reload (user-controlled)
+      // Mark update ready so UI can decide when to apply it (user-controlled)
       window.__WT_SW_UPDATE_READY__ = true;
 
       const text = node.querySelector("[data-wt-update-text]");
@@ -146,6 +147,34 @@
       node.classList.add("wt-toast--visible");
     }
 
+    function setWaitingWorker(worker) {
+      if (!worker) return;
+      window.__WT_SW_WAITING__ = worker;
+      window.__WT_SW_UPDATE_READY__ = true;
+    }
+
+    window.__WT_APPLY_SW_UPDATE__ = function () {
+      const waiting = window.__WT_SW_WAITING__ || null;
+      if (!waiting || typeof waiting.postMessage !== "function") {
+        location.reload();
+        return;
+      }
+
+      try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = true; } catch (_) { }
+
+      try {
+        waiting.postMessage({ type: "SKIP_WAITING" });
+      } catch (_) {
+        try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false; } catch (_) { }
+        location.reload();
+      }
+    };
+
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ !== true) return;
+      try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false; } catch (_) { }
+      location.reload();
+    });
 
     window.addEventListener("load", () => {
       const version = String(cfg.version || "").trim();
@@ -162,8 +191,9 @@
         .then((registration) => {
           Logger.log("✅ Service Worker registered:", registration.scope);
 
-          // Boot check: update already waiting (missed by updatefound)
-          if (cfg.serviceWorker.showUpdateNotifications && registration.waiting) {
+          // Update already waiting from a previous page session: surface it immediately.
+          if (cfg.serviceWorker.showUpdateNotifications && registration.waiting && navigator.serviceWorker.controller) {
+            setWaitingWorker(registration.waiting);
             const msg = String(window.WT_WORDING?.system?.updateAvailable || "").trim();
             if (msg) showUpdateToast(msg);
           }
@@ -189,6 +219,7 @@
               newWorker.addEventListener("statechange", () => {
                 // Only notify when updating an already-controlled page
                 if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                  setWaitingWorker(newWorker);
                   const msg = String(window.WT_WORDING?.system?.updateAvailable || "").trim();
                   if (msg) showUpdateToast(msg);
                 }
@@ -275,11 +306,16 @@
     if (!sys) return;
 
     const title = String(sys.loadingTitle || "").trim();
+    const icon = String(sys.loadingIcon || "●").trim();
     const hint = String(sys.loadingHint || "").trim();
+    const logoUrl = String(window.WT_CONFIG?.identity?.uiLogoUrl || "").trim();
+    const loadingVisual = logoUrl
+      ? `<img src="${escapeHtmlSafe(logoUrl)}" alt="" class="wt-loading-icon" />`
+      : `<div class="wt-loading-icon">${escapeHtmlSafe(icon)}</div>`;
 
     root.innerHTML = `
     <div class="wt-loading">
-      <div class="wt-loading-icon">🇫🇷</div>
+      ${loadingVisual}
       <div class="wt-loading-spinner"></div>
       <h2 class="wt-h2">${escapeHtmlSafe(title)}</h2>
       <p class="wt-muted">${escapeHtmlSafe(hint)}</p>
@@ -441,7 +477,7 @@
         window.WT_PWA.initPWA(storage, ui);
       }
 
-      Logger.log(`✅ Word Traps v${config.version} started successfully`);
+      Logger.log(`✅ ${config.identity.appName} v${config.version} started successfully`);
     } catch (error) {
       clearTimeout(slowLoadTimer);
       Logger.error("Startup error:", error);
@@ -465,9 +501,11 @@
     if (!version) Logger.warn("WT_CONFIG.version missing/empty");
     if (!env) Logger.warn("WT_CONFIG.environment missing/empty");
 
-    if (version && env) Logger.log(`Initializing Word Traps v${version} (${env})`);
-    else if (version) Logger.log(`Initializing Word Traps v${version}`);
-    else Logger.log("Initializing Word Traps");
+    const appName = String(cfg?.identity?.appName || "Game").trim();
+
+    if (version && env) Logger.log(`Initializing ${appName} v${version} (${env})`);
+    else if (version) Logger.log(`Initializing ${appName} v${version}`);
+    else Logger.log(`Initializing ${appName}`);
 
     if (!validatePrerequisites()) return;
     if (!validateModules()) return;

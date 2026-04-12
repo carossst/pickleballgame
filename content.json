@@ -1,1610 +1,2480 @@
 {
-  "version": "3.5",
-  "totalItems": 200,
+  "version": "2.0",
+  "totalItems": 204,
   "breakdown": {
-    "falseItems": 106,
-    "trueItems": 94
+    "trueItems": 107,
+    "falseItems": 97,
+    "byCategory": {
+      "2026_changes": 20,
+      "Court & Equipment": 34,
+      "Faults & Dead Ball": 19,
+      "Line Calls": 18,
+      "Non-Volley Zone": 8,
+      "Player Conduct & Apparel": 11,
+      "Rally Situations": 17,
+      "Score & Readiness": 31,
+      "Serving Rules": 37,
+      "The Net": 9
+    },
+    "byDifficulty": {
+      "Easy": 70,
+      "Hard": 63,
+      "Intermediate": 71
+    },
+    "byFormat": {
+      "Both": 180,
+      "Singles only": 9,
+      "Doubles only": 15
+    }
   },
   "items": [
     {
       "id": 1,
-      "termFr": "librairie",
-      "termEn": "library",
+      "question": "A ball contacting the net post results in a dead ball and the team that hit the ball loses the rally.",
       "correctAnswer": false,
-      "explanationShort": "librairie (FR) = a bookstore.\nlibrary (EN) = a place where you borrow books.\nFrench sells books; English lends them.",
-      "tag": "false_friend"
+      "explanationShort": "The old rule made net post contact a dead ball.\nNow the ball stays live and must be played.\n2026 USA Pickleball Rulebook Change Document, page 5.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 2,
-      "termFr": "actuellement",
-      "termEn": "actually",
+      "question": "Spectators should not be consulted on any call.",
       "correctAnswer": false,
-      "explanationShort": "actuellement (FR) = currently, at the present time.\nactually (EN) = in fact, really, contrary to what was expected.\nFrench speaks about time; English corrects a statement.",
-      "tag": "false_friend"
+      "explanationShort": "The old rule said 'should not' — it was advisory.\nNow 'must not' makes the ban mandatory and enforceable.\n2026 USA Pickleball Rulebook Change Document, page 7.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 3,
-      "termFr": "éventuellement",
-      "termEn": "eventually",
-      "correctAnswer": false,
-      "explanationShort": "éventuellement (FR) = possibly, perhaps.\neventually (EN) = in the end, after some time.\nFrench is uncertainty; English is outcome.",
-      "tag": "false_friend"
+      "question": "Spin may be applied to the ball upon contact by the paddle.",
+      "correctAnswer": true,
+      "explanationShort": "Spin at paddle contact is allowed in 2026.\nBefore, spin was banned if caused during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 4,
-      "termFr": "collège",
-      "termEn": "college",
+      "question": "If you do not return the ball, you may call it out up until the next serve.",
       "correctAnswer": false,
-      "explanationShort": "collège (FR) = middle school (ages 11-15).\ncollege (EN) = higher education after high school.\nTeenagers in French, adults in English.",
-      "tag": "false_friend"
+      "explanationShort": "That was the old wording.\nNow the out call must still be made promptly.\n2026 USA Pickleball Rulebook Change Document, page 12.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 5,
-      "termFr": "location",
-      "termEn": "location",
-      "correctAnswer": false,
-      "explanationShort": "location (FR) = a rental (flat, car, equipment).\nlocation (EN) = a place or position.\nRenting in French, place in English.",
-      "tag": "false_friend"
+      "question": "A receiving team can win the game on a technical foul.",
+      "correctAnswer": true,
+      "explanationShort": "Before, only the serving side could score the winning point.\nNow a receiving team can win the game by technical foul.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 6,
-      "termFr": "stage",
-      "termEn": "stage",
-      "correctAnswer": false,
-      "explanationShort": "stage (FR) = an internship or training period.\nstage (EN) = a platform for performances, or a phase.\nWork experience in French, theatre in English.",
-      "tag": "false_friend"
+      "question": "A wheelchair's large rear wheels are treated like a standing player's legs for positioning.",
+      "correctAnswer": true,
+      "explanationShort": "This wheelchair rule did not exist before 2026.\nThe large rear wheels define player positioning.\n2026 USA Pickleball Rulebook Change Document, page 18.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 7,
-      "termFr": "chair",
-      "termEn": "chair",
-      "correctAnswer": false,
-      "explanationShort": "chair (FR) = flesh, the soft tissue of the body.\nchair (EN) = a seat or piece of furniture.\nFrench is flesh; English is furniture.",
-      "tag": "false_friend"
+      "question": "A wheelchair player must have at least one buttock in contact with the wheelchair seat when striking the ball.",
+      "correctAnswer": true,
+      "explanationShort": "This wheelchair rule is newly added.\nLifting fully off the seat when hitting is a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 8,
-      "termFr": "caméra",
-      "termEn": "camera",
-      "correctAnswer": false,
-      "explanationShort": "caméra (FR) = a device mainly used to record video.\ncamera (EN) = a device used to take photographs or record images.\nFrench usually distinguishes photo ('appareil photo') and video ('caméra'); English often uses 'camera' for both.",
-      "tag": "false_friend"
+      "question": "If an extra ball carried by a player is visible to an opponent during a live rally, it is a fault.",
+      "correctAnswer": true,
+      "explanationShort": "Before, extra balls had to be hidden.\nNow a visible extra ball is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 22.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 9,
-      "termFr": "préservatif",
-      "termEn": "preservative",
-      "correctAnswer": false,
-      "explanationShort": "préservatif (FR) = a condom.\npreservative (EN) = a chemical added to food to keep it fresh.\nA notorious source of confusion for travellers ordering food in France.",
-      "tag": "false_friend"
+      "question": "A time-out must be called audibly by voice, visibly by hand signal, or both.",
+      "correctAnswer": true,
+      "explanationShort": "Before, the rule said when to call a time-out.\nNow it also says how: voice, hand signal, or both.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 10,
-      "termFr": "raisin",
-      "termEn": "raisin",
-      "correctAnswer": false,
-      "explanationShort": "raisin (FR) = a grape.\nraisin (EN) = a dried grape.\nFrench is fresh; English is dried.",
-      "tag": "false_friend"
+      "question": "If a player calls a time-out after the serve has been hit, it is a fault.",
+      "correctAnswer": true,
+      "explanationShort": "Before, the rule focused on calling time-out before the next serve.\nNow a late time-out call after the serve is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 11,
-      "termFr": "tissu",
-      "termEn": "tissue",
-      "correctAnswer": false,
-      "explanationShort": "tissu (FR) = fabric or cloth.\ntissue (EN) = thin disposable paper, or biological body tissue in science.\nBoth from Old French \"tissu\" (woven); the meanings split between textile and paper.",
-      "tag": "false_friend"
+      "question": "In rally scoring, a receiving team can win the game by winning the rally at game point.",
+      "correctAnswer": true,
+      "explanationShort": "Before, the receiver could not win at game point.\nNow every rally can award the winning point.\n2026 USA Pickleball Rulebook Change Document, page 16.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 12,
-      "termFr": "monnaie",
-      "termEn": "money",
-      "correctAnswer": false,
-      "explanationShort": "monnaie (FR) = coins, change, or currency in circulation.\nmoney (EN) = money in general, including cash or wealth.\nFrench counts the change; English counts the wealth.",
-      "tag": "false_friend"
+      "question": "Balls can be hit more than once, but the stroke must be continuous in a single-direction by one player.",
+      "correctAnswer": true,
+      "explanationShort": "This includes rare triple-hit cases.\nThe stroke must still be continuous and single-direction.\n2026 USA Pickleball Rulebook Change Document, page 10.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 13,
-      "termFr": "pétrole",
-      "termEn": "petrol",
-      "correctAnswer": false,
-      "explanationShort": "pétrole (FR) = crude oil in its natural state.\npetrol (EN) = gasoline used as fuel in cars.\nFrench names the raw oil; English names the fuel.",
-      "tag": "false_friend"
+      "question": "In doubles, if one player retires after a medical time-out, the partner may continue playing.",
+      "correctAnswer": true,
+      "explanationShort": "That doubles case was not stated in the old rule.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 14,
-      "termFr": "grappe",
-      "termEn": "grape",
-      "correctAnswer": false,
-      "explanationShort": "grappe (FR) = a cluster or bunch, especially of fruit on a stem.\ngrape (EN) = a single small fruit used for eating or making wine.\nFrench names the whole bunch hanging together; English names the individual berry.",
-      "tag": "false_friend"
+      "question": "On a wheelchair serve, the front small wheels may extend into the court when the ball is hit.",
+      "correctAnswer": true,
+      "explanationShort": "This wheelchair serving rule is newly added.\nOnly the large rear wheels must stay behind the baseline.\n2026 USA Pickleball Rulebook Change Document, page 18.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 15,
-      "termFr": "définitivement",
-      "termEn": "definitely",
-      "correctAnswer": false,
-      "explanationShort": "définitivement (FR) = permanently, for good.\ndefinitely (EN) = certainly, without doubt.\nPermanent in French, certain in English.",
-      "tag": "false_friend"
+      "question": "An assistive device must not be used to strike the ball or intentionally alter its flight.",
+      "correctAnswer": true,
+      "explanationShort": "This adaptive standing rule is newly added.\nFor example, a crutch or cane cannot hit a live ball.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 16,
-      "termFr": "assister",
-      "termEn": "assist",
-      "correctAnswer": false,
-      "explanationShort": "assister (FR) = to attend or be present at an event.\nassist (EN) = to help someone.\nFrom Latin 'assistere' (to stand by); French kept the passive witness sense, English took the active help sense.",
-      "tag": "false_friend"
+      "question": "Dangerous ball abuse can lead to a match forfeit even if no one is hit.",
+      "correctAnswer": true,
+      "explanationShort": "This is a conduct penalty, not a rally fault.\nRecklessly hitting a dead ball can trigger it.\n2026 USA Pickleball Rulebook Change Document, page 22.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 17,
-      "termFr": "attendre",
-      "termEn": "attend",
-      "correctAnswer": false,
-      "explanationShort": "attendre (FR) = to wait.\nattend (EN) = to be present at an event.\nFrom Latin 'attendere' (to stretch toward); French kept the waiting, English kept the showing up.",
-      "tag": "false_friend"
+      "question": "If an assistive device becomes dislodged during a rally, the rally must continue to completion.",
+      "correctAnswer": true,
+      "explanationShort": "This adaptive standing rule is newly added.\nA loose brace or device does not stop the rally.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 18,
-      "termFr": "demander",
-      "termEn": "demand",
-      "correctAnswer": false,
-      "explanationShort": "demander (FR) = to ask.\ndemand (EN) = to insist on receiving something.\nFrench asks; English insists.",
-      "tag": "false_friend"
+      "question": "An adaptive standing player's two-bounce allowance must be declared before the match.",
+      "correctAnswer": true,
+      "explanationShort": "This adaptive standing rule is newly added.\nA player cannot switch it on mid-match.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 19,
-      "termFr": "quitter",
-      "termEn": "quit",
-      "correctAnswer": false,
-      "explanationShort": "quitter (FR) = to leave a place or a person.\nquit (EN) = to stop doing something, especially a job or a habit.\nFrench leaves; English stops.",
-      "tag": "false_friend"
+      "question": "A wheelchair player's feet must not touch the ground while the ball is live, even accidentally.",
+      "correctAnswer": true,
+      "explanationShort": "This wheelchair fault rule is newly added.\nEven an accidental foot touch is still a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 20,
-      "termFr": "avertir",
-      "termEn": "avert",
-      "correctAnswer": false,
-      "explanationShort": "avertir (FR) = to warn or notify someone in advance.\navert (EN) = to prevent or turn away from danger.\nFrench warns first; English blocks danger.",
-      "tag": "false_friend"
+      "question": "If a time-out is not called by voice or hand signal, the referee may issue a warning.",
+      "correctAnswer": true,
+      "explanationShort": "This warning rule is newly added.\nFor example, leaving the court without clearly calling time-out can trigger it.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "tags": [
+        "2026_changes",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 21,
-      "termFr": "blesser",
-      "termEn": "bless",
-      "correctAnswer": false,
-      "explanationShort": "blesser (FR) = to injure or wound someone.\nbless (EN) = to give a holy or divine favour.\nFrench injures; English blesses.",
-      "tag": "false_friend"
+      "question": "If the server's foot is beyond the imaginary extension of the sideline, it is illegal.",
+      "correctAnswer": true,
+      "explanationShort": "The server's feet must stay within the correct serving area.\nStepping outside the serving area boundary is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.A.3.a.",
+      "tags": [
+        "Serving Rules",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 22,
-      "termFr": "charger",
-      "termEn": "charge",
+      "question": "The rally may still stand if the wrong player returns the serve.",
       "correctAnswer": false,
-      "explanationShort": "charger (FR) = to load something or charge a battery.\ncharge (EN) = to ask for payment or accuse someone.\nSome overlap exists, but French usually means to load.",
-      "tag": "false_friend"
+      "explanationShort": "This wrong-receiver rule was clarified in 2025.\nFor example, the wrong doubles partner cannot take the return.\n2026 USA Pickleball Official Rulebook, Rule 5.C.1.c.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 23,
-      "termFr": "sort",
-      "termEn": "sort",
+      "question": "The serve may be directed to either service court.",
       "correctAnswer": false,
-      "explanationShort": "sort (FR) = goes out, comes out, gets out; as a noun, it can also mean fate or a spell.\nsort (EN) = to classify, arrange, or put into order.",
-      "tag": "false_friend"
+      "explanationShort": "The serve must go diagonally crosscourt.\nServing straight ahead is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 24,
-      "termFr": "médecin",
-      "termEn": "medicine",
+      "question": "For a volley serve, the paddle may move in any direction when it contacts the ball.",
       "correctAnswer": false,
-      "explanationShort": "médecin (FR) = a doctor, the person who treats patients.\nmedicine (EN) = a drug or substance used to treat illness.\nSame Latin root 'medicus,' but French named the healer while English named the remedy.",
-      "tag": "false_friend"
+      "explanationShort": "The arm used to move in an upward arc.\nNow the paddle itself must arc upward at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 25,
-      "termFr": "lecture",
-      "termEn": "lecture",
-      "correctAnswer": false,
-      "explanationShort": "lecture (FR) = reading.\nlecture (EN) = a talk or spoken presentation.\nFrench reads; English speaks.",
-      "tag": "false_friend"
+      "question": "For a volley serve, the paddle head must not be above the server's wrist joint at contact.",
+      "correctAnswer": true,
+      "explanationShort": "The paddle head must be at or below the wrist.\nAbove the wrist joint at contact is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.C.2.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 26,
-      "termFr": "journal",
-      "termEn": "journal",
-      "correctAnswer": false,
-      "explanationShort": "journal (FR) = a newspaper or TV news bulletin.\njournal (EN) = a diary or academic publication.\nFrench reports the news; English records it.",
-      "tag": "false_friend"
+      "question": "For a volley serve, the ball must be below the server's waist at contact.",
+      "correctAnswer": true,
+      "explanationShort": "The ball must not be at or above waist level when struck.\nAbove the waist is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.C.3.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 27,
-      "termFr": "cave",
-      "termEn": "cave",
+      "question": "A volley serve must be made with a forehand motion.",
       "correctAnswer": false,
-      "explanationShort": "cave (FR) = a cellar or basement, often used for wine.\ncave (EN) = a natural underground cavern.\nFrench stores wine; English explores rock caves.",
-      "tag": "false_friend"
+      "explanationShort": "Both forehand and backhand motions are legal.\nThe drop serve also allows both motions.\n2026 USA Pickleball Official Rulebook, Rule 7.C.4.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 28,
-      "termFr": "habit",
-      "termEn": "habit",
+      "question": "For a drop serve, the server may toss the ball upward before letting it bounce.",
       "correctAnswer": false,
-      "explanationShort": "habit (FR) = a piece of clothing, or clothes in general.\nhabit (EN) = a repeated behaviour or routine.\nFrom Latin 'habitus' which covered both dress and condition; each language picked one meaning.",
-      "tag": "false_friend"
+      "explanationShort": "The ball must be dropped from a natural height only.\nPropelling it in any direction before contact is a fault.\n2026 USA Pickleball Official Rulebook, Rules 7.D.1-7.D.2.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 29,
-      "termFr": "travail",
-      "termEn": "travel",
+      "question": "For a drop serve, the ball must bounce exactly once before the server hits it.",
       "correctAnswer": false,
-      "explanationShort": "travail (FR) = work or labour.\ntravel (EN) = going on a journey.\nFrench works; English moves.",
-      "tag": "false_friend"
+      "explanationShort": "There is no restriction on how many times the ball can bounce.\nThere is also no restriction on where it bounces.\n2026 USA Pickleball Official Rulebook, Rules 7.D.3-7.D.4.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 30,
-      "termFr": "coin",
-      "termEn": "coin",
+      "question": "A server may have both feet off the ground when striking the ball.",
       "correctAnswer": false,
-      "explanationShort": "coin (FR) = a corner or a spot.\ncoin (EN) = a small metal disc used as money.\nFrench 'coin' comes from Latin 'cuneus' (wedge), describing the angular shape of a corner.",
-      "tag": "false_friend"
+      "explanationShort": "One foot must be grounded behind the baseline.\nThis applies to both volley and drop serves.\n2026 USA Pickleball Official Rulebook, Rule 7.A.1.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 31,
-      "termFr": "phrase",
-      "termEn": "phrase",
+      "question": "A server's foot may touch the baseline when striking the ball.",
       "correctAnswer": false,
-      "explanationShort": "phrase (FR) = a full sentence.\nphrase (EN) = a group of words, not always a full sentence.\nFrench is complete; English can be shorter.",
-      "tag": "false_friend"
+      "explanationShort": "No foot may touch the court, including the baseline, at contact.\nThe server must stay behind it until the ball is struck.\n2026 USA Pickleball Official Rulebook, Rule 7.A.2.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 32,
-      "termFr": "chat",
-      "termEn": "chat",
-      "correctAnswer": false,
-      "explanationShort": "chat (FR) = a cat.\nchat (EN) = an online written conversation.\nFrench purrs; English messages.",
-      "tag": "false_friend"
+      "question": "When the receiver cannot see the ball release, the receiver may call for a replay.",
+      "correctAnswer": true,
+      "explanationShort": "The receiver has the right to call a replay in this situation.\nThe call must be made before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 7.B.3.a.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 33,
-      "termFr": "supporter",
-      "termEn": "support",
-      "correctAnswer": false,
-      "explanationShort": "supporter (FR) = to tolerate or endure something unpleasant.\nsupport (EN) = to help, encourage, or hold something up.\nFrench endures; English helps.",
-      "tag": "false_friend"
+      "question": "A served ball that lands on the non-volley zone (NVZ) line is a fault.",
+      "correctAnswer": true,
+      "explanationShort": "The serve must clear the NVZ (kitchen) entirely, including its lines.\nLanding on the NVZ line counts as landing in the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 7.E.2.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 34,
-      "termFr": "résumer",
-      "termEn": "resume",
+      "question": "If the served ball hits the receiver before landing, the server loses the rally.",
       "correctAnswer": false,
-      "explanationShort": "résumer (FR) = to summarize or condense.\nresume (EN) = to continue after a pause.\nFrench shortens; English starts again.",
-      "tag": "false_friend"
+      "explanationShort": "The fault goes against the receiver, not the server.\nThis includes anything worn or carried by the receiver or their partner.\n2026 USA Pickleball Official Rulebook, Rule 7.E.5.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 35,
-      "termFr": "actuel",
-      "termEn": "actual",
-      "correctAnswer": false,
-      "explanationShort": "actuel (FR) = current, present-day.\nactual (EN) = real, true, not imagined.\nFrench is current; English is real.",
-      "tag": "false_friend"
+      "question": "If the served ball hits the server's partner, the server's team loses the rally.",
+      "correctAnswer": true,
+      "explanationShort": "The fault applies if the ball hits the server or their partner.\nThis includes anything worn or carried by either of them.\n2026 USA Pickleball Official Rulebook, Rule 7.E.4.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 36,
-      "termFr": "préjudice",
-      "termEn": "prejudice",
+      "question": "If the served ball hits the net post and lands in the correct service court, the serve is good.",
       "correctAnswer": false,
-      "explanationShort": "préjudice (FR) = harm or damage, especially in legal contexts.\nprejudice (EN) = a biased opinion formed without evidence.\nLatin 'praejudicium' (prior judgment) split into legal harm in French and personal bias in English.",
-      "tag": "false_friend"
+      "explanationShort": "Hitting a permanent object before landing is a fault.\nThe net is allowed, but the net post is not.\n2026 USA Pickleball Official Rulebook, Rule 7.E.3.",
+      "tags": [
+        "Serving Rules",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 37,
-      "termFr": "assumer",
-      "termEn": "assume",
+      "question": "A server may serve as soon as the previous rally ends.",
       "correctAnswer": false,
-      "explanationShort": "assumer (FR) = to take responsibility for something, to own it.\nassume (EN) = to suppose or take for granted.\nFrench owns it; English guesses it.",
-      "tag": "false_friend"
+      "explanationShort": "The server must wait until the full score is called before serving.\nServing before the score is called is a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 38,
-      "termFr": "prétendre",
-      "termEn": "pretend",
+      "question": "A server's foot may contact the baseline at the moment the paddle strikes the ball.",
       "correctAnswer": false,
-      "explanationShort": "prétendre (FR) = to claim or assert something as true.\npretend (EN) = to fake or act as if something is true when it is not.\nFrench claims; English fakes.",
-      "tag": "false_friend"
+      "explanationShort": "Touching the baseline at contact is a fault.\nThe foot must be fully behind the baseline.\n2026 USA Pickleball Official Rulebook, Rule 7.A.2.a.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 39,
-      "termFr": "adresser",
-      "termEn": "address",
-      "correctAnswer": false,
-      "explanationShort": "adresser (FR) = to send or direct something to someone.\naddress (EN) = to deal with a problem or issue.\nSome overlap exists, but French usually means to send or direct.",
-      "tag": "false_friend"
+      "question": "A server has 10 seconds after the score is called to serve the ball.",
+      "correctAnswer": true,
+      "explanationShort": "Exceeding the 10-second count is a fault.\nThe clock starts after the score call is completed.\n2026 USA Pickleball Official Rulebook, Rule 6.D.1.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 40,
-      "termFr": "délai",
-      "termEn": "delay",
+      "question": "The volley serve and the drop serve have the same motion requirements.",
       "correctAnswer": false,
-      "explanationShort": "délai (FR) = a time limit or allowed period.\ndelay (EN) = lateness or postponement.\nFrench gives you time; English makes you late.",
-      "tag": "false_friend"
+      "explanationShort": "The volley serve has arc, wrist, and waist rules.\nThe drop serve has none of those restrictions.\n2026 USA Pickleball Official Rulebook, Rules 7.C, 7.D.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 41,
-      "termFr": "étiquette",
-      "termEn": "etiquette",
-      "correctAnswer": false,
-      "explanationShort": "étiquette (FR) = a label or price tag.\netiquette (EN) = rules of polite behaviour.\nFrench sticks on objects; English guides behaviour.",
-      "tag": "false_friend"
+      "question": "The receiver must be ready before the server may serve.",
+      "correctAnswer": true,
+      "explanationShort": "Players signal 'not ready' before the score call.\nAfter the call, the server has 10 seconds to serve.\n2026 USA Pickleball Official Rulebook, Rule 6.A.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 42,
-      "termFr": "engager",
-      "termEn": "engage",
+      "question": "A server may impart spin on the ball during the release.",
       "correctAnswer": false,
-      "explanationShort": "engager (FR) = to hire someone or commit yourself.\nengage (EN) = to involve, attract attention, or take part.\nFrench hires; English grabs attention.",
-      "tag": "false_friend"
+      "explanationShort": "Spin during the release is not allowed.\nSpin at paddle contact is allowed.\n2026 USA Pickleball Official Rulebook, Rule 7.B.1.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 43,
-      "termFr": "formation",
-      "termEn": "formation",
+      "question": "A server may not let the ball roll off the paddle face before serving.",
       "correctAnswer": false,
-      "explanationShort": "formation (FR) = training or education.\nformation (EN) = an arrangement or structure of things.\nFrench trains people; English arranges things.",
-      "tag": "false_friend"
+      "explanationShort": "Gravity-caused rolling off the paddle is allowed.\nOnly deliberate spin during the release is banned.\n2026 USA Pickleball Official Rulebook, Rule 7.B.1.",
+      "tags": [
+        "Serving Rules",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 44,
-      "termFr": "fournir",
-      "termEn": "furnish",
+      "question": "The served ball must land in the correct service court without touching the net.",
       "correctAnswer": false,
-      "explanationShort": "fournir (FR) = to supply or provide.\nfurnish (EN) = to equip with furniture.\nFrench provides; English decorates.",
-      "tag": "false_friend"
+      "explanationShort": "The served ball may touch the net before landing.\nTouching the net does not invalidate the serve.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 45,
-      "termFr": "éventuel",
-      "termEn": "eventual",
-      "correctAnswer": false,
-      "explanationShort": "éventuel (FR) = possible, potential, not certain.\neventual (EN) = final, happening at the end, ultimate.\nFrench is uncertainty; English is end result.",
-      "tag": "false_friend"
+      "question": "If the wrong score is called and the rally is completed, the result of the rally stands.",
+      "correctAnswer": true,
+      "explanationShort": "A wrong score does not invalidate a completed rally.\nThe score must be corrected before the next serve.\n2026 USA Pickleball Official Rulebook, Rule 6.F.4.",
+      "tags": [
+        "Serving Rules",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 46,
-      "termFr": "journée",
-      "termEn": "journey",
+      "question": "A player may stop a rally to challenge the score without risk of fault.",
       "correctAnswer": false,
-      "explanationShort": "journée (FR) = the span of a full day.\njourney (EN) = a trip from one place to another.\nFrench refers to a day; English refers to travel.",
-      "tag": "false_friend"
+      "explanationShort": "Stopping a rally to challenge a correct score is a fault.\nOnly challenging a wrong score before the return of serve is safe.\n2026 USA Pickleball Official Rulebook, Rule 6.F.2.",
+      "tags": [
+        "Serving Rules",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 47,
-      "termFr": "rester",
-      "termEn": "rest",
-      "correctAnswer": false,
-      "explanationShort": "rester (FR) = to stay or remain somewhere.\nrest (EN) = to relax or stop working.\nFrench stays; English relaxes.",
-      "tag": "false_friend"
+      "question": "In singles, a server with an odd score must serve from the left serving area.",
+      "correctAnswer": true,
+      "explanationShort": "Odd score = left side. Even score, including zero = right side.\nIn doubles, position depends on the team score and starting position.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles"
+      ]
     },
     {
       "id": 48,
-      "termFr": "sympathique",
-      "termEn": "sympathetic",
-      "correctAnswer": false,
-      "explanationShort": "sympathique (FR) = nice, friendly, pleasant.\nsympathetic (EN) = showing compassion or understanding.\nFrench is friendly; English shows compassion.",
-      "tag": "false_friend"
+      "question": "In singles, a server with a score of zero must serve from the right serving area.",
+      "correctAnswer": true,
+      "explanationShort": "Zero is even, so the server starts on the right.\nThe left side is used only when the score is odd.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles"
+      ]
     },
     {
       "id": 49,
-      "termFr": "sensible",
-      "termEn": "sensible",
-      "correctAnswer": false,
-      "explanationShort": "sensible (FR) = sensitive, easily affected emotionally.\nsensible (EN) = practical, reasonable, showing good judgment.\nFrom Latin 'sensibilis'; French kept feeling deeply, English shifted to thinking clearly.",
-      "tag": "false_friend"
+      "question": "In doubles, the starting server's position is on the right side when the team's score is zero or even.",
+      "correctAnswer": true,
+      "explanationShort": "Position is based on the team's score, not individual.\nThis applies after each side out.\n2026 USA Pickleball Official Rulebook, Rule 5.B.3.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Doubles"
+      ]
     },
     {
       "id": 50,
-      "termFr": "envie",
-      "termEn": "envy",
-      "correctAnswer": false,
-      "explanationShort": "envie (FR) = a desire or craving for something.\nenvy (EN) = jealousy of what others have.\nWanting chocolate is French 'envie'; resenting someone else's chocolate is English 'envy.'",
-      "tag": "false_friend"
+      "question": "In doubles, both players on a team serve before a side out is declared.",
+      "correctAnswer": true,
+      "explanationShort": "Each server serves until their team loses a rally.\nA side out follows the second server's lost rally.\n2026 USA Pickleball Official Rulebook, Rule 5.B.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Doubles"
+      ]
     },
     {
       "id": 51,
-      "termFr": "déception",
-      "termEn": "deception",
+      "question": "A served ball that lands on the centerline of the service court is a fault.",
       "correctAnswer": false,
-      "explanationShort": "déception (FR) = disappointment, when expectations are not met.\ndeception (EN) = trickery, deliberate lying or misleading.\nFrench is about unmet hopes; English is about intentional dishonesty.",
-      "tag": "false_friend"
+      "explanationShort": "The centerline is part of the service court and counts as in.\nSideline and baseline of the service court also count as in.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.f.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 52,
-      "termFr": "décevoir",
-      "termEn": "deceive",
+      "question": "In doubles, the score is called as two numbers.",
       "correctAnswer": false,
-      "explanationShort": "décevoir (FR) = to disappoint someone.\ndeceive (EN) = to trick or mislead someone.\nFrench hurts feelings; English breaks trust.",
-      "tag": "false_friend"
+      "explanationShort": "In doubles, three numbers are called, not two.\nThe third number is the server number: one or two.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Doubles"
+      ]
     },
     {
       "id": 53,
-      "termFr": "roman",
-      "termEn": "roman",
+      "question": "In singles, the receiver's score is called first.",
       "correctAnswer": false,
-      "explanationShort": "roman (FR) = a novel, a work of fiction.\nroman (EN) = relating to ancient Rome.\nFrench names the story; English names the empire.",
-      "tag": "false_friend"
+      "explanationShort": "The server's score is always called first.\nReversing the order would be a wrong score call.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 54,
-      "termFr": "bras",
-      "termEn": "brass",
+      "question": "The receiver normally calls the score.",
       "correctAnswer": false,
-      "explanationShort": "bras (FR) = an arm, the body part.\nbrass (EN) = a yellow metal alloy.\nOne moves; the other shines.",
-      "tag": "false_friend"
+      "explanationShort": "The server normally calls the score, not the receiver.\nThis is true in both singles and doubles.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 55,
-      "termFr": "limonade",
-      "termEn": "lemonade",
+      "question": "In doubles, the server's partner may call the score at any time.",
       "correctAnswer": false,
-      "explanationShort": "limonade (FR) = a fizzy lemon soda.\nlemonade (EN) = a still drink made with lemon juice.\nIn France it bubbles; in English it does not.",
-      "tag": "false_friend"
+      "explanationShort": "The partner may call only if the server cannot.\nIt is not a free choice for the partner.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.a.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Doubles"
+      ]
     },
     {
       "id": 56,
-      "termFr": "prune",
-      "termEn": "prune",
+      "question": "A player may verbally say 'not ready' to signal they are not ready to play.",
       "correctAnswer": false,
-      "explanationShort": "prune (FR) = a fresh plum.\nprune (EN) = a dried plum.\nFrench is fresh; English is dried.",
-      "tag": "false_friend"
+      "explanationShort": "Only physical signals like raising the paddle are valid.\nVerbal statements like saying 'not ready' do not count.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 57,
-      "termFr": "pain",
-      "termEn": "pain",
+      "question": "A player may signal 'not ready' after the score call has started.",
       "correctAnswer": false,
-      "explanationShort": "pain (FR) = bread.\npain (EN) = physical or emotional suffering.\nSame spelling, totally different meaning.",
-      "tag": "false_friend"
+      "explanationShort": "After the score call starts, 'not ready' signals are no longer valid.\nThe only exception is to indicate a hinder.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 58,
-      "termFr": "sale",
-      "termEn": "sale",
+      "question": "The score may be called before all players are in position.",
       "correctAnswer": false,
-      "explanationShort": "sale (FR) = dirty, filthy.\nsale (EN) = a discount event, or the act of selling.\nUnrelated roots: French from Frankish (dirty), English from Old Norse (selling).",
-      "tag": "false_friend"
+      "explanationShort": "The score must wait until all players are ready.\nCalling early can cause a replay or fault.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 59,
-      "termFr": "table",
-      "termEn": "table",
-      "correctAnswer": true,
-      "explanationShort": "table (FR) = a piece of furniture used for eating, working, or placing objects.\ntable (EN) = the same: a piece of furniture for eating or working.\nSame word, same everyday meaning.",
-      "tag": "true_friend"
+      "question": "A server may hit the serve while the score is still being called.",
+      "correctAnswer": false,
+      "explanationShort": "The full score must be called before the serve.\nServing during the call is a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.C.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 60,
-      "termFr": "orange",
-      "termEn": "orange",
+      "question": "If the serving team changes sides after the score is called, the score must be re-called.",
       "correctAnswer": true,
-      "explanationShort": "orange (FR) = the fruit and the colour.\norange (EN) = the same: the fruit and the colour.\nThe word came from Sanskrit through Arabic \"naranj\"; European languages dropped the initial \"n\" by confusing it with the article.",
-      "tag": "true_friend"
+      "explanationShort": "The server must let all players reposition before re-calling the score.\nRe-calling without allowing repositioning first is not allowed.\n2026 USA Pickleball Official Rulebook, Rule 6.D.2.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 61,
-      "termFr": "chocolat",
-      "termEn": "chocolate",
+      "question": "After the score call starts, verbal indicators like 'stop' or 'wait' are recognized.",
       "correctAnswer": true,
-      "explanationShort": "chocolat (FR) = the food made from cacao beans.\nchocolate (EN) = the same: the cacao-based food or flavour.\nFrom Nahuatl 'xocolatl,' brought to Europe by Spanish conquistadors in the 1500s.",
-      "tag": "true_friend"
+      "explanationShort": "Words like 'stop' or 'wait' are recognized.\nThey can halt play to flag a wrong score.\n2026 USA Pickleball Official Rulebook, Rule 6.E.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 62,
-      "termFr": "fruit",
-      "termEn": "fruit",
-      "correctAnswer": true,
-      "explanationShort": "fruit (FR) = edible produce from a plant.\nfruit (EN) = the same: edible produce from a plant.\nFrom Latin 'fructus,' both languages preserved the botanical meaning.",
-      "tag": "true_friend"
+      "question": "A player may stop the rally to challenge the score after the return of serve.",
+      "correctAnswer": false,
+      "explanationShort": "A late score challenge is a fault.\nIt must happen before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 6.F.3.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 63,
-      "termFr": "restaurant",
-      "termEn": "restaurant",
-      "correctAnswer": true,
-      "explanationShort": "restaurant (FR) = a place where meals are prepared and served.\nrestaurant (EN) = the same: a place where meals are served to customers.\nFrom French 'restaurer' (to restore strength).",
-      "tag": "true_friend"
+      "question": "In doubles, the first score call of a game is 'zero – zero – one.'",
+      "correctAnswer": false,
+      "explanationShort": "The first doubles score call is 'zero–zero–two.'\nThe 'two' marks the starting server as second.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Doubles"
+      ]
     },
     {
       "id": 64,
-      "termFr": "zoo",
-      "termEn": "zoo",
+      "question": "A player may ask their opponent for the correct score before the serve is hit.",
       "correctAnswer": true,
-      "explanationShort": "zoo = a place where animals are kept for public display.\nShort for 'zoological garden,' from Greek 'zoion' (animal).",
-      "tag": "true_friend"
+      "explanationShort": "A player may ask the opponent for the score.\nThis right exists before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.E.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 65,
-      "termFr": "appartement",
-      "termEn": "apartment",
+      "question": "If the wrong score is called and the rally is stopped before the return of serve, the rally must be replayed.",
       "correctAnswer": true,
-      "explanationShort": "appartement = a residential unit inside a building.\nFrom Italian 'appartamento,' both languages kept the same housing meaning.",
-      "tag": "true_friend"
+      "explanationShort": "The rally is replayed with the correct score.\nA late challenge results in a fault instead.\n2026 USA Pickleball Official Rulebook, Rule 6.F.1.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 66,
-      "termFr": "accident",
-      "termEn": "accident",
-      "correctAnswer": true,
-      "explanationShort": "accident = an unexpected, usually harmful event.\nFrom Latin 'accidere' (to happen), both kept the sense of chance misfortune.",
-      "tag": "true_friend"
+      "question": "The 10-second count starts when the server begins calling the score.",
+      "correctAnswer": false,
+      "explanationShort": "The count starts after the call is completed.\nIt does not begin when the call starts.\n2026 USA Pickleball Official Rulebook, Rule 6.D.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 67,
-      "termFr": "information",
-      "termEn": "information",
+      "question": "In singles, a game always starts with the score call 'zero – zero.'",
       "correctAnswer": true,
-      "explanationShort": "information (FR) = facts or knowledge about a subject; in the plural, it can also mean the TV news.\ninformation (EN) = facts or knowledge about a subject.",
-      "tag": "true_friend"
+      "explanationShort": "Every singles game starts with 'zero–zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles"
+      ]
     },
     {
       "id": 68,
-      "termFr": "communication",
-      "termEn": "communication",
-      "correctAnswer": true,
-      "explanationShort": "communication = the exchange of information through speech, writing, or signals.\nFrom Latin 'communicare' (to share), both preserved the same meaning.",
-      "tag": "true_friend"
+      "question": "In standard scoring, either team can score on any rally.",
+      "correctAnswer": false,
+      "explanationShort": "Points are scored only when serving.\nA technical foul is the only exception.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 69,
-      "termFr": "situation",
-      "termEn": "situation",
-      "correctAnswer": true,
-      "explanationShort": "situation = a set of circumstances or state of affairs.\nFrom Latin 'situs' (position), both languages use it for circumstances.",
-      "tag": "true_friend"
+      "question": "A receiving team can never score a point in standard scoring.",
+      "correctAnswer": false,
+      "explanationShort": "A technical foul can award a point to receivers.\nThis is the exception to serve-only scoring.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 70,
-      "termFr": "solution",
-      "termEn": "solution",
+      "question": "The court must be a rectangle measuring 20 feet (6.10 m) wide and 44 feet (13.41 m) long.",
       "correctAnswer": true,
-      "explanationShort": "solution = an answer to a problem, or a liquid mixture in chemistry.\nFrom Latin 'solvere' (to loosen), both kept the same double meaning.",
-      "tag": "true_friend"
+      "explanationShort": "The same dimensions apply to both singles and doubles matches.\nMeasurements are made to the outside edge of the lines.\n2026 USA Pickleball Official Rulebook, Rule 3.A.1.",
+      "tags": [
+        "Court & Equipment",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 71,
-      "termFr": "nation",
-      "termEn": "nation",
-      "correctAnswer": true,
-      "explanationShort": "nation = a country or its people as a political community.\nFrom Latin 'natio' (birth, people), both use it for political and cultural entities.",
-      "tag": "true_friend"
+      "question": "The net is the same height at the sidelines and at the center of the court.",
+      "correctAnswer": false,
+      "explanationShort": "The net is 36 inches at sidelines, 34 at center.\nIt sags slightly in the middle by design.\n2026 USA Pickleball Official Rulebook, Rules 3.B.6-3.B.7.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 72,
-      "termFr": "important",
-      "termEn": "important",
-      "correctAnswer": true,
-      "explanationShort": "important = significant, having great value or influence.\nFrom Latin 'importare' (to carry in, to matter), both languages mark what has weight.",
-      "tag": "true_friend"
+      "question": "Some approved pickleball balls are only approved for indoor play.",
+      "correctAnswer": false,
+      "explanationShort": "All approved balls are acceptable for both indoor and outdoor play.\nThe choice of ball is a preference, not a rule restriction.\n2026 USA Pickleball Official Rulebook, Rule 3.C.1.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 73,
-      "termFr": "possible",
-      "termEn": "possible",
-      "correctAnswer": true,
-      "explanationShort": "possible = something that can happen or be done.\nFrom Latin 'posse' (to be able), both kept the same sense.",
-      "tag": "true_friend"
+      "question": "A pickleball ball may have multiple colors.",
+      "correctAnswer": false,
+      "explanationShort": "The ball must be one uniform color.\nA manufacturer logo or name is the only exception.\n2026 USA Pickleball Official Rulebook, Rule 3.C.3.",
+      "tags": [
+        "Court & Equipment",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 74,
-      "termFr": "impossible",
-      "termEn": "impossible",
+      "question": "The non-volley zone (NVZ) extends 7 feet (2.13 m) from the net on each side.",
       "correctAnswer": true,
-      "explanationShort": "impossible = something that cannot happen or be done.\nThe Latin prefix 'im-' negates 'possible' the same way in both languages.",
-      "tag": "true_friend"
+      "explanationShort": "The NVZ (kitchen) is 7 feet from the net.\nThe NVZ line itself is part of the zone.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c.",
+      "tags": [
+        "Court & Equipment",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 75,
-      "termFr": "excellent",
-      "termEn": "excellent",
+      "question": "A ball landing on the non-volley zone (NVZ) line is considered in the NVZ.",
       "correctAnswer": true,
-      "explanationShort": "excellent = of the highest quality or standard.\nFrom Latin 'excellere' (to surpass), both preserved the superlative sense.",
-      "tag": "true_friend"
+      "explanationShort": "All lines bounding the NVZ (kitchen) are part of the zone itself.\nThis applies to all lines on all four sides of the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 76,
-      "termFr": "intelligent",
-      "termEn": "intelligent",
-      "correctAnswer": true,
-      "explanationShort": "intelligent = having strong mental ability.\nFrom Latin 'intelligere' (to understand), both describe cognitive ability.",
-      "tag": "true_friend"
+      "question": "A pickleball ball may have a textured surface.",
+      "correctAnswer": false,
+      "explanationShort": "The ball must have a smooth surface and be free of texturing.\nA slight ridge at the seam is the only exception allowed.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 77,
-      "termFr": "urgent",
-      "termEn": "urgent",
+      "question": "A pickleball ball may have a slight ridge at the seam.",
       "correctAnswer": true,
-      "explanationShort": "urgent = requiring immediate attention or action.\nFrom Latin 'urgere' (to press), both kept the sense of pressing time.",
-      "tag": "true_friend"
+      "explanationShort": "A seam ridge is allowed if it doesn't affect flight.\nThis is the only exception to the smooth rule.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 78,
-      "termFr": "taxi",
-      "termEn": "taxi",
+      "question": "A paddle may not exceed 17 inches (43.18 cm) in length.",
       "correctAnswer": true,
-      "explanationShort": "taxi = a hired car with a driver.\nShort for 'taximeter' (fare meter), the word spread internationally with identical meaning.",
-      "tag": "true_friend"
+      "explanationShort": "Length plus width must not exceed 24 inches.\nOnly length and combined dimensions are regulated.\n2026 USA Pickleball Official Rulebook, Rule 3.D.1.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 79,
-      "termFr": "bus",
-      "termEn": "bus",
-      "correctAnswer": true,
-      "explanationShort": "bus = a large vehicle for carrying passengers on a fixed route.\nShortened from Latin 'omnibus' (for everyone), both languages adopted the same abbreviation.",
-      "tag": "true_friend"
+      "question": "There is a maximum weight limit for pickleball paddles.",
+      "correctAnswer": false,
+      "explanationShort": "No weight restriction exists for paddles in the rulebook.\nOnly length and combined dimensions are regulated.\n2026 USA Pickleball Official Rulebook, Rule 3.D.1.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 80,
-      "termFr": "menu",
-      "termEn": "menu",
-      "correctAnswer": true,
-      "explanationShort": "menu = a list of available dishes in a restaurant.\nFrom French 'menu' (detailed, small), originally meaning a detailed list of options.",
-      "tag": "true_friend"
+      "question": "A center strap is required on all pickleball nets.",
+      "correctAnswer": false,
+      "explanationShort": "A center strap is optional, not required.\nIt adjusts the net to 34 inches at center.\n2026 USA Pickleball Official Rulebook, Rule 3.B.5.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 81,
-      "termFr": "animal",
-      "termEn": "animal",
+      "question": "Court lines must be 2 inches (5.08 cm) wide.",
       "correctAnswer": true,
-      "explanationShort": "animal = a living creature that is not a plant.\nFrom Latin 'animalis' (having breath), both kept the biological category.",
-      "tag": "true_friend"
+      "explanationShort": "All court lines must be 2 inches wide.\nThis applies to every line on the court.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.e.",
+      "tags": [
+        "Court & Equipment",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 82,
-      "termFr": "musique",
-      "termEn": "music",
-      "correctAnswer": true,
-      "explanationShort": "musique = the art of organized sound.\nFrom Greek 'mousike' (art of the Muses), both preserved the same artistic meaning.",
-      "tag": "true_friend"
+      "question": "Court lines may be any color, even if similar to the playing surface.",
+      "correctAnswer": false,
+      "explanationShort": "Lines must clearly contrast with the surface color.\nAll lines must also be the same color as each other.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.e.",
+      "tags": [
+        "Court & Equipment",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 83,
-      "termFr": "culture",
-      "termEn": "culture",
+      "question": "A pickleball ball must have between 26 and 40 circular holes.",
       "correctAnswer": true,
-      "explanationShort": "culture (FR) = the arts, customs, and beliefs of a society; it can also mean the cultivation of living organisms in science.\nculture (EN) = the same: the arts, customs, and beliefs of a society; it can also mean the cultivation of living organisms in science.",
-      "tag": "true_friend"
+      "explanationShort": "The number of holes affects the ball's flight characteristics.\nBalls outside this range are not approved for play.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 84,
-      "termFr": "minute",
-      "termEn": "minute",
+      "question": "The net must be at least 30 inches (76.2 cm) tall from bottom to top.",
       "correctAnswer": true,
-      "explanationShort": "minute = a unit of time equal to 60 seconds.\nFrom Latin 'minuta' (small part), international timekeeping aligned the unit.",
-      "tag": "true_friend"
+      "explanationShort": "The net must be at least 30 inches tall.\nThis is separate from the playing height above court.\n2026 USA Pickleball Official Rulebook, Rule 3.B.3.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 85,
-      "termFr": "seconde",
-      "termEn": "second",
-      "correctAnswer": true,
-      "explanationShort": "seconde (FR) = a unit of time or second position.\nsecond (EN) = the same: a unit of time or position after first.\nFrom Latin 'secunda' (following).",
-      "tag": "true_friend"
+      "question": "The net must be made of a specific approved material.",
+      "correctAnswer": false,
+      "explanationShort": "Any mesh fabric is acceptable for the net.\nThe only requirement is balls cannot pass through.\n2026 USA Pickleball Official Rulebook, Rule 3.B.1.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 86,
-      "termFr": "public",
-      "termEn": "public",
+      "question": "A pickleball ball must have a manufacturer or supplier name or logo on its surface.",
       "correctAnswer": true,
-      "explanationShort": "public = open to everyone, or relating to the people as a whole.\nFrom Latin 'publicus,' both describe collective access and shared space.",
-      "tag": "true_friend"
+      "explanationShort": "The marking must be printed or embossed on the ball surface.\nThis is required for all approved balls.\n2026 USA Pickleball Official Rulebook, Rule 3.C.4.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 87,
-      "termFr": "total",
-      "termEn": "total",
+      "question": "The minimum playing surface area is 30 feet (9.14 m) wide and 60 feet (18.29 m) long.",
       "correctAnswer": true,
-      "explanationShort": "total = the complete amount or sum.\nFrom Latin 'totus' (whole), both use it for a full count.",
-      "tag": "true_friend"
+      "explanationShort": "The minimum playing surface is 30 × 60 feet.\nThe court itself is only 20 × 44 feet.\n2026 USA Pickleball Official Rulebook, Rule 3.A.3.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 88,
-      "termFr": "normal",
-      "termEn": "normal",
+      "question": "Net posts should be 22 feet (6.71 m) apart, measured from inside post to inside post.",
       "correctAnswer": true,
-      "explanationShort": "normal = conforming to what is standard or expected.\nFrom Latin 'norma' (carpenter's square); the measuring tool became the metaphor for what fits the rule.",
-      "tag": "true_friend"
+      "explanationShort": "A tolerance of ±1.0 inch is allowed.\nEach post must not exceed 3 inches in diameter.\n2026 USA Pickleball Official Rulebook, Rule 3.B.2.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 89,
-      "termFr": "national",
-      "termEn": "national",
-      "correctAnswer": true,
-      "explanationShort": "national = relating to or belonging to a nation.\nBuilt on 'nation,' the adjective stayed aligned in both languages.",
-      "tag": "true_friend"
+      "question": "A paddle's hitting surface may have small indentations to improve grip on the ball.",
+      "correctAnswer": false,
+      "explanationShort": "Indentations on the hitting surface are banned.\nThey could let a player add extra spin.\n2026 USA Pickleball Official Rulebook, Rule 3.D.3.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 90,
-      "termFr": "international",
-      "termEn": "international",
+      "question": "A pickleball ball must be between 2.87 inches (7.29 cm) and 2.97 inches (7.54 cm) in diameter.",
       "correctAnswer": true,
-      "explanationShort": "international = involving two or more countries.\nThe prefix 'inter-' (between) worked identically in both languages.",
-      "tag": "true_friend"
+      "explanationShort": "Balls outside this diameter range are not approved for play.\nThe out-of-round variance must also not exceed +/- 0.020 inch (0.51 mm).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.3.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 91,
-      "termFr": "valeur",
-      "termEn": "value",
-      "correctAnswer": false,
-      "explanationShort": "valeur (FR) = worth, importance, moral principle.\nvalue (EN) = numerical or economic amount.\nFrench can mean importance; English usually means a quantity.",
-      "tag": "false_friend"
+      "question": "A pickleball ball must weigh between 0.78 and 0.935 ounces (22.1 and 26.5 grams).",
+      "correctAnswer": true,
+      "explanationShort": "Balls outside this weight range are not approved for play.\nBoth minimum and maximum weights are strictly enforced.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.4.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 92,
-      "termFr": "photographe",
-      "termEn": "photographer",
+      "question": "A pickleball paddle must be made of rigid, non-compressible material.",
       "correctAnswer": true,
-      "explanationShort": "photographe = a person who takes photographs.\nFrom Greek 'photo' (light) + 'graphe' (writing), both name the same profession.",
-      "tag": "true_friend"
+      "explanationShort": "The material must be rigid and deemed safe.\nFlexible or compressible faces are not allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.1.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 93,
-      "termFr": "responsable",
-      "termEn": "responsible",
+      "question": "A pickleball ball must bounce between 30 and 34 inches (76.2 and 86.4 cm) when dropped from 78 inches (198.1 cm).",
       "correctAnswer": true,
-      "explanationShort": "responsable (FR) = in charge or accountable.\nresponsible (EN) = the same: accountable or in charge.\nIn French the noun can also mean a manager.",
-      "tag": "true_friend"
+      "explanationShort": "The bounce test uses a granite surface plate.\nTest temperature must be 70°F (±5°F).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.5.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 94,
-      "termFr": "danger",
-      "termEn": "danger",
+      "question": "There is no restriction on paddle handle length.",
       "correctAnswer": true,
-      "explanationShort": "danger = a risk of harm or threat to safety.\nBoth languages inherited the word from Old French, keeping the sense of threat.",
-      "tag": "true_friend"
+      "explanationShort": "The handle may be any length within the overall paddle dimensions.\nOnly the combined length and width cannot exceed 24 inches (60.96 cm).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.3.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 95,
-      "termFr": "produit",
-      "termEn": "product",
-      "correctAnswer": true,
-      "explanationShort": "produit = something manufactured, grown, or created for sale.\nFrom Latin 'producere' (to bring forth), both name what is made.",
-      "tag": "true_friend"
+      "question": "Adding weight to a paddle is not allowed.",
+      "correctAnswer": false,
+      "explanationShort": "Adding weight is a permitted alteration.\nWeighted tape is a common and allowed method.\n2026 USA Pickleball Official Rulebook, Rule 3.D.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 96,
-      "termFr": "organisation",
-      "termEn": "organization",
+      "question": "Decals and tape may not extend more than 1.0 inch (2.54 cm) onto the paddle face from the grip.",
       "correctAnswer": true,
-      "explanationShort": "organisation = a structured group of people working together.\nSame meaning in both languages.",
-      "tag": "true_friend"
+      "explanationShort": "Decals and tape cannot go further onto the face.\nThe hitting surface must remain unaltered beyond that.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.b.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 97,
-      "termFr": "administration",
-      "termEn": "administration",
+      "question": "Decals and tape may extend up to 0.5 inch (1.27 cm) inside the paddle's outer edge.",
       "correctAnswer": true,
-      "explanationShort": "administration = the management or governance of an organization.\nFrom Latin 'administrare' (to serve, manage), both refer to governance.",
-      "tag": "true_friend"
+      "explanationShort": "Beyond 0.5 inch inside the edge is not allowed.\nEdge guard presence shifts the limit inward.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.b.",
+      "tags": [
+        "Court & Equipment",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 98,
-      "termFr": "libraire",
-      "termEn": "librarian",
+      "question": "Writing on the paddle's playing surface is not permitted.",
       "correctAnswer": false,
-      "explanationShort": "libraire (FR) = a bookseller.\nlibrarian (EN) = a person who works in a library.\nSeller in French; library staff in English.",
-      "tag": "false_friend"
+      "explanationShort": "Name and contact info on the face are allowed.\nThis is an explicitly permitted marking.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.c.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 99,
-      "termFr": "historique",
-      "termEn": "historical",
-      "correctAnswer": false,
-      "explanationShort": "historique (FR) = historic, significant in history.\nhistorical (EN) = related to history in general.\nFrench often means important; English simply relates to history.",
-      "tag": "false_friend"
+      "question": "A player may have another player's autograph on their paddle's playing surface.",
+      "correctAnswer": true,
+      "explanationShort": "Autographs on the paddle face are allowed.\nThis is an explicitly permitted identification marking.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.c.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 100,
-      "termFr": "économique",
-      "termEn": "economic",
-      "correctAnswer": true,
-      "explanationShort": "économique = relating to the economy, trade, and production of wealth.\nFrom Greek 'oikonomia' (household management), both kept the resource meaning.",
-      "tag": "true_friend"
+      "question": "A paddle may include electronic features to assist the player during play.",
+      "correctAnswer": false,
+      "explanationShort": "Electronic communications and power assistance are strictly prohibited.\nThe paddle must provide no mechanical or electronic advantage during play.\n2026 USA Pickleball Official Rulebook, Rule 3.D.5.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 101,
-      "termFr": "magasin",
-      "termEn": "magazine",
+      "question": "Changing the grip size of a paddle is not permitted.",
       "correctAnswer": false,
-      "explanationShort": "magasin (FR) = a shop or store where you buy things.\nmagazine (EN) = a periodical publication with articles and photos.\nBoth come from Arabic 'makhazin' (storehouses); one stores goods, the other stores stories.",
-      "tag": "false_friend"
+      "explanationShort": "Grip size changes are explicitly permitted.\nGrip wraps and inserts are both allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.a.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 102,
-      "termFr": "veste",
-      "termEn": "vest",
+      "question": "Replacing the edge guard on a paddle is not allowed.",
       "correctAnswer": false,
-      "explanationShort": "veste (FR) = a jacket, a garment with sleeves.\nvest (EN) = a sleeveless undergarment or waistcoat.\nFrench wears a jacket; English wears an undershirt.",
-      "tag": "false_friend"
+      "explanationShort": "Edge guard tape is a permitted player alteration.\nSeveral modifications to commercial paddles are allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.a.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 103,
-      "termFr": "réclamer",
-      "termEn": "reclaim",
+      "question": "Any ball design can be used in pickleball as long as it meets size and weight requirements.",
       "correctAnswer": false,
-      "explanationShort": "réclamer (FR) = to demand or ask for something.\nreclaim (EN) = to take something back or recover it.\nFrench demands; English takes back.",
-      "tag": "false_friend"
+      "explanationShort": "The ball design must be specifically approved by USA Pickleball.\nSize and weight alone are not sufficient for approval.\n2026 USA Pickleball Official Rulebook, Rule 3.C.2.",
+      "tags": [
+        "Court & Equipment",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 104,
-      "termFr": "formidable",
-      "termEn": "formidable",
+      "question": "In doubles, only the player closest to the ball may make a line call.",
       "correctAnswer": false,
-      "explanationShort": "formidable (FR) = wonderful or fantastic.\nformidable (EN) = impressive, powerful, or intimidating.\nFrench praises; English warns.",
-      "tag": "false_friend"
+      "explanationShort": "Either or both partners may make a line call.\nNo rule restricts it to the closer player.\n2026 USA Pickleball Official Rulebook, Rule 8.A.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Doubles"
+      ]
     },
     {
       "id": 105,
-      "termFr": "crier",
-      "termEn": "cry",
+      "question": "If a player is unsure whether a ball is out, they may call it out anyway.",
       "correctAnswer": false,
-      "explanationShort": "crier (FR) = to shout loudly.\ncry (EN) = to shed tears.\nFrench shouts; English weeps.",
-      "tag": "false_friend"
+      "explanationShort": "Any ball that cannot be promptly called out must be considered in.\nQuestionable calls must always be resolved in favor of the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 106,
-      "termFr": "portrait",
-      "termEn": "portrait",
+      "question": "A player must clearly see a space between the line and the ball to call it out.",
       "correctAnswer": true,
-      "explanationShort": "portrait (FR) = an artistic depiction of a person.\nportrait (EN) = the same: an artistic depiction of a person.\nBoth languages use it the same way.",
-      "tag": "true_friend"
+      "explanationShort": "No clear space between ball and line means 'in.'\nThis prevents uncertain out calls.\n2026 USA Pickleball Official Rulebook, Rule 8.E.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 107,
-      "termFr": "garage",
-      "termEn": "garage",
-      "correctAnswer": true,
-      "explanationShort": "garage = a building for parking or repairing vehicles.\nA French word exported worldwide with identical meaning.",
-      "tag": "true_friend"
+      "question": "A ball that touches a court line during a rally is out.",
+      "correctAnswer": false,
+      "explanationShort": "Any ball touching a court line is considered in.\nOnly balls landing fully outside a line are out.\n2026 USA Pickleball Official Rulebook, Rule 8.B.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 108,
-      "termFr": "touriste",
-      "termEn": "tourist",
+      "question": "An 'out' call must be made promptly by voice, hand signal, or both.",
       "correctAnswer": true,
-      "explanationShort": "touriste = a person travelling for pleasure.\nFrom French 'tour' (a journey or circuit), both describe the same traveller.",
-      "tag": "true_friend"
+      "explanationShort": "A delayed out call may not be recognized.\nThe call must come before the opponent hits back.\n2026 USA Pickleball Official Rulebook, Rule 8.F.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 109,
-      "termFr": "science",
-      "termEn": "science",
-      "correctAnswer": true,
-      "explanationShort": "science = the systematic study of the natural world through observation and experiment.\nFrom Latin 'scientia' (knowledge), both kept the same meaning.",
-      "tag": "true_friend"
+      "question": "If doubles partners disagree on a line call, the ball is considered out.",
+      "correctAnswer": false,
+      "explanationShort": "When partners disagree on a line call, the ball is considered in.\nThis gives the benefit of the doubt to the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.H.",
+      "tags": [
+        "Line Calls",
+        "Intermediate",
+        "Doubles"
+      ]
     },
     {
       "id": 110,
-      "termFr": "architecture",
-      "termEn": "architecture",
+      "question": "A player may overrule their own line call to their own disadvantage.",
       "correctAnswer": true,
-      "explanationShort": "architecture = the art and practice of designing buildings.\nFrom Greek 'arkhitekton' (master builder), both preserved the construction meaning.",
-      "tag": "true_friend"
+      "explanationShort": "Players may override calls to their own disadvantage.\nOverriding to gain an advantage is not allowed.\n2026 USA Pickleball Official Rulebook, Rule 8.G.",
+      "tags": [
+        "Line Calls",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 111,
-      "termFr": "regarder",
-      "termEn": "regard",
-      "correctAnswer": false,
-      "explanationShort": "regarder (FR) = to look at or watch.\nregard (EN) = respect or consideration.\nFrench looks; English respects.",
-      "tag": "false_friend"
+      "question": "A player may ask their opponent's opinion on a line call.",
+      "correctAnswer": true,
+      "explanationShort": "A player may defer a line call to the opponent.\nThe opponent's clear decision then stands.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
+      "tags": [
+        "Line Calls",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 112,
-      "termFr": "caution",
-      "termEn": "caution",
+      "question": "A player may change their mind on a line call after the next serve is hit.",
       "correctAnswer": false,
-      "explanationShort": "caution (FR) = a security deposit or bail money.\ncaution (EN) = care taken to avoid danger or mistakes.\nFrench turned it into a financial guarantee; English turned it into a warning.",
-      "tag": "false_friend"
+      "explanationShort": "Once the next serve is hit, the call is final.\nAny change must happen before that serve.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
+      "tags": [
+        "Line Calls",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 113,
-      "termFr": "pet",
-      "termEn": "pet",
-      "correctAnswer": false,
-      "explanationShort": "pet (FR) = a fart, gas released from the body.\npet (EN) = a domesticated animal kept for companionship.\nFlatulence in French; furry friend in English.",
-      "tag": "false_friend"
+      "question": "In rally scoring, a point is scored on every rally, regardless of who served.",
+      "correctAnswer": true,
+      "explanationShort": "Every rally awards a point in rally scoring.\nThis differs from standard side-out scoring.\n2026 USA Pickleball Official Rulebook, Rule 14.A.2.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 114,
-      "termFr": "patron",
-      "termEn": "patron",
+      "question": "A player may accept a spectator's line call if the spectator volunteered it.",
       "correctAnswer": false,
-      "explanationShort": "patron (FR) = the boss or employer who runs the business.\npatron (EN) = a loyal customer or financial supporter.\nFrom Latin 'patronus' (protector); French took the authority side, English took the generosity side.",
-      "tag": "false_friend"
+      "explanationShort": "Spectators must not be consulted on any call.\nWhether the spectator volunteered or was asked makes no difference.\n2026 USA Pickleball Official Rulebook, Rule 8.J.",
+      "tags": [
+        "Line Calls",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 115,
-      "termFr": "pièce",
-      "termEn": "piece",
-      "correctAnswer": false,
-      "explanationShort": "pièce (FR) = a room, coin, or theatrical play.\npiece (EN) = a part of something.\nFrench enters a room; English takes a part.",
-      "tag": "false_friend"
+      "question": "When a line call is questionable, the benefit of the doubt goes to the opponent.",
+      "correctAnswer": true,
+      "explanationShort": "Questionable calls must always be resolved in favor of the opponent.\nThis is a core principle of pickleball's code of ethics.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 116,
-      "termFr": "massage",
-      "termEn": "massage",
-      "correctAnswer": true,
-      "explanationShort": "massage = therapeutic manipulation of muscles and soft tissue.\nFrom Arabic 'mass' (to touch), the word entered French then spread worldwide.",
-      "tag": "true_friend"
+      "question": "Saying 'out' while the ball is still in the air counts as a line call.",
+      "correctAnswer": false,
+      "explanationShort": "Partner communication in the air is not a call.\nA line call is only valid after the ball lands.\n2026 USA Pickleball Official Rulebook, Rule 8.F.4.",
+      "tags": [
+        "Line Calls",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 117,
-      "termFr": "surprise",
-      "termEn": "surprise",
+      "question": "After an 'out' call is made, play must stop immediately.",
       "correctAnswer": true,
-      "explanationShort": "surprise = an unexpected event, or the feeling of astonishment it causes.\nFrom Old French 'surprendre' (to overtake), both kept the element of the unexpected.",
-      "tag": "true_friend"
+      "explanationShort": "A line call makes the ball dead immediately.\nPlay cannot continue after a valid out call.\n2026 USA Pickleball Official Rulebook, Rule 8.F.2.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 118,
-      "termFr": "concert",
-      "termEn": "concert",
-      "correctAnswer": true,
-      "explanationShort": "concert = a live musical performance before an audience.\nFrom Italian through French, both name the same musical event.",
-      "tag": "true_friend"
+      "question": "Players are responsible for making line calls on their opponent's end of the court.",
+      "correctAnswer": false,
+      "explanationShort": "Players call lines on their own end of the court only.\nCalling lines on the opponent's end is not a player's responsibility.\n2026 USA Pickleball Official Rulebook, Rule 8.A.",
+      "tags": [
+        "Line Calls",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 119,
-      "termFr": "effort",
-      "termEn": "effort",
-      "correctAnswer": true,
-      "explanationShort": "effort = physical or mental energy applied to a task.\nFrom Old French 'esforcer' (to force), both kept the sense of trying hard.",
-      "tag": "true_friend"
+      "question": "If a player asks their opponent's opinion and the opponent cannot make a definitive call, the ball is considered out.",
+      "correctAnswer": false,
+      "explanationShort": "No definitive call from the opponent means 'in.'\nOnly a clear 'in' or 'out' overrides the call.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
+      "tags": [
+        "Line Calls",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 120,
-      "termFr": "virus",
-      "termEn": "virus",
-      "correctAnswer": true,
-      "explanationShort": "virus = an infectious agent that causes disease.\nAlso used for harmful computer programs — Latin scientific vocabulary keeps both languages aligned.",
-      "tag": "true_friend"
+      "question": "If a player returns the ball, they may still call it out after the opponent hits it back.",
+      "correctAnswer": false,
+      "explanationShort": "After the opponent hits back, the out right is lost.\nThe call must come before the opponent strikes.\n2026 USA Pickleball Official Rulebook, Rule 8.F.3.",
+      "tags": [
+        "Line Calls",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 121,
-      "termFr": "défaut",
-      "termEn": "default",
-      "correctAnswer": false,
-      "explanationShort": "défaut (FR) = a flaw or imperfection.\ndefault (EN) = the preset option or a failure to pay.\nFrench points to a flaw; English points to a preset.",
-      "tag": "false_friend"
+      "question": "Players must strive for accuracy when making line calls.",
+      "correctAnswer": true,
+      "explanationShort": "Accuracy is a core obligation under pickleball's code of ethics.\nQuestionable calls must always favor the opponent, not the caller.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 122,
-      "termFr": "physicien",
-      "termEn": "physician",
-      "correctAnswer": false,
-      "explanationShort": "physicien (FR) = a physicist, a scientist who studies physics.\nphysician (EN) = a medical doctor.\nBoth trace back to Greek 'physis' (nature), but one studies nature's laws and the other heals nature's body.",
-      "tag": "false_friend"
+      "question": "If no player makes an 'out' call, the ball is considered in.",
+      "correctAnswer": true,
+      "explanationShort": "Any ball that cannot be called out must be considered in.\nSilence on a line call always defaults to in.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
+      "tags": [
+        "Line Calls",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 123,
-      "termFr": "propre",
-      "termEn": "proper",
+      "question": "Play may continue after a fault is committed.",
       "correctAnswer": false,
-      "explanationShort": "propre (FR) = clean, or one's own.\nproper (EN) = correct or appropriate.\nFrench washes things; English approves them.",
-      "tag": "false_friend"
+      "explanationShort": "A fault immediately stops play and ends the rally.\nThe ball becomes dead the moment a fault occurs.\n2026 USA Pickleball Official Rulebook, Rule 9.B.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 124,
-      "termFr": "injure",
-      "termEn": "injury",
-      "correctAnswer": false,
-      "explanationShort": "injure (FR) = a verbal insult or offensive word.\ninjury (EN) = a physical wound or bodily harm.\nFrench wounds with words; English wounds the body.",
-      "tag": "false_friend"
+      "question": "A called hinder results in a dead ball.",
+      "correctAnswer": true,
+      "explanationShort": "Any player may call a hinder to stop play.\nExample: a ball rolling in from another court.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 125,
-      "termFr": "course",
-      "termEn": "course",
-      "correctAnswer": false,
-      "explanationShort": "course (FR) = an errand, a shopping trip, or a race.\ncourse (EN) = a class, a direction, or a part of a meal.\nFrench runs errands; English runs classes.",
-      "tag": "false_friend"
+      "question": "Players are expected to call faults on themselves or their partner.",
+      "correctAnswer": true,
+      "explanationShort": "Faults must be called when committed or detected.\nWaiting until after the rally is too late.\n2026 USA Pickleball Official Rulebook, Rule 9.B.2.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 126,
-      "termFr": "train",
-      "termEn": "train",
+      "question": "A player may call a non-volley zone (NVZ) fault on their opponent.",
       "correctAnswer": true,
-      "explanationShort": "train (FR) = a railway vehicle that carries passengers or freight.\ntrain (EN) = the same: a railway vehicle that carries passengers or freight.\nSame word, same meaning in both languages.",
-      "tag": "true_friend"
+      "explanationShort": "NVZ and service foot faults may be called on opponents.\nThese are the only enforceable faults on others.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 127,
-      "termFr": "dialogue",
-      "termEn": "dialogue",
-      "correctAnswer": true,
-      "explanationShort": "dialogue (FR) = a conversation between two or more people.\ndialogue (EN) = the same: a conversation between two or more people.\nBoth languages kept the same meaning from Greek 'dialogos'.",
-      "tag": "true_friend"
+      "question": "A player may enforce a double-bounce fault on their opponent.",
+      "correctAnswer": false,
+      "explanationShort": "Only NVZ and foot faults are enforceable on opponents.\nAll other faults are decided by the committing player.\n2026 USA Pickleball Official Rulebook, Rule 9.B.4.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 128,
-      "termFr": "costume",
-      "termEn": "costume",
-      "correctAnswer": false,
-      "explanationShort": "costume (FR) = a men's business suit, jacket and trousers for formal wear.\ncostume (EN) = fancy dress, a disguise, or a stage outfit.\nBoardroom in French, costume party in English.",
-      "tag": "false_friend"
+      "question": "A fault call must be made before the next serve is hit.",
+      "correctAnswer": true,
+      "explanationShort": "A fault should be called as soon as detected.\nAfter the next serve, it can no longer be enforced.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.a.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 129,
-      "termFr": "artiste",
-      "termEn": "artist",
-      "correctAnswer": true,
-      "explanationShort": "artiste = a person who creates art — painting, music, or other creative work.\nFrom Latin 'ars' (skill), both describe the same creative role.",
-      "tag": "true_friend"
+      "question": "When a hinder is called, the team that called it wins the rally.",
+      "correctAnswer": false,
+      "explanationShort": "A valid hinder results in a replayed rally.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.C.2.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 130,
-      "termFr": "avenue",
-      "termEn": "avenue",
+      "question": "A ball rolling onto the court from an adjacent court during a rally is a valid hinder.",
       "correctAnswer": true,
-      "explanationShort": "avenue = a wide urban road, often lined with trees.\nFrom French 'avenir' (to approach), both name broad city streets.",
-      "tag": "true_friend"
+      "explanationShort": "An outside object unexpectedly entering the court is a valid hinder.\nThe rally must be replayed when a valid hinder is called.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 131,
-      "termFr": "blanc",
-      "termEn": "blank",
+      "question": "A player who misses a shot may call a hinder to replay the rally.",
       "correctAnswer": false,
-      "explanationShort": "blanc (FR) = white, the colour.\nblank (EN) = empty, unmarked, or without content.\nBoth from a Germanic root meaning bright or shining, but one became a colour and the other an absence.",
-      "tag": "false_friend"
+      "explanationShort": "A hinder must be caused by unexpected outside interference.\nMissing a shot is not a valid reason to call a hinder.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 132,
-      "termFr": "joli",
-      "termEn": "jolly",
+      "question": "Only the player directly affected may call a hinder.",
       "correctAnswer": false,
-      "explanationShort": "joli (FR) = pretty or attractive in appearance.\njolly (EN) = cheerful, merry, full of good spirits.\nFrench looks pretty; English feels cheerful.",
-      "tag": "false_friend"
+      "explanationShort": "Any player on either team may call a hinder.\nThe call is not limited to the affected player.\n2026 USA Pickleball Official Rulebook, Rule 9.C.1.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 133,
-      "termFr": "retirer",
-      "termEn": "retire",
-      "correctAnswer": false,
-      "explanationShort": "retirer (FR) = to withdraw or remove — especially money from a bank.\nretire (EN) = to stop working permanently at the end of a career.\nFrench withdraws; English stops working.",
-      "tag": "false_friend"
+      "question": "A net system malfunction during a rally is a hinder.",
+      "correctAnswer": true,
+      "explanationShort": "Any malfunction of a net system during play is considered a hinder.\nThe rally must be replayed when a valid hinder is called.\n2026 USA Pickleball Official Rulebook, Rule 13.J.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 134,
-      "termFr": "prévenir",
-      "termEn": "prevent",
+      "question": "A player who is distracted by an opponent's loud noise may call a hinder.",
       "correctAnswer": false,
-      "explanationShort": "prévenir (FR) = to warn or alert someone in advance.\nprevent (EN) = to stop something from happening.\nFrom Latin 'praevenire' (to come before); French warns before the event, English blocks it.",
-      "tag": "false_friend"
+      "explanationShort": "Opponent distraction is a fault, not a hinder.\nHinders come from outside interference only.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 135,
-      "termFr": "heurter",
-      "termEn": "hurt",
+      "question": "When two teams disagree on a fault call, the calling team wins the point.",
       "correctAnswer": false,
-      "explanationShort": "heurter (FR) = to bump into or collide with something.\nhurt (EN) = to feel pain, or to cause someone pain.\nFrench bumps into things; English feels pain.",
-      "tag": "false_friend"
+      "explanationShort": "Team disagreement on a fault results in a replay.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 136,
-      "termFr": "silence",
-      "termEn": "silence",
+      "question": "When doubles partners disagree on a fault call, the benefit of the doubt goes to their opponents.",
       "correctAnswer": true,
-      "explanationShort": "silence = the complete absence of sound.\nFrom Latin 'silentium,' both languages kept the quiet meaning.",
-      "tag": "true_friend"
+      "explanationShort": "Partner disagreement on a fault always favors the opposing team.\nThis mirrors the same principle that applies to line calls.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.c.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Intermediate",
+        "Doubles"
+      ]
     },
     {
       "id": 137,
-      "termFr": "piano",
-      "termEn": "piano",
+      "question": "A dead ball is a ball that is no longer in play.",
       "correctAnswer": true,
-      "explanationShort": "piano = a keyboard instrument with hammers striking strings.\nShort for Italian 'pianoforte' (soft-loud), naming the instrument's dynamic range.",
-      "tag": "true_friend"
+      "explanationShort": "A dead ball means play has stopped.\nNeither team may continue the rally.\n2026 USA Pickleball Official Rulebook, Section 2.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 138,
-      "termFr": "radio",
-      "termEn": "radio",
-      "correctAnswer": true,
-      "explanationShort": "radio = wireless audio broadcasting, or the device that receives it.\nFrom Latin 'radius' (ray), both adopted the same shortened form.",
-      "tag": "true_friend"
+      "question": "Stopping a rally before the ball is dead is always a fault.",
+      "correctAnswer": false,
+      "explanationShort": "Some reasons to stop a rally are valid exceptions.\nHinders, position errors, and score challenges qualify.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 139,
-      "termFr": "téléphone",
-      "termEn": "telephone",
+      "question": "A player may stop a rally to call a hinder without committing a fault.",
       "correctAnswer": true,
-      "explanationShort": "téléphone = a device for voice communication over distance.\nFrom Greek 'tele' (far) + 'phone' (voice), both kept the same scientific coinage.",
-      "tag": "true_friend"
+      "explanationShort": "Calling a hinder is a valid reason to stop play.\nA valid hinder results in a replayed rally.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 140,
-      "termFr": "document",
-      "termEn": "document",
+      "question": "A player may stop a rally to identify a position error without committing a fault.",
       "correctAnswer": true,
-      "explanationShort": "document = an official or informative written record.\nFrom Latin 'documentum' (lesson, proof), both kept the written record meaning.",
-      "tag": "true_friend"
+      "explanationShort": "Correctly identifying a position error stops play validly.\nAn incorrect claim is a fault on the claimant.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 141,
-      "termFr": "limon",
-      "termEn": "lemon",
+      "question": "A standard time-out may last up to 2 minutes.",
       "correctAnswer": false,
-      "explanationShort": "limon (FR) = silt, fine sediment deposited by rivers.\nlemon (EN) = a sour yellow citrus fruit.\nRiver mud in French; sour fruit in English.",
-      "tag": "false_friend"
+      "explanationShort": "A standard time-out lasts up to 1 minute.\nPlay may resume early if all players are ready.\n2026 USA Pickleball Official Rulebook, Rule 21.A.5.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 142,
-      "termFr": "carte",
-      "termEn": "cart",
+      "question": "Play may continue after a dead ball if both teams agree.",
       "correctAnswer": false,
-      "explanationShort": "carte (FR) = a map, a card, or a restaurant menu.\ncart (EN) = a wheeled vehicle for carrying goods.\nFrench reads maps; English pushes carts.",
-      "tag": "false_friend"
+      "explanationShort": "Once the ball is dead, play must stop immediately.\nStopping a rally prematurely without a valid reason is a fault.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
+      "tags": [
+        "Faults & Dead Ball",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 143,
-      "termFr": "supplier",
-      "termEn": "supply",
-      "correctAnswer": false,
-      "explanationShort": "supplier (FR) = to beg or plead desperately for mercy.\nsupply (EN) = to provide goods or resources.\nFrench begs; English provides.",
-      "tag": "false_friend"
-    },
-    {
-      "id": 144,
-      "termFr": "éducation",
-      "termEn": "education",
+      "question": "The serve and the return of serve must each bounce before being returned.",
       "correctAnswer": true,
-      "explanationShort": "éducation = the process of teaching, learning, and personal development.\nFrom Latin 'educare' (to bring up, to rear), both kept the full educational meaning.",
-      "tag": "true_friend"
-    },
-    {
-      "id": 145,
-      "termFr": "apologie",
-      "termEn": "apology",
-      "correctAnswer": false,
-      "explanationShort": "apologie (FR) = a defense or strong justification of something.\napology (EN) = saying sorry for a mistake.\nBoth come from Greek 'apologia' (a speech in defense), but English shifted toward regret.",
-      "tag": "false_friend"
+      "explanationShort": "This is called the two-bounce rule.\nViolating it on either side is a fault.\n2026 USA Pickleball Official Rulebook, Rule 10.A.",
+      "tags": [
+        "Rally Situations",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 146,
-      "termFr": "village",
-      "termEn": "village",
+      "question": "A player must return the ball before a second bounce.",
       "correctAnswer": true,
-      "explanationShort": "village = a small rural settlement, smaller than a town.\nFrom Old French, both name the same type of community.",
-      "tag": "true_friend"
+      "explanationShort": "Failing to return before the second bounce is a fault.\nThis applies after the first two shots of a rally.\n2026 USA Pickleball Official Rulebook, Rule 10.B.",
+      "tags": [
+        "Rally Situations",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 147,
-      "termFr": "station",
-      "termEn": "station",
-      "correctAnswer": true,
-      "explanationShort": "station = a stopping point for transport or services.\nFrom Latin 'statio' (a standing place), both describe where things halt.",
-      "tag": "true_friend"
+      "question": "A player may stop play immediately if they suspect the ball is broken.",
+      "correctAnswer": false,
+      "explanationShort": "Play must continue even if the ball seems broken.\nPlayers may check and challenge after the rally.\n2026 USA Pickleball Official Rulebook, Rule 10.G.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 148,
-      "termFr": "acte",
-      "termEn": "act",
-      "correctAnswer": true,
-      "explanationShort": "acte/act = an action, a deed, or a division of a play.\nBoth also have legal uses: \"acte de naissance,\" \"Act of Parliament.\"\nSame meaning in most everyday contexts.",
-      "tag": "true_friend"
+      "question": "In doubles, both partners may hit the ball on the same shot.",
+      "correctAnswer": false,
+      "explanationShort": "Only one player on a team may hit each shot.\nBoth partners hitting the same stroke is a fault.\n2026 USA Pickleball Official Rulebook, Rule 10.D.2.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Doubles"
+      ]
     },
     {
       "id": 149,
-      "termFr": "parc",
-      "termEn": "park",
+      "question": "If a player is injured during a rally, play must continue until the end of the rally.",
       "correctAnswer": true,
-      "explanationShort": "parc = a public green space, or an enclosed area like a theme park.\nFrom Old French, both kept the recreational outdoor meaning.",
-      "tag": "true_friend"
+      "explanationShort": "An injury does not stop play mid-rally.\nThe rally must be completed before any medical attention can be given.\n2026 USA Pickleball Official Rulebook, Rule 10.H.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 150,
-      "termFr": "océan",
-      "termEn": "ocean",
-      "correctAnswer": true,
-      "explanationShort": "océan = a vast body of saltwater covering much of the Earth.\nNamed after the Greek titan Okeanos, who personified the world-encircling river.",
-      "tag": "true_friend"
+      "question": "Players must wait for a time-out to hydrate.",
+      "correctAnswer": false,
+      "explanationShort": "Quick hydration between rallies is permitted.\nIt must not disrupt the flow of the game.\n2026 USA Pickleball Official Rulebook, Rule 10.K.",
+      "tags": [
+        "Rally Situations",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 151,
-      "termFr": "assiette",
-      "termEn": "asset",
+      "question": "If a player's hat falls onto their end of the court, the ball is dead if it hits the hat.",
       "correctAnswer": false,
-      "explanationShort": "assiette (FR) = a plate, a dish used for eating.\nasset (EN) = a valuable resource or property.\nFrench holds food; English holds value.",
-      "tag": "false_friend"
+      "explanationShort": "Items on a player's side do not stop play.\nThe ball stays live even if it hits a fallen item.\n2026 USA Pickleball Official Rulebook, Rule 10.J.",
+      "tags": [
+        "Rally Situations",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 152,
-      "termFr": "chef",
-      "termEn": "chef",
-      "correctAnswer": false,
-      "explanationShort": "chef (FR) = a leader, boss, or head of a group.\nchef (EN) = a professional cook in a restaurant.\nFrench means a leader; English means a professional cook.",
-      "tag": "false_friend"
+      "question": "If a player's shoe comes off during a rally, play must continue until the end of the rally.",
+      "correctAnswer": true,
+      "explanationShort": "Equipment and apparel problems do not stop play mid-rally.\nThe rally must be completed before addressing the problem.\n2026 USA Pickleball Official Rulebook, Rule 10.I.",
+      "tags": [
+        "Rally Situations",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 153,
-      "termFr": "parcours",
-      "termEn": "parkour",
-      "correctAnswer": false,
-      "explanationShort": "parcours (FR) = a route, path, or career journey.\nparkour (EN) = an urban acrobatic sport of jumping over obstacles.\nFrench means a route; English names a sport.",
-      "tag": "false_friend"
+      "question": "A player must not distract their opponent when the opponent is about to hit the ball.",
+      "correctAnswer": true,
+      "explanationShort": "Deliberate distraction is a fault against the player who distracted.\nExamples include loud noises, stomping feet, or waving the paddle erratically.\n2026 USA Pickleball Official Rulebook, Rule 10.F.",
+      "tags": [
+        "Rally Situations",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 154,
-      "termFr": "fabrique",
-      "termEn": "fabric",
+      "question": "A player must keep the paddle in the same hand for the entire rally.",
       "correctAnswer": false,
-      "explanationShort": "fabrique (FR) = a factory or manufacturing workshop.\nfabric (EN) = textile, cloth, or woven material.\nThe place of making vs. what gets made.",
-      "tag": "false_friend"
+      "explanationShort": "Switching hands during a rally is allowed.\nThe player must still hold the paddle when hitting.\n2026 USA Pickleball Official Rulebook, Rule 12.B.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 155,
-      "termFr": "crayon",
-      "termEn": "crayon",
+      "question": "A player may catch the ball on their paddle and redirect it during a rally.",
       "correctAnswer": false,
-      "explanationShort": "crayon (FR) = a pencil.\ncrayon (EN) = a wax colouring stick.\nFrench writes homework; English colours it.",
-      "tag": "false_friend"
+      "explanationShort": "Catching or carrying the ball on the paddle is a fault.\nThe ball must bounce away from the paddle on contact.\n2026 USA Pickleball Official Rulebook, Rule 12.C.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 156,
-      "termFr": "ballet",
-      "termEn": "ballet",
+      "question": "A player must not use or carry more than one paddle during a rally.",
       "correctAnswer": true,
-      "explanationShort": "ballet = a classical dance form performed to music.\nBorn in the Italian and French courts of the Renaissance, the word and art spread together unchanged.",
-      "tag": "true_friend"
+      "explanationShort": "Carrying more than one paddle is a fault.\nThis applies even if the extra paddle is unused.\n2026 USA Pickleball Official Rulebook, Rule 12.A.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 157,
-      "termFr": "continent",
-      "termEn": "continent",
-      "correctAnswer": true,
-      "explanationShort": "continent = one of the Earth's major landmasses.\nFrom Latin 'continere' (to hold together), both name the same geographical divisions.",
-      "tag": "true_friend"
+      "question": "A player may throw their paddle to hit the ball during a rally.",
+      "correctAnswer": false,
+      "explanationShort": "The player must have possession of the paddle when hitting the ball.\nThrowing the paddle to make contact is a fault.\n2026 USA Pickleball Official Rulebook, Rule 12.B.1.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 158,
-      "termFr": "résidence",
-      "termEn": "residence",
+      "question": "If a player's shot hits the fence before landing in the court, it is a fault.",
       "correctAnswer": true,
-      "explanationShort": "résidence = a place where someone lives, especially a formal or official dwelling.\nFrom Latin 'residere' (to sit back, settle), both kept the dwelling meaning.",
-      "tag": "true_friend"
+      "explanationShort": "A ball hitting a permanent object first is a fault.\nIt must land in court without contact first.\n2026 USA Pickleball Official Rulebook, Rule 10.C.4.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 159,
-      "termFr": "profession",
-      "termEn": "profession",
+      "question": "If all players agree a broken ball affected the rally, the rally must be replayed.",
       "correctAnswer": true,
-      "explanationShort": "profession = a skilled occupation requiring specialized training.\nFrom Latin 'professio' (public declaration), both describe a declared career or trade.",
-      "tag": "true_friend"
+      "explanationShort": "All players must agree that the break affected the outcome.\nIf there is no agreement, the result of the rally stands.\n2026 USA Pickleball Official Rulebook, Rule 10.G.1.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 160,
-      "termFr": "émotion",
-      "termEn": "emotion",
-      "correctAnswer": true,
-      "explanationShort": "émotion = a strong feeling such as joy, fear, or sadness.\nFrom Latin 'emovere' (to stir up), both kept the inner experience meaning.",
-      "tag": "true_friend"
+      "question": "A player may only enter the non-volley zone (NVZ) to play a bounced ball.",
+      "correctAnswer": false,
+      "explanationShort": "Entering the NVZ (kitchen) is allowed at any time.\nThe only restriction is volleying while in it.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
+      "tags": [
+        "Non-Volley Zone",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 161,
-      "termFr": "issue",
-      "termEn": "issue",
+      "question": "A player may volley the ball while standing in the non-volley zone (NVZ).",
       "correctAnswer": false,
-      "explanationShort": "issue (FR) = an exit or way out.\nissue (EN) = a problem, topic, or matter.\nFrench leaves the room; English starts the discussion.",
-      "tag": "false_friend"
+      "explanationShort": "Volleying the ball while in the NVZ (kitchen) is a fault.\nThe player must be completely outside the NVZ to volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
+      "tags": [
+        "Non-Volley Zone",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 162,
-      "termFr": "pull",
-      "termEn": "pull",
-      "correctAnswer": false,
-      "explanationShort": "pull (FR) = a sweater or jumper.\npull (EN) = to draw something toward you.\nFrench wears it; English tugs it.",
-      "tag": "false_friend"
+      "question": "If a player's momentum carries them into the non-volley zone (NVZ) after a volley, it is a fault.",
+      "correctAnswer": true,
+      "explanationShort": "Momentum into the NVZ (kitchen) after a volley is a fault.\nThis applies even after the ball has become dead.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2.",
+      "tags": [
+        "Non-Volley Zone",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 163,
-      "termFr": "billet",
-      "termEn": "billet",
+      "question": "After entering the non-volley zone (NVZ), a player may volley the ball as soon as one foot is outside the NVZ.",
       "correctAnswer": false,
-      "explanationShort": "billet (FR) = a ticket or banknote.\nbillet (EN) = temporary lodging assigned to soldiers.\nFrench buys tickets; English houses soldiers.",
-      "tag": "false_friend"
+      "explanationShort": "Both feet must be completely outside the NVZ (kitchen) before volleying.\nOne foot outside is not sufficient to volley legally.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3.",
+      "tags": [
+        "Non-Volley Zone",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 164,
-      "termFr": "attirer",
-      "termEn": "attire",
+      "question": "If the ball becomes soft during a rally, the result of the rally is replayed.",
       "correctAnswer": false,
-      "explanationShort": "attirer (FR) = to attract or draw toward.\nattire (EN) = clothing or dress.\nFrench attracts; English dresses.",
-      "tag": "false_friend"
+      "explanationShort": "A soft or degraded ball does not cause a replay.\nOnly a broken ball agreed on by all can.\n2026 USA Pickleball Official Rulebook, Rule 10.G.2.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 165,
-      "termFr": "robe",
-      "termEn": "robe",
-      "correctAnswer": false,
-      "explanationShort": "robe (FR) = a dress worn by women.\nrobe (EN) = a gown or bathrobe.\nFrench means a dress; English means a robe or gown.",
-      "tag": "false_friend"
+      "question": "If a volleying player's partner touches the non-volley zone (NVZ), it is a fault.",
+      "correctAnswer": true,
+      "explanationShort": "The partner must not touch the NVZ (kitchen) either.\nThis applies at the moment of the volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A.1.",
+      "tags": [
+        "Non-Volley Zone",
+        "Hard",
+        "Doubles"
+      ]
     },
     {
       "id": 166,
-      "termFr": "théâtre",
-      "termEn": "theatre",
-      "correctAnswer": true,
-      "explanationShort": "théâtre = a venue for live performances, or the art of dramatic performance.\nFrom Greek 'theatron' (viewing place), both kept the same dramatic meaning.",
-      "tag": "true_friend"
+      "question": "A player may jump from outside the non-volley zone (NVZ), volley the ball in the air, and land inside the NVZ.",
+      "correctAnswer": false,
+      "explanationShort": "Landing in the NVZ (kitchen) after volleying is a fault.\nThe player must land completely outside.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2.",
+      "tags": [
+        "Non-Volley Zone",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 167,
-      "termFr": "université",
-      "termEn": "university",
-      "correctAnswer": true,
-      "explanationShort": "université = a higher education institution that awards degrees.\nFrom Latin 'universitas' (community of scholars); the first ones appeared in Bologna and Paris around 1150.",
-      "tag": "true_friend"
+      "question": "A standard time-out may be called before a match starts.",
+      "correctAnswer": false,
+      "explanationShort": "A time-out cannot be called before a match starts.\nTime-outs are only available between rallies or games.\n2026 USA Pickleball Official Rulebook, Rule 21.A.1.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 168,
-      "termFr": "page",
-      "termEn": "page",
-      "correctAnswer": true,
-      "explanationShort": "page = a leaf of a book, document, or website.\nFrom Latin 'pagina,' both kept the written surface meaning.",
-      "tag": "true_friend"
+      "question": "In rally scoring doubles, the score is called as three numbers.",
+      "correctAnswer": false,
+      "explanationShort": "Rally scoring uses two numbers, not three.\nThere is no server number in rally scoring.\n2026 USA Pickleball Official Rulebook, Rule 14.A.3.",
+      "tags": [
+        "Score & Readiness",
+        "Hard",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 169,
-      "termFr": "route",
-      "termEn": "route",
+      "question": "A player may touch the non-volley zone (NVZ) with their paddle before hitting a volley.",
       "correctAnswer": true,
-      "explanationShort": "route = a road or path taken to reach a destination.\nFrom Latin 'rupta via' (broken path, a road cleared through terrain), both describe a travel way.",
-      "tag": "true_friend"
+      "explanationShort": "NVZ (kitchen) contact is only banned during volleying.\nTouching it before the volley is not a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
+      "tags": [
+        "Non-Volley Zone",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 170,
-      "termFr": "président",
-      "termEn": "president",
-      "correctAnswer": true,
-      "explanationShort": "président = the head of state, company, or organization.\nFrom Latin 'praesidens' (sitting before, presiding), both name the person in charge.",
-      "tag": "true_friend"
+      "question": "Jumping from inside the non-volley zone (NVZ) to volley the ball in the air is legal.",
+      "correctAnswer": false,
+      "explanationShort": "Both feet must be outside the NVZ (kitchen) first.\nJumping from inside to volley is a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3.",
+      "tags": [
+        "Non-Volley Zone",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 171,
-      "termFr": "lunettes",
-      "termEn": "lunatic",
+      "question": "A standard pickleball game is played to 15 points.",
       "correctAnswer": false,
-      "explanationShort": "lunettes (FR) = glasses for seeing better.\nlunatic (EN) = a crazy or insane person.\nFrench means glasses; English means a crazy person.",
-      "tag": "false_friend"
+      "explanationShort": "The standard game is played to 11 points.\n15 and 21 are optional tournament formats.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 172,
-      "termFr": "bibliothèque",
-      "termEn": "bibliography",
+      "question": "A game is won by the first team to reach 11 points.",
       "correctAnswer": false,
-      "explanationShort": "bibliothèque (FR) = a library, a place where you borrow books.\nbibliography (EN) = a list of books or sources cited in a work.\nBuilding in French; list in English.",
-      "tag": "false_friend"
+      "explanationShort": "A game must be won by at least 2 points.\nThere is no score cap if teams keep tying.\n2026 USA Pickleball Official Rulebook, Rule 15.C.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 173,
-      "termFr": "forfait",
-      "termEn": "forfeit",
-      "correctAnswer": false,
-      "explanationShort": "forfait (FR) = a flat-rate package like a phone plan or ski pass.\nforfeit (EN) = to lose something as a penalty.\nFrench sells packages; English takes them away.",
-      "tag": "false_friend"
+      "question": "A pickleball game may be played to 15 or 21 points in some tournament formats.",
+      "correctAnswer": true,
+      "explanationShort": "One game to 15 or 21 points is an allowed tournament format.\nAll formats still require a win by 2 points.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.c.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 174,
-      "termFr": "rapport",
-      "termEn": "rapport",
-      "correctAnswer": false,
-      "explanationShort": "rapport (FR) = a written report or official account.\nrapport (EN) = a relationship of trust or harmony.\nFrench writes reports; English builds connections.",
-      "tag": "false_friend"
+      "question": "The standard tournament format is best 2-of-3 games to 11 points.",
+      "correctAnswer": true,
+      "explanationShort": "This is the standard for USAP sanctioned events.\nBest 3-of-5 or one game to 15/21 are also allowed.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.a.",
+      "tags": [
+        "Score & Readiness",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 175,
-      "termFr": "buffet",
-      "termEn": "buffet",
-      "correctAnswer": true,
-      "explanationShort": "buffet (FR) = a self-service meal where people serve themselves.\nbuffet (EN) = the same: a self-service meal.\nThe word can also mean a sideboard or dining-room cabinet in both languages.",
-      "tag": "true_friend"
-    },
-    {
-      "id": 176,
-      "termFr": "guitare",
-      "termEn": "guitar",
-      "correctAnswer": true,
-      "explanationShort": "guitare = a stringed instrument played by plucking or strumming.\nThe word travelled from Arabic 'qitara' through Spanish and French to English, unchanged in meaning.",
-      "tag": "true_friend"
+      "question": "In a round robin format, players are eliminated after a loss.",
+      "correctAnswer": false,
+      "explanationShort": "Every participant faces every other in round robin.\nElimination formats are single or double elimination.\n2026 USA Pickleball Official Rulebook, Rule 15.B.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 177,
-      "termFr": "migration",
-      "termEn": "migration",
+      "question": "In a double elimination format, after losing one match, a player plays in a consolation bracket.",
       "correctAnswer": true,
-      "explanationShort": "migration = the movement of people, animals, or data from one place to another.\nFrom Latin 'migrare' (to move), both describe the same displacement.",
-      "tag": "true_friend"
+      "explanationShort": "A first loss moves the player to consolation bracket.\nElimination requires a second loss.\n2026 USA Pickleball Official Rulebook, Rule 15.B.1.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 178,
-      "termFr": "cinéma",
-      "termEn": "cinema",
+      "question": "A ball may be returned around the outside of the net post.",
       "correctAnswer": true,
-      "explanationShort": "cinéma = a movie theatre, or the film industry as a whole.\nShort for 'cinématographe,' invented by the Lumière brothers in Lyon in 1895.",
-      "tag": "true_friend"
+      "explanationShort": "This is called an around-the-post (ATP) shot.\nThe ball does not need to go over the net.\n2026 USA Pickleball Official Rulebook, Rule 13.C.",
+      "tags": [
+        "The Net",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 179,
-      "termFr": "catastrophe",
-      "termEn": "catastrophe",
-      "correctAnswer": true,
-      "explanationShort": "catastrophe = a sudden, large-scale disaster with severe consequences.\nIn Greek drama, 'katastrophe' was the final turning point of a play — the meaning shifted from endings to disasters.",
-      "tag": "true_friend"
+      "question": "If the ball bounces in your court and returns back over the net without being touched, your opponent wins the rally.",
+      "correctAnswer": false,
+      "explanationShort": "The player may reach over to hit the returned ball.\nThe ball must have crossed back first.\n2026 USA Pickleball Official Rulebook, Rule 13.I.2.",
+      "tags": [
+        "The Net",
+        "Hard",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 180,
-      "termFr": "tunnel",
-      "termEn": "tunnel",
+      "question": "Players should avoid wearing clothing that closely matches the ball color.",
       "correctAnswer": true,
-      "explanationShort": "tunnel = an underground or underwater passage.\nFrom Old French 'tonnelle' (barrel vault), both describe the same enclosed corridor.",
-      "tag": "true_friend"
+      "explanationShort": "Matching the ball color makes it harder to see.\nThis is a fair play principle.\n2026 USA Pickleball Official Rulebook, Section 1.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 181,
-      "termFr": "brillant",
-      "termEn": "brilliant",
+      "question": "Shoes must have soles that do not mark or damage the playing surface.",
       "correctAnswer": true,
-      "explanationShort": "brillant = extremely intelligent, or shining with bright light.\nFrom Italian 'brillare' (to sparkle), both kept the dual meaning of shine and intellect.",
-      "tag": "true_friend"
+      "explanationShort": "Inappropriate footwear can be required to be changed by the Tournament Director.\nRefusing to change apparel can result in a match forfeit.\n2026 USA Pickleball Official Rulebook, Rule 18.B.2.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 182,
-      "termFr": "esprit",
-      "termEn": "spirit",
-      "correctAnswer": false,
-      "explanationShort": "esprit (FR) = mind, intellect, or attitude.\nspirit (EN) = a ghost, strong attitude, or alcohol.\nFrench thinks; English haunts or drinks.",
-      "tag": "false_friend"
+      "question": "A player may be required to change their clothing if it approximates the color of the ball.",
+      "correctAnswer": true,
+      "explanationShort": "The Tournament Director may require an apparel change during a match.\nA referee time-out is used for the change.\n2026 USA Pickleball Official Rulebook, Rule 18.B.3.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 183,
-      "termFr": "gentil",
-      "termEn": "gentle",
-      "correctAnswer": false,
-      "explanationShort": "gentil (FR) = kind, nice, friendly.\ngentle (EN) = soft, mild, not rough.\nFrench is kind; English is gentle.",
-      "tag": "false_friend"
+      "question": "In doubles tournament play, the starting server must wear a visible form of identification.",
+      "correctAnswer": true,
+      "explanationShort": "The form of identification is determined by the Tournament Director.\nIt must be visible to officials and players throughout the match.\n2026 USA Pickleball Official Rulebook, Rule 18.C.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Intermediate",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 184,
-      "termFr": "slip",
-      "termEn": "slip",
+      "question": "A side out occurs when the serving team wins a rally.",
       "correctAnswer": false,
-      "explanationShort": "slip (FR) = briefs or underwear.\nslip (EN) = to slide or make a mistake.\nFrench puts it on; English loses balance.",
-      "tag": "false_friend"
+      "explanationShort": "A side out occurs when the serve is lost.\nThe serve then goes to the opposing team.\n2026 USA Pickleball Official Rulebook, Section 2.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 185,
-      "termFr": "caractère",
-      "termEn": "character",
-      "correctAnswer": false,
-      "explanationShort": "caractère (FR) = personality or temperament.\ncharacter (EN) = a fictional person or someone's qualities.\nFrench describes temperament; English can enter the story.",
-      "tag": "false_friend"
+      "question": "In doubles, the starting server of each game is designated as the second server for the first service rotation.",
+      "correctAnswer": true,
+      "explanationShort": "Only one serve is allowed before the first side out.\nThe starting server becomes first server after that.\n2026 USA Pickleball Official Rulebook, Rule 5.B.2.",
+      "tags": [
+        "Serving Rules",
+        "Hard",
+        "Doubles"
+      ]
     },
     {
       "id": 186,
-      "termFr": "volcan",
-      "termEn": "volcano",
-      "correctAnswer": true,
-      "explanationShort": "volcan = a mountain with an opening through which lava and gases erupt.\nNamed after Vulcanus, the Roman god of fire and metalworking.",
-      "tag": "true_friend"
+      "question": "If the ball hits the net and lands in bounds, play stops and the rally is replayed.",
+      "correctAnswer": false,
+      "explanationShort": "The ball stays in play if it lands in bounds.\nNet contact alone does not stop the rally.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
+      "tags": [
+        "The Net",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 187,
-      "termFr": "horizon",
-      "termEn": "horizon",
+      "question": "If the ball hits the cable at the top of the net and lands in bounds, it remains in play.",
       "correctAnswer": true,
-      "explanationShort": "horizon = the line where earth and sky appear to meet.\nFrom Greek 'horizein' (to limit), both describe the same visual boundary.",
-      "tag": "true_friend"
+      "explanationShort": "The cable or rope at the top counts as the net.\nThe ball stays in play if it lands in bounds.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
+      "tags": [
+        "The Net",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 188,
-      "termFr": "décembre",
-      "termEn": "december",
-      "correctAnswer": true,
-      "explanationShort": "décembre = the twelfth and final month of the year.\nFrom Latin 'decem' (ten) — it was the tenth month in the old Roman calendar before January and February were added.",
-      "tag": "true_friend"
+      "question": "A serve that clips the top of the net and lands in the correct service court is a fault.",
+      "correctAnswer": false,
+      "explanationShort": "A net serve that lands in the correct court is good.\nThere is no let rule in pickleball.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
+      "tags": [
+        "The Net",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 189,
-      "termFr": "guide",
-      "termEn": "guide",
-      "correctAnswer": true,
-      "explanationShort": "guide = a person who leads others, or a book with useful information about a topic.\nFrom Old French, both describe someone or something that shows the way.",
-      "tag": "true_friend"
+      "question": "In singles, the server always serves from the same side.",
+      "correctAnswer": false,
+      "explanationShort": "The server alternates sides after each point scored.\nThe score determines which side to serve from.\n2026 USA Pickleball Official Rulebook, Rule 5.A.2.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles"
+      ]
     },
     {
       "id": 190,
-      "termFr": "collection",
-      "termEn": "collection",
+      "question": "In singles, a side out occurs after the server loses a rally.",
       "correctAnswer": true,
-      "explanationShort": "collection = a group of gathered objects.\nIn fashion, it also refers to a designer's seasonal range of clothing — a usage shared by both languages.",
-      "tag": "true_friend"
+      "explanationShort": "The server immediately loses the serve after a lost rally.\nUnlike doubles, there is no second server in singles.\n2026 USA Pickleball Official Rulebook, Rule 5.A.3.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles"
+      ]
     },
     {
       "id": 191,
-      "termFr": "liège",
-      "termEn": "liege",
+      "question": "A ball may pass between the net and the net post during play.",
       "correctAnswer": false,
-      "explanationShort": "liège (FR) = cork, the bark used for bottle stoppers.\nliege (EN) = a feudal lord or sovereign.\nFrench seals bottles; English rules vassals.",
-      "tag": "false_friend"
+      "explanationShort": "The ball must go over or around the net post.\nThrough the gap between net and post is a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.D.",
+      "tags": [
+        "The Net",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 192,
-      "termFr": "bride",
-      "termEn": "bride",
-      "correctAnswer": false,
-      "explanationShort": "bride (FR) = a bridle, the straps used to control a horse.\nbride (EN) = a woman getting married.\nReins vs. rings — no shared root despite identical spelling.",
-      "tag": "false_friend"
+      "question": "During a match, when a player is discovered playing with a non-compliant paddle, a match forfeit will be imposed.",
+      "correctAnswer": true,
+      "explanationShort": "A non-compliant paddle during play results in an automatic forfeit.\nSwitching without penalty is only allowed before the match starts.\n2026 USA Pickleball Official Rulebook, Rule 18.A.2.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 193,
-      "termFr": "surnom",
-      "termEn": "surname",
-      "correctAnswer": false,
-      "explanationShort": "surnom (FR) = a nickname, an informal name from friends or family.\nsurname (EN) = a family name or last name.\nCasual vs. official, despite the shared 'sur-' (over/above) prefix.",
-      "tag": "false_friend"
+      "question": "If a non-compliant paddle is discovered before a match starts, there is no penalty to switch paddles.",
+      "correctAnswer": true,
+      "explanationShort": "Before a match, the player simply switches paddles.\nDuring play, discovery means a match forfeit.\n2026 USA Pickleball Official Rulebook, Rule 18.A.1.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 194,
-      "termFr": "bague",
-      "termEn": "bag",
+      "question": "A player may hit the ball before it has fully crossed the plane of the net to their side.",
       "correctAnswer": false,
-      "explanationShort": "bague (FR) = a ring worn on a finger.\nbag (EN) = a container used to carry items.\nFrench wears rings; English carries bags.",
-      "tag": "false_friend"
+      "explanationShort": "The ball must fully cross the net plane first.\nHitting early across the plane is a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.F.1.",
+      "tags": [
+        "The Net",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 195,
-      "termFr": "dot",
-      "termEn": "dot",
-      "correctAnswer": false,
-      "explanationShort": "dot (FR) = a dowry brought to marriage.\ndot (EN) = a small round point.\nFrench means a dowry; English means a small point.",
-      "tag": "false_friend"
+      "question": "Graphics, insignias, pictures, and writing on apparel must be in good taste.",
+      "correctAnswer": true,
+      "explanationShort": "Offensive content on clothing is not permitted during play.\nThis includes language, symbols, or explicit images.\n2026 USA Pickleball Official Rulebook, Rule 18.B.1.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 196,
-      "termFr": "festival",
-      "termEn": "festival",
-      "correctAnswer": true,
-      "explanationShort": "festival = a large public event centred on music, film, or culture.\nFrom Latin 'festivalis,' both name the same joyful public gatherings.",
-      "tag": "true_friend"
+      "question": "Touching the net with your paddle during a rally is allowed if accidental.",
+      "correctAnswer": false,
+      "explanationShort": "Any contact with the net system during play is a fault.\nThis includes paddle, clothing, or anything carried.\n2026 USA Pickleball Official Rulebook, Rule 13.G.",
+      "tags": [
+        "The Net",
+        "Easy",
+        "Singles",
+        "Doubles"
+      ]
     },
     {
       "id": 197,
-      "termFr": "promotion",
-      "termEn": "promotion",
+      "question": "In singles, the server serves from the right side when their score is zero or even.",
       "correctAnswer": true,
-      "explanationShort": "promotion (FR) = a career advancement or a marketing campaign; in universities, it can also mean a graduating class.\npromotion (EN) = a career advancement or a marketing campaign.",
-      "tag": "true_friend"
+      "explanationShort": "The server's score determines which side to serve from in singles.\nAn odd score means serving from the left side.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles"
+      ]
     },
     {
       "id": 198,
-      "termFr": "ambulance",
-      "termEn": "ambulance",
+      "question": "In singles, the server serves from the left side when their score is odd.",
       "correctAnswer": true,
-      "explanationShort": "ambulance = an emergency vehicle that transports patients to hospital.\nFrom French 'hôpital ambulant' (mobile hospital), the word was born on Napoleonic battlefields.",
-      "tag": "true_friend"
+      "explanationShort": "The server's score determines the serving side in singles.\nAn even score or zero means serving from the right side.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
+      "tags": [
+        "Serving Rules",
+        "Easy",
+        "Singles"
+      ]
     },
     {
       "id": 199,
-      "termFr": "latitude",
-      "termEn": "latitude",
+      "question": "A player who refuses to change inappropriate apparel may forfeit their match.",
       "correctAnswer": true,
-      "explanationShort": "latitude = a geographic coordinate showing how far north or south a place is.\nSame meaning in both languages.",
-      "tag": "true_friend"
+      "explanationShort": "The Tournament Director may impose a match forfeit for non-compliance.\nRefusing an apparel change is treated as a rules violation.\n2026 USA Pickleball Official Rulebook, Rule 18.B.4.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     },
     {
       "id": 200,
-      "termFr": "saxophone",
-      "termEn": "saxophone",
+      "question": "In singles, the score is called as three numbers.",
+      "correctAnswer": false,
+      "explanationShort": "Singles uses two numbers: server's then receiver's.\nThree numbers are used in standard doubles only.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Singles"
+      ]
+    },
+    {
+      "id": 201,
+      "question": "In doubles, the score is called as three numbers.",
       "correctAnswer": true,
-      "explanationShort": "saxophone = a woodwind instrument with a brass body.\nNamed after Belgian inventor Adolphe Sax, who patented it in Paris in 1846.",
-      "tag": "true_friend"
+      "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four–two–one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
+      "tags": [
+        "Score & Readiness",
+        "Easy",
+        "Doubles"
+      ]
+    },
+    {
+      "id": 202,
+      "question": "In doubles, except when serving or receiving, players may stand anywhere on the court.",
+      "correctAnswer": true,
+      "explanationShort": "No position restrictions exist after serve and return.\nOnly server and receiver have starting positions.\n2026 USA Pickleball Official Rulebook, Rule 5.B.4.",
+      "tags": [
+        "Serving Rules",
+        "Intermediate",
+        "Doubles"
+      ]
+    },
+    {
+      "id": 203,
+      "question": "A returned ball that hits the net support system on the hitter's side is a fault.",
+      "correctAnswer": true,
+      "explanationShort": "The net support system is not the same as the net.\nOnly net contact itself keeps the ball in play.\n2026 USA Pickleball Official Rulebook, Rule 13.B.1.",
+      "tags": [
+        "The Net",
+        "Intermediate",
+        "Singles",
+        "Doubles"
+      ]
+    },
+    {
+      "id": 204,
+      "question": "In mini-singles, only half the court is in play during each rally.",
+      "correctAnswer": true,
+      "explanationShort": "The in-play side depends on each player's score.\nThe centerline acts as the third boundary line.\n2026 USA Pickleball Official Rulebook, Rule 14.B.1.a.",
+      "tags": [
+        "Rally Situations",
+        "Intermediate",
+        "Singles"
+      ]
+    },
+    {
+      "id": 205,
+      "question": "A technical warning results in a point being deducted from the offender's score.",
+      "correctAnswer": false,
+      "explanationShort": "A technical warning does not affect the score.\nOnly a technical foul deducts a point.\n2026 USA Pickleball Official Rulebook, Rule 22.C.1.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Intermediate",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
+    },
+    {
+      "id": 206,
+      "question": "A technical foul results in one point being deducted from the offender's score.",
+      "correctAnswer": true,
+      "explanationShort": "One point is removed from the offender's score.\nIf the score is zero, a point goes to the opponent.\n2026 USA Pickleball Official Rulebook, Rule 22.E.1.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
+    },
+    {
+      "id": 207,
+      "question": "A game forfeit is imposed after one technical warning and one technical foul in the same match.",
+      "correctAnswer": true,
+      "explanationShort": "Any combination of one warning plus one foul triggers it.\nThree technical warnings also lead to a game forfeit.\n2026 USA Pickleball Official Rulebook, Rule 22.F.1.",
+      "tags": [
+        "Player Conduct & Apparel",
+        "Hard",
+        "Singles",
+        "Doubles",
+        "Tournament"
+      ]
     }
   ]
 }

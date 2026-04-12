@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Payment successful. Your Word Traps code is ready.">
+  <meta name="description" content="Payment successful. Your Pickleball Rules Quiz device unlock code is ready.">
   <meta name="robots" content="noindex, nofollow">
 
   <!-- PWA & UI (match index.html) -->
@@ -12,14 +12,16 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Word Traps">
+  <meta name="apple-mobile-web-app-title" content="Pickleball Rules Quiz">
 
   <!-- Icons & manifest (match index.html) -->
   <link rel="manifest" href="./manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192x192.png">
-  <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+  <link rel="icon" href="./icons/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-  <title>Payment Successful - Word Traps</title>
+  <title>Full Access Ready - Pickleball Rules Quiz</title>
 
   <!-- Styles -->
   <link rel="preload" href="./style.css" as="style">
@@ -34,11 +36,11 @@
         <!-- Header (landing-like branding) -->
         <div class="wt-card wt-card--hero">
           <div class="wt-row wt-row--spaced" style="align-items:center; gap:var(--gap-2)">
-            <a class="wt-branding" href="./index.html" id="wt-success-branding" aria-label="">
+            <a class="wt-branding" href="./index.html" id="wt-success-branding" aria-label="Pickleball Rules Quiz home">
               <img id="wt-success-logo" src="" alt="" class="wt-branding-logo" style="display:none" />
               <span id="wt-success-name" class="wt-branding-name"></span>
             </a>
-            <div class="wt-badge">THIS DEVICE</div>
+            <div class="wt-badge" data-wt-wording="success.deviceBadge"></div>
           </div>
 
           <div style="margin-top:var(--space-10)">
@@ -47,7 +49,7 @@
           </div>
         </div>
 
-        <!-- Premium code -->
+        <!-- Full access code -->
         <div class="wt-card">
           <div class="wt-row wt-row--spaced">
             <div class="wt-meta">
@@ -57,7 +59,7 @@
             </button>
           </div>
 
-          <div class="wt-code" id="code" style="margin-top:var(--gap-2)">WT-XXXX-XXXX</div>
+          <div class="wt-code" id="code" style="margin-top:var(--gap-2)">PRQ-0000-0000</div>
 
           <div id="copy-status" class="wt-live wt-hidden" role="status" aria-live="polite"
             style="margin-top:var(--space-10)">
@@ -95,21 +97,6 @@
           </ol>
 
 
-        </div>
-
-        <!-- Cheat Sheet order bump (serverless trust-by-design via Kit) -->
-        <div class="wt-card" id="cheatsheet-card">
-          <div class="wt-meta"><strong data-wt-wording="success.cheatSheetTitle"></strong></div>
-          <p class="wt-muted" style="margin-top:var(--space-10)" data-wt-wording="success.cheatSheetBody"></p>
-          <div id="cheatsheet-ck" style="margin-top:var(--gap-2)"></div>
-          <p id="cheatsheet-link-wrap" class="wt-hidden" style="margin-top:var(--space-10)">
-            <a id="cheatsheet-link" class="wt-btn wt-btn--secondary" href="#" target="_blank" rel="noopener"
-              data-wt-wording="success.cheatSheetLinkCta"></a>
-          </p>
-          <p class="wt-muted" style="margin-top:var(--space-10); font-size:var(--fs-xs)">
-            Optional: enter your email to receive this bonus content. The form is handled by our email provider. See our
-            <a href="./privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
-          </p>
         </div>
 
         <!-- What you get -->
@@ -181,7 +168,7 @@
   <script src="./footer.js"></script>
   <script>
 
-    // success.js inline - Word Traps
+    // success.js inline - Pickleball Rules Quiz
     (() => {
       const cfg = window.WT_CONFIG;
       if (!cfg || typeof cfg !== "object") return;
@@ -198,12 +185,7 @@
         throw new Error("success page: empty config.storage.vanityCodeStorageKey");
       }
       function rand4() {
-        return Math.random()
-          .toString(36)
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, "")
-          .slice(0, 4)
-          .padEnd(4, "X");
+        return String(Math.floor(Math.random() * 10000)).padStart(4, "0");
       }
 
       function generateCode() {
@@ -249,16 +231,6 @@
       function renderCode(code) {
         const codeEl = document.getElementById("code");
         if (codeEl) codeEl.textContent = code;
-      }
-
-      function disableCodeActions() {
-        const ids = ["copy-btn", "copy-again", "download-code"];
-        ids.forEach((id) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          el.setAttribute("disabled", "disabled");
-          el.setAttribute("aria-disabled", "true");
-        });
       }
 
       let statusHideTimer = 0;
@@ -367,7 +339,7 @@
 
           const a = document.createElement("a");
           a.href = url;
-          a.download = `word-traps-code-${code}.txt`;
+          a.download = `activation-code-${code}.txt`;
           a.style.display = "none";
           document.body.appendChild(a);
           a.click();
@@ -467,94 +439,21 @@
           img.style.display = "";
         } catch (_) { }
       }
-
-
-      function applyCheatSheetOrderBump() {
-        try {
-          const card = document.getElementById("cheatsheet-card");
-          const mount = document.getElementById("cheatsheet-ck");
-          const link = document.getElementById("cheatsheet-link");
-          const linkWrap = document.getElementById("cheatsheet-link-wrap");
-          if (!card || !mount || !link || !linkWrap) return;
-
-          const ob = window.WT_CONFIG?.marketing?.cheatSheetOrderBump;
-          const enabled = ob && ob.enabled === true;
-
-          const uid = String(ob?.convertKitUid || "").trim();
-          const src = String(ob?.convertKitEmbedScriptSrc || "").trim();
-          const formId = String(ob?.convertKitFormId || "").trim();
-          const formAction = String(ob?.convertKitFormAction || "").trim();
-          const redirectUrl = String(ob?.convertKitRedirectUrl || "").trim();
-          const submitLabel = String(ob?.submitLabel || "").trim();
-          const formUrl = formId ? `https://app.kit.com/forms/${encodeURIComponent(formId)}` : "";
-          const showFallbackLink = () => {
-            if (!formUrl) return;
-            link.href = formUrl;
-            linkWrap.classList.remove("wt-hidden");
-          };
-
-          // Fail-closed: hide unless explicitly enabled + fully configured.
-          if (!enabled || !uid || !src || !formId || !formAction || !redirectUrl || !submitLabel || src.indexOf("REPLACE") !== -1) {
-            card.style.display = "none";
-            return;
-          }
-
-          mount.innerHTML = `
-            <form action="${formAction}" class="seva-form formkit-form" method="post"
-              data-sv-form="${formId}" data-uid="${uid}" data-format="inline" data-version="5"
-              data-options="{&quot;settings&quot;:{&quot;after_subscribe&quot;:{&quot;action&quot;:&quot;redirect&quot;,&quot;success_message&quot;:&quot;Success! Now check your email in 5 minutes. You will have the PDF. &quot;,&quot;redirect_url&quot;:&quot;${redirectUrl}&quot;},&quot;analytics&quot;:{&quot;google&quot;:null,&quot;fathom&quot;:null,&quot;facebook&quot;:null,&quot;segment&quot;:null,&quot;pinterest&quot;:null,&quot;sparkloop&quot;:null,&quot;googletagmanager&quot;:null},&quot;modal&quot;:{&quot;trigger&quot;:&quot;timer&quot;,&quot;scroll_percentage&quot;:null,&quot;timer&quot;:5,&quot;devices&quot;:&quot;all&quot;,&quot;show_once_every&quot;:15},&quot;powered_by&quot;:{&quot;show&quot;:false,&quot;url&quot;:&quot;https://partners.kit.com/na5980p7joc3?utm_campaign=poweredby&amp;utm_content=form&quot;},&quot;recaptcha&quot;:{&quot;enabled&quot;:true},&quot;return_visitor&quot;:{&quot;action&quot;:&quot;hide&quot;,&quot;custom_content&quot;:&quot;&quot;},&quot;slide_in&quot;:{&quot;display_in&quot;:&quot;bottom_right&quot;,&quot;trigger&quot;:&quot;timer&quot;,&quot;scroll_percentage&quot;:null,&quot;timer&quot;:5,&quot;devices&quot;:&quot;all&quot;,&quot;show_once_every&quot;:15},&quot;sticky_bar&quot;:{&quot;display_in&quot;:&quot;top&quot;,&quot;trigger&quot;:&quot;timer&quot;,&quot;scroll_percentage&quot;:null,&quot;timer&quot;:5,&quot;devices&quot;:&quot;all&quot;,&quot;show_once_every&quot;:15}},&quot;version&quot;:&quot;5&quot;}"
-              min-width="400 500 600 700 800">
-              <div data-style="clean">
-                <ul class="formkit-alert formkit-alert-error" data-element="errors" data-group="alert"></ul>
-                <div data-element="fields" data-stacked="false" class="seva-fields formkit-fields">
-                  <div class="formkit-field">
-                    <input class="formkit-input" name="email_address" aria-label="Email Address" placeholder="Email Address" required type="email">
-                  </div>
-                  <button data-element="submit" class="formkit-submit formkit-submit">
-                    <div class="formkit-spinner"><div></div><div></div><div></div></div>
-                    <span>${submitLabel}</span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          `;
-
-          // Avoid duplicate injection
-          if (document.querySelector('script[data-wt-ck="cheatsheet"]')) return;
-
-          const s = document.createElement("script");
-          s.async = true;
-          s.src = src;
-          s.setAttribute("data-uid", uid);
-          s.setAttribute("data-wt-ck", "cheatsheet");
-          s.addEventListener("error", showFallbackLink);
-
-          mount.appendChild(s);
-
-          window.setTimeout(() => {
-            const renderedForm = mount.querySelector("form.formkit-form");
-            if (!renderedForm) showFallbackLink();
-          }, 2500);
-        } catch (_) { }
-      }
-
-
       document.addEventListener("DOMContentLoaded", () => {
+
         const code = getOrCreateCode();
+        if (!code) {
+          const codeEl = document.getElementById("code");
+          if (codeEl) codeEl.textContent = "Unable to generate code. Please reload this page.";
+          return;
+        }
+
+        renderCode(code);
 
         applyPoolSize();
         applyWording();
         applyBrand();
         applySuccessBranding();
-        applyCheatSheetOrderBump();
-
-        if (!code) {
-          const codeEl = document.getElementById("code");
-          if (codeEl) codeEl.textContent = "Unable to generate code. Please reload this page.";
-          disableCodeActions();
-        } else {
-          renderCode(code);
-        }
 
         const copyBtn = document.getElementById("copy-btn");
         const copyAgain = document.getElementById("copy-again");

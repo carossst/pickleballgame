@@ -1,5 +1,5 @@
 /* APRES */
-/* Word Traps - style.css v5.1
+/* style.css v5.1
    Mobile-first • Safari-safe • Mini-jeu optimized
 
    ============================================================
@@ -250,7 +250,7 @@
 
   /* Branding */
   --wt-title-size: 31px;
-  --wt-logo-scale: 0.90;
+  --wt-logo-scale: 1.18;
 
   /* Calmer “premium” glow (less corporate, less neon) */
   --hero-glow: 0.16;
@@ -259,7 +259,7 @@
 @media (min-width: 481px) {
   :root {
     --wt-title-size: 36px;
-    --wt-logo-scale: 1.42;
+    --wt-logo-scale: 1.56;
   }
 }
 
@@ -640,7 +640,7 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 .wt-landing-header__brand {
   min-width: 0;
   flex: 1 1 auto;
-  padding-right: calc(44px + var(--gap-2));
+  padding-right: calc(56px + var(--gap-2));
 
   display: flex;
   align-items: center;
@@ -664,7 +664,7 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 
 @media (max-width: 360px) {
   .wt-landing-header__brand {
-    padding-right: calc(88px + var(--gap-2));
+    padding-right: calc(76px + var(--gap-2));
   }
 
   .wt-landing-top-right {
@@ -1118,9 +1118,9 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   background: rgb(var(--surface));
   border: 1px solid rgb(var(--border));
   border-radius: var(--r-btn);
-  padding: clamp(var(--gap-2), 2vh, var(--space-14)) var(--gap-2);
+  padding: clamp(14px, 2.4vh, 18px) var(--gap-2);
   min-height: 48px;
-  font-size: clamp(var(--fs-md), 2.5vw, var(--fs-lg));
+  font-size: clamp(17px, 4.2vw, 19px);
   font-weight: 700;
   color: rgb(var(--text-strong));
   box-shadow: var(--shadow-1);
@@ -1469,10 +1469,24 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 
 /* PLAYING: question prompt (assertion / progress) */
 .wt-question-prompt {
-  margin: 0 0 8px;
+  margin: 0 0 12px;
   text-align: center;
-  font-size: var(--fs-md);
+  font-size: clamp(18px, 4.5vw, 20px);
+  line-height: 1.35;
   font-weight: 700;
+}
+
+@media (max-height: 740px) {
+  .wt-question-prompt {
+    margin-bottom: 8px;
+    font-size: clamp(16px, 4.2vw, 18px);
+    line-height: 1.3;
+  }
+
+  .wt-choice {
+    padding: clamp(12px, 2vh, 14px) var(--gap-2);
+    font-size: clamp(16px, 4vw, 18px);
+  }
 }
 
 /* ============================================
@@ -1798,6 +1812,31 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 }
 
 /* Very small screens: keep HUD readable without forcing wrap too often */
+@media (max-width: 480px) {
+  .wt-hud {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .wt-hud__left {
+    gap: 6px;
+  }
+
+  .wt-pill--score,
+  .wt-pill--chances {
+    font-size: var(--fs-xs);
+    padding: 5px var(--space-8);
+    padding-right: 32px;
+    box-shadow: var(--shadow-1);
+    letter-spacing: 0.1px;
+  }
+
+  .wt-pill__delta {
+    right: 10px;
+    font-size: var(--fs-xs);
+  }
+}
+
 @media (max-width: 360px) {
 
   .wt-pill--score,
@@ -2463,12 +2502,13 @@ body.wt-state--playing .wt-footer {
 }
 
 .wt-container[data-wt-bonus="fall"] .wt-branding-name {
-  display: none;
+  display: inline;
+  font-size: clamp(18px, 4vw, 22px);
 }
 
 .wt-container[data-wt-bonus="fall"] .wt-branding-logo {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   padding: var(--space-2);
 }
 
@@ -2479,6 +2519,35 @@ body.wt-state--playing .wt-footer {
 
 .wt-bonus-subtitle {
   margin: -10px 0 12px;
+  text-align: center;
+}
+
+.wt-bonus-branding {
+  display: flex;
+  justify-content: center;
+}
+
+.wt-bonus-branding__top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-1);
+  flex-wrap: wrap;
+}
+
+.wt-bonus-branding__top .wt-branding {
+  padding-bottom: 0;
+}
+
+.wt-bonus-badge {
+  margin: 0;
+}
+
+@media (max-width: 360px) {
+  .wt-bonus-branding__top {
+    flex-direction: column;
+    gap: var(--space-6);
+  }
 }
 
 .wt-container[data-wt-bonus="fall"] .wt-card {
@@ -2887,6 +2956,31 @@ arcade" feel; deviation from --fs-* scale is expected. */
   font-variant-numeric: tabular-nums;
 }
 
+.wt-end-lens {
+  margin-top: 4px;
+}
+
+.wt-end-copy {
+  margin-top: 8px;
+}
+
+.wt-end-copy p,
+.wt-end-copy .wt-end-practice-stats {
+  margin: 0;
+}
+
+.wt-end-copy > * + * {
+  margin-top: 4px;
+}
+
+.wt-end-practice-stats p {
+  margin: 0;
+}
+
+.wt-end-practice-stats p + p {
+  margin-top: 2px;
+}
+
 @media (min-width: 481px) {
   .wt-end-table {
     margin-top: var(--space-14);
@@ -2895,6 +2989,59 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
   .wt-end-table__row+.wt-end-table__row {
     padding-top: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .wt-end-copy {
+    margin-top: 6px;
+  }
+
+  .wt-end-copy > * + * {
+    margin-top: 3px;
+  }
+
+  .wt-end-lens {
+    margin-top: 2px;
+  }
+
+  .wt-end-score {
+    margin-top: var(--space-6);
+  }
+
+  .wt-end-score__label {
+    margin-top: 2px;
+  }
+
+  .wt-end-table {
+    margin-top: var(--space-8);
+    row-gap: 0;
+  }
+
+  .wt-end-table__row+.wt-end-table__row {
+    padding-top: var(--space-1);
+  }
+
+  .wt-actions--stack {
+    gap: var(--gap-1);
+    margin-top: var(--gap-2);
+  }
+
+  .wt-accordion {
+    margin-top: var(--space-8);
+  }
+
+  .wt-accordion-toggle {
+    padding: var(--space-8) var(--gap-2);
+  }
+
+  .wt-accordion-content {
+    margin-top: var(--space-8);
+    padding: var(--gap-1) var(--gap-2);
+  }
+
+  .wt-divider {
+    margin: var(--space-12) 0;
   }
 }
 
@@ -2913,9 +3060,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   animation: wtEndBurst var(--wt-anim-celebrate) ease-out 1;
 }
 
-/* Micro burst: 2 radial "
-particle rings"
- (subtle, premium-arcade) */
+/* Micro burst: 2 radial particle rings (subtle, premium-arcade) */
 .wt-end-score__burst::before,
 .wt-end-score__burst::after {
   content: "";

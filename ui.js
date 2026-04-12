@@ -1,4 +1,4 @@
-// ui.js v2.0 - Word Traps
+// ui.js v2.0 - Quiz UI
 // UI-only: rendering, accessibility, interactions (V2 RUN)
 
 void function () {
@@ -248,14 +248,26 @@ void function () {
   function extractTermsFromItem(item) {
     const it = item && typeof item === "object" ? item : {};
     return {
-      termFr: String(it.termFr || "").trim(),
-      termEn: String(it.termEn || "").trim(),
+      question: String(it.question || "").trim(),
       correctAnswer: (it.correctAnswer === true || it.correctAnswer === false) ? it.correctAnswer : null,
       explanationShort: String(it.explanationShort || it.explanation || "").trim()
     };
   }
 
-  function formatExplanationForDisplay(raw, cfg, termFr, termEn) {
+  function extractTagsFromItem(item) {
+    const it = item && typeof item === "object" ? item : {};
+
+    if (Array.isArray(it.tags)) {
+      return it.tags
+        .map(x => String(x || "").trim())
+        .filter(Boolean);
+    }
+
+    const singleTag = String(it.tag || "").trim();
+    return singleTag ? [singleTag] : [];
+  }
+
+  function formatExplanationForDisplay(raw, cfg, questionText) {
     const s = String(raw || "").trim();
     if (!s) return "";
 
@@ -295,16 +307,11 @@ void function () {
 
     let out = lines.map(x => escapeHtml(String(x || "").trim())).join("<br>");
 
-    const fr = String(termFr || "").trim();
-    const en = String(termEn || "").trim();
+    const question = String(questionText || "").trim();
 
-    if (fr) {
-      const frEsc = escapeHtml(fr);
-      out = out.replaceAll(`${frEsc} (FR)`, `<strong>${frEsc} (FR)</strong>`);
-    }
-    if (en) {
-      const enEsc = escapeHtml(en);
-      out = out.replaceAll(`${enEsc} (EN)`, `<strong>${enEsc} (EN)</strong>`);
+    if (question) {
+      const questionEsc = escapeHtml(question);
+      out = out.replaceAll(questionEsc, `<strong>${questionEsc}</strong>`);
     }
 
     return out;
@@ -1034,6 +1041,7 @@ void function () {
 
     const goalLine1 = String(extra?.goalLine1 || "").trim();
     const goalLine2 = String(extra?.goalLine2 || "").trim();
+    const defaultTapHint = (!isBonus && !isPractice) ? String(wording?.ui?.startOverlayTapAnywhere || "").trim() : "";
     const practiceTapHint = isPractice ? String(wording?.practice?.startOverlayTapAnywhere || "").trim() : "";
 
     overlay.innerHTML = `
@@ -1046,7 +1054,7 @@ void function () {
                 ${goalLine1 ? `<span class="wt-muted">${escapeHtml(goalLine1)}</span><br>` : ``}
                 ${goalLine2 ? `<span class="wt-muted">${escapeHtml(goalLine2)}</span><br>` : ``}
              ${msg.split("\n").filter(Boolean).map(l => `<span>${escapeHtml(l)}</span>`).join("<br>")}
-                ${practiceTapHint ? `<br><span>${escapeHtml(practiceTapHint)}</span>` : ``}
+                ${(practiceTapHint || defaultTapHint) ? `<br><span>${escapeHtml(practiceTapHint || defaultTapHint)}</span>` : ``}
               `
       }
         </span>
@@ -1303,6 +1311,8 @@ void function () {
 
     if (!this.appEl) return;
 
+    const pointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
+
 
     function dispatchAction(action, event) {
       switch (action) {
@@ -1342,19 +1352,17 @@ void function () {
           const startedFromModal =
             !!(self.modalEl && !self.modalEl.classList.contains("wt-hidden"));
 
-          const bypassFirstRunFramingOnTouch =
-            (!startedFromModal) &&
-            (self.state === STATES.LANDING) &&
-            shouldTapToContinue() === true;
-
-          // First-run framing stays on non-touch flows.
-          // On touch devices, start directly to avoid fragile modal-first behavior.
-          if (
-            !bypassFirstRunFramingOnTouch &&
-            !startedFromModal &&
-            self.state === STATES.LANDING &&
-            self._canShowFirstRunFraming()
-          ) {
+          // First-run framing must open only from the LANDING screen itself.
+          // If the click already comes from the first-run modal CTA, we must start the run.
+          // Mobile-first safeguard: on touch devices, start directly instead of routing through
+          // an extra modal step that can feel broken or be missed.
+          const bypassFirstRunFraming = !!(
+            window.matchMedia && (
+              window.matchMedia("(pointer: coarse)").matches ||
+              window.matchMedia("(max-width: 768px)").matches
+            )
+          );
+          if (!startedFromModal && self.state === STATES.LANDING && self._canShowFirstRunFraming() && !bypassFirstRunFraming) {
             self._openFirstRunFraming();
             break;
           }
@@ -1604,8 +1612,17 @@ void function () {
           self.promptInstall();
           break;
 
-        case "dismiss-update":
-          self.dismissUpdateToast();
+        case "install-app-now":
+          self.closeModal();
+          self.promptInstall();
+          break;
+
+        case "dismiss-install-prompt":
+          self.closeModal();
+          break;
+
+        case "apply-update":
+          self.applyUpdateToast();
           break;
 
         case "dismiss-house-ad": // legacy alias
@@ -1649,58 +1666,47 @@ void function () {
       this._wtBoundModalActions = true;
 
       const modalActionHandler = (e) => {
-        const t = e && e.target ? e.target : null;
-        if (!t) return false;
+        const t = e.target;
+        if (!t) return;
 
-        // Backdrop click/tap: close modal even if overlay has no data-action
+        // Backdrop click: close modal even if overlay has no data-action
         if (t === self.modalEl) {
           e.preventDefault();
           self.closeModal();
-          return true;
+          return;
         }
 
         // Only trigger actions from explicit buttons/links inside the modal
-        const btn = t.closest ? t.closest("button[data-action], a[data-action]") : null;
-        if (!btn) return false;
+        const btn = t.closest("button[data-action], a[data-action]");
+        if (!btn) return;
 
         const action = String(btn.getAttribute("data-action") || "").trim();
-        if (!action) return false;
+        if (!action) return;
 
         e.preventDefault();
         dispatchAction(action, e);
-        return true;
       };
 
-      const modalPointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
-      this.modalEl.addEventListener(modalPointerEvt, modalActionHandler);
-
-      if (modalPointerEvt !== "click") {
+      if (pointerEvt !== "click") {
         let lastHandledTs = 0;
-        const modalDedupHandler = (e) => {
+        const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
           if (now - lastHandledTs < 400) return;
           modalActionHandler(e);
         };
 
-        this.modalEl.removeEventListener(modalPointerEvt, modalActionHandler);
-        this.modalEl.addEventListener("click", modalDedupHandler);
-        this.modalEl.addEventListener(modalPointerEvt, (e) => {
-          const handled = modalActionHandler(e);
-          if (handled) {
-            lastHandledTs = e.timeStamp || Date.now();
-          }
+        this.modalEl.addEventListener(pointerEvt, (e) => {
+          const before = e.timeStamp || Date.now();
+          modalActionHandler(e);
+          const t = e && e.target ? e.target : null;
+          const btn = (t && t.closest) ? t.closest("button[data-action], a[data-action]") : null;
+          if (t === self.modalEl || btn) lastHandledTs = before;
         });
+        this.modalEl.addEventListener("click", dedupHandler);
+      } else {
+        this.modalEl.addEventListener("click", modalActionHandler);
       }
     }
-
-
-    // App-level actions should not fire on touchstart/pointerdown:
-    // on mobile, that steals gestures before the browser can decide between
-    // tap and scroll, which makes END harder to scroll and top-right icon
-    // taps feel unreliable. Use pointerup, keep click as iOS fallback below.
-    const pointerEvt = ("PointerEvent" in window)
-      ? "pointerup"
-      : "click";
 
     // Main app event delegation (LANDING / PLAYING / END / PAYWALL)
     // Without this, buttons like data-action="start-run" never fire.
@@ -1736,35 +1742,70 @@ void function () {
 
         const action = String(btn.getAttribute("data-action") || "").trim();
         if (!action) return false;
-
         e.preventDefault();
-        dispatchAction(action, e);
+        dispatchAction(action);
         return true;
       };
 
       this.appEl.addEventListener(pointerEvt, appActionHandler);
 
-      // Mobile safety: also listen on "click" when primary is "pointerup".
-      // Some iOS Safari + PWA combos silently swallow pointerup on buttons.
-      // The dedup guard blocks click only if pointerup really handled an action.
+      // Mobile safety: also listen on "click" when primary is a pointer event.
+      // Some mobile Safari/PWA combos behave unreliably on button release events.
+      // The dedup guard (same timestamp check) prevents double-fire.
       if (pointerEvt !== "click") {
         let lastHandledTs = 0;
+        const origHandler = appActionHandler;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - lastHandledTs < 400) return;
-          appActionHandler(e);
+          if (now - lastHandledTs < 400) return; // already handled by pointer event
+          origHandler(e);
         };
-
+        // Patch original to track timestamp
         this.appEl.removeEventListener(pointerEvt, appActionHandler);
         this.appEl.addEventListener(pointerEvt, (e) => {
           const handled = appActionHandler(e);
-          if (handled) {
-            lastHandledTs = e.timeStamp || Date.now();
-          }
+          if (handled) lastHandledTs = e.timeStamp || Date.now();
         });
         this.appEl.addEventListener("click", dedupHandler);
       }
 
+    }
+
+    if (!this._wtBoundUpdateToastActions) {
+      this._wtBoundUpdateToastActions = true;
+
+      const updateToast = document.getElementById("update-toast");
+      if (updateToast) {
+        updateToast.addEventListener(pointerEvt, (e) => {
+          const t = e && e.target ? e.target : null;
+          if (!t) return;
+
+          const btn = (t.closest && t.closest("[data-action]")) ? t.closest("[data-action]") : null;
+          if (!btn) return;
+
+          const action = String(btn.getAttribute("data-action") || "").trim();
+          if (!action) return;
+
+          e.preventDefault();
+          dispatchAction(action, e);
+        });
+
+        if (pointerEvt !== "click") {
+          updateToast.addEventListener("click", (e) => {
+            const t = e && e.target ? e.target : null;
+            if (!t) return;
+
+            const btn = (t.closest && t.closest("[data-action]")) ? t.closest("[data-action]") : null;
+            if (!btn) return;
+
+            const action = String(btn.getAttribute("data-action") || "").trim();
+            if (!action) return;
+
+            e.preventDefault();
+            dispatchAction(action, e);
+          });
+        }
+      }
     }
 
     // Prevent duplicate bindings if UI init runs more than once
@@ -1803,16 +1844,17 @@ void function () {
         } catch (_) { /* silent */ }
       });
 
-      // Browser Back => prefer LANDING for internal app navigation,
-      // even if history state is degraded on mobile / PWA.
+      // Browser Back => prefer returning to Home (LANDING) for in-app history entries.
+      // Robustness: some mobile/PWA contexts emit popstate with a null/partial state,
+      // so we also fall back to the internal hashes we control (#home / #app).
       window.addEventListener("popstate", (e) => {
         const st = e && e.state ? e.state : null;
-        const hash = String(window.location.hash || "").trim().toLowerCase();
+        const hash = String(window.location.hash || "").trim();
+        const hasInternalState = !!(st && st.wt === true);
+        const hasInternalHash = (hash === "#home" || hash === "#app");
 
-        const isKnownInternalState = !!(st && st.wt === true);
-        const isKnownInternalHash = (hash === "#home" || hash === "#app");
-
-        if (!isKnownInternalState && !isKnownInternalHash) return;
+        // If the browser navigated outside our internal history model, let it proceed.
+        if (!hasInternalState && !hasInternalHash) return;
 
         self.closeModal();
 
@@ -1820,13 +1862,13 @@ void function () {
           cleanupPlayingExit(self, { keepChanceOverlayVisible: false });
         }
 
-        if (hash === "#home") {
-          if (self.state !== STATES.LANDING) self.setState(STATES.LANDING);
+        if (self.state !== STATES.LANDING) {
+          self.setState(STATES.LANDING);
           return;
         }
 
-        if (self.state !== STATES.LANDING) {
-          self.setState(STATES.LANDING);
+        // Keep URL/state coherent even when popstate arrived with a degraded state payload.
+        if (hash !== "#home") {
           try {
             const baseUrl = location.pathname + location.search;
             history.replaceState({ wt: true, screen: STATES.LANDING }, "", baseUrl + "#home");
@@ -2229,7 +2271,7 @@ void function () {
     // Entering PAYWALL: ensure clean single ticker
     if (next === STATES.PAYWALL && prev !== STATES.PAYWALL) {
       if (this.storage && typeof this.storage.markPaywallShown === "function") {
-        this.storage.markPaywallShown(); // Storage owns startedAt persistence
+        this.storage.markPaywallShown(prev); // Storage owns startedAt persistence
       }
       this._stopPaywallTicker();
       this._startPaywallTicker(); // UI-only: re-render to show ticking mm:ss (PAYWALL/LANDING)
@@ -2388,7 +2430,7 @@ void function () {
     this.modalContentEl.innerHTML = `
   <div class="wt-modal-header">
     <div class="wt-row wt-row--spaced">
-      <h2 class="wt-h2">${t}</h2>
+      <h2 id="wt-modal-title" class="wt-h2">${t}</h2>
       <button class="wt-btn wt-btn--ghost" data-action="close-modal" aria-label="${closeLabel}">&times;</button>
     </div>
   </div>
@@ -3908,17 +3950,10 @@ void function () {
           ? String(pw.feedbackTitleOk || "").trim()
           : String(pw.feedbackTitleBad || "").trim();
 
-        const termFr = String(frozen?.termFr || "").trim();
-        const termEn = String(frozen?.termEn || "").trim();
-
-        const relTpl = (res.correctAnswer === true)
-          ? String(pw.feedbackRelationSameTemplate || "").trim()
-          : String(pw.feedbackRelationDifferentTemplate || "").trim();
-
-        const relation = (relTpl && termFr && termEn) ? fillTemplate(relTpl, { termFr, termEn }) : "";
+        const questionText = String(frozen?.question || "").trim();
         const explanation = String(res.feedbackLine || "").trim();
 
-        const parts = [verdictText, relation, explanation].filter(Boolean);
+        const parts = [verdictText, questionText, explanation].filter(Boolean);
         const msg = parts.join(". ").replace(/\s+/g, " ").trim();
 
         if (msg) {
@@ -4087,9 +4122,8 @@ void function () {
             if (nextItem) {
               const root = this.appEl || document.getElementById("app");
               const words = root ? root.querySelectorAll(".wt-term-word") : [];
-              if (words.length >= 2) {
-                words[0].textContent = String(nextItem.termFr || "").trim();
-                words[1].textContent = String(nextItem.termEn || "").trim();
+              if (words.length >= 1) {
+                words[0].textContent = String(nextItem.question || "").trim();
               }
 
               const sbf = this._runtime?.secretBonusFall;
@@ -4444,8 +4478,7 @@ void function () {
     this._runtime.answerLocked = false;
 
     // BONUS returns to END (no separate BONUS_END state)
-    // Post-completion reveal: once the user has seen all word traps,
-    // persist the "seen once" flag so it can appear on LANDING too.
+    // Persist post-completion milestone state when the full pool is exhausted.
     try {
       const exhausted =
         !!(this.storage && typeof this.storage.hasSeenAllWordTraps === "function" && this.storage.hasSeenAllWordTraps() === true);
@@ -4627,10 +4660,11 @@ void function () {
     if (String(lastRun.mode || "RUN").trim() !== "RUN") return "";
 
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
+    const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
 
     // Curiosity-gap share: "Can you guess?" framing (nudge psychology).
-    // Priority: pick a false friend (trap) for maximum surprise.
-    // Fallback: pick a true friend if no traps were in the run.
+    // Priority: pick a surprising question for maximum curiosity.
+    // Fallback: pick another seen question if needed.
     // Source of truth: lastRun.mistakeIds + lastRun.runItemIds (stored in _finishRun()).
     let funFact = "";
     try {
@@ -4666,11 +4700,10 @@ void function () {
         }
 
         if (pick) {
-          const termFr = String(pick.termFr || "").trim();
-          const termEn = String(pick.termEn || "").trim();
+          const questionText = String(pick.question || "").trim();
           const isTrap = (pick.correctAnswer === false);
 
-          if (termFr && termEn) {
+          if (questionText) {
             const tpls = isTrap
               ? (Array.isArray(share.funFactTemplatesTrap) ? share.funFactTemplatesTrap : [])
               : (Array.isArray(share.funFactTemplatesTrue) ? share.funFactTemplatesTrue : []);
@@ -4678,8 +4711,7 @@ void function () {
 
             if (tpl) {
               funFact = tpl
-                .replaceAll("{termFr}", termFr)
-                .replaceAll("{termEn}", termEn);
+                .replaceAll("{question}", questionText);
             }
           }
         }
@@ -4698,6 +4730,7 @@ void function () {
       .replaceAll("{poolSize}", String(poolSize))
       .replaceAll("{maxChances}", String(maxChances))
       .replaceAll("{score}", String(scoreFP))
+      .replaceAll("{bestScore}", String(bestScoreFP))
       .replaceAll("{funFact}", funFact);
 
     this._runtime = this._runtime || {};
@@ -4880,24 +4913,30 @@ void function () {
 
 
   // ============================================
-  // Milestone: halfway (one-shot modal on END entry)
+  // Milestone modal (one-shot on END entry)
   // ============================================
-  UI.prototype.openHalfwayMilestoneModal = function () {
+  UI.prototype.openMilestoneModal = function (milestoneKey) {
     const w = this.wording || {};
     const ms = w.milestones || {};
-    const hw = ms.halfway || {};
+    const block = (milestoneKey && typeof ms === "object") ? (ms[milestoneKey] || {}) : {};
 
-    const title = String(hw.title || "").trim();
-    const lines = Array.isArray(hw.bodyLines) ? hw.bodyLines : [];
-    const cta = String(hw.cta || "").trim();
+    const title = String(block.title || "").trim();
+    const lines = Array.isArray(block.bodyLines) ? block.bodyLines : [];
+    const cta = String(block.cta || "").trim();
 
     // Fail-closed: if required copy is missing, do nothing.
     if (!title || !cta) return;
 
     // Mark one-shot only if we can actually show the modal.
     try {
-      if (this.storage && typeof this.storage.markHalfwayMilestoneShown === "function") {
-        this.storage.markHalfwayMilestoneShown();
+      const markByKey = {
+        quarter: "markQuarterMilestoneShown",
+        halfway: "markHalfwayMilestoneShown",
+        threeQuarters: "markThreeQuartersMilestoneShown"
+      };
+      const fnName = markByKey[String(milestoneKey || "").trim()] || "";
+      if (fnName && this.storage && typeof this.storage[fnName] === "function") {
+        this.storage[fnName]();
       }
     } catch (_) { /* silent */ }
 
@@ -5059,14 +5098,12 @@ void function () {
         const idKey = String(Number.isFinite(idNum) ? idNum : (m && m.id != null ? m.id : "")).trim();
 
         const it = idKey ? byId[idKey] : null;
-        const termFr = String(it && it.termFr != null ? it.termFr : "").trim();
-        const termEn = String(it && it.termEn != null ? it.termEn : "").trim();
+        const questionText = String(it && it.question || "").trim();
 
         return {
           id: Number.isFinite(idNum) ? idNum : m && m.id,
           wrongCount: m && m.wrongCount,
-          termFr: termFr,
-          termEn: termEn
+          question: questionText
         };
       });
     }
@@ -5248,76 +5285,85 @@ void function () {
   };
 
 
-  // ============================================
-  // Install prompt (minimal)
-  // ============================================
-  UI.prototype.promptInstall = async function () {
-    // pwa.js owns the native prompt + storage counter (single source of truth)
-    if (!window.WT_PWA || typeof window.WT_PWA.promptInstall !== "function") return;
+  UI.prototype.openInstallPromptModal = function () {
+    const ip = this.wording?.installPrompt || {};
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
+    const title = String(ip.title || "").trim();
+    const body = String((isIOS ? ip.bodyIOS : ip.body) || "").trim();
+    const ctaPrimary = String((isIOS ? ip.ctaPrimaryIOS : ip.ctaPrimary) || "").trim();
+    const ctaSecondary = String(ip.ctaSecondary || this.wording?.system?.close || "").trim();
+    const primaryAction = isIOS ? "dismiss-install-prompt" : "install-app-now";
 
-    const res = await window.WT_PWA.promptInstall(this.storage);
-    if (!res || typeof res !== "object") return;
+    if (!title || !body || !ctaPrimary) return false;
 
-    if (res.reason === "IOS_NO_NATIVE_PROMPT") {
-      const ip = this.wording?.installPrompt || {};
-
-      const title = String(ip.title || "").trim();
-      const body = String(ip.body || "").trim();
-      const ctaSecondary = String(ip.ctaSecondary || "").trim();
-
-      // Fail-closed: no dedicated visible copy => no modal.
-      if (!title || !body || !ctaSecondary) return;
-
-      const html = `
+    const html = `
       <p>${escapeHtml(body)}</p>
-      <div class="wt-actions">
-        <button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(ctaSecondary)}</button>
+      <div class="wt-actions" style="margin-top:14px">
+        <button class="wt-btn wt-btn--primary" data-action="${primaryAction}">${escapeHtml(ctaPrimary)}</button>
+        <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(ctaSecondary)}</button>
       </div>
     `;
 
-      this.openModal(html, title);
+    this.openModal(html, title);
+
+    try {
+      if (this.storage && typeof this.storage.markInstallPromptShown === "function") {
+        this.storage.markInstallPromptShown();
+      }
+    } catch (_) { /* silent */ }
+
+    return true;
+  };
+
+  UI.prototype._maybePromptInstallOnEnd = function () {
+    const cfg = this.config || {};
+    const storage = this.storage;
+    const pwa = window.WT_PWA || null;
+
+    if (!storage || !pwa || typeof pwa.canPrompt !== "function") return false;
+
+    const counters = (typeof storage.getCounters === "function") ? (storage.getCounters() || {}) : {};
+    const shown = Number(counters.installPromptShown || 0);
+    if (Number.isFinite(shown) && shown > 0) return false;
+
+    const modalOpen = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
+    if (modalOpen) return false;
+
+    if (pwa.canPrompt(cfg, storage) !== true) return false;
+
+    return this.openInstallPromptModal() === true;
+  };
+
+  // ============================================
+  // Install prompt (minimal)
+  // ============================================
+  UI.prototype.promptInstall = function () {
+    const pwa = window.WT_PWA || null;
+    if (!pwa || typeof pwa.promptInstall !== "function") return;
+
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
+    if (isIOS) {
+      this.openInstallPromptModal();
+      return;
     }
+
+    pwa.promptInstall(this.storage);
   };
 
 
 
-  UI.prototype.dismissUpdateToast = function () {
+  UI.prototype.applyUpdateToast = function () {
     const node = el("update-toast");
     if (!node) return;
 
     // If an update is ready, user intent = apply it now.
     if (window.__WT_SW_UPDATE_READY__ === true) {
       try { window.__WT_SW_UPDATE_READY__ = false; } catch (_) { }
-
-      const regPromise = ("serviceWorker" in navigator && navigator.serviceWorker.getRegistration)
-        ? navigator.serviceWorker.getRegistration()
-        : Promise.resolve(null);
-
-      regPromise
-        .then((registration) => {
-          const waiting = registration && registration.waiting ? registration.waiting : null;
-
-          // Fail-closed: no waiting worker => just hide the toast, no blind reload.
-          if (!waiting) {
-            node.classList.remove("wt-toast--visible");
-            return;
-          }
-
-          let reloaded = false;
-          const onControllerChange = () => {
-            if (reloaded) return;
-            reloaded = true;
-            navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
-            location.reload();
-          };
-
-          navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
-          waiting.postMessage({ type: "SKIP_WAITING" });
-        })
-        .catch(() => {
-          node.classList.remove("wt-toast--visible");
-        });
-
+      if (typeof window.__WT_APPLY_SW_UPDATE__ === "function") {
+        window.__WT_APPLY_SW_UPDATE__();
+      } else {
+        location.reload();
+      }
       return;
     }
 
@@ -5492,7 +5538,13 @@ void function () {
     }
 
     if (Number.isFinite(Number(res.itemId))) {
-      this._runtime.runItemIds.push(Number(res.itemId));
+      const id = Number(res.itemId);
+      this._runtime.runItemIds.push(id);
+
+      if (res.isCorrect !== true) {
+        if (!Array.isArray(this._runtime.runMistakeIds)) this._runtime.runMistakeIds = [];
+        if (this._runtime.runMistakeIds.indexOf(id) === -1) this._runtime.runMistakeIds.push(id);
+      }
     }
 
     // BONUS feedback policy already handled in UI.prototype.answer, but here we enforce the same "none/minimal".
@@ -6014,7 +6066,8 @@ void function () {
           return;
         }
 
-        // Halfway milestone: END-only, RUN-only, not when pool is exhausted
+        // Discovery milestones: END-only, RUN-only, not when pool is exhausted.
+        // Show at most one modal per END entry, prioritizing the highest reached threshold.
         try {
           const modalOpen1 = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
 
@@ -6025,10 +6078,6 @@ void function () {
               ? this.config.postCompletion.milestoneThresholds
               : null;
 
-            const halfwayPctRaw = thresholds && thresholds.length ? Number(thresholds[0]) : NaN;
-            const halfwayPct = (Number.isFinite(halfwayPctRaw) && halfwayPctRaw > 0 && halfwayPctRaw < 1) ? halfwayPctRaw : null;
-
-            const threshold = (poolSize > 0 && halfwayPct != null) ? Math.floor(poolSize * halfwayPct) : 0;
             const uniqueSeen =
               (this.storage && typeof this.storage.getUniqueSeenCount === "function")
                 ? clampInt(this.storage.getUniqueSeenCount(), 0, 999999)
@@ -6036,12 +6085,25 @@ void function () {
 
             const exhausted =
               !!(this.storage && typeof this.storage.isPoolExhausted === "function" && this.storage.isPoolExhausted() === true);
-            const already =
-              !!(this.storage && typeof this.storage.hasHalfwayMilestoneShown === "function" && this.storage.hasHalfwayMilestoneShown() === true);
+            if (!exhausted && poolSize > 0 && Array.isArray(thresholds)) {
+              const milestoneChecks = [
+                { key: "threeQuarters", index: 2, hasFn: "hasThreeQuartersMilestoneShown" },
+                { key: "halfway", index: 1, hasFn: "hasHalfwayMilestoneShown" },
+                { key: "quarter", index: 0, hasFn: "hasQuarterMilestoneShown" }
+              ];
 
-            if (threshold > 0 && uniqueSeen >= threshold && !exhausted && !already) {
-              this.openHalfwayMilestoneModal();
-              return;
+              for (const item of milestoneChecks) {
+                const rawPct = Number(thresholds[item.index]);
+                const pct = (Number.isFinite(rawPct) && rawPct > 0 && rawPct < 1) ? rawPct : null;
+                const threshold = (pct != null) ? Math.floor(poolSize * pct) : 0;
+                const already =
+                  !!(item.hasFn && this.storage && typeof this.storage[item.hasFn] === "function" && this.storage[item.hasFn]() === true);
+
+                if (threshold > 0 && uniqueSeen >= threshold && !already) {
+                  this.openMilestoneModal(item.key);
+                  return;
+                }
+              }
             }
           }
         } catch (_) { /* silent */ }
@@ -6049,28 +6111,14 @@ void function () {
         // Free limit reached must be intentional:
         // gate on CTA click via startRun()/startRun(true), never auto-open on END.
 
-        // Waitlist: optional one-shot auto-modal on END (no dark patterns: only once per device)
-        const cfg = this.config || {};
-        const wlCfg = cfg.waitlist || {};
-        const placement = String(wlCfg.placement || "").trim();
+        // Install prompt: END-only, one-shot, only when the platform prompt is actually available.
+        try {
+          if (typeof this._maybePromptInstallOnEnd === "function" && this._maybePromptInstallOnEnd() === true) {
+            return;
+          }
+        } catch (_) { /* silent */ }
 
-        const eligiblePlacement = (placement === "end-and-landing-after-seen-once");
-        const oneShot = (wlCfg.showModalOneShot === true);
-        const afterExhaustedOnly = (wlCfg.afterPoolExhaustedOnly === true);
-
-        const waitlistEligible =
-          !afterExhaustedOnly ||
-          !!(this.storage && typeof this.storage.hasSeenAllWordTraps === "function" && this.storage.hasSeenAllWordTraps() === true);
-        const status =
-          (this.storage && typeof this.storage.getWaitlistStatus === "function")
-            ? String(this.storage.getWaitlistStatus() || "").trim()
-            : "";
-
-        const modalOpen = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
-
-        if (eligiblePlacement && oneShot && waitlistEligible && !modalOpen && status === "not_seen") {
-          this.openWaitlistModal();
-        }
+        // Waitlist is now a stable LANDING block, not an END auto-modal.
       } catch (_) { /* silent */ }
     }, delayMs);
   };
@@ -6113,8 +6161,9 @@ void function () {
     // postBlock: computed after canShowChest (see below)
     let postBlock = "";
 
-    // Post-completion (House Ad / Waitlist) can appear on LANDING only AFTER it was seen once on END.
-    // Source of truth: StorageManager persistence (no UI fallback).
+    // Landing-only secondary offers:
+    // - Waitlist from its unique-seen threshold until joined
+    // - House ad only after the full pool is exhausted
     let postCompletionHtml = "";
     try {
       const exhausted =
@@ -6122,44 +6171,62 @@ void function () {
 
       const pcCfg = cfg?.postCompletion || {};
       const pcW = w?.postCompletion || {};
+      const wlCfg = cfg?.waitlist || {};
+      const wlW = w?.waitlist || {};
+      const haW = w?.houseAd || {};
 
-      const enabled = (pcCfg?.enabled === true);
-      const canWaitlist = (pcCfg?.waitlistEnabled === true);
-      const canOpenFull = (pcCfg?.houseAdEnabled === true);
+      const waitlistEligible =
+        !!(wlCfg.enabled === true && this.storage && typeof this.storage.shouldShowWaitlistNow === "function" && this.storage.shouldShowWaitlistNow({ inRun: false }) === true);
+      const houseAdEligible =
+        !!(pcCfg?.houseAdEnabled === true && this.storage && typeof this.storage.shouldShowHouseAdNow === "function" && this.storage.shouldShowHouseAdNow({ inRun: false }) === true);
 
-      if (exhausted && enabled) {
+      if (waitlistEligible || houseAdEligible) {
         const pcPoolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
-        const pcTitle = fillTemplate(String(pcW.title || "").trim(), { poolSize: pcPoolSize });
-        const pcBody = fillTemplate(String(pcW.body || "").trim(), { poolSize: pcPoolSize });
-        const wlTitle = String(pcW.waitlistTitle || "").trim();
-        const wlB1 = String(pcW.waitlistBody1 || "").trim();
-        const wlB2 = String(pcW.waitlistBody2 || "").trim();
-        const wlCta = String(pcW.waitlistCta || "").trim();
-        const wlDisc = String(pcW.waitlistDisclaimer || "").trim();
-        const ctaFull = String(pcW.houseAdCta || "").trim();
+
+        const title = exhausted && pcCfg?.enabled === true
+          ? fillTemplate(String(pcW.title || "").trim(), { poolSize: pcPoolSize })
+          : String(wlW.title || "").trim();
+
+        const body1 = exhausted && pcCfg?.enabled === true
+          ? fillTemplate(String(pcW.body || "").trim(), { poolSize: pcPoolSize })
+          : String(wlW.bodyLine1 || "").trim();
+
+        const body2 = exhausted
+          ? String(pcW.waitlistBody1 || wlW.bodyLine1 || "").trim()
+          : String(wlW.bodyLine2 || "").trim();
+
+        const body3 = exhausted
+          ? String(pcW.waitlistBody2 || wlW.bodyLine2 || "").trim()
+          : "";
+
+        const waitlistCta = exhausted
+          ? String(pcW.waitlistCta || wlW.ctaLabel || "").trim()
+          : String(wlW.ctaLabel || "").trim();
+
+        const waitlistDisclaimer = exhausted
+          ? String(pcW.waitlistDisclaimer || wlW.disclaimer || "").trim()
+          : String(wlW.disclaimer || "").trim();
+
+        const houseAdCta = String(pcW.houseAdCta || haW.ctaPrimary || "").trim();
 
         postCompletionHtml = `
           <div class="wt-divider"></div>
-          ${pcTitle ? `<strong class="wt-meta">${escapeHtml(pcTitle)}</strong>` : ``}
-          ${pcBody ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(pcBody)}</p>` : ``}
-
-          ${(!canOpenFull && canWaitlist) ? `
-            ${wlTitle ? `<strong class="wt-meta">${escapeHtml(wlTitle)}</strong>` : ``}
-            ${wlB1 ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(wlB1)}</p>` : ``}
-            ${wlB2 ? `<p class="wt-muted" style="margin-top:4px">${escapeHtml(wlB2)}</p>` : ``}
-          ` : ``}
+          ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
+          ${body1 ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(body1)}</p>` : ``}
+          ${waitlistEligible && body2 ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(body2)}</p>` : ``}
+          ${waitlistEligible && body3 ? `<p class="wt-muted" style="margin-top:4px">${escapeHtml(body3)}</p>` : ``}
 
           <div class="wt-actions" style="margin-top:12px">
-            ${canWaitlist && wlCta ? `
-              <button class="wt-btn wt-btn--secondary" data-action="open-waitlist">${escapeHtml(wlCta)}</button>
+            ${waitlistEligible && waitlistCta ? `
+              <button class="wt-btn ${houseAdEligible ? `wt-btn--secondary` : `wt-btn--primary`}" data-action="open-waitlist">${escapeHtml(waitlistCta)}</button>
             ` : ``}
 
-            ${canOpenFull && ctaFull ? `
-              <button class="wt-btn wt-btn--primary" data-action="open-house-ad">${escapeHtml(ctaFull)}</button>
+            ${houseAdEligible && houseAdCta ? `
+              <button class="wt-btn ${waitlistEligible ? `wt-btn--ghost` : `wt-btn--primary`}" data-action="open-house-ad">${escapeHtml(houseAdCta)}</button>
             ` : ``}
           </div>
 
-          ${wlDisc ? `<p class="wt-muted" style="margin-top:10px">${escapeHtml(wlDisc)}</p>` : ``}
+          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted" style="margin-top:10px">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
         `;
       }
     } catch (_) { postCompletionHtml = ""; }
@@ -6365,7 +6432,7 @@ void function () {
           const phaseBadge = (mistakes > 0) ? phaseBadgeCorrection : phaseBadgeConsolidation;
           title = (completeLabelTpl ? fillTemplate(completeLabelTpl, { poolSize: poolSizeSafe }) : "");
 
-          const masteryLine = `${mastered}/${poolSizeSafe} traps mastered`;
+          const masteryLine = `${mastered}/${poolSizeSafe} questions answered correctly`;
           const mistakesLine =
             (mistakes > 0 && practiceAvailable && mistakesLabel && mistakesTpl)
               ? `${mistakesLabel}: ${fillTemplate(mistakesTpl, { mistakes })}`
@@ -6506,7 +6573,6 @@ void function () {
   <div class="wt-landing-header">
     <div class="wt-landing-header__brand">
       ${renderBrandingRow(cfg, true)}
-      ${tagline ? `<p class="wt-meta wt-landing-header__tagline">${escapeHtml(tagline)}</p>` : ``}
     </div>
    <div class="wt-landing-top-right">
       ${chestHintTextLanding ? `<div class="wt-chest-hint-inline">${escapeHtml(chestHintTextLanding)}</div>` : ``}
@@ -6523,7 +6589,7 @@ void function () {
           class="wt-btn-icon${chestTeaseClass}"
           aria-label="${escapeHtml(chestAria)}"
           title="${escapeHtml(chestAria)}"
-        >🎯</button>
+        >⚡</button>
       ` : ``}
     </div>
   </div>
@@ -6537,6 +6603,7 @@ ${landingHeaderRowHtml}
 
    ${landingUrgencyHtml}
 
+        ${tagline ? `<p class="wt-meta wt-tagline">${escapeHtml(tagline)}</p>` : ``}
 
         <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
   ${(() => {
@@ -6639,13 +6706,13 @@ ${(() => {
 
     ${welcomeBackHtml}
 
-    ${((!premium && landing.microFun) ? `<p class="wt-sub wt-muted" style="margin-top:10px">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
+    ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted" style="margin-top:10px">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
 
     ${postBlock}
 
     ${postCompletionHtml}
 
-    ${microTrust ? `<p class="wt-sub wt-muted" style="margin-top:12px">${escapeHtml(microTrust)}</p>` : ``}
+    ${(!isPostPaywallVariant && microTrust) ? `<p class="wt-sub wt-muted" style="margin-top:12px">${escapeHtml(microTrust)}</p>` : ``}
 
 </div>
 `;
@@ -6909,6 +6976,29 @@ ${(() => {
 
     vars.backlog = clampInt(backlog, 0, 99999);
 
+    const runPracticePrimaryMinRaw = Number(cfg?.routing?.practicePrimaryMinWrong);
+    const runPracticePrimaryMin =
+      (Number.isFinite(runPracticePrimaryMinRaw) && runPracticePrimaryMinRaw >= 1)
+        ? Math.floor(runPracticePrimaryMinRaw)
+        : null;
+    const runShouldPromotePractice =
+      isRun &&
+      runPracticePrimaryMin != null &&
+      canPractice &&
+      vars.backlog >= runPracticePrimaryMin;
+    const runBonusEnabled = (cfg?.secretBonus?.enabled === true);
+    const runEliteOrMore = (runVerdictKey === "elite" || runVerdictKey === "legendary");
+    const runBonusPrimaryLabel = String(end.bonusCtaPrimary || "").trim();
+    const runBonusBacklogOk = (runPracticePrimaryMin != null) ? (vars.backlog < runPracticePrimaryMin) : true;
+    const runShouldPromoteBonus =
+      isRun &&
+      !runShouldPromotePractice &&
+      !!runBonusEnabled &&
+      runEliteOrMore &&
+      runBonusBacklogOk &&
+      !!runBonusPrimaryLabel;
+    const runLensBonusPrimaryTpl = String(end.lensBonusPrimary || "").trim();
+
     // Pool remaining (RUN context only)
     if (isRun && !Number.isFinite(Number(vars.remaining))) {
       vars.remaining = clampInt(poolSize - totalPresented, 0, poolSize);
@@ -7015,20 +7105,20 @@ ${(() => {
             const it = byId[String(id)] || null;
             const t = extractTermsFromItem(it);
 
-            const fr = String(t.termFr || "").trim();
-            const en = String(t.termEn || "").trim();
-            if (!fr && !en) continue;
+            const questionText = String(t.question || "").trim();
+            if (!questionText) continue;
 
-            const rel =
-              (t.correctAnswer === true) ? "=" :
-                (t.correctAnswer === false) ? "≠" :
-                  "";
-
-            if (!rel) continue;
+            const answerLabel = (t.correctAnswer === true)
+              ? String(ui.trueLabel || "").trim()
+              : (t.correctAnswer === false)
+                ? String(ui.falseLabel || "").trim()
+                : "";
 
             const expl = String(t.explanationShort || "").trim();
-            const pairHtml = `<span class="wt-mistake-pair">${escapeHtml(fr)} (FR) ${rel} ${escapeHtml(en)} (EN)</span>`;
-            const explHtml = expl ? `<span class="wt-mistake-expl">${formatExplanationForDisplay(expl, cfg)}</span>` : "";
+            const pairHtml = answerLabel
+              ? `<span class="wt-mistake-pair">${escapeHtml(questionText)} <strong>(${escapeHtml(answerLabel)})</strong></span>`
+              : `<span class="wt-mistake-pair">${escapeHtml(questionText)}</span>`;
+            const explHtml = expl ? `<span class="wt-mistake-expl">${formatExplanationForDisplay(expl, cfg, questionText)}</span>` : "";
 
             items.push(`<div class="wt-mistake-item">${pairHtml}${explHtml}</div>`);
           }
@@ -7211,7 +7301,7 @@ ${(() => {
           class="wt-btn-icon${chestTeaseClass}"
           aria-label="${escapeHtml(chestAria)}"
           title="${escapeHtml(chestAria)}"
-        >🎯</button>
+        >⚡</button>
       ` : ``}
     </div>
   </div>
@@ -7223,46 +7313,45 @@ ${(() => {
     // progressHtml: REMOVED (dead code — computed but never injected into HTML).
     // Seen/poolSize info is now solely in runLensTpl (lens verdict).
 
-    // False friends identified (RUN-only): tag === "false_friend" AND correctCount > 0
+    // Category recap (RUN-only): surface the most-missed content tag for this game.
     if (isRun) {
-      const ffTpl = String(end.falseFriendsIdentifiedLine || "").trim();
-      if (ffTpl && this.storage && typeof this.storage.getStatsByItem === "function") {
-        let statsByItem = {};
-        try { statsByItem = this.storage.getStatsByItem() || {}; } catch (_) { statsByItem = {}; }
+      const copyByTag = (end && typeof end.endTagHighlights === "object") ? end.endTagHighlights : null;
+      const runMistakeIds = Array.isArray(this._runtime?.runMistakeIds) ? this._runtime.runMistakeIds : [];
+      const byId = (this._runtime && this._runtime.contentById && typeof this._runtime.contentById === "object")
+        ? this._runtime.contentById
+        : {};
 
-        const byId = (this._runtime && this._runtime.contentById && typeof this._runtime.contentById === "object")
-          ? this._runtime.contentById
-          : {};
+      if (copyByTag && runMistakeIds.length > 0) {
+        const ignored = new Set(["Easy", "Medium", "Hard"]);
+        const counts = Object.create(null);
 
-        let count = 0;
-        for (const k in statsByItem) {
-          const id = Number(k);
-          if (!Number.isFinite(id)) continue;
-
-          const it = byId[String(id)] || null;
-          const tag = String(it?.tag || "").trim();
-          if (tag !== "false_friend") continue;
-
-          const cc = clampInt(Number(statsByItem[k]?.correctCount), 0, 999999);
-          if (cc > 0) count += 1;
+        for (const rawId of runMistakeIds) {
+          const item = byId[String(rawId)] || byId[rawId] || null;
+          const tags = extractTagsFromItem(item).filter((t) => !ignored.has(t));
+          for (const tag of tags) {
+            counts[tag] = clampInt(Number(counts[tag] || 0) + 1, 0, 9999);
+          }
         }
 
-        const msg = fillTemplate(ffTpl, { count: String(clampInt(count, 0, 99999)) });
-        if (msg) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(msg)}</p>`);
+        let bestTag = "";
+        let bestCount = 0;
+        let tie = false;
+        for (const tag in counts) {
+          const n = clampInt(Number(counts[tag] || 0), 0, 9999);
+          if (n > bestCount) {
+            bestTag = tag;
+            bestCount = n;
+            tie = false;
+          } else if (n > 0 && n === bestCount) {
+            tie = true;
+          }
+        }
+
+        if (!tie && bestCount >= 1) {
+          const line = String(copyByTag[bestTag] || "").trim();
+          if (line) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(line)}</p>`);
+        }
       }
-    }
-
-    // Best streak (RUN-only): keep it in the same "scoreboard" block
-    const rawMin = Number(cfg?.routing?.bestStreakLineMin);
-    const bestStreakLineMin = (Number.isFinite(rawMin) && rawMin >= 1) ? Math.floor(rawMin) : null;
-
-    if (bestStreakLineMin != null && isRun && bestStreakNum >= bestStreakLineMin && bestStreakLine) {
-      microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(bestStreakLine)}</p>`);
-    }
-
-    // Record moment: if active, surface the celebration line explicitly.
-    if (recordActive && newBestLine) {
-      microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(newBestLine)}</p>`);
     }
 
     // Personal best (RUN + premium only)
@@ -7297,79 +7386,8 @@ ${(() => {
         `
         : "";
 
-    // HouseAd / Waitlist — move into accordion to avoid END scroll fatigue
-    const moreAccordionHtml = (() => {
-      const unlocked =
-        !!(this.storage && typeof this.storage.hasReachedHouseAdThreshold === "function" && this.storage.hasReachedHouseAdThreshold() === true);
-
-      if (!unlocked) return ``;
-
-      const ha = w.houseAd || {};
-      const wl = w.waitlist || {};
-      const haCfg = cfg.houseAd || {};
-      const wlCfg = cfg.waitlist || {};
-
-      const canOpenFull =
-        (haCfg.enabled === true) &&
-        !!String(haCfg.url || "").trim() &&
-        !!(this.storage && typeof this.storage.shouldShowHouseAdNow === "function" && this.storage.shouldShowHouseAdNow({ inRun: false }) === true);
-
-      const canWaitlist = (wlCfg.enabled === true);
-
-      if (!canOpenFull && !canWaitlist) return ``;
-
-      const b1 = String(ha.bodyLine1 || "").trim();
-      const b2 = String(ha.bodyLine2 || "").trim();
-      const ctaFull = String(ha.ctaPrimary || "").trim();
-      const haTitle = fillTemplate(String(ha.title || "").trim(), vars);
-
-      const wlTitle = String(wl.endTitle || wl.title || "").trim();
-      const wlB1 = String(wl.endBodyLine1 || wl.bodyLine1 || "").trim();
-      const wlB2 = String(wl.endBodyLine2 || wl.bodyLine2 || "").trim();
-
-      const wlCta = String(wl.ctaLabel || "").trim();
-      const wlDisc = String(wl.disclaimer || "").trim();
-
-      const label = canOpenFull
-        ? haTitle
-        : (wlTitle || "");
-
-      if (!label) return ``;
-
-      return `
-        <details class="wt-accordion" style="margin-top:10px">
-          <summary class="wt-accordion-toggle">${escapeHtml(label)}</summary>
-          <div class="wt-accordion-content">
-            ${canOpenFull ? `
-              ${b1 ? `<p class="wt-muted">${escapeHtml(b1)}</p>` : ``}
-              ${b2 ? `<p class="wt-muted">${escapeHtml(b2)}</p>` : ``}
-            ` : ``}
-
-            ${(!canOpenFull && canWaitlist) ? `
-              ${wlB1 ? `<p class="wt-muted">${escapeHtml(wlB1)}</p>` : ``}
-              ${wlB2 ? `<p class="wt-muted">${escapeHtml(wlB2)}</p>` : ``}
-            ` : ``}
-
-            <div class="wt-actions">
-              ${canWaitlist && wlCta ? `
-                <button class="wt-btn wt-btn--secondary" data-action="open-waitlist">${escapeHtml(wlCta)}</button>
-              ` : ``}
-
-              ${canOpenFull && ctaFull ? `
-                <a class="wt-btn wt-btn--primary"
-   href="${escapeHtml(String((this.config?.houseAd?.url) || '').trim())}"
-   target="_blank"
-   rel="noopener">
-  ${escapeHtml(ctaFull)}
-</a>
-              ` : ``}
-            </div>
-
-            ${wlDisc ? `<p class="wt-muted">${escapeHtml(wlDisc)}</p>` : ``}
-          </div>
-        </details>
-      `;
-    })();
+    // END stays focused on score, replay, and practice.
+    const moreAccordionHtml = "";
 
     const shareHtml = shareEnabled ? `
       ${(() => {
@@ -7417,6 +7435,18 @@ ${(() => {
       })()}
     ` : ``;
 
+    const shouldPromoteShare =
+      isRun && (
+        newBest ||
+        !!pbLine ||
+        runVerdictKey === "elite" ||
+        runVerdictKey === "legendary" ||
+        poolCompleteCelebration
+      );
+
+    const shareBeforeRecapHtml = shouldPromoteShare ? shareHtml : "";
+    const shareAfterRecapHtml = shouldPromoteShare ? "" : shareHtml;
+
     return `
 <div class="wt-card">
   ${endHeaderRowHtml}
@@ -7444,13 +7474,32 @@ ${(() => {
 
   ${microLinesHtml}
 
+  <div class="wt-end-copy">
   ${(() => {
         if (isPractice) {
           const statsLine = practiceStatsLineTpl ? fillTemplate(practiceStatsLineTpl, vars) : "";
           const repeatLine = practiceRepeatNoteTpl ? fillTemplate(practiceRepeatNoteTpl, vars) : "";
+          const practiceStatsHtml = (() => {
+            if (!statsLine) return ``;
+
+            const parts = String(statsLine)
+              .split(/(?<=\.)\s+(?=Mistakes remaining:)/)
+              .map((s) => String(s || "").trim())
+              .filter(Boolean);
+
+            if (parts.length < 2) {
+              return `<p class="wt-muted">${escapeHtml(statsLine)}</p>`;
+            }
+
+            return `
+              <div class="wt-muted wt-end-practice-stats">
+                ${parts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
+              </div>
+            `;
+          })();
           return [
             endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``,
-            statsLine ? `<p class="wt-muted">${escapeHtml(statsLine)}</p>` : ``,
+            practiceStatsHtml,
             repeatLine ? `<p class="wt-muted">${escapeHtml(repeatLine)}</p>` : ``
           ].join("");
         }
@@ -7467,6 +7516,7 @@ ${(() => {
   ${(isBonus && bonusDeckSizeLine) ? `<p class="wt-muted">${escapeHtml(bonusDeckSizeLine)}</p>` : ``}
   ${(isBonus && bonusPoolProgressLine) ? `<p class="wt-muted">${escapeHtml(bonusPoolProgressLine)}</p>` : ``}
   ${(isBonus && bonusDecisionLine) ? `<p class="wt-meta">${escapeHtml(bonusDecisionLine)}</p>` : ``}
+  </div>
 
   ${``}
 
@@ -7522,31 +7572,16 @@ ${(() => {
 
         } else {
           if (isRun) {
-            // Routing: if active backlog >= practicePrimaryMinWrong, swap CTAs (Practice = primary).
-            const ppMinRaw = Number(cfg?.routing?.practicePrimaryMinWrong);
-            const ppMin = (Number.isFinite(ppMinRaw) && ppMinRaw >= 1) ? Math.floor(ppMinRaw) : null;
-            const shouldPromotePractice = (ppMin != null && canPractice && vars.backlog >= ppMin);
-
-            const bonusEnabled = (cfg?.secretBonus?.enabled === true);
-            const strongOrMore =
-              (runVerdictKey === "strong" || runVerdictKey === "elite" || runVerdictKey === "legendary");
-
-            const bonusPrimaryLabel = String(end.bonusCtaPrimary || "").trim();
-
-            // Option C: promote BONUS only if strong+ AND backlog is below the Practice-push threshold.
-            const bonusBacklogOk = (ppMin != null) ? (vars.backlog < ppMin) : true;
-            const shouldPromoteBonus = (!!bonusEnabled && strongOrMore && bonusBacklogOk && !!bonusPrimaryLabel);
-
-            if (shouldPromotePractice) {
+            if (runShouldPromotePractice) {
               primaryAction = "start-practice";
               primaryLabel = String(practiceCta || "").trim();
 
               secondaryAction = runsExhausted ? "open-paywall" : "start-run";
               secondaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
 
-            } else if (shouldPromoteBonus) {
+            } else if (runShouldPromoteBonus) {
               primaryAction = "start-secret-bonus";
-              primaryLabel = bonusPrimaryLabel;
+              primaryLabel = runBonusPrimaryLabel;
 
               secondaryAction = runsExhausted ? "open-paywall" : "start-run";
               secondaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
@@ -7578,14 +7613,14 @@ ${(() => {
               secondaryLabel = String(end.playAgain || "").trim();
             }
           } else if (isBonus) {
-            // CTA override: low accuracy + small deck → primary = go to RUN
-            const lowSmallOverride = String(bonusW?.ctaLowSmallOverride || "").trim();
-            const lowSmallAction = String(cfg?.secretBonus?.ctaLowSmallAction || "").trim();
-            const isLowSmall = (bonusLevel === "low" && bonusDeckTier === "small" && lowSmallOverride && lowSmallAction);
+            const expandDeckLabel = String(bonusW?.ctaExpandDeck || "").trim();
+            const shouldExpandDeck =
+              (bonusDeckTier === "small") &&
+              !!expandDeckLabel;
 
-            if (isLowSmall) {
-              primaryAction = lowSmallAction;
-              primaryLabel = lowSmallOverride;
+            if (shouldExpandDeck) {
+              primaryAction = "start-run";
+              primaryLabel = expandDeckLabel;
 
               secondaryAction = "start-secret-bonus";
               secondaryLabel = String(bonusAgain || "").trim();
@@ -7618,51 +7653,33 @@ ${(() => {
             : ``;
 
         const runLensHtml =
-          (isRun && runLensTpl)
-            ? `<p class="wt-muted">${escapeHtml(fillTemplate(runLensTpl, vars))}</p>`
+          (isRun && !poolCompleteCelebration && clampInt(seen, 0, poolSize) < poolSize)
+            ? (() => {
+              const lensText = runShouldPromoteBonus && runLensBonusPrimaryTpl
+                ? runLensBonusPrimaryTpl
+                : (runLensTpl ? fillTemplate(runLensTpl, vars) : "");
+              return lensText
+                ? `<p class="wt-muted wt-end-lens">${escapeHtml(lensText)}</p>`
+                : ``;
+            })()
             : ``;
-
-        let installBtn = ``;
-        try {
-          const installW = w.installPrompt || {};
-          const installLabel = String(installW.ctaPrimary || "").trim();
-
-          let runCompletes = 0;
-          if (this.storage && typeof this.storage.getCounters === "function") {
-            const counters = this.storage.getCounters() || {};
-            runCompletes = Number(counters.runCompletes || 0);
-          }
-
-          const shouldShowInstall =
-            isRun &&
-            runCompletes === 1 &&
-            !!installLabel &&
-            !!(window.WT_PWA && typeof window.WT_PWA.canPrompt === "function" && window.WT_PWA.canPrompt(cfg, this.storage) === true);
-
-          if (shouldShowInstall) {
-            installBtn = `
-            <button class="wt-btn wt-btn--ghost" data-action="install-app" style="width:100%">
-              ${escapeHtml(installLabel)}
-            </button>
-          `;
-          }
-        } catch (_) { /* silent */ }
 
         return `
   ${masteredHtml}
   ${runLensHtml}
   ${primaryBtn}
   ${secondaryBtn}
-  ${installBtn}
 `;
       })()}
   </div>
 
   ${paywallBridgeHtml}
 
+  ${shareBeforeRecapHtml}
+
   ${mistakesRecapHtml}
 
-  ${shareHtml}
+  ${shareAfterRecapHtml}
 
   ${moreAccordionHtml}
 </div>
@@ -7897,13 +7914,6 @@ ${(() => {
 	            <span>${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}</span>${mistakeDeltaHtml}<span style="margin-left:4px">${mistakesVisual}</span>
 	          </div>
 	        ` : ``}
-
-	        ${(modeNow === "BONUS" && bonusBadge) ? `
-	          <div class="wt-pill" aria-label="${escapeHtml(bonusBadge)}">
-	            ${hudLogoUrl ? `<img src="${escapeHtml(hudLogoUrl)}" alt="" class="wt-pill__logo" />` : ``}
-	            <span>${escapeHtml(bonusBadge)}</span>
-	          </div>
-	        ` : ``}
 	      </div>
 
 	       ${(modeNow !== "PRACTICE") ? `
@@ -7960,7 +7970,11 @@ ${(() => {
 
     if (modeNow === "BONUS") {
       brandingHtml = `
-        ${renderBrandingRow(cfg, true, false)}
+        <div class="wt-bonus-branding">
+          <div class="wt-bonus-branding__top">
+            ${renderBrandingRow(cfg, true, false)}
+          </div>
+        </div>
               ${bonusSubtitle ? `
           <p class="wt-muted wt-bonus-subtitle">
             ${escapeHtml(bonusSubtitle)}
@@ -7990,8 +8004,7 @@ ${(() => {
     `);
     }
 
-    const termFr = String(item.termFr || "").trim();
-    const termEn = String(item.termEn || "").trim();
+    const questionText = String(item.question || "").trim();
 
     const bonusPrompt = String(this.wording?.secretBonus?.questionPrompt || "").trim();
 
@@ -8019,12 +8032,7 @@ ${questionPrompt ? `
 ` : ``}
 <div class="wt-terms-box">
   <div class="wt-term-row">
-    <span class="wt-term-word">${escapeHtml(termFr)}</span>
-    <span class="wt-term-lang">FR</span>
-  </div>
-  <div class="wt-term-row">
-    <span class="wt-term-word">${escapeHtml(termEn)}</span>
-    <span class="wt-term-lang">EN</span>
+    <span class="wt-term-word">${escapeHtml(questionText)}</span>
   </div>
 </div>
 `;
@@ -8073,19 +8081,16 @@ ${questionPrompt ? `
       const stableExplanation = String(ans.feedbackLine || "").trim();
 
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${(ans.correctAnswer === false)
-          ? formatExplanationForDisplay(stableExplanation, cfg, termFr, termEn)
-          : formatExplanationForDisplay(stableExplanation, cfg)
-        }</p>`
+        ? `<p class="wt-explanation">${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : "";
 
       return renderShell(`
-  <div class="wt-card" role="status" aria-live="polite" data-action="continue" style="cursor:pointer">
+  <div class="wt-card" role="status" aria-live="polite">
     ${questionHtml}
 
     <div class="wt-feedback ${feedbackClass}" style="padding:10px; border-radius:var(--r-btn);">
       <strong class="wt-feedback-title">
-                    ${escapeHtml(titleLine)}: ${escapeHtml(termFr)} (FR) ${ans.correctAnswer === true ? "=" : "\u2260"} ${escapeHtml(termEn)} (EN)
+                    ${escapeHtml(titleLine)}
       </strong>
       ${youChoseLine ? `
         <div class="wt-muted" style="margin-top:4px">
@@ -8143,12 +8148,12 @@ ${questionPrompt ? `
       `}
 
       <div class="wt-choices">
-  <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml([trueLabel, fillTemplate(String(w.feedbackRelationSameTemplate || "").trim(), { termFr, termEn })].filter(Boolean).join(": "))}">
+  <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
     <span class="wt-choice-icon">\u2714
     </span>
     ${escapeHtml(trueLabel)}
   </button>
-  <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml([falseLabel, fillTemplate(String(w.feedbackRelationDifferentTemplate || "").trim(), { termFr, termEn })].filter(Boolean).join(": "))}">
+  <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml(falseLabel)}">
     <span class="wt-choice-icon">\u2716</span>
     ${escapeHtml(falseLabel)}
   </button>

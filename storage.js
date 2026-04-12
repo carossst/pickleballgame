@@ -1,4 +1,4 @@
-/* Word Traps - storage (V2 RUN) */
+/* storage.js - local persistence (V2 RUN) */
 
 (() => {
   "use strict";
@@ -108,7 +108,7 @@
       // Premium
       isPremium: false,
 
-      // Premium codes (device-local)
+      // Full access codes (device-local)
       codes: {
         redeemedOnce: false,
         code: ""
@@ -173,6 +173,10 @@
         shareClicked: 0,
         installPromptShown: 0,
         paywallShown: 0,
+        paywallShownFromLanding: 0,
+        paywallShownFromEnd: 0,
+        paywallShownFromPlaying: 0,
+        paywallShownFromOther: 0,
         checkoutStarted: 0,
         codeRedeemed: 0,
         houseAdShown: 0,
@@ -219,9 +223,17 @@
         postCompletionShown: false,
         postCompletionAt: 0,
 
+        // Milestone: first quarter through the pool (one-shot).
+        quarterMilestoneShown: false,
+        quarterMilestoneShownAt: 0,
+
         // Milestone: halfway through the pool (one-shot).
         halfwayMilestoneShown: false,
         halfwayMilestoneShownAt: 0,
+
+        // Milestone: three quarters through the pool (one-shot).
+        threeQuartersMilestoneShown: false,
+        threeQuartersMilestoneShownAt: 0,
 
         // One-shot: celebrate "seen all 200" once, then never again (even if user reaches 400+).
         poolCompleteCelebrated: false,
@@ -258,6 +270,7 @@
         statsSharingSnoozeUntilRunCompletes: 0,
 
         // Checkout / premium analytics
+        paywallLastSource: "",
         checkoutStartedAt: 0,
         checkoutPriceKey: "",
         premiumUnlockedAt: 0
@@ -341,6 +354,10 @@
       this.data.analytics.checkoutStartedAt = 0;
     } else {
       this.data.analytics.checkoutStartedAt = Math.floor(Number(this.data.analytics.checkoutStartedAt));
+    }
+
+    if (typeof this.data.analytics.paywallLastSource !== "string") {
+      this.data.analytics.paywallLastSource = "";
     }
 
     if (typeof this.data.analytics.checkoutPriceKey !== "string") {
@@ -521,16 +538,15 @@
           try { window.dispatchEvent(new CustomEvent(EVT_SAVE_FAILED)); } catch (_) { /* silent */ }
         }
 
-        return false;
+        return;
       }
 
       this._lastSavedData = deepCopy(this.data);
       this._saveFailedOnce = false;
+
       this._emit();
-      return true;
     } catch (_) {
       // silent
-      return false;
     }
   };
 
@@ -1148,6 +1164,24 @@
   };
 
   // One-shot: halfway milestone (pool midpoint)
+  StorageManager.prototype.hasQuarterMilestoneShown = function () {
+    return !!(this.data?.postCompletion?.quarterMilestoneShown);
+  };
+
+  StorageManager.prototype.markQuarterMilestoneShown = function () {
+    if (!this.data) return;
+
+    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+      this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
+    }
+
+    if (this.data.postCompletion.quarterMilestoneShown === true) return;
+
+    this.data.postCompletion.quarterMilestoneShown = true;
+    this.data.postCompletion.quarterMilestoneShownAt = now();
+    this._save();
+  };
+
   StorageManager.prototype.hasHalfwayMilestoneShown = function () {
     return !!(this.data?.postCompletion?.halfwayMilestoneShown);
   };
@@ -1163,6 +1197,24 @@
 
     this.data.postCompletion.halfwayMilestoneShown = true;
     this.data.postCompletion.halfwayMilestoneShownAt = now();
+    this._save();
+  };
+
+  StorageManager.prototype.hasThreeQuartersMilestoneShown = function () {
+    return !!(this.data?.postCompletion?.threeQuartersMilestoneShown);
+  };
+
+  StorageManager.prototype.markThreeQuartersMilestoneShown = function () {
+    if (!this.data) return;
+
+    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+      this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
+    }
+
+    if (this.data.postCompletion.threeQuartersMilestoneShown === true) return;
+
+    this.data.postCompletion.threeQuartersMilestoneShown = true;
+    this.data.postCompletion.threeQuartersMilestoneShownAt = now();
     this._save();
   };
 
@@ -1544,8 +1596,9 @@
     if (haCfg.enabled !== true) return false;
     if (!String(haCfg.url || "").trim()) return false;
 
-    // Unlock based on unique seen threshold (not pool exhausted).
+    // Unlock based on unique seen threshold, but only after the full pool is exhausted.
     if (this.hasReachedHouseAdThreshold() !== true) return false;
+    if (typeof this.hasSeenAllWordTraps !== "function" || this.hasSeenAllWordTraps() !== true) return false;
 
     // Never show during a run.
     if (ctx && ctx.inRun === true) return false;
@@ -1740,9 +1793,24 @@
     this._save();
   };
 
-  StorageManager.prototype.markPaywallShown = function () {
+  StorageManager.prototype.markPaywallShown = function (source) {
     if (!this.data) return;
     this.data.counters.paywallShown = clampNonNegativeInt(this.data.counters.paywallShown) + 1;
+
+    const src = String(source || "").trim().toUpperCase();
+    if (src === "LANDING") {
+      this.data.counters.paywallShownFromLanding = clampNonNegativeInt(this.data.counters.paywallShownFromLanding) + 1;
+      this.data.analytics.paywallLastSource = "landing";
+    } else if (src === "END") {
+      this.data.counters.paywallShownFromEnd = clampNonNegativeInt(this.data.counters.paywallShownFromEnd) + 1;
+      this.data.analytics.paywallLastSource = "end";
+    } else if (src === "PLAYING") {
+      this.data.counters.paywallShownFromPlaying = clampNonNegativeInt(this.data.counters.paywallShownFromPlaying) + 1;
+      this.data.analytics.paywallLastSource = "playing";
+    } else {
+      this.data.counters.paywallShownFromOther = clampNonNegativeInt(this.data.counters.paywallShownFromOther) + 1;
+      this.data.analytics.paywallLastSource = "other";
+    }
 
     // Early price window starts once, at the first PAYWALL view (persisted).
     const ep = this.data.earlyPrice || {};
@@ -1987,11 +2055,21 @@
       totalMistakes: totalMistakes,
       device: device,
 
+      milestones: {
+        quarterShown: !!(this.data.analytics?.quarterMilestoneShownAt),
+        halfwayShown: !!(this.data.analytics?.halfwayMilestoneShownAt),
+        threeQuartersShown: !!(this.data.analytics?.threeQuartersMilestoneShownAt)
+      },
+
       // Funnel (aggregated, local-only)
       funnel: {
         landingViewed: clampNonNegativeInt(this.data.counters?.landingViewed),
         landingPlayClicked: clampNonNegativeInt(this.data.counters?.landingPlayClicked),
         paywallShown: clampNonNegativeInt(this.data.counters?.paywallShown),
+        paywallShownFromLanding: clampNonNegativeInt(this.data.counters?.paywallShownFromLanding),
+        paywallShownFromEnd: clampNonNegativeInt(this.data.counters?.paywallShownFromEnd),
+        paywallShownFromPlaying: clampNonNegativeInt(this.data.counters?.paywallShownFromPlaying),
+        paywallShownFromOther: clampNonNegativeInt(this.data.counters?.paywallShownFromOther),
         checkoutStarted: clampNonNegativeInt(this.data.counters?.checkoutStarted),
         runStarts: clampNonNegativeInt(this.data.counters?.runStarts),
         runCompletes: clampNonNegativeInt(this.data.counters?.runCompletes),

@@ -1,5 +1,5 @@
 /* global self, caches */
-/* sw.js - Service Worker for Word Traps */
+/* sw.js - Service Worker v2.1 */
 /* Spec section 8: PWA / Offline / Service Worker */
 /**
  * Single source of truth for version:
@@ -42,14 +42,20 @@ const ASSETS_TO_CACHE = [
   "./main.js",
   "./content.json",
   "./manifest.json",
-  "./icons/icon-192x192.png",
+  "./icons/android-chrome-192x192.png",
   "./icons/icon-192x192-maskable.png",
-  "./icons/icon-512x512.png",
+  "./icons/android-chrome-512x512.png",
   "./icons/icon-512x512-maskable.png",
-  "./icons/icon512x512-rond.png"
+  "./icons/apple-touch-icon.png",
+  "./icons/favicon-32x32.png",
+  "./icons/favicon-16x16.png",
+  "./icons/favicon.ico",
+  "./icons/og-image.png"
 ];
 
 // Critical assets: if any of these fail to pre-cache, do NOT force-activate immediately.
+// Intentionally excludes non-blocking helpers such as pwa.js and email.js:
+// the core game must still boot even if install or mail flows are unavailable on first load.
 const CRITICAL_ASSETS = [
   "./",
   "./index.html",
@@ -93,15 +99,6 @@ self.addEventListener("install", (event) => {
   );
 });
 
-
-// Allow app shell to activate an already-installed update on user intent.
-self.addEventListener("message", (event) => {
-  const data = event && event.data ? event.data : null;
-  const type = data && typeof data.type === "string" ? data.type.trim() : "";
-  if (type !== "SKIP_WAITING") return;
-
-  self.skipWaiting();
-});
 
 // Activate event: clean old caches
 self.addEventListener("activate", (event) => {
@@ -234,4 +231,9 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// No message-based skipWaiting: SW activates via install skipWaiting().
+self.addEventListener("message", (event) => {
+  const data = event && event.data ? event.data : null;
+  if (!data || data.type !== "SKIP_WAITING") return;
+
+  self.skipWaiting();
+});
