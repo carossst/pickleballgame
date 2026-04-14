@@ -249,7 +249,7 @@
   --space-18: 18px;
 
   /* Branding */
-  --wt-title-size: 31px;
+  --wt-title-size: 27px;
   --wt-logo-scale: 1.18;
 
   /* Calmer “premium” glow (less corporate, less neon) */
@@ -258,7 +258,7 @@
 
 @media (min-width: 481px) {
   :root {
-    --wt-title-size: 36px;
+    --wt-title-size: 31px;
     --wt-logo-scale: 1.56;
   }
 }
@@ -270,7 +270,7 @@
     --fs-sm: 15px;
 
     /* Branding desktop boost */
-    --wt-title-size: 56px;
+    --wt-title-size: 44px;
     --wt-logo-scale: 2.2;
   }
 }
