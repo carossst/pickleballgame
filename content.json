@@ -775,7 +775,7 @@
       "id": 63,
       "question": "In doubles, the first score call of a game is 'zero – zero – one.'",
       "correctAnswer": false,
-      "explanationShort": "The first doubles score call is 'zero–zero–two.'\nThe 'two' marks the starting server as second.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
+      "explanationShort": "The first doubles score call is 'zero–zero–two.'\nThe 'two' means the opening server is treated as server 2, so that team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -2204,9 +2204,9 @@
     },
     {
       "id": 185,
-      "question": "In doubles, the starting server of each game is designated as the second server for the first service rotation.",
+      "question": "In doubles, the starting server is treated as server 2 for the first service sequence of the game.",
       "correctAnswer": true,
-      "explanationShort": "Only one serve is allowed before the first side out.\nThe starting server becomes first server after that.\n2026 USA Pickleball Official Rulebook, Rule 5.B.2.",
+      "explanationShort": "Only one player on the opening team serves before the first side out.\nAfter that opening sequence, service goes back to the normal first-server then second-server pattern.\n2026 USA Pickleball Official Rulebook, Rule 5.B.2.",
       "tags": [
         "Serving Rules",
         "Hard",

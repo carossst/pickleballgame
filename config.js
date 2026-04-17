@@ -153,8 +153,8 @@
     earlyPriceCents: 499,
     standardPriceCents: 699,
     earlyPriceWindowMs: 20 * 60 * 1000, // 20 minutes
-    stripeEarlyPaymentUrl: "https://buy.stripe.com/fZu6oJ2Y86pegsjfNt2VG01",
-    stripeStandardPaymentUrl: "https://buy.stripe.com/6oUfZj8is00QfofgRx2VG00",
+    stripeEarlyPaymentUrl: "https://buy.stripe.com/dRmcN53jhc63evD3EOejK00",
+    stripeStandardPaymentUrl: "https://buy.stripe.com/bJe3cv2fd7PNbjr7V4ejK01",
     successRedirectUrl: "./success.html",
 
     // Marketing (opt-in only; Stripe receipt email is NOT marketing consent)
@@ -179,7 +179,7 @@
     houseAd: {
       enabled: true,
       premiumOnly: false,
-      url: "https://www.breworfalse.com",
+      url: "https://www.bonjourpickleball.fr/pickleball-france-trip/",
       showAfterEnd: true,
 
       // Unlock threshold (unique seen items)
@@ -509,8 +509,8 @@
   // If it sounds aggressive, ego-heavy, technical, or like "play for streaks" -> reject.
   window.WT_WORDING = {
     brand: {
-      creatorLine: "Carole, creator of Pickleball Rules Quiz 🇫🇷",
-      creatorLineHtml: "An indie game by Studio 2034.<br>Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>. 🇫🇷"
+      creatorLine: "Created by Carole at Bonjour Pickleball. Explore pickleball trips in France.",
+      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a> at <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>. Explore <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">pickleball trips in France</a>."
     },
 
     system: {
@@ -519,7 +519,7 @@
       versionPrefix: "",
 
       loadingTitle: "Loading Pickleball Rules Quiz...",
-      loadingIcon: "🏓",
+      loadingIcon: "🇫🇷",
       loadingHint: "Preparing your pickleball rules quiz",
       loadingSlowHint: "Still loading... Check your connection if this takes too long.",
       updateAvailable: "Update ready. Reload to apply it.",
@@ -583,7 +583,7 @@
       ctaDownload: "Download code (.txt)",
       shortcutHint: "In the game: How to play -> Use a device unlock code.",
 
-      thankYouLine: "Thank you for supporting an independent game. See you on the court. 🇫🇷",
+      thankYouLine: "Thank you for supporting Pickleball Rules Quiz. Your code is ready when you are.",
       supportLabel: "Need help?",
 
       copyCta: "Copy code",
@@ -1175,22 +1175,22 @@
       waitlistBody2: "No spam. No account. Leave anytime.",
       waitlistCta: "Get notified",
       waitlistDisclaimer: "Email only. Unsubscribe anytime.",
-      houseAdCta: "Try Studio 2034"
+      houseAdCta: "Explore Bonjour Pickleball"
     },
 
-      houseAd: {
+    houseAd: {
       eyebrow: "After {poolSize} questions",
-      title: "You've seen all {poolSize} questions.",
-      bodyLine1: "Pickleball Rules Quiz is an indie game by Studio 2034.",
-      bodyLine2: "You can also try Brew or False, our coffee true-or-false game.",
-      ctaPrimary: "Try Brew or False",
+      title: "You know the rules. Next stop: France.",
+      bodyLine1: "Carole, the creator of Pickleball Rules Quiz, splits her time between the U.S. and France.",
+      bodyLine2: "Join the Bonjour Pickleball list for future pickleball trips, camps, and small-group experiences in France.",
+      ctaPrimary: "See France trips",
       ctaRemindLater: "Remind later",
 
       // Landing presence (same meaning, same tone)
-      landingTitle: "You've seen all {poolSize} questions.",
-      landingBodyLine1: "Pickleball Rules Quiz is an indie game by Studio 2034.",
-      landingBodyLine2: "You can also try Brew or False, our coffee true-or-false game.",
-      landingCtaPrimary: "Try Brew or False",
+      landingTitle: "You know the rules. Next stop: France.",
+      landingBodyLine1: "Carole, the creator of Pickleball Rules Quiz, splits her time between the U.S. and France.",
+      landingBodyLine2: "Join the Bonjour Pickleball list for future pickleball trips, camps, and small-group experiences in France.",
+      landingCtaPrimary: "See France trips",
       landingCtaRemindLater: "Remind later"
     },
 
