@@ -30,9 +30,9 @@
   "items": [
     {
       "id": 1,
-      "question": "A ball contacting the net post results in a dead ball and the team that hit the ball loses the rally.",
+      "question": "If the ball lands in the opponent's court and then hits the net post, it is a dead ball.",
       "correctAnswer": false,
-      "explanationShort": "The old rule made net post contact a dead ball.\nNow the ball stays live and must be played.\n2026 USA Pickleball Rulebook Change Document, page 5.",
+      "explanationShort": "That was the old rule.\nIf the ball lands in and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\n2026 USA Pickleball Rulebook Change Document, page 5.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -42,9 +42,9 @@
     },
     {
       "id": 2,
-      "question": "Spectators should not be consulted on any call.",
+      "question": "Asking spectators for help on a call is only discouraged, not prohibited.",
       "correctAnswer": false,
-      "explanationShort": "The old rule said 'should not' — it was advisory.\nNow 'must not' makes the ban mandatory and enforceable.\n2026 USA Pickleball Rulebook Change Document, page 7.",
+      "explanationShort": "The old rule said players 'should not' ask spectators.\nNow it says 'must not,' which makes the ban mandatory.\n2026 USA Pickleball Rulebook Change Document, page 7.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -54,9 +54,9 @@
     },
     {
       "id": 3,
-      "question": "Spin may be applied to the ball upon contact by the paddle.",
+      "question": "Spin may be applied to the ball at paddle contact.",
       "correctAnswer": true,
-      "explanationShort": "Spin at paddle contact is allowed in 2026.\nBefore, spin was banned if caused during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "explanationShort": "Spin at paddle contact is allowed in 2026.\nWhat is still banned is adding spin with the hand or fingers during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -66,9 +66,9 @@
     },
     {
       "id": 4,
-      "question": "If you do not return the ball, you may call it out up until the next serve.",
+      "question": "If you do not return the ball, you may still wait until the next serve to call it out.",
       "correctAnswer": false,
-      "explanationShort": "That was the old wording.\nNow the out call must still be made promptly.\n2026 USA Pickleball Rulebook Change Document, page 12.",
+      "explanationShort": "That delay was allowed under the old wording.\nNow the out call still has to be made promptly.\n2026 USA Pickleball Rulebook Change Document, page 12.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -78,9 +78,9 @@
     },
     {
       "id": 5,
-      "question": "A receiving team can win the game on a technical foul.",
+      "question": "The receiving team can win the game on a technical foul.",
       "correctAnswer": true,
-      "explanationShort": "Before, only the serving side could score the winning point.\nNow a receiving team can win the game by technical foul.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "explanationShort": "Before, only the serving side could get the winning point.\nNow the receiving team can win the game on a technical foul.\n2026 USA Pickleball Rulebook Change Document, page 11.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -91,9 +91,9 @@
     },
     {
       "id": 6,
-      "question": "A wheelchair's large rear wheels are treated like a standing player's legs for positioning.",
+      "question": "For positioning, a wheelchair's large rear wheels are treated like a standing player's legs.",
       "correctAnswer": true,
-      "explanationShort": "This wheelchair rule did not exist before 2026.\nThe large rear wheels define player positioning.\n2026 USA Pickleball Rulebook Change Document, page 18.",
+      "explanationShort": "This wheelchair rule is new for 2026.\nFor positioning, the large rear wheels are what count.\n2026 USA Pickleball Rulebook Change Document, page 18.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -103,9 +103,9 @@
     },
     {
       "id": 7,
-      "question": "A wheelchair player must have at least one buttock in contact with the wheelchair seat when striking the ball.",
+      "question": "A wheelchair player must keep at least one buttock on the seat when striking the ball.",
       "correctAnswer": true,
-      "explanationShort": "This wheelchair rule is newly added.\nLifting fully off the seat when hitting is a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
+      "explanationShort": "This wheelchair rule is new for 2026.\nIf the player lifts fully off the seat when hitting, it is a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -115,9 +115,9 @@
     },
     {
       "id": 8,
-      "question": "If an extra ball carried by a player is visible to an opponent during a live rally, it is a fault.",
+      "question": "If an opponent can see an extra ball you are carrying during a live rally, it is a fault.",
       "correctAnswer": true,
-      "explanationShort": "Before, extra balls had to be hidden.\nNow a visible extra ball is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 22.",
+      "explanationShort": "Before, the extra ball just had to be hidden.\nNow a visible extra ball during a live rally is specifically a fault.\n2026 USA Pickleball Rulebook Change Document, page 22.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -127,9 +127,9 @@
     },
     {
       "id": 9,
-      "question": "A time-out must be called audibly by voice, visibly by hand signal, or both.",
+      "question": "A time-out must be called clearly by voice, hand signal, or both.",
       "correctAnswer": true,
-      "explanationShort": "Before, the rule said when to call a time-out.\nNow it also says how: voice, hand signal, or both.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "explanationShort": "Before, the rule mainly said when to call time-out.\nNow it also says how to call it: by voice, hand signal, or both.\n2026 USA Pickleball Rulebook Change Document, page 24.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -140,7 +140,7 @@
     },
     {
       "id": 10,
-      "question": "If a player calls a time-out after the serve has been hit, it is a fault.",
+      "question": "If a player calls time-out after the serve has been hit, it is a fault.",
       "correctAnswer": true,
       "explanationShort": "Before, the rule focused on calling time-out before the next serve.\nNow a late time-out call after the serve is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 24.",
       "tags": [
@@ -153,9 +153,9 @@
     },
     {
       "id": 11,
-      "question": "In rally scoring, a receiving team can win the game by winning the rally at game point.",
+      "question": "In rally scoring, the receiving team can win the game by winning the rally at game point.",
       "correctAnswer": true,
-      "explanationShort": "Before, the receiver could not win at game point.\nNow every rally can award the winning point.\n2026 USA Pickleball Rulebook Change Document, page 16.",
+      "explanationShort": "Before, the receiving team could not win at game point.\nNow the winning point can be scored on any rally.\n2026 USA Pickleball Rulebook Change Document, page 16.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -165,9 +165,9 @@
     },
     {
       "id": 12,
-      "question": "Balls can be hit more than once, but the stroke must be continuous in a single-direction by one player.",
+      "question": "A ball may be hit more than once if one player makes one continuous, single-direction stroke.",
       "correctAnswer": true,
-      "explanationShort": "This includes rare triple-hit cases.\nThe stroke must still be continuous and single-direction.\n2026 USA Pickleball Rulebook Change Document, page 10.",
+      "explanationShort": "This includes rare triple-hit cases.\nThe stroke still has to be one continuous stroke in one direction by one player.\n2026 USA Pickleball Rulebook Change Document, page 10.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -177,9 +177,9 @@
     },
     {
       "id": 13,
-      "question": "In doubles, if one player retires after a medical time-out, the partner may continue playing.",
+      "question": "In doubles, if one player retires after a medical time-out, the partner may keep playing.",
       "correctAnswer": true,
-      "explanationShort": "That doubles case was not stated in the old rule.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
+      "explanationShort": "The old rule did not state this doubles situation clearly.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -190,9 +190,9 @@
     },
     {
       "id": 14,
-      "question": "On a wheelchair serve, the front small wheels may extend into the court when the ball is hit.",
+      "question": "On a wheelchair serve, the front small wheels may extend into the court at contact.",
       "correctAnswer": true,
-      "explanationShort": "This wheelchair serving rule is newly added.\nOnly the large rear wheels must stay behind the baseline.\n2026 USA Pickleball Rulebook Change Document, page 18.",
+      "explanationShort": "This wheelchair serving rule is new for 2026.\nOnly the large rear wheels have to stay behind the baseline.\n2026 USA Pickleball Rulebook Change Document, page 18.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -202,9 +202,9 @@
     },
     {
       "id": 15,
-      "question": "An assistive device must not be used to strike the ball or intentionally alter its flight.",
+      "question": "An assistive device must not be used to hit the ball or intentionally alter its flight.",
       "correctAnswer": true,
-      "explanationShort": "This adaptive standing rule is newly added.\nFor example, a crutch or cane cannot hit a live ball.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "explanationShort": "This adaptive standing rule is new for 2026.\nFor example, a crutch or cane cannot be used to hit a live ball.\n2026 USA Pickleball Rulebook Change Document, page 21.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -214,9 +214,9 @@
     },
     {
       "id": 16,
-      "question": "Dangerous ball abuse can lead to a match forfeit even if no one is hit.",
+      "question": "Dangerous paddle or ball abuse can lead to a match forfeit even if no one is hit.",
       "correctAnswer": true,
-      "explanationShort": "This is a conduct penalty, not a rally fault.\nRecklessly hitting a dead ball can trigger it.\n2026 USA Pickleball Rulebook Change Document, page 22.",
+      "explanationShort": "This is a conduct penalty, not a rally fault.\nPutting a person or facility property at risk can still lead to a match forfeit.\n2026 USA Pickleball Rulebook Change Document, page 23.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -226,9 +226,9 @@
     },
     {
       "id": 17,
-      "question": "If an assistive device becomes dislodged during a rally, the rally must continue to completion.",
+      "question": "If an assistive device comes loose during a rally, the rally must continue to completion.",
       "correctAnswer": true,
-      "explanationShort": "This adaptive standing rule is newly added.\nA loose brace or device does not stop the rally.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "explanationShort": "This adaptive standing rule is new for 2026.\nA loose brace or device does not stop the rally.\n2026 USA Pickleball Rulebook Change Document, page 21.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -238,9 +238,9 @@
     },
     {
       "id": 18,
-      "question": "An adaptive standing player's two-bounce allowance must be declared before the match.",
+      "question": "An adaptive standing player must declare the two-bounce allowance before the match starts.",
       "correctAnswer": true,
-      "explanationShort": "This adaptive standing rule is newly added.\nA player cannot switch it on mid-match.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "explanationShort": "This adaptive standing rule is new for 2026.\nIt must be declared before the match and then used for the rest of that match.\n2026 USA Pickleball Rulebook Change Document, page 21.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -250,9 +250,9 @@
     },
     {
       "id": 19,
-      "question": "A wheelchair player's feet must not touch the ground while the ball is live, even accidentally.",
+      "question": "Except for the single-foot propulsion exception, a wheelchair player's feet or legs must not touch the ground during a live ball, even by accident.",
       "correctAnswer": true,
-      "explanationShort": "This wheelchair fault rule is newly added.\nEven an accidental foot touch is still a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
+      "explanationShort": "This wheelchair fault rule is new for 2026.\nExcept for the single-foot propulsion rule, even accidental ground contact is still a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -262,9 +262,9 @@
     },
     {
       "id": 20,
-      "question": "If a time-out is not called by voice or hand signal, the referee may issue a warning.",
+      "question": "If a time-out is not clearly called by voice or hand signal, a referee may issue a warning.",
       "correctAnswer": true,
-      "explanationShort": "This warning rule is newly added.\nFor example, leaving the court without clearly calling time-out can trigger it.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "explanationShort": "This warning rule is new for 2026.\nFor example, leaving the court without clearly calling time-out can trigger it.\n2026 USA Pickleball Rulebook Change Document, page 24.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -311,9 +311,9 @@
     },
     {
       "id": 24,
-      "question": "For a volley serve, the paddle may move in any direction when it contacts the ball.",
+      "question": "For a volley serve, the paddle may move in any direction at contact.",
       "correctAnswer": false,
-      "explanationShort": "The arm used to move in an upward arc.\nNow the paddle itself must arc upward at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1.",
+      "explanationShort": "The old rule focused on the arm moving in an upward arc.\nNow the paddle itself must move in an upward arc at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1.",
       "tags": [
         "Serving Rules",
         "Intermediate",

@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "2.4",
+    version: "2.5",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -331,7 +331,7 @@
 
       // Gesture: single tap (simple, no “secret handshake”)
       tapWindowMs: 900,
-      tapsRequired: 0,
+      tapsRequired: 1,
 
 
 
@@ -523,8 +523,6 @@
       loadingHint: "Preparing your pickleball rules quiz",
       loadingSlowHint: "Still loading... Check your connection if this takes too long.",
       updateAvailable: "Update ready. Reload to apply it.",
-      dismiss: "Dismiss",
-      closeIcon: "✕",
       updateNow: "Reload",
 
       offlinePayment: "Payment requires an internet connection.",
@@ -1000,23 +998,9 @@
       // Definition: longest sequence of consecutive correct answers within the run
       bestStreakLine: "Best streak: {bestStreak} correct in a row.",
 
-      // RUN progress surfacing (RUN only)
-      // Vars: {seen} {poolSize} {remaining}
-      progressLine: "Seen: {seen}/{poolSize}. {remaining} to go.",
-
-      // Category highlight (RUN only)
-      falseFriendsIdentifiedLine: "",
-
       endTagHighlights: {
         "2026_changes": "The 2026 rule changes were the toughest part of this game."
       },
-
-
-      // END secondary content toggles
-      statsToggle: "Stats & games history",
-
-      // Fallback for non-RUN modes (PRACTICE, BONUS)
-      effortLine: "Well played.",
 
       scoreLine: "Score: {score} {fpLong}",
 
