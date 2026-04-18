@@ -59,6 +59,25 @@ When in doubt:
 - keep the more precise version
 - move extra context into the explanation, not the question
 
+## Media Inspiration
+
+Media articles can be useful for:
+- more natural player-facing wording
+- clearer on-court phrasing
+- making the practical outcome of a rule easier to understand
+
+Media articles must not be used for:
+- replacing the official rule source
+- removing conditions, limits, or exceptions
+- turning a precise rule into a looser summary
+- importing hype, opinion, or enforcement speculation into quiz copy
+
+Safe use of media inspiration:
+- prefer stronger verbs
+- prefer on-court wording over bureaucratic wording
+- prefer clear consequence language such as `wins the rally` or `replay` when that consequence is already supported by the official source
+- keep the same factual meaning as the official source
+
 ## Review Mode
 
 When reviewing an existing question set, use only two categories:
@@ -97,3 +116,25 @@ The target is:
 - easy to parse
 - still faithful to the official source
 - natural enough to sound like player language on court
+
+## False-Item Standard
+
+For items whose correct answer is `false`:
+- prefer a false affirmative statement
+- avoid building the item around `not`, `never`, `may not`, `must not`, or similar negative phrasing when a cleaner false affirmative is available
+- avoid double-negation logic
+- avoid wording traps that test sentence parsing more than rule knowledge
+
+Preferred:
+- `Players may ask spectators for help on a call.`
+- `Play may continue after a fault.`
+- `Letting the ball roll off the paddle face before the serve is a fault.`
+
+Avoid when a cleaner option exists:
+- `Players must not ask spectators for help on a call.`
+- `A player may not let the ball roll off the paddle face before serving.`
+- `A receiving team can never score a point in standard scoring.`
+
+Exception:
+- if the official rule itself is best understood through a negative boundary, a negative term may remain
+- but the default target is still `false = false affirmative statement, easy to parse`
