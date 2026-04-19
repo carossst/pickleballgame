@@ -69,7 +69,7 @@
       parentUrl: "",
 
       // UI signature icon (in-card). Single source of truth for in-app branding.
-      uiLogoUrl: "./icons/android-chrome-512x512.png"
+      uiLogoUrl: "./icons/brand-logo-512.png"
     },
 
     // Storage (single source of truth)
@@ -604,7 +604,7 @@
     },
     landing: {
       title: "Pickleball Rules Quiz",
-      tagline: "Think you know pickleball? Prove it.",
+      tagline: "**Think you know pickleball? Prove it.**",
       subtitle: "A fast true-or-false pickleball rules game.\n{poolSize} questions about serving, faults, scoring, line calls, and rule changes.",
       microFun: "Quick games · No signup · Free to try",
       microTrust: "Learn fast, replay often, and fix your mistakes as you go.",
@@ -1005,6 +1005,9 @@
       // Definition: longest sequence of consecutive correct answers within the run
       bestStreakLine: "Best streak: {bestStreak} correct in a row.",
 
+      strongestTagLine: "Strongest category this game: {tag}.",
+      weakestTagLine: "Most missed category this game: {tag}.",
+
       endTagHighlights: {
         "2026_changes": "The 2026 rule changes were the toughest part of this game."
       },
@@ -1055,17 +1058,17 @@
       trustTitle: "Simple unlock",
 
       valueBullets: [
-        "The full set of questions",
-        "Explanations after every answer",
-        "Mistakes Mode for your mistakes",
-        "Rapid Fire Mode and unlimited replays"
+        "**The full set** of questions",
+        "**Explanations after every answer**",
+        "**Mistakes Mode** for your mistakes",
+        "**Rapid Fire Mode** and unlimited replays"
       ],
 
       // Shared bridge copy (LANDING post-paywall + END runs exhausted)
       bridgeTitle: "Keep building your rule knowledge.",
       bridgeBody: "Unlock the full set, fix your mistakes, and keep replaying with every mode open.",
 
-      trustLine: "One-time unlock",
+      trustLine: "**One-time unlock**",
       trustBullets: [
         "Pay once, no subscription",
         "No account or signup needed",

@@ -661,6 +661,13 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   margin: var(--space-2) 0 0;
 }
 
+.wt-tagline strong,
+.wt-list strong,
+.wt-meta strong {
+  font-weight: 700;
+  color: rgb(var(--text-strong));
+}
+
 .wt-landing-top-right {
   position: absolute;
   top: var(--gap-2);
@@ -1771,11 +1778,6 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
     0 0 0 1px rgb(var(--danger) / var(--wt-a-20)),
     0 0 16px rgb(var(--danger) / var(--wt-a-20));
   animation: wtPulse var(--wt-anim-pulse) ease-in-out infinite;
-}
-
-.wt-pill--chances .wt-hud-lives__dot {
-  background: rgb(var(--danger));
-  box-shadow: 0 0 0 1px rgb(var(--danger) / var(--wt-a-20));
 }
 
 .wt-pill--chances .wt-hud-lives__dot--off {

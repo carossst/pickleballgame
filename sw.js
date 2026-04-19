@@ -45,6 +45,7 @@ const ASSETS_TO_CACHE = [
   "./icons/android-chrome-192x192.png",
   "./icons/icon-192x192-maskable.png",
   "./icons/android-chrome-512x512.png",
+  "./icons/brand-logo-512.png",
   "./icons/icon-512x512-maskable.png",
   "./icons/apple-touch-icon.png",
   "./icons/favicon-32x32.png",

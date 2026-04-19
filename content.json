@@ -1,9 +1,9 @@
 {
   "version": "2.0",
-  "totalItems": 202,
+  "totalItems": 200,
   "breakdown": {
-    "trueItems": 105,
-    "falseItems": 97,
+    "trueItems": 104,
+    "falseItems": 96,
     "byCategory": {
       "2026_changes": 20,
       "Court & Equipment": 34,
@@ -179,7 +179,7 @@
       "id": 13,
       "question": "In doubles, if one player retires after a medical time-out, the partner may keep playing.",
       "correctAnswer": true,
-      "explanationShort": "The old rule did not state this doubles situation clearly.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
+      "explanationShort": "The old rule didn't state this doubles situation clearly.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -216,7 +216,7 @@
       "id": 16,
       "question": "Dangerous paddle or ball abuse can lead to a match forfeit even if no one is hit.",
       "correctAnswer": true,
-      "explanationShort": "This is a conduct penalty, not a rally fault.\nPutting a person or facility property at risk can still lead to a match forfeit.\n2026 USA Pickleball Rulebook Change Document, page 23.",
+      "explanationShort": "That's a conduct penalty, not a rally fault.\nPutting a person or facility property at risk can still lead to a match forfeit.\n2026 USA Pickleball Rulebook Change Document, page 23.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -337,7 +337,7 @@
       "id": 26,
       "question": "For a volley serve, the ball must be below the server's waist at contact.",
       "correctAnswer": true,
-      "explanationShort": "The ball must not be at or above waist level when struck.\nAbove the waist is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.C.3.",
+      "explanationShort": "The ball can't be at or above waist level when struck.\nAbove the waist is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.C.3.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -373,7 +373,7 @@
       "id": 29,
       "question": "A drop serve becomes illegal if the ball bounces twice before it is hit.",
       "correctAnswer": false,
-      "explanationShort": "There is no restriction on how many times the ball can bounce.\nThere is also no restriction on where it bounces.\n2026 USA Pickleball Official Rulebook, Rules 7.D.3-7.D.4.",
+      "explanationShort": "There's no limit on how many times the ball can bounce.\nThere's also no restriction on where it bounces.\n2026 USA Pickleball Official Rulebook, Rules 7.D.3-7.D.4.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -397,7 +397,7 @@
       "id": 31,
       "question": "A server's foot may touch the baseline when striking the ball.",
       "correctAnswer": false,
-      "explanationShort": "No foot may touch the court, including the baseline, at contact.\nThe server must stay behind it until the ball is struck.\n2026 USA Pickleball Official Rulebook, Rule 7.A.2.",
+      "explanationShort": "No foot can touch the court, including the baseline, at contact.\nThe server has to stay behind it until the ball is struck.\n2026 USA Pickleball Official Rulebook, Rule 7.A.2.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -409,7 +409,7 @@
       "id": 32,
       "question": "If the receiver cannot see the ball release, the receiver may call for a replay.",
       "correctAnswer": true,
-      "explanationShort": "The receiver has the right to call a replay in this situation.\nThe call must be made before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 7.B.3.a.",
+      "explanationShort": "The receiver can call a replay in this situation.\nThe call must be made before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 7.B.3.a.",
       "tags": [
         "Serving Rules",
         "Intermediate",
@@ -421,7 +421,7 @@
       "id": 33,
       "question": "A served ball that lands on the non-volley zone (NVZ) line is a fault.",
       "correctAnswer": true,
-      "explanationShort": "The serve must clear the NVZ (kitchen) entirely, including its lines.\nLanding on the NVZ line counts as landing in the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 7.E.2.",
+      "explanationShort": "The serve has to clear the NVZ (kitchen) entirely, including its lines.\nLanding on the NVZ line counts as landing in the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 7.E.2.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -445,7 +445,7 @@
       "id": 35,
       "question": "If the serve hits the server's partner, the server's team loses the rally.",
       "correctAnswer": true,
-      "explanationShort": "The fault applies if the ball hits the server or their partner.\nThis includes anything worn or carried by either of them.\n2026 USA Pickleball Official Rulebook, Rule 7.E.4.",
+      "explanationShort": "It's a fault if the ball hits the server or their partner.\nThat includes anything worn or carried by either of them.\n2026 USA Pickleball Official Rulebook, Rule 7.E.4.",
       "tags": [
         "Serving Rules",
         "Intermediate",
@@ -469,7 +469,7 @@
       "id": 37,
       "question": "A server may serve as soon as the previous rally ends.",
       "correctAnswer": false,
-      "explanationShort": "The server must wait until the full score is called before serving.\nServing before the score is called is a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
+      "explanationShort": "The server has to wait until the full score is called before serving.\nIf you serve before the score is called, it's a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -493,7 +493,7 @@
       "id": 39,
       "question": "A server has 10 seconds after the score is called to serve.",
       "correctAnswer": true,
-      "explanationShort": "Exceeding the 10-second count is a fault.\nThe clock starts after the score call is completed.\n2026 USA Pickleball Official Rulebook, Rule 6.D.1.",
+      "explanationShort": "If you go over the 10-second count, it's a fault.\nThe clock starts after the score call is completed.\n2026 USA Pickleball Official Rulebook, Rule 6.D.1.",
       "tags": [
         "Serving Rules",
         "Intermediate",
@@ -529,7 +529,7 @@
       "id": 42,
       "question": "A server may impart spin on the ball during the release.",
       "correctAnswer": false,
-      "explanationShort": "Spin during the release is not allowed.\nSpin at paddle contact is allowed.\n2026 USA Pickleball Official Rulebook, Rule 7.B.1.",
+      "explanationShort": "Spin during the release isn't allowed.\nSpin at paddle contact is allowed.\n2026 USA Pickleball Official Rulebook, Rule 7.B.1.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -553,7 +553,7 @@
       "id": 44,
       "question": "The served ball must land in the correct service court without touching the net.",
       "correctAnswer": false,
-      "explanationShort": "The served ball may touch the net before landing.\nTouching the net does not invalidate the serve.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
+      "explanationShort": "The served ball can touch the net before landing.\nTouching the net doesn't invalidate the serve.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -565,7 +565,7 @@
       "id": 45,
       "question": "If the wrong score is called and the rally is completed, the result of the rally stands.",
       "correctAnswer": true,
-      "explanationShort": "A wrong score does not invalidate a completed rally.\nThe score must be corrected before the next serve.\n2026 USA Pickleball Official Rulebook, Rule 6.F.4.",
+      "explanationShort": "A wrong score call doesn't erase a rally that's already over.\nThe score must be corrected before the next serve.\n2026 USA Pickleball Official Rulebook, Rule 6.F.4.",
       "tags": [
         "Serving Rules",
         "Hard",
@@ -577,7 +577,7 @@
       "id": 46,
       "question": "Stopping a rally to challenge the score is always allowed.",
       "correctAnswer": false,
-      "explanationShort": "Stopping a rally to challenge a correct score is a fault.\nOnly a wrong-score challenge before the return of serve is safe.\n2026 USA Pickleball Official Rulebook, Rule 6.F.2.",
+      "explanationShort": "If you stop a rally to challenge a correct score, it's a fault.\nOnly a wrong-score challenge before the return of serve is safe.\n2026 USA Pickleball Official Rulebook, Rule 6.F.2.",
       "tags": [
         "Serving Rules",
         "Hard",
@@ -586,7 +586,7 @@
       ]
     },
     {
-      "id": 49,
+      "id": 47,
       "question": "In doubles, the starting server's position is on the right side when the team's score is zero or even.",
       "correctAnswer": true,
       "explanationShort": "Position is based on the team's score, not individual.\nThis applies after each side out.\n2026 USA Pickleball Official Rulebook, Rule 5.B.3.",
@@ -597,7 +597,7 @@
       ]
     },
     {
-      "id": 50,
+      "id": 48,
       "question": "In doubles, both players on a team serve before a side out is declared.",
       "correctAnswer": true,
       "explanationShort": "Each server serves until their team loses a rally.\nA side out follows the second server's lost rally.\n2026 USA Pickleball Official Rulebook, Rule 5.B.",
@@ -608,7 +608,7 @@
       ]
     },
     {
-      "id": 51,
+      "id": 49,
       "question": "A served ball that lands on the centerline of the service court is a fault.",
       "correctAnswer": false,
       "explanationShort": "The centerline is part of the service court and counts as in.\nSideline and baseline of the service court also count as in.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.f.",
@@ -620,7 +620,7 @@
       ]
     },
     {
-      "id": 52,
+      "id": 50,
       "question": "In doubles, the score is called as two numbers.",
       "correctAnswer": false,
       "explanationShort": "In doubles, three numbers are called, not two.\nThe third number is the server number: one or two.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
@@ -631,7 +631,7 @@
       ]
     },
     {
-      "id": 53,
+      "id": 51,
       "question": "In singles, the receiver's score is called first.",
       "correctAnswer": false,
       "explanationShort": "The server's score is always called first.\nReversing the order would be a wrong score call.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
@@ -643,10 +643,10 @@
       ]
     },
     {
-      "id": 54,
+      "id": 52,
       "question": "The receiver normally calls the score.",
       "correctAnswer": false,
-      "explanationShort": "The server normally calls the score, not the receiver.\nThis is true in both singles and doubles.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
+      "explanationShort": "The server normally calls the score, not the receiver.\nThat's true in both singles and doubles.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -655,10 +655,10 @@
       ]
     },
     {
-      "id": 55,
+      "id": 53,
       "question": "In doubles, the server's partner may call the score at any time.",
       "correctAnswer": false,
-      "explanationShort": "The partner may call only if the server cannot.\nIt is not a free choice for the partner.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.a.",
+      "explanationShort": "The partner may call only if the server cannot.\nIt's not a free choice for the partner.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.a.",
       "tags": [
         "Score & Readiness",
         "Intermediate",
@@ -666,10 +666,10 @@
       ]
     },
     {
-      "id": 56,
+      "id": 54,
       "question": "Saying 'not ready' is a valid way to signal not ready.",
       "correctAnswer": false,
-      "explanationShort": "Only physical signals, such as raising the paddle, are valid.\nSaying 'not ready' does not count.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1.",
+      "explanationShort": "Only physical signals count here, like raising the paddle.\nSaying 'not ready' doesn't count.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -678,10 +678,10 @@
       ]
     },
     {
-      "id": 57,
+      "id": 55,
       "question": "A 'not ready' signal still counts after the score call starts.",
       "correctAnswer": false,
-      "explanationShort": "After the score call starts, a 'not ready' signal no longer counts.\nThe only exception is a hinder signal.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2.",
+      "explanationShort": "Once the score call starts, a 'not ready' signal no longer counts.\nThe only exception is a hinder signal.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -690,7 +690,7 @@
       ]
     },
     {
-      "id": 58,
+      "id": 56,
       "question": "The score may be called before all players are in position.",
       "correctAnswer": false,
       "explanationShort": "The score must wait until all players are ready.\nCalling early can cause a replay or fault.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
@@ -702,10 +702,10 @@
       ]
     },
     {
-      "id": 59,
+      "id": 57,
       "question": "A server may serve while the score is still being called.",
       "correctAnswer": false,
-      "explanationShort": "The full score must be called before the serve.\nServing during the call is a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.C.1.",
+      "explanationShort": "The full score has to be called before the serve.\nIf you serve during the call, it's a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.C.1.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -714,10 +714,10 @@
       ]
     },
     {
-      "id": 60,
+      "id": 58,
       "question": "If the serving team changes sides after the score is called, the score must be called again.",
       "correctAnswer": true,
-      "explanationShort": "The server must let all players reposition before re-calling the score.\nRe-calling without allowing repositioning first is not allowed.\n2026 USA Pickleball Official Rulebook, Rule 6.D.2.",
+      "explanationShort": "The server has to let all players reposition before re-calling the score.\nRe-calling before players can reposition isn't allowed.\n2026 USA Pickleball Official Rulebook, Rule 6.D.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -726,7 +726,7 @@
       ]
     },
     {
-      "id": 61,
+      "id": 59,
       "question": "After the score call starts, verbal indicators like 'stop' or 'wait' are recognized.",
       "correctAnswer": true,
       "explanationShort": "Words like 'stop' or 'wait' are recognized.\nThey can halt play to flag a wrong score.\n2026 USA Pickleball Official Rulebook, Rule 6.E.",
@@ -738,10 +738,10 @@
       ]
     },
     {
-      "id": 62,
+      "id": 60,
       "question": "A player may stop the rally to challenge the score after the return of serve.",
       "correctAnswer": false,
-      "explanationShort": "A late score challenge is a fault.\nIt must happen before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 6.F.3.",
+      "explanationShort": "A late score challenge is a fault.\nIt has to happen before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 6.F.3.",
       "tags": [
         "Score & Readiness",
         "Intermediate",
@@ -750,10 +750,10 @@
       ]
     },
     {
-      "id": 63,
-      "question": "In doubles, the first score call of the game is 'zero – zero – one.'",
+      "id": 61,
+      "question": "In doubles, the first score call of the game is 'zero \u2013 zero \u2013 one.'",
       "correctAnswer": false,
-      "explanationShort": "The first doubles score call is 'zero–zero–two.'\nThe 'two' means the opening server is treated as server 2, so that team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
+      "explanationShort": "The first doubles score call is 'zero\u2013zero\u2013two.'\nThe 'two' means the opening server is treated as server 2, so that team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -761,10 +761,10 @@
       ]
     },
     {
-      "id": 64,
+      "id": 62,
       "question": "A player may ask their opponent for the score before the serve is hit.",
       "correctAnswer": true,
-      "explanationShort": "A player may ask the opponent for the score.\nThis right exists before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.E.1.",
+      "explanationShort": "A player can ask the opponent for the score.\nThat right exists before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.E.1.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -773,7 +773,7 @@
       ]
     },
     {
-      "id": 65,
+      "id": 63,
       "question": "If the wrong score is called and the rally is stopped before the return of serve, the rally must be replayed.",
       "correctAnswer": true,
       "explanationShort": "The rally is replayed with the correct score.\nA late challenge results in a fault instead.\n2026 USA Pickleball Official Rulebook, Rule 6.F.1.",
@@ -785,10 +785,10 @@
       ]
     },
     {
-      "id": 66,
+      "id": 64,
       "question": "The 10-second count starts when the server begins calling the score.",
       "correctAnswer": false,
-      "explanationShort": "The count starts after the call is completed.\nIt does not begin when the call starts.\n2026 USA Pickleball Official Rulebook, Rule 6.D.",
+      "explanationShort": "The count starts after the call is completed.\nIt doesn't begin when the call starts.\n2026 USA Pickleball Official Rulebook, Rule 6.D.",
       "tags": [
         "Score & Readiness",
         "Intermediate",
@@ -797,10 +797,10 @@
       ]
     },
     {
-      "id": 67,
-      "question": "In singles, a game always starts with the score call 'zero – zero.'",
+      "id": 65,
+      "question": "In singles, a game always starts with the score call 'zero \u2013 zero.'",
       "correctAnswer": true,
-      "explanationShort": "Every singles game starts with 'zero–zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
+      "explanationShort": "Every singles game starts with 'zero\u2013zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -808,7 +808,7 @@
       ]
     },
     {
-      "id": 68,
+      "id": 66,
       "question": "In standard scoring, the receiving team can score by winning a rally.",
       "correctAnswer": false,
       "explanationShort": "In standard scoring, points are scored only when serving.\nA technical foul is the only exception.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
@@ -820,10 +820,10 @@
       ]
     },
     {
-      "id": 69,
+      "id": 67,
       "question": "In standard scoring, the receiving team has no way to score a point.",
       "correctAnswer": false,
-      "explanationShort": "A technical foul can award a point to receivers.\nThis is the exception to serve-only scoring.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
+      "explanationShort": "A technical foul can give a point to the receivers.\nThat's the exception to serve-only scoring.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -832,10 +832,10 @@
       ]
     },
     {
-      "id": 70,
+      "id": 68,
       "question": "The court must be a rectangle measuring 20 feet (6.10 m) wide and 44 feet (13.41 m) long.",
       "correctAnswer": true,
-      "explanationShort": "The same dimensions apply to both singles and doubles matches.\nMeasurements are made to the outside edge of the lines.\n2026 USA Pickleball Official Rulebook, Rule 3.A.1.",
+      "explanationShort": "The same dimensions apply in both singles and doubles.\nMeasurements are made to the outside edge of the lines.\n2026 USA Pickleball Official Rulebook, Rule 3.A.1.",
       "tags": [
         "Court & Equipment",
         "Easy",
@@ -844,7 +844,7 @@
       ]
     },
     {
-      "id": 71,
+      "id": 69,
       "question": "The net is 36 inches high across the full width of the court.",
       "correctAnswer": false,
       "explanationShort": "The net is 36 inches at sidelines, 34 at center.\nIt sags slightly in the middle by design.\n2026 USA Pickleball Official Rulebook, Rules 3.B.6-3.B.7.",
@@ -856,7 +856,7 @@
       ]
     },
     {
-      "id": 72,
+      "id": 70,
       "question": "Some approved pickleball balls are restricted to indoor play only.",
       "correctAnswer": false,
       "explanationShort": "All approved balls are acceptable for both indoor and outdoor play.\nThe choice of ball is a preference, not a rule restriction.\n2026 USA Pickleball Official Rulebook, Rule 3.C.1.",
@@ -868,7 +868,7 @@
       ]
     },
     {
-      "id": 73,
+      "id": 71,
       "question": "A pickleball ball may have multiple colors.",
       "correctAnswer": false,
       "explanationShort": "The ball must be one uniform color.\nA manufacturer logo or name is the only exception.\n2026 USA Pickleball Official Rulebook, Rule 3.C.3.",
@@ -880,7 +880,7 @@
       ]
     },
     {
-      "id": 74,
+      "id": 72,
       "question": "The non-volley zone (NVZ) extends 7 feet (2.13 m) from the net on each side.",
       "correctAnswer": true,
       "explanationShort": "The NVZ (kitchen) is 7 feet from the net.\nThe NVZ line itself is part of the zone.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c.",
@@ -892,7 +892,7 @@
       ]
     },
     {
-      "id": 75,
+      "id": 73,
       "question": "A ball landing on the non-volley zone (NVZ) line is considered in the NVZ.",
       "correctAnswer": true,
       "explanationShort": "All lines bounding the NVZ (kitchen) are part of the zone itself.\nThis applies to all lines on all four sides of the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c.",
@@ -904,7 +904,7 @@
       ]
     },
     {
-      "id": 76,
+      "id": 74,
       "question": "A pickleball ball may have a textured surface.",
       "correctAnswer": false,
       "explanationShort": "The ball must have a smooth surface and be free of texturing.\nA slight ridge at the seam is the only exception allowed.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
@@ -916,10 +916,10 @@
       ]
     },
     {
-      "id": 77,
+      "id": 75,
       "question": "A pickleball ball may have a slight ridge at the seam.",
       "correctAnswer": true,
-      "explanationShort": "A seam ridge is allowed if it doesn't affect flight.\nThis is the only exception to the smooth rule.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
+      "explanationShort": "A seam ridge is allowed if it doesn't affect flight.\nThat's the only exception to the smooth rule.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -928,7 +928,7 @@
       ]
     },
     {
-      "id": 78,
+      "id": 76,
       "question": "A paddle may not exceed 17 inches (43.18 cm) in length.",
       "correctAnswer": true,
       "explanationShort": "Length plus width must not exceed 24 inches.\nOnly length and combined dimensions are regulated.\n2026 USA Pickleball Official Rulebook, Rule 3.D.1.",
@@ -940,10 +940,10 @@
       ]
     },
     {
-      "id": 79,
+      "id": 77,
       "question": "There is a maximum weight limit for pickleball paddles.",
       "correctAnswer": false,
-      "explanationShort": "No weight restriction exists for paddles in the rulebook.\nOnly length and combined dimensions are regulated.\n2026 USA Pickleball Official Rulebook, Rule 3.D.1.",
+      "explanationShort": "There's no weight restriction for paddles in the rulebook.\nOnly length and combined dimensions are regulated.\n2026 USA Pickleball Official Rulebook, Rule 3.D.1.",
       "tags": [
         "Court & Equipment",
         "Intermediate",
@@ -952,7 +952,7 @@
       ]
     },
     {
-      "id": 80,
+      "id": 78,
       "question": "A center strap is required on all pickleball nets.",
       "correctAnswer": false,
       "explanationShort": "A center strap is optional, not required.\nIt adjusts the net to 34 inches at center.\n2026 USA Pickleball Official Rulebook, Rule 3.B.5.",
@@ -964,10 +964,10 @@
       ]
     },
     {
-      "id": 81,
+      "id": 79,
       "question": "Court lines must be 2 inches (5.08 cm) wide.",
       "correctAnswer": true,
-      "explanationShort": "All court lines must be 2 inches wide.\nThis applies to every line on the court.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.e.",
+      "explanationShort": "All court lines must be 2 inches wide.\nThat applies to every line on the court.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.e.",
       "tags": [
         "Court & Equipment",
         "Easy",
@@ -976,7 +976,7 @@
       ]
     },
     {
-      "id": 82,
+      "id": 80,
       "question": "Court lines may be any color, even if similar to the playing surface.",
       "correctAnswer": false,
       "explanationShort": "Lines must clearly contrast with the surface color.\nAll lines must also be the same color as each other.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.e.",
@@ -988,7 +988,7 @@
       ]
     },
     {
-      "id": 83,
+      "id": 81,
       "question": "A pickleball ball must have between 26 and 40 circular holes.",
       "correctAnswer": true,
       "explanationShort": "The number of holes affects the ball's flight characteristics.\nBalls outside this range are not approved for play.\n2026 USA Pickleball Official Rulebook, Rule 3.C.5.",
@@ -1000,7 +1000,7 @@
       ]
     },
     {
-      "id": 84,
+      "id": 82,
       "question": "The net must be at least 30 inches (76.2 cm) tall from bottom to top.",
       "correctAnswer": true,
       "explanationShort": "The net must be at least 30 inches tall.\nThis is separate from the playing height above court.\n2026 USA Pickleball Official Rulebook, Rule 3.B.3.",
@@ -1012,10 +1012,10 @@
       ]
     },
     {
-      "id": 85,
+      "id": 83,
       "question": "The net must be made of a specific approved material.",
       "correctAnswer": false,
-      "explanationShort": "Any mesh fabric is acceptable for the net.\nThe only requirement is balls cannot pass through.\n2026 USA Pickleball Official Rulebook, Rule 3.B.1.",
+      "explanationShort": "Any mesh fabric is acceptable for the net.\nThe only requirement is that balls can't pass through.\n2026 USA Pickleball Official Rulebook, Rule 3.B.1.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1024,7 +1024,7 @@
       ]
     },
     {
-      "id": 86,
+      "id": 84,
       "question": "A pickleball ball must have a manufacturer or supplier name or logo on its surface.",
       "correctAnswer": true,
       "explanationShort": "The marking must be printed or embossed on the ball surface.\nThis is required for all approved balls.\n2026 USA Pickleball Official Rulebook, Rule 3.C.4.",
@@ -1036,10 +1036,10 @@
       ]
     },
     {
-      "id": 87,
+      "id": 85,
       "question": "The minimum playing surface area is 30 feet (9.14 m) wide and 60 feet (18.29 m) long.",
       "correctAnswer": true,
-      "explanationShort": "The minimum playing surface is 30 × 60 feet.\nThe court itself is only 20 × 44 feet.\n2026 USA Pickleball Official Rulebook, Rule 3.A.3.",
+      "explanationShort": "The minimum playing surface is 30 \u00d7 60 feet.\nThe court itself is only 20 \u00d7 44 feet.\n2026 USA Pickleball Official Rulebook, Rule 3.A.3.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1048,10 +1048,10 @@
       ]
     },
     {
-      "id": 88,
+      "id": 86,
       "question": "Net posts should be 22 feet (6.71 m) apart, measured from inside edge to inside edge.",
       "correctAnswer": true,
-      "explanationShort": "A tolerance of ±1.0 inch is allowed.\nEach post must not exceed 3 inches in diameter.\n2026 USA Pickleball Official Rulebook, Rule 3.B.2.",
+      "explanationShort": "A tolerance of \u00b11.0 inch is allowed.\nEach post must not exceed 3 inches in diameter.\n2026 USA Pickleball Official Rulebook, Rule 3.B.2.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1060,7 +1060,7 @@
       ]
     },
     {
-      "id": 89,
+      "id": 87,
       "question": "A paddle's hitting surface may have small indentations to improve grip on the ball.",
       "correctAnswer": false,
       "explanationShort": "Indentations on the hitting surface are banned.\nThey could let a player add extra spin.\n2026 USA Pickleball Official Rulebook, Rule 3.D.3.",
@@ -1072,10 +1072,10 @@
       ]
     },
     {
-      "id": 90,
+      "id": 88,
       "question": "A pickleball ball must be between 2.87 inches (7.29 cm) and 2.97 inches (7.54 cm) in diameter.",
       "correctAnswer": true,
-      "explanationShort": "Balls outside this diameter range are not approved for play.\nThe out-of-round variance must also not exceed +/- 0.020 inch (0.51 mm).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.3.",
+      "explanationShort": "Balls outside this diameter range aren't approved for play.\nThe out-of-round variance also can't exceed +/- 0.020 inch (0.51 mm).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.3.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1084,7 +1084,7 @@
       ]
     },
     {
-      "id": 91,
+      "id": 89,
       "question": "A pickleball ball must weigh between 0.78 and 0.935 ounces (22.1 and 26.5 grams).",
       "correctAnswer": true,
       "explanationShort": "Balls outside this weight range are not approved for play.\nBoth minimum and maximum weights are strictly enforced.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.4.",
@@ -1096,10 +1096,10 @@
       ]
     },
     {
-      "id": 92,
+      "id": 90,
       "question": "A pickleball paddle must be made of rigid, non-compressible material.",
       "correctAnswer": true,
-      "explanationShort": "The material must be rigid and deemed safe.\nFlexible or compressible faces are not allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.1.",
+      "explanationShort": "The material must be rigid and deemed safe.\nFlexible or compressible faces aren't allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.1.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1108,10 +1108,10 @@
       ]
     },
     {
-      "id": 93,
+      "id": 91,
       "question": "A pickleball ball must bounce between 30 and 34 inches (76.2 and 86.4 cm) when dropped from 78 inches (198.1 cm).",
       "correctAnswer": true,
-      "explanationShort": "The bounce test uses a granite surface plate.\nTest temperature must be 70°F (±5°F).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.5.",
+      "explanationShort": "The bounce test uses a granite surface plate.\nTest temperature must be 70\u00b0F (\u00b15\u00b0F).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.5.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1120,7 +1120,7 @@
       ]
     },
     {
-      "id": 94,
+      "id": 92,
       "question": "There is no restriction on paddle handle length.",
       "correctAnswer": true,
       "explanationShort": "The handle may be any length within the overall paddle dimensions.\nOnly the combined length and width cannot exceed 24 inches (60.96 cm).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.3.",
@@ -1132,7 +1132,7 @@
       ]
     },
     {
-      "id": 95,
+      "id": 93,
       "question": "Adding weight to a paddle makes it non-compliant.",
       "correctAnswer": false,
       "explanationShort": "Adding weight is a permitted alteration.\nWeighted tape is one allowed method.\n2026 USA Pickleball Official Rulebook, Rule 3.D.",
@@ -1144,10 +1144,10 @@
       ]
     },
     {
-      "id": 96,
+      "id": 94,
       "question": "Decals and tape may not extend more than 1.0 inch (2.54 cm) onto the paddle face from the grip.",
       "correctAnswer": true,
-      "explanationShort": "Decals and tape cannot go further onto the face.\nThe hitting surface must remain unaltered beyond that.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.b.",
+      "explanationShort": "Decals and tape can't go any farther onto the face.\nThe hitting surface must remain unaltered beyond that.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.b.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1156,7 +1156,7 @@
       ]
     },
     {
-      "id": 97,
+      "id": 95,
       "question": "Decals and tape may extend up to 0.5 inch (1.27 cm) inside the paddle's outer edge.",
       "correctAnswer": true,
       "explanationShort": "Beyond 0.5 inch inside the edge is not allowed.\nEdge guard presence shifts the limit inward.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.b.",
@@ -1168,7 +1168,7 @@
       ]
     },
     {
-      "id": 98,
+      "id": 96,
       "question": "Writing on the paddle's playing surface makes the paddle non-compliant.",
       "correctAnswer": false,
       "explanationShort": "Name and contact information on the face are allowed.\nThis is an explicitly permitted marking.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.c.",
@@ -1180,7 +1180,7 @@
       ]
     },
     {
-      "id": 99,
+      "id": 97,
       "question": "A player may have another player's autograph on their paddle's playing surface.",
       "correctAnswer": true,
       "explanationShort": "Autographs on the paddle face are allowed.\nThis is an explicitly permitted identification marking.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.c.",
@@ -1192,7 +1192,7 @@
       ]
     },
     {
-      "id": 100,
+      "id": 98,
       "question": "A paddle may include electronic features to assist the player during play.",
       "correctAnswer": false,
       "explanationShort": "Electronic communications and power assistance are strictly prohibited.\nThe paddle must provide no mechanical or electronic advantage during play.\n2026 USA Pickleball Official Rulebook, Rule 3.D.5.",
@@ -1204,7 +1204,7 @@
       ]
     },
     {
-      "id": 101,
+      "id": 99,
       "question": "Changing the grip size of a paddle makes it non-compliant.",
       "correctAnswer": false,
       "explanationShort": "Grip size changes are explicitly permitted.\nGrip wraps and inserts are allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.a.",
@@ -1216,7 +1216,7 @@
       ]
     },
     {
-      "id": 102,
+      "id": 100,
       "question": "Replacing the edge guard on a paddle makes it non-compliant.",
       "correctAnswer": false,
       "explanationShort": "Edge guard tape is a permitted player alteration.\nSeveral modifications to commercial paddles are allowed.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.a.",
@@ -1228,10 +1228,10 @@
       ]
     },
     {
-      "id": 103,
+      "id": 101,
       "question": "Any ball design can be used in pickleball as long as it meets size and weight requirements.",
       "correctAnswer": false,
-      "explanationShort": "The ball design must be specifically approved by USA Pickleball.\nSize and weight alone are not sufficient for approval.\n2026 USA Pickleball Official Rulebook, Rule 3.C.2.",
+      "explanationShort": "The ball design must be specifically approved by USA Pickleball.\nSize and weight alone aren't enough for approval.\n2026 USA Pickleball Official Rulebook, Rule 3.C.2.",
       "tags": [
         "Court & Equipment",
         "Intermediate",
@@ -1240,7 +1240,7 @@
       ]
     },
     {
-      "id": 104,
+      "id": 102,
       "question": "In doubles, the player closest to the ball makes the line call.",
       "correctAnswer": false,
       "explanationShort": "Either or both partners may make a line call.\nNo rule restricts it to the closer player.\n2026 USA Pickleball Official Rulebook, Rule 8.A.",
@@ -1251,10 +1251,10 @@
       ]
     },
     {
-      "id": 105,
+      "id": 103,
       "question": "If a player is unsure whether a ball is out, they may call it out anyway.",
       "correctAnswer": false,
-      "explanationShort": "Any ball that cannot be promptly called out must be considered in.\nQuestionable calls must always be resolved in favor of the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
+      "explanationShort": "If you can't promptly call it out, it's in.\nQuestionable calls must always be resolved in favor of the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
       "tags": [
         "Line Calls",
         "Easy",
@@ -1263,7 +1263,7 @@
       ]
     },
     {
-      "id": 106,
+      "id": 104,
       "question": "A player must clearly see a space between the line and the ball to call it out.",
       "correctAnswer": true,
       "explanationShort": "No clear space between ball and line means 'in.'\nThis prevents uncertain out calls.\n2026 USA Pickleball Official Rulebook, Rule 8.E.",
@@ -1275,7 +1275,7 @@
       ]
     },
     {
-      "id": 107,
+      "id": 105,
       "question": "A ball that touches a court line during a rally is out.",
       "correctAnswer": false,
       "explanationShort": "Any ball touching a court line is considered in.\nOnly balls landing fully outside a line are out.\n2026 USA Pickleball Official Rulebook, Rule 8.B.",
@@ -1287,10 +1287,10 @@
       ]
     },
     {
-      "id": 108,
+      "id": 106,
       "question": "An 'out' call must be made promptly by voice, hand signal, or both.",
       "correctAnswer": true,
-      "explanationShort": "A delayed out call may not be recognized.\nThe call must come before the opponent hits back.\n2026 USA Pickleball Official Rulebook, Rule 8.F.",
+      "explanationShort": "A delayed out call may not be recognized.\nThe call has to come before the opponent hits back.\n2026 USA Pickleball Official Rulebook, Rule 8.F.",
       "tags": [
         "Line Calls",
         "Easy",
@@ -1299,7 +1299,7 @@
       ]
     },
     {
-      "id": 109,
+      "id": 107,
       "question": "If doubles partners disagree on a line call, the ball is considered out.",
       "correctAnswer": false,
       "explanationShort": "When partners disagree on a line call, the ball is considered in.\nThis gives the benefit of the doubt to the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.H.",
@@ -1310,7 +1310,7 @@
       ]
     },
     {
-      "id": 110,
+      "id": 108,
       "question": "A player may overrule their own line call to their own disadvantage.",
       "correctAnswer": true,
       "explanationShort": "Players may override calls to their own disadvantage.\nOverriding to gain an advantage is not allowed.\n2026 USA Pickleball Official Rulebook, Rule 8.G.",
@@ -1322,10 +1322,10 @@
       ]
     },
     {
-      "id": 111,
+      "id": 109,
       "question": "A player may ask their opponent's opinion on a line call.",
       "correctAnswer": true,
-      "explanationShort": "A player may defer a line call to the opponent.\nThe opponent's clear decision then stands.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
+      "explanationShort": "A player can defer a line call to the opponent.\nThe opponent's clear decision then stands.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
       "tags": [
         "Line Calls",
         "Intermediate",
@@ -1334,7 +1334,7 @@
       ]
     },
     {
-      "id": 112,
+      "id": 110,
       "question": "A player may change their mind on a line call after the next serve is hit.",
       "correctAnswer": false,
       "explanationShort": "Once the next serve is hit, the call is final.\nAny change must happen before that serve.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
@@ -1346,7 +1346,7 @@
       ]
     },
     {
-      "id": 113,
+      "id": 111,
       "question": "In rally scoring, a point is scored on every rally, regardless of who served.",
       "correctAnswer": true,
       "explanationShort": "Every rally awards a point in rally scoring.\nThis differs from standard side-out scoring.\n2026 USA Pickleball Official Rulebook, Rule 14.A.2.",
@@ -1359,10 +1359,10 @@
       ]
     },
     {
-      "id": 114,
+      "id": 112,
       "question": "A player may accept a spectator's line call if the spectator volunteered it.",
       "correctAnswer": false,
-      "explanationShort": "Spectators must not be consulted on any call.\nWhether the spectator volunteered or was asked makes no difference.\n2026 USA Pickleball Official Rulebook, Rule 8.J.",
+      "explanationShort": "Spectators must not be consulted on any call.\nIt doesn't matter whether the spectator volunteered or was asked.\n2026 USA Pickleball Official Rulebook, Rule 8.J.",
       "tags": [
         "Line Calls",
         "Hard",
@@ -1371,7 +1371,7 @@
       ]
     },
     {
-      "id": 115,
+      "id": 113,
       "question": "When a line call is questionable, the benefit of the doubt goes to the opponent.",
       "correctAnswer": true,
       "explanationShort": "Questionable calls must always be resolved in favor of the opponent.\nThis is a core principle of pickleball's code of ethics.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
@@ -1383,7 +1383,7 @@
       ]
     },
     {
-      "id": 116,
+      "id": 114,
       "question": "Saying 'out' while the ball is still in the air counts as a line call.",
       "correctAnswer": false,
       "explanationShort": "Partner communication in the air is not a call.\nA line call is only valid after the ball lands.\n2026 USA Pickleball Official Rulebook, Rule 8.F.4.",
@@ -1395,10 +1395,10 @@
       ]
     },
     {
-      "id": 117,
+      "id": 115,
       "question": "After an 'out' call is made, play must stop immediately.",
       "correctAnswer": true,
-      "explanationShort": "A line call makes the ball dead immediately.\nPlay cannot continue after a valid out call.\n2026 USA Pickleball Official Rulebook, Rule 8.F.2.",
+      "explanationShort": "A line call makes the ball dead immediately.\nPlay can't continue after a valid out call.\n2026 USA Pickleball Official Rulebook, Rule 8.F.2.",
       "tags": [
         "Line Calls",
         "Easy",
@@ -1407,10 +1407,10 @@
       ]
     },
     {
-      "id": 118,
+      "id": 116,
       "question": "Players are responsible for making line calls on their opponent's end of the court.",
       "correctAnswer": false,
-      "explanationShort": "Players call lines on their own end of the court only.\nCalling lines on the opponent's end is not a player's responsibility.\n2026 USA Pickleball Official Rulebook, Rule 8.A.",
+      "explanationShort": "Players call lines on their own end of the court only.\nCalling lines on the opponent's end isn't a player's responsibility.\n2026 USA Pickleball Official Rulebook, Rule 8.A.",
       "tags": [
         "Line Calls",
         "Intermediate",
@@ -1419,7 +1419,7 @@
       ]
     },
     {
-      "id": 119,
+      "id": 117,
       "question": "If a player asks the opponent's opinion and gets no definitive call, the ball is out.",
       "correctAnswer": false,
       "explanationShort": "No definitive call from the opponent means 'in.'\nOnly a clear 'in' or 'out' overrides the call.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
@@ -1431,7 +1431,7 @@
       ]
     },
     {
-      "id": 120,
+      "id": 118,
       "question": "If a player returns the ball, they may still call it out after the opponent hits it back.",
       "correctAnswer": false,
       "explanationShort": "After the opponent hits back, the out right is lost.\nThe call must come before the opponent strikes.\n2026 USA Pickleball Official Rulebook, Rule 8.F.3.",
@@ -1443,7 +1443,7 @@
       ]
     },
     {
-      "id": 121,
+      "id": 119,
       "question": "Players must strive for accuracy when making line calls.",
       "correctAnswer": true,
       "explanationShort": "Accuracy is a core obligation under pickleball's code of ethics.\nQuestionable calls must always favor the opponent, not the caller.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
@@ -1455,10 +1455,10 @@
       ]
     },
     {
-      "id": 122,
+      "id": 120,
       "question": "If no player makes an 'out' call, the ball is considered in.",
       "correctAnswer": true,
-      "explanationShort": "Any ball that cannot be called out must be considered in.\nSilence on a line call always defaults to in.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
+      "explanationShort": "If you can't call it out, it's in.\nSilence on a line call always defaults to in.\n2026 USA Pickleball Official Rulebook, Rule 8.D.",
       "tags": [
         "Line Calls",
         "Easy",
@@ -1467,7 +1467,7 @@
       ]
     },
     {
-      "id": 123,
+      "id": 121,
       "question": "Play may continue after a fault.",
       "correctAnswer": false,
       "explanationShort": "A fault immediately stops play and ends the rally.\nThe ball becomes dead the moment a fault occurs.\n2026 USA Pickleball Official Rulebook, Rule 9.B.",
@@ -1479,7 +1479,7 @@
       ]
     },
     {
-      "id": 124,
+      "id": 122,
       "question": "A called hinder results in a dead ball.",
       "correctAnswer": true,
       "explanationShort": "Any player may call a hinder to stop play.\nExample: a ball rolling in from another court.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
@@ -1491,7 +1491,7 @@
       ]
     },
     {
-      "id": 125,
+      "id": 123,
       "question": "Players are expected to call faults on themselves or their partner.",
       "correctAnswer": true,
       "explanationShort": "Faults must be called when committed or detected.\nWaiting until after the rally is too late.\n2026 USA Pickleball Official Rulebook, Rule 9.B.2.",
@@ -1503,7 +1503,7 @@
       ]
     },
     {
-      "id": 126,
+      "id": 124,
       "question": "A player may call a non-volley zone (NVZ) fault on their opponent.",
       "correctAnswer": true,
       "explanationShort": "NVZ and service foot faults may be called on opponents.\nThese are the only enforceable faults on others.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.",
@@ -1515,7 +1515,7 @@
       ]
     },
     {
-      "id": 127,
+      "id": 125,
       "question": "A player may enforce a double-bounce fault on their opponent.",
       "correctAnswer": false,
       "explanationShort": "Only NVZ and foot faults are enforceable on opponents.\nAll other faults are decided by the committing player.\n2026 USA Pickleball Official Rulebook, Rule 9.B.4.",
@@ -1527,7 +1527,7 @@
       ]
     },
     {
-      "id": 128,
+      "id": 126,
       "question": "A fault call must be made before the next serve is hit.",
       "correctAnswer": true,
       "explanationShort": "A fault should be called as soon as detected.\nAfter the next serve, it can no longer be enforced.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.a.",
@@ -1539,19 +1539,7 @@
       ]
     },
     {
-      "id": 129,
-      "question": "When a hinder is called, the team that called it wins the rally.",
-      "correctAnswer": false,
-      "explanationShort": "A valid hinder results in a replayed rally.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.C.2.",
-      "tags": [
-        "Faults & Dead Ball",
-        "Easy",
-        "Singles",
-        "Doubles"
-      ]
-    },
-    {
-      "id": 130,
+      "id": 127,
       "question": "A ball rolling in from another court during a rally is a valid hinder.",
       "correctAnswer": true,
       "explanationShort": "An outside object unexpectedly entering the court is a valid hinder.\nThe rally must be replayed when a valid hinder is called.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
@@ -1563,10 +1551,10 @@
       ]
     },
     {
-      "id": 131,
+      "id": 128,
       "question": "A player who misses a shot may call a hinder to replay the rally.",
       "correctAnswer": false,
-      "explanationShort": "A hinder must be caused by unexpected outside interference.\nMissing a shot is not a valid reason to call a hinder.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
+      "explanationShort": "A hinder must be caused by unexpected outside interference.\nMissing a shot isn't a valid reason to call a hinder.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
       "tags": [
         "Faults & Dead Ball",
         "Easy",
@@ -1575,7 +1563,7 @@
       ]
     },
     {
-      "id": 132,
+      "id": 129,
       "question": "Only the player directly affected may call a hinder.",
       "correctAnswer": false,
       "explanationShort": "Any player on either team may call a hinder.\nThe call is not limited to the affected player.\n2026 USA Pickleball Official Rulebook, Rule 9.C.1.",
@@ -1587,7 +1575,7 @@
       ]
     },
     {
-      "id": 133,
+      "id": 130,
       "question": "A net system malfunction during a rally is a hinder.",
       "correctAnswer": true,
       "explanationShort": "Any malfunction of a net system during play is considered a hinder.\nThe rally must be replayed when a valid hinder is called.\n2026 USA Pickleball Official Rulebook, Rule 13.J.",
@@ -1599,7 +1587,7 @@
       ]
     },
     {
-      "id": 134,
+      "id": 131,
       "question": "A player who is distracted by an opponent's loud noise may call a hinder.",
       "correctAnswer": false,
       "explanationShort": "Opponent distraction is a fault, not a hinder.\nHinders come from outside interference only.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
@@ -1611,10 +1599,10 @@
       ]
     },
     {
-      "id": 135,
+      "id": 132,
       "question": "When two teams disagree on a fault call, the calling team wins the point.",
       "correctAnswer": false,
-      "explanationShort": "Team disagreement on a fault results in a replay.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b.",
+      "explanationShort": "If teammates disagree on a fault, the rally is replayed.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b.",
       "tags": [
         "Faults & Dead Ball",
         "Easy",
@@ -1623,7 +1611,7 @@
       ]
     },
     {
-      "id": 136,
+      "id": 133,
       "question": "When doubles partners disagree on a fault call, the benefit of the doubt goes to their opponents.",
       "correctAnswer": true,
       "explanationShort": "Partner disagreement on a fault always favors the opposing team.\nThis mirrors the same principle that applies to line calls.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.c.",
@@ -1634,10 +1622,10 @@
       ]
     },
     {
-      "id": 137,
+      "id": 134,
       "question": "A dead ball is no longer in play.",
       "correctAnswer": true,
-      "explanationShort": "A dead ball means play has stopped.\nNeither team may continue the rally.\n2026 USA Pickleball Official Rulebook, Section 2.",
+      "explanationShort": "A dead ball means play has stopped.\nNeither team can keep the rally going.\n2026 USA Pickleball Official Rulebook, Section 2.",
       "tags": [
         "Faults & Dead Ball",
         "Easy",
@@ -1646,10 +1634,10 @@
       ]
     },
     {
-      "id": 138,
+      "id": 135,
       "question": "Stopping a rally before the ball is dead is always a fault.",
       "correctAnswer": false,
-      "explanationShort": "Some reasons to stop a rally are valid exceptions.\nHinders, position errors, and score challenges qualify.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
+      "explanationShort": "Some reasons to stop a rally are valid exceptions.\nA hinder, a position error, or a score challenge can qualify.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
       "tags": [
         "Faults & Dead Ball",
         "Easy",
@@ -1658,7 +1646,7 @@
       ]
     },
     {
-      "id": 139,
+      "id": 136,
       "question": "A player may stop a rally to call a hinder without committing a fault.",
       "correctAnswer": true,
       "explanationShort": "Calling a hinder is a valid reason to stop play.\nA valid hinder results in a replayed rally.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
@@ -1670,7 +1658,7 @@
       ]
     },
     {
-      "id": 140,
+      "id": 137,
       "question": "A player may stop a rally to identify a position error without committing a fault.",
       "correctAnswer": true,
       "explanationShort": "Correctly identifying a position error stops play validly.\nAn incorrect claim is a fault on the claimant.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
@@ -1682,7 +1670,7 @@
       ]
     },
     {
-      "id": 141,
+      "id": 138,
       "question": "A standard time-out may last up to 2 minutes.",
       "correctAnswer": false,
       "explanationShort": "A standard time-out lasts up to 1 minute.\nPlay may resume early if all players are ready.\n2026 USA Pickleball Official Rulebook, Rule 21.A.5.",
@@ -1695,7 +1683,7 @@
       ]
     },
     {
-      "id": 142,
+      "id": 139,
       "question": "Play may continue after a dead ball if both teams agree.",
       "correctAnswer": false,
       "explanationShort": "Once the ball is dead, play must stop immediately.\nStopping a rally prematurely without a valid reason is a fault.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
@@ -1707,7 +1695,7 @@
       ]
     },
     {
-      "id": 143,
+      "id": 140,
       "question": "The serve and the return of serve must each bounce before being returned.",
       "correctAnswer": true,
       "explanationShort": "This is called the two-bounce rule.\nViolating it on either side is a fault.\n2026 USA Pickleball Official Rulebook, Rule 10.A.",
@@ -1719,7 +1707,7 @@
       ]
     },
     {
-      "id": 146,
+      "id": 141,
       "question": "A player must return the ball before a second bounce.",
       "correctAnswer": true,
       "explanationShort": "Failing to return before the second bounce is a fault.\nThis applies after the first two shots of a rally.\n2026 USA Pickleball Official Rulebook, Rule 10.B.",
@@ -1731,7 +1719,7 @@
       ]
     },
     {
-      "id": 147,
+      "id": 142,
       "question": "A player may stop play immediately if they suspect the ball is broken.",
       "correctAnswer": false,
       "explanationShort": "Play must continue even if the ball seems broken.\nPlayers may check and challenge after the rally.\n2026 USA Pickleball Official Rulebook, Rule 10.G.",
@@ -1743,7 +1731,7 @@
       ]
     },
     {
-      "id": 148,
+      "id": 143,
       "question": "In doubles, one shot may legally contact both partners' paddles.",
       "correctAnswer": false,
       "explanationShort": "Only one player on a team may hit each shot.\nBoth partners hitting the same stroke is a fault.\n2026 USA Pickleball Official Rulebook, Rule 10.D.2.",
@@ -1754,10 +1742,10 @@
       ]
     },
     {
-      "id": 149,
+      "id": 144,
       "question": "If a player is injured during a rally, play must continue until the rally ends.",
       "correctAnswer": true,
-      "explanationShort": "An injury does not stop play mid-rally.\nThe rally must be completed before any medical attention can be given.\n2026 USA Pickleball Official Rulebook, Rule 10.H.",
+      "explanationShort": "An injury doesn't stop play mid-rally.\nThe rally must be completed before any medical attention can be given.\n2026 USA Pickleball Official Rulebook, Rule 10.H.",
       "tags": [
         "Rally Situations",
         "Intermediate",
@@ -1766,7 +1754,7 @@
       ]
     },
     {
-      "id": 150,
+      "id": 145,
       "question": "Players must wait for a time-out to hydrate.",
       "correctAnswer": false,
       "explanationShort": "Quick hydration between rallies is permitted.\nIt must not disrupt the flow of the game.\n2026 USA Pickleball Official Rulebook, Rule 10.K.",
@@ -1778,10 +1766,10 @@
       ]
     },
     {
-      "id": 151,
+      "id": 146,
       "question": "If a player's hat falls onto their end of the court, the ball is dead if it hits the hat.",
       "correctAnswer": false,
-      "explanationShort": "Items on a player's side do not stop play.\nThe ball stays live even if it hits a fallen item.\n2026 USA Pickleball Official Rulebook, Rule 10.J.",
+      "explanationShort": "Items on a player's side don't stop play.\nThe ball stays live even if it hits a fallen item.\n2026 USA Pickleball Official Rulebook, Rule 10.J.",
       "tags": [
         "Rally Situations",
         "Hard",
@@ -1790,10 +1778,10 @@
       ]
     },
     {
-      "id": 152,
+      "id": 147,
       "question": "If a player's shoe comes off during a rally, play must continue until the rally ends.",
       "correctAnswer": true,
-      "explanationShort": "Equipment and apparel problems do not stop play mid-rally.\nThe rally must be completed before addressing the problem.\n2026 USA Pickleball Official Rulebook, Rule 10.I.",
+      "explanationShort": "Equipment and apparel problems don't stop play mid-rally.\nThe rally must be completed before addressing the problem.\n2026 USA Pickleball Official Rulebook, Rule 10.I.",
       "tags": [
         "Rally Situations",
         "Easy",
@@ -1802,7 +1790,7 @@
       ]
     },
     {
-      "id": 153,
+      "id": 148,
       "question": "A player must not distract their opponent when the opponent is about to hit the ball.",
       "correctAnswer": true,
       "explanationShort": "Deliberate distraction is a fault against the player who distracted.\nExamples include loud noises, stomping feet, or waving the paddle erratically.\n2026 USA Pickleball Official Rulebook, Rule 10.F.",
@@ -1814,7 +1802,7 @@
       ]
     },
     {
-      "id": 154,
+      "id": 149,
       "question": "Switching the paddle from one hand to the other during a rally is a fault.",
       "correctAnswer": false,
       "explanationShort": "Switching hands during a rally is allowed.\nThe player must still be holding the paddle at contact.\n2026 USA Pickleball Official Rulebook, Rule 12.B.",
@@ -1826,7 +1814,7 @@
       ]
     },
     {
-      "id": 155,
+      "id": 150,
       "question": "A player may catch the ball on their paddle and redirect it during a rally.",
       "correctAnswer": false,
       "explanationShort": "Catching or carrying the ball on the paddle is a fault.\nThe ball must bounce away from the paddle on contact.\n2026 USA Pickleball Official Rulebook, Rule 12.C.",
@@ -1838,10 +1826,10 @@
       ]
     },
     {
-      "id": 156,
+      "id": 151,
       "question": "A player must not use or carry more than one paddle during a rally.",
       "correctAnswer": true,
-      "explanationShort": "Carrying more than one paddle is a fault.\nThis applies even if the extra paddle is unused.\n2026 USA Pickleball Official Rulebook, Rule 12.A.",
+      "explanationShort": "Carrying more than one paddle is a fault.\nThat applies even if the extra paddle is unused.\n2026 USA Pickleball Official Rulebook, Rule 12.A.",
       "tags": [
         "Rally Situations",
         "Intermediate",
@@ -1850,7 +1838,7 @@
       ]
     },
     {
-      "id": 157,
+      "id": 152,
       "question": "A player may throw their paddle to hit the ball during a rally.",
       "correctAnswer": false,
       "explanationShort": "The player must have possession of the paddle when hitting the ball.\nThrowing the paddle to make contact is a fault.\n2026 USA Pickleball Official Rulebook, Rule 12.B.1.",
@@ -1862,7 +1850,7 @@
       ]
     },
     {
-      "id": 158,
+      "id": 153,
       "question": "If a player's shot hits the fence before landing in the court, it is a fault.",
       "correctAnswer": true,
       "explanationShort": "A ball hitting a permanent object first is a fault.\nIt must land in court without contact first.\n2026 USA Pickleball Official Rulebook, Rule 10.C.4.",
@@ -1874,7 +1862,7 @@
       ]
     },
     {
-      "id": 159,
+      "id": 154,
       "question": "If all players agree a broken ball affected the rally, the rally must be replayed.",
       "correctAnswer": true,
       "explanationShort": "All players must agree that the break affected the outcome.\nIf there is no agreement, the result of the rally stands.\n2026 USA Pickleball Official Rulebook, Rule 10.G.1.",
@@ -1886,7 +1874,7 @@
       ]
     },
     {
-      "id": 160,
+      "id": 155,
       "question": "Playing a bounced ball is the only reason a player may enter the non-volley zone (NVZ).",
       "correctAnswer": false,
       "explanationShort": "Entering the NVZ (kitchen) is allowed at any time.\nThe only restriction is volleying while in it.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
@@ -1898,7 +1886,7 @@
       ]
     },
     {
-      "id": 161,
+      "id": 156,
       "question": "A player may volley the ball while standing in the non-volley zone (NVZ).",
       "correctAnswer": false,
       "explanationShort": "Volleying the ball while in the NVZ (kitchen) is a fault.\nThe player must be completely outside the NVZ to volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
@@ -1910,7 +1898,7 @@
       ]
     },
     {
-      "id": 162,
+      "id": 157,
       "question": "If a player's momentum carries them into the non-volley zone (NVZ) after a volley, it is a fault.",
       "correctAnswer": true,
       "explanationShort": "Momentum into the NVZ (kitchen) after a volley is a fault.\nThis applies even after the ball has become dead.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2.",
@@ -1922,7 +1910,7 @@
       ]
     },
     {
-      "id": 163,
+      "id": 158,
       "question": "After entering the non-volley zone (NVZ), a player may volley the ball as soon as one foot is outside the NVZ.",
       "correctAnswer": false,
       "explanationShort": "Both feet must be completely outside the NVZ (kitchen) before volleying.\nOne foot outside is not sufficient to volley legally.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3.",
@@ -1934,10 +1922,10 @@
       ]
     },
     {
-      "id": 164,
+      "id": 159,
       "question": "If the ball becomes soft during a rally, the result of the rally is replayed.",
       "correctAnswer": false,
-      "explanationShort": "A soft or degraded ball does not cause a replay.\nOnly a broken ball agreed on by all can.\n2026 USA Pickleball Official Rulebook, Rule 10.G.2.",
+      "explanationShort": "A soft or degraded ball doesn't cause a replay.\nOnly a broken ball agreed on by all can.\n2026 USA Pickleball Official Rulebook, Rule 10.G.2.",
       "tags": [
         "Rally Situations",
         "Intermediate",
@@ -1946,7 +1934,7 @@
       ]
     },
     {
-      "id": 165,
+      "id": 160,
       "question": "If a volleying player's partner touches the non-volley zone (NVZ), it is a fault.",
       "correctAnswer": true,
       "explanationShort": "The partner must not touch the NVZ (kitchen) either.\nThis applies at the moment of the volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A.1.",
@@ -1957,7 +1945,7 @@
       ]
     },
     {
-      "id": 166,
+      "id": 161,
       "question": "A player may jump from outside the non-volley zone (NVZ), volley the ball in the air, and land inside the NVZ.",
       "correctAnswer": false,
       "explanationShort": "Landing in the NVZ (kitchen) after volleying is a fault.\nThe player must land completely outside.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2.",
@@ -1969,10 +1957,10 @@
       ]
     },
     {
-      "id": 167,
+      "id": 162,
       "question": "A standard time-out may be called before a match starts.",
       "correctAnswer": false,
-      "explanationShort": "A time-out cannot be called before a match starts.\nTime-outs are only available between rallies or games.\n2026 USA Pickleball Official Rulebook, Rule 21.A.1.",
+      "explanationShort": "A time-out can't be called before a match starts.\nTime-outs are only available between rallies or games.\n2026 USA Pickleball Official Rulebook, Rule 21.A.1.",
       "tags": [
         "Score & Readiness",
         "Intermediate",
@@ -1982,10 +1970,10 @@
       ]
     },
     {
-      "id": 168,
+      "id": 163,
       "question": "In rally scoring doubles, the score is called as three numbers.",
       "correctAnswer": false,
-      "explanationShort": "Rally scoring uses two numbers, not three.\nThere is no server number in rally scoring.\n2026 USA Pickleball Official Rulebook, Rule 14.A.3.",
+      "explanationShort": "Rally scoring uses two numbers, not three.\nThere's no server number in rally scoring.\n2026 USA Pickleball Official Rulebook, Rule 14.A.3.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -1994,7 +1982,7 @@
       ]
     },
     {
-      "id": 169,
+      "id": 164,
       "question": "A player may touch the non-volley zone (NVZ) with their paddle before hitting a volley.",
       "correctAnswer": true,
       "explanationShort": "NVZ (kitchen) contact is only banned during volleying.\nTouching it before the volley is not a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
@@ -2006,7 +1994,7 @@
       ]
     },
     {
-      "id": 170,
+      "id": 165,
       "question": "Jumping from inside the non-volley zone (NVZ) to volley the ball in the air is legal.",
       "correctAnswer": false,
       "explanationShort": "Both feet must be outside the NVZ (kitchen) first.\nJumping from inside to volley is a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3.",
@@ -2018,10 +2006,10 @@
       ]
     },
     {
-      "id": 171,
+      "id": 166,
       "question": "A standard pickleball game is played to 15 points.",
       "correctAnswer": false,
-      "explanationShort": "The standard game is played to 11 points.\n15 and 21 are optional tournament formats.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.",
+      "explanationShort": "A standard game is played to 11 points.\n15 and 21 are optional tournament formats.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -2031,10 +2019,10 @@
       ]
     },
     {
-      "id": 172,
+      "id": 167,
       "question": "A game is won by the first team to reach 11 points.",
       "correctAnswer": false,
-      "explanationShort": "A game must be won by at least 2 points.\nThere is no score cap if teams keep tying.\n2026 USA Pickleball Official Rulebook, Rule 15.C.",
+      "explanationShort": "A game must be won by at least 2 points.\nThere's no score cap if teams keep tying.\n2026 USA Pickleball Official Rulebook, Rule 15.C.",
       "tags": [
         "Score & Readiness",
         "Intermediate",
@@ -2044,7 +2032,7 @@
       ]
     },
     {
-      "id": 173,
+      "id": 168,
       "question": "A pickleball game may be played to 15 or 21 points in some tournament formats.",
       "correctAnswer": true,
       "explanationShort": "One game to 15 or 21 points is an allowed tournament format.\nAll formats still require a win by 2 points.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.c.",
@@ -2057,7 +2045,7 @@
       ]
     },
     {
-      "id": 174,
+      "id": 169,
       "question": "The standard tournament format is best 2-of-3 games to 11 points.",
       "correctAnswer": true,
       "explanationShort": "This is the standard for USAP sanctioned events.\nBest 3-of-5 or one game to 15/21 are also allowed.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.a.",
@@ -2070,7 +2058,7 @@
       ]
     },
     {
-      "id": 175,
+      "id": 170,
       "question": "In a round robin format, players are eliminated after a loss.",
       "correctAnswer": false,
       "explanationShort": "Every participant faces every other in round robin.\nElimination formats are single or double elimination.\n2026 USA Pickleball Official Rulebook, Rule 15.B.1.",
@@ -2083,7 +2071,7 @@
       ]
     },
     {
-      "id": 177,
+      "id": 171,
       "question": "In a double elimination format, after losing one match, a player plays in a consolation bracket.",
       "correctAnswer": true,
       "explanationShort": "A first loss moves the player to consolation bracket.\nElimination requires a second loss.\n2026 USA Pickleball Official Rulebook, Rule 15.B.1.",
@@ -2096,7 +2084,7 @@
       ]
     },
     {
-      "id": 178,
+      "id": 172,
       "question": "A ball may be returned around the outside of the net post.",
       "correctAnswer": true,
       "explanationShort": "This is called an around-the-post (ATP) shot.\nThe ball does not need to go over the net.\n2026 USA Pickleball Official Rulebook, Rule 13.C.",
@@ -2108,7 +2096,7 @@
       ]
     },
     {
-      "id": 179,
+      "id": 173,
       "question": "If the ball bounces in your court and returns over the net on its own, you lose the rally.",
       "correctAnswer": false,
       "explanationShort": "The player may reach over to hit the returned ball.\nThe ball must have crossed back first.\n2026 USA Pickleball Official Rulebook, Rule 13.I.2.",
@@ -2120,7 +2108,7 @@
       ]
     },
     {
-      "id": 180,
+      "id": 174,
       "question": "Players should avoid wearing clothing that closely matches the ball color.",
       "correctAnswer": true,
       "explanationShort": "Matching the ball color makes it harder to see.\nThis is a fair play principle.\n2026 USA Pickleball Official Rulebook, Section 1.",
@@ -2132,7 +2120,7 @@
       ]
     },
     {
-      "id": 181,
+      "id": 175,
       "question": "Shoes must have soles that do not mark or damage the playing surface.",
       "correctAnswer": true,
       "explanationShort": "Inappropriate footwear can be required to be changed by the Tournament Director.\nRefusing to change apparel can result in a match forfeit.\n2026 USA Pickleball Official Rulebook, Rule 18.B.2.",
@@ -2144,10 +2132,10 @@
       ]
     },
     {
-      "id": 182,
+      "id": 176,
       "question": "A player may be required to change their clothing if it approximates the color of the ball.",
       "correctAnswer": true,
-      "explanationShort": "The Tournament Director may require an apparel change during a match.\nA referee time-out is used for the change.\n2026 USA Pickleball Official Rulebook, Rule 18.B.3.",
+      "explanationShort": "A Tournament Director can require an apparel change during a match.\nA referee time-out is used for the change.\n2026 USA Pickleball Official Rulebook, Rule 18.B.3.",
       "tags": [
         "Player Conduct & Apparel",
         "Intermediate",
@@ -2157,10 +2145,10 @@
       ]
     },
     {
-      "id": 183,
+      "id": 177,
       "question": "In doubles tournament play, the starting server must wear a visible form of identification.",
       "correctAnswer": true,
-      "explanationShort": "The form of identification is determined by the Tournament Director.\nIt must be visible to officials and players throughout the match.\n2026 USA Pickleball Official Rulebook, Rule 18.C.",
+      "explanationShort": "The form of identification is determined by the Tournament Director.\nIt has to stay visible to officials and players throughout the match.\n2026 USA Pickleball Official Rulebook, Rule 18.C.",
       "tags": [
         "Player Conduct & Apparel",
         "Intermediate",
@@ -2169,7 +2157,7 @@
       ]
     },
     {
-      "id": 184,
+      "id": 178,
       "question": "A side out occurs when the serving team wins a rally.",
       "correctAnswer": false,
       "explanationShort": "A side out occurs when the serve is lost.\nThe serve then goes to the opposing team.\n2026 USA Pickleball Official Rulebook, Section 2.",
@@ -2181,7 +2169,7 @@
       ]
     },
     {
-      "id": 185,
+      "id": 179,
       "question": "In doubles, the starting server is treated as server 2 for the first service sequence of the game.",
       "correctAnswer": true,
       "explanationShort": "Only one player on the opening team serves before the first side out.\nAfter that opening sequence, service goes back to the normal first-server then second-server pattern.\n2026 USA Pickleball Official Rulebook, Rule 5.B.2.",
@@ -2192,7 +2180,7 @@
       ]
     },
     {
-      "id": 186,
+      "id": 180,
       "question": "If the ball hits the net and lands in bounds, play stops and the rally is replayed.",
       "correctAnswer": false,
       "explanationShort": "The ball stays in play if it lands in bounds.\nNet contact alone does not stop the rally.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
@@ -2204,7 +2192,7 @@
       ]
     },
     {
-      "id": 187,
+      "id": 181,
       "question": "If the ball hits the cable at the top of the net and lands in bounds, it remains in play.",
       "correctAnswer": true,
       "explanationShort": "The cable or rope at the top counts as the net.\nThe ball stays in play if it lands in bounds.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
@@ -2216,10 +2204,10 @@
       ]
     },
     {
-      "id": 188,
+      "id": 182,
       "question": "A serve that clips the top of the net and lands in the correct service court is a fault.",
       "correctAnswer": false,
-      "explanationShort": "A net serve that lands in the correct court is good.\nThere is no let rule in pickleball.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
+      "explanationShort": "A net serve that lands in the correct court is good.\nThere's no let rule in pickleball.\n2026 USA Pickleball Official Rulebook, Rule 13.A.",
       "tags": [
         "The Net",
         "Intermediate",
@@ -2228,7 +2216,7 @@
       ]
     },
     {
-      "id": 189,
+      "id": 183,
       "question": "In singles, the server stays on the same side for every serve.",
       "correctAnswer": false,
       "explanationShort": "The server alternates sides after each point scored.\nThe score determines which side to serve from.\n2026 USA Pickleball Official Rulebook, Rule 5.A.2.",
@@ -2239,7 +2227,7 @@
       ]
     },
     {
-      "id": 190,
+      "id": 184,
       "question": "In singles, a side out occurs after the server loses a rally.",
       "correctAnswer": true,
       "explanationShort": "The server immediately loses the serve after a lost rally.\nUnlike doubles, there is no second server in singles.\n2026 USA Pickleball Official Rulebook, Rule 5.A.3.",
@@ -2250,10 +2238,10 @@
       ]
     },
     {
-      "id": 191,
+      "id": 185,
       "question": "A ball may pass between the net and the net post during play.",
       "correctAnswer": false,
-      "explanationShort": "The ball must go over or around the net post.\nThrough the gap between net and post is a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.D.",
+      "explanationShort": "The ball has to go over or around the net post.\nIf it goes through the gap between the net and post, it's a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.D.",
       "tags": [
         "The Net",
         "Intermediate",
@@ -2262,7 +2250,7 @@
       ]
     },
     {
-      "id": 192,
+      "id": 186,
       "question": "During a match, when a player is discovered playing with a non-compliant paddle, a match forfeit will be imposed.",
       "correctAnswer": true,
       "explanationShort": "A non-compliant paddle during play results in an automatic forfeit.\nSwitching without penalty is only allowed before the match starts.\n2026 USA Pickleball Official Rulebook, Rule 18.A.2.",
@@ -2275,10 +2263,10 @@
       ]
     },
     {
-      "id": 193,
+      "id": 187,
       "question": "If a non-compliant paddle is discovered before a match starts, there is no penalty to switch paddles.",
       "correctAnswer": true,
-      "explanationShort": "Before a match, the player simply switches paddles.\nDuring play, discovery means a match forfeit.\n2026 USA Pickleball Official Rulebook, Rule 18.A.1.",
+      "explanationShort": "Before a match, the player just switches paddles.\nDuring play, discovery means a match forfeit.\n2026 USA Pickleball Official Rulebook, Rule 18.A.1.",
       "tags": [
         "Player Conduct & Apparel",
         "Intermediate",
@@ -2288,10 +2276,10 @@
       ]
     },
     {
-      "id": 194,
+      "id": 188,
       "question": "A player may hit the ball before it has fully crossed the plane of the net to their side.",
       "correctAnswer": false,
-      "explanationShort": "The ball must fully cross the net plane first.\nHitting early across the plane is a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.F.1.",
+      "explanationShort": "The ball has to fully cross the net plane first.\nIf you hit it early across the plane, it's a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.F.1.",
       "tags": [
         "The Net",
         "Intermediate",
@@ -2300,10 +2288,10 @@
       ]
     },
     {
-      "id": 195,
+      "id": 189,
       "question": "Graphics, insignias, pictures, and writing on apparel must be in good taste.",
       "correctAnswer": true,
-      "explanationShort": "Offensive content on clothing is not permitted during play.\nThis includes language, symbols, or explicit images.\n2026 USA Pickleball Official Rulebook, Rule 18.B.1.",
+      "explanationShort": "Offensive content on clothing isn't permitted during play.\nThis includes language, symbols, or explicit images.\n2026 USA Pickleball Official Rulebook, Rule 18.B.1.",
       "tags": [
         "Player Conduct & Apparel",
         "Intermediate",
@@ -2313,7 +2301,7 @@
       ]
     },
     {
-      "id": 196,
+      "id": 190,
       "question": "Touching the net with your paddle during a rally is allowed if accidental.",
       "correctAnswer": false,
       "explanationShort": "Any contact with the net system during play is a fault.\nThis includes paddle, clothing, or anything carried.\n2026 USA Pickleball Official Rulebook, Rule 13.G.",
@@ -2325,7 +2313,7 @@
       ]
     },
     {
-      "id": 197,
+      "id": 191,
       "question": "In singles, the server serves from the right side when their score is zero or even.",
       "correctAnswer": true,
       "explanationShort": "The server's score determines which side to serve from in singles.\nAn odd score means serving from the left side.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
@@ -2336,10 +2324,10 @@
       ]
     },
     {
-      "id": 198,
+      "id": 192,
       "question": "In singles, the server serves from the left side when their score is odd.",
       "correctAnswer": true,
-      "explanationShort": "The server's score determines the serving side in singles.\nAn even score or zero means serving from the right side.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
+      "explanationShort": "In singles, the server's score determines the serving side.\nAn even score or zero means serving from the right side.\n2026 USA Pickleball Official Rulebook, Rule 5.A.1.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -2347,7 +2335,7 @@
       ]
     },
     {
-      "id": 199,
+      "id": 193,
       "question": "A player who refuses to change inappropriate apparel may forfeit their match.",
       "correctAnswer": true,
       "explanationShort": "The Tournament Director may impose a match forfeit for non-compliance.\nRefusing an apparel change is treated as a rules violation.\n2026 USA Pickleball Official Rulebook, Rule 18.B.4.",
@@ -2360,7 +2348,7 @@
       ]
     },
     {
-      "id": 200,
+      "id": 194,
       "question": "In singles, the score is called as three numbers.",
       "correctAnswer": false,
       "explanationShort": "Singles uses two numbers: server's then receiver's.\nThree numbers are used in standard doubles only.\n2026 USA Pickleball Official Rulebook, Rule 6.B.",
@@ -2371,10 +2359,10 @@
       ]
     },
     {
-      "id": 201,
+      "id": 195,
       "question": "In standard doubles, the score is called as three numbers.",
       "correctAnswer": true,
-      "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four–two–one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
+      "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four\u2013two\u2013one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -2382,7 +2370,7 @@
       ]
     },
     {
-      "id": 202,
+      "id": 196,
       "question": "In doubles, except when serving or receiving, players may stand anywhere on the court.",
       "correctAnswer": true,
       "explanationShort": "No position restrictions exist after serve and return.\nOnly server and receiver have starting positions.\n2026 USA Pickleball Official Rulebook, Rule 5.B.4.",
@@ -2393,10 +2381,10 @@
       ]
     },
     {
-      "id": 203,
+      "id": 197,
       "question": "A returned ball that hits the net support system on the hitter's side is a fault.",
       "correctAnswer": true,
-      "explanationShort": "The net support system is not the same as the net.\nOnly net contact itself keeps the ball in play.\n2026 USA Pickleball Official Rulebook, Rule 13.B.1.",
+      "explanationShort": "The net support system isn't the same as the net.\nOnly net contact itself keeps the ball in play.\n2026 USA Pickleball Official Rulebook, Rule 13.B.1.",
       "tags": [
         "The Net",
         "Intermediate",
@@ -2405,7 +2393,7 @@
       ]
     },
     {
-      "id": 204,
+      "id": 198,
       "question": "In mini-singles, only half the court is in play during each rally.",
       "correctAnswer": true,
       "explanationShort": "The in-play side depends on each player's score.\nThe centerline acts as the third boundary line.\n2026 USA Pickleball Official Rulebook, Rule 14.B.1.a.",
@@ -2416,10 +2404,10 @@
       ]
     },
     {
-      "id": 205,
+      "id": 199,
       "question": "A technical warning results in a point being deducted from the offender's score.",
       "correctAnswer": false,
-      "explanationShort": "A technical warning does not affect the score.\nOnly a technical foul deducts a point.\n2026 USA Pickleball Official Rulebook, Rule 22.C.1.",
+      "explanationShort": "A technical warning doesn't affect the score.\nOnly a technical foul deducts a point.\n2026 USA Pickleball Official Rulebook, Rule 22.C.1.",
       "tags": [
         "Player Conduct & Apparel",
         "Intermediate",
@@ -2429,23 +2417,10 @@
       ]
     },
     {
-      "id": 206,
+      "id": 200,
       "question": "A technical foul results in one point being deducted from the offender's score.",
       "correctAnswer": true,
       "explanationShort": "One point is removed from the offender's score.\nIf the score is zero, a point goes to the opponent.\n2026 USA Pickleball Official Rulebook, Rule 22.E.1.",
-      "tags": [
-        "Player Conduct & Apparel",
-        "Hard",
-        "Singles",
-        "Doubles",
-        "Tournament"
-      ]
-    },
-    {
-      "id": 207,
-      "question": "A game forfeit is imposed after one technical warning and one technical foul in the same match.",
-      "correctAnswer": true,
-      "explanationShort": "Any combination of one warning plus one foul triggers it.\nThree technical warnings also lead to a game forfeit.\n2026 USA Pickleball Official Rulebook, Rule 22.F.1.",
       "tags": [
         "Player Conduct & Apparel",
         "Hard",
