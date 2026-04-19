@@ -6737,9 +6737,6 @@ void function () {
       return ``;
     })();
 
-    const howToPlayAria = String(w.system?.more || "").trim();
-    const howToPlayTitle = String(w.system?.more || "").trim();
-
     const landingHeaderRowHtml = `
   <div class="wt-landing-header">
     <div class="wt-landing-header__brand">
@@ -6747,12 +6744,6 @@ void function () {
     </div>
    <div class="wt-landing-top-right">
       ${chestHintTextLanding ? `<div class="wt-chest-hint-inline">${escapeHtml(chestHintTextLanding)}</div>` : ``}
-     <button
-        class="wt-btn-icon"
-        data-action="open-howto"
-        aria-label="${escapeHtml(howToPlayAria)}"
-        title="${escapeHtml(howToPlayTitle)}"
-      >${renderIcon("help-circle")}</button>
       ${canShowChest ? `
         <button
           type="button"
@@ -7677,8 +7668,6 @@ ${(() => {
 
     const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
 
-    const howToPlayAria = String(w.system?.more || "").trim();
-
     const homeLabel = String(w.system?.home || "").trim();
     const homeBtnHtml = homeLabel
       ? `
@@ -7799,16 +7788,6 @@ ${(() => {
 
     <div class="wt-row wt-row--tight" style="flex-shrink:0">
       ${homeBtnHtml}
-
-      ${this.state === STATES.LANDING ? `
-        <button
-          type="button"
-          class="wt-btn-icon"
-          data-action="open-howto"
-          aria-label="${escapeHtml(howToPlayAria)}"
-          title="${escapeHtml(howToPlayAria)}"
-        >${renderIcon("help-circle")}</button>
-      ` : ``}
 
       ${canShowChest ? `
         <button
