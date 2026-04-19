@@ -306,12 +306,11 @@
     if (!sys) return;
 
     const title = String(sys.loadingTitle || "").trim();
-    const icon = String(sys.loadingIcon || "●").trim();
     const hint = String(sys.loadingHint || "").trim();
     const logoUrl = String(window.WT_CONFIG?.identity?.uiLogoUrl || "").trim();
     const loadingVisual = logoUrl
       ? `<img src="${escapeHtmlSafe(logoUrl)}" alt="" class="wt-loading-icon" />`
-      : `<div class="wt-loading-icon">${escapeHtmlSafe(icon)}</div>`;
+      : `<div class="wt-loading-icon">●</div>`;
 
     root.innerHTML = `
     <div class="wt-loading">

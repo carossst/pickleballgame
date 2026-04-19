@@ -129,3 +129,8 @@ node --check config.js
 node --check ui.js
 node --check storage.js
 ```
+
+## UI Conventions
+
+- `wt-btn--ghost` is reserved for secondary, non-destructive actions such as `Later` or `Not now`
+- destructive or high-stakes exits should stay on `wt-btn--secondary` or stronger variants

@@ -28,6 +28,15 @@
       Reuse existing breakpoints (481/501/661/741/900px).
       New breakpoint requires documented rationale here.
 
+   6b) VARIANTS VS STATE
+      Orthogonal variants => BEM modifiers.
+      Cross-cutting mode/state => data attributes.
+      Never use a BEM modifier for temporary UI state.
+      Current data attrs:
+      - data-wt-mode="run|practice|bonus"
+      - data-wt-state="playing|ended|locked"
+      - data-wt-bonus-layout="fall"
+
    7) ANIMATIONS
       - Keyframe names: wtCamelCase
       - Prefer durations via --wt-anim-* tokens
@@ -49,7 +58,7 @@
 
    10) BONUS MODE (explicit exception scope)
       Bonus mode may deviate from the global type scale and spacing for “arcade feel”.
-      Those deviations must stay inside [data-wt-bonus] scope.
+      Those deviations must stay inside [data-wt-mode="bonus"] scope.
 
    Current stats: ~130 selectors, 20 keyframes, 3 font-weights, 0 inline opacities.
    ============================================================ */
@@ -160,6 +169,7 @@
   --glass-65: rgb(var(--surface) / var(--wt-a-65));
   --glass-72: rgb(var(--surface) / var(--wt-a-72));
   --glass-92: rgb(var(--surface) / var(--wt-a-92));
+  --wt-blur-md: blur(12px) saturate(1.4);
 
   /* Shadows */
   --shadow-color: 15 23 42;
@@ -394,6 +404,10 @@ body.wt-state--playing .wt-main {
   margin: 0 auto;
 }
 
+.wt-container--doc {
+  max-width: 680px;
+}
+
 body.wt-state--playing .wt-container {
   flex: 1 1 auto;
   width: 100%;
@@ -454,6 +468,13 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   line-height: 1.2;
   font-weight: 700;
   color: rgb(var(--text-strong));
+}
+
+.wt-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  display: inline-block;
 }
 
 .wt-branding--logo-only .wt-branding-name {
@@ -572,22 +593,6 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   box-shadow:
     var(--shadow-hero),
     inset 0 1px 0 rgb(var(--text-strong) / var(--wt-a-06));
-}
-
-/* Narrative tension: a whisper of “risk” at the bottom edge */
-.wt-card--hero::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  pointer-events: none;
-  background: linear-gradient(90deg,
-      rgb(var(--primary) / var(--wt-a-35)),
-      rgb(var(--danger) / var(--wt-a-18)),
-      rgb(var(--primary) / var(--wt-a-35)));
-  opacity: var(--wt-a-85);
 }
 
 /* Subtle hero glow also on mobile (desktop keeps stronger version below) */
@@ -924,14 +929,12 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   display: none;
 }
 
-.wt-accordion-toggle::before {
-  content: "▸";
-  display: inline-block;
-  transition: transform var(--fast);
+.wt-accordion-toggle .wt-icon {
   color: rgb(var(--text-muted));
+  transition: transform var(--fast);
 }
 
-.wt-accordion[open] .wt-accordion-toggle::before {
+.wt-accordion[open] .wt-accordion-toggle .wt-icon {
   transform: rotate(90deg);
 }
 
@@ -1027,11 +1030,17 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   color: rgb(var(--text-strong));
   box-shadow: none;
   padding: var(--gap-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgb(var(--text-strong) / var(--wt-a-35));
 }
 
 .wt-btn--ghost:active:not(:disabled) {
   transform: translateY(1px);
-  opacity: var(--wt-a-85);
+  opacity: 1;
+  background: rgb(var(--surface-muted));
+  text-decoration-color: transparent;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -1044,6 +1053,10 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
     box-shadow: var(--shadow-1);
     border-color: rgb(var(--border) / var(--wt-a-85));
   }
+}
+
+.wt-btn--ghost:focus-visible {
+  text-decoration-color: rgb(var(--primary-dark));
 }
 
 @media (min-width: 481px) {
@@ -1361,7 +1374,6 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   background: var(--glass-65);
   box-shadow: var(--shadow-1);
   color: rgb(var(--text-muted));
-  font-size: var(--fs-base);
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
@@ -1373,6 +1385,11 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
     background-color var(--fast),
     box-shadow var(--fast),
     transform var(--fast);
+}
+
+.wt-btn-icon .wt-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .wt-btn-icon:focus-visible {
@@ -1392,6 +1409,14 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 .wt-btn-icon:active:not(:disabled) {
   transform: translateY(1px) scale(0.98);
   box-shadow: var(--shadow-press);
+}
+
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .wt-btn-icon {
+    backdrop-filter: var(--wt-blur-md);
+    -webkit-backdrop-filter: var(--wt-blur-md);
+    background: rgb(var(--surface) / var(--wt-a-55));
+  }
 }
 
 /* Tease: visible enough to be noticed on landing, without looking noisy */
@@ -1550,17 +1575,25 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 12px;
 }
 
 .wt-hud__left {
   display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   min-width: 0;
+}
+
+.wt-hud__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  margin-left: auto;
 }
 
 
@@ -1599,19 +1632,17 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   color: rgb(var(--text-muted));
 }
 
-/* HUD emphasis: Chances + Score larger (keep arcade, but calmer) */
-.wt-pill--score,
-.wt-pill--chances {
-  font-size: var(--fs-sm);
+/* HUD emphasis: score is the hero, best/lives stay secondary. */
+.wt-pill--score {
+  font-size: 20px;
   transform: scale(1);
   filter: none;
   font-weight: 700;
-  letter-spacing: 0.2px;
-  padding: var(--space-6) var(--space-10);
+  letter-spacing: -0.02em;
+  padding: var(--space-8) var(--space-10);
   box-shadow: var(--shadow-2);
-
   position: relative;
-  padding-right: 36px;
+  padding-right: 38px;
   overflow: clip;
   white-space: nowrap;
 }
@@ -1704,12 +1735,57 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 }
 
 .wt-pill__sub {
-  display: inline-block;
-  margin-left: var(--gap-1);
-  font-size: var(--fs-xs);
+  display: block;
+  font-size: 11px;
   font-weight: 500;
   color: rgb(var(--text-muted));
-  opacity: var(--wt-a-92);
+  opacity: var(--wt-a-95);
+  text-align: right;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wt-hud__best {
+  min-height: 14px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgb(var(--text-muted));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.wt-hud-lives {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wt-hud-lives__count {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: rgb(var(--text-strong));
+  white-space: nowrap;
+}
+
+.wt-hud-lives__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgb(var(--primary-dark));
+  box-shadow: 0 0 0 1px rgb(var(--primary-dark) / var(--wt-a-12));
+}
+
+.wt-hud-lives__dot--off {
+  background: rgb(var(--border));
+  box-shadow: inset 0 0 0 1px rgb(var(--border));
+}
+
+.wt-hud-lives__dot--last {
+  background: rgb(var(--danger));
+  box-shadow:
+    0 0 0 1px rgb(var(--danger) / var(--wt-a-20)),
+    0 0 16px rgb(var(--danger) / var(--wt-a-20));
+  animation: wtPulse var(--wt-anim-pulse) ease-in-out infinite;
 }
 
 .wt-momentum-wrap {
@@ -1819,16 +1895,18 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   }
 
   .wt-hud__left {
+    gap: 4px;
+  }
+
+  .wt-hud__right {
     gap: 6px;
   }
 
-  .wt-pill--score,
-  .wt-pill--chances {
-    font-size: var(--fs-xs);
+  .wt-pill--score {
+    font-size: 18px;
     padding: 5px var(--space-8);
     padding-right: 32px;
     box-shadow: var(--shadow-1);
-    letter-spacing: 0.1px;
   }
 
   .wt-pill__delta {
@@ -1839,12 +1917,10 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 
 @media (max-width: 360px) {
 
-  .wt-pill--score,
-  .wt-pill--chances {
-    font-size: var(--fs-xs);
+  .wt-pill--score {
+    font-size: 17px;
     padding: 5px var(--space-6);
     padding-right: 32px;
-    letter-spacing: 0.1px;
   }
 
   .wt-pill--bonus {
@@ -1852,18 +1928,6 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
     padding: 5px var(--space-6);
   }
 }
-
-.wt-pill--danger {
-  border-color: rgb(var(--danger) / var(--wt-a-35));
-  background: rgb(var(--danger) / var(--wt-a-06));
-}
-
-.wt-pill--danger small {
-  color: rgb(var(--danger-dark));
-  opacity: var(--wt-a-95);
-}
-
-/* HUD pill danger pulse (when losing a chance) */
 
 .wt-pill--score-flash {
   transform-origin: center;
@@ -1997,6 +2061,14 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   z-index: 999;
 }
 
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .wt-backdrop {
+    backdrop-filter: var(--wt-blur-md);
+    -webkit-backdrop-filter: var(--wt-blur-md);
+    background: rgb(var(--shadow-color) / var(--wt-a-35));
+  }
+}
+
 .wt-modal {
   width: min(560px, 92vw);
   max-height: 86vh;
@@ -2041,6 +2113,14 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   .wt-modal-header {
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+  }
+}
+
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .wt-pill {
+    backdrop-filter: var(--wt-blur-md);
+    -webkit-backdrop-filter: var(--wt-blur-md);
+    background: rgb(var(--surface) / var(--wt-a-55));
   }
 }
 
@@ -2201,6 +2281,40 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 .wt-chance-overlay__content::before {
   content: "";
   display: none;
+}
+
+.wt-doc-nav {
+  margin-bottom: var(--gap-3);
+}
+
+.wt-press-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap-3);
+}
+
+.wt-col-span-4 {
+  grid-column: span 4;
+}
+
+.wt-col-span-6 {
+  grid-column: span 6;
+}
+
+.wt-col-span-12 {
+  grid-column: span 12;
+}
+
+@media (max-width: 900px) {
+  .wt-press-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wt-col-span-4,
+  .wt-col-span-6,
+  .wt-col-span-12 {
+    grid-column: auto;
+  }
 }
 
 @media (min-width: 900px) {
@@ -2475,7 +2589,7 @@ body.wt-state--playing .wt-footer {
 /* ============================================
    BONUS MODE
    ============================================ */
-.wt-container[data-wt-bonus="fall"] {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] {
   position: fixed;
   inset: 0;
   max-width: none;
@@ -2493,7 +2607,7 @@ body.wt-state--playing .wt-footer {
 }
 
 /* Bonus (fall): keep an exit affordance, but make it compact so it doesn't compete with gameplay */
-.wt-container[data-wt-bonus="fall"] .wt-branding {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-branding {
   display: flex;
   justify-content: center;
   padding-bottom: 0;
@@ -2501,19 +2615,19 @@ body.wt-state--playing .wt-footer {
   opacity: var(--wt-a-70);
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-branding-name {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-branding-name {
   display: inline;
   font-size: clamp(18px, 4vw, 22px);
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-branding-logo {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-branding-logo {
   width: 40px;
   height: 40px;
   padding: var(--space-2);
 }
 
 /* In BONUS, ui.js may add an optional subtitle as a <p> right after .wt-branding */
-.wt-container[data-wt-bonus="fall"] .wt-branding+p {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-branding+p {
   display: none;
 }
 
@@ -2550,7 +2664,7 @@ body.wt-state--playing .wt-footer {
   }
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-card {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-card {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2562,7 +2676,7 @@ body.wt-state--playing .wt-footer {
 
 /* Desktop polish only: keep mobile-first full-bleed */
 @media (min-width: 900px) {
-  .wt-container[data-wt-bonus="fall"] .wt-card {
+  .wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-card {
     width: min(560px, 100%);
     margin: 0 auto;
     border-radius: var(--r-card);
@@ -2662,17 +2776,17 @@ body.wt-state--playing .wt-footer {
 /* BONUS fall: typography/spacing tuned for a "Tetris-like" feel */
 /* Intentional: tighter type (17px/20px) for faster "
 arcade" feel; deviation from --fs-* scale is expected. */
-.wt-container[data-wt-bonus="fall"] .wt-terms-box {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-terms-box {
   padding: var(--space-10);
   margin: var(--space-6) 0;
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-term-row {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-term-row {
   gap: var(--space-10);
   padding: var(--space-6) 0;
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-term-word {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-term-word {
   font-size: clamp(16px, 2.2vw, 24px);
 }
 
@@ -2802,7 +2916,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   }
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-choices {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-choices {
   flex-shrink: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2819,7 +2933,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 /* Desktop: don't pin answers to the bottom (feels too low in BONUS) */
 @media (min-width: 900px) {
-  .wt-container[data-wt-bonus="fall"] .wt-choices {
+  .wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-choices {
     position: static;
     bottom: auto;
     margin-top: var(--gap-3);
@@ -2832,20 +2946,20 @@ arcade" feel; deviation from --fs-* scale is expected. */
      Sur petite hauteur, on limite les paddings pour preserver le gameplay;
      au-dela, on repasse sur --pad pour une UI plus confortable. */
 @media (min-height: 501px) {
-  .wt-container[data-wt-bonus="fall"] .wt-choices {
+  .wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-choices {
     padding: var(--pad);
     padding-bottom: calc(var(--pad) + env(safe-area-inset-bottom));
   }
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-choice {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-choice {
   padding: var(--space-18) var(--space-14);
   min-height: 60px;
   font-size: 17px;
   text-align: center;
 }
 
-.wt-container[data-wt-bonus="fall"] .wt-choice-icon {
+.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-choice-icon {
   font-size: 20px;
   margin-right: var(--gap-1);
   opacity: var(--wt-a-75);

@@ -519,7 +519,7 @@
       versionPrefix: "",
 
       loadingTitle: "Loading Pickleball Rules Quiz...",
-      loadingIcon: "🇫🇷",
+      loadingIcon: "",
       loadingHint: "Preparing your pickleball rules quiz",
       loadingSlowHint: "Still loading... Check your connection if this takes too long.",
       updateAvailable: "Update ready. Reload to apply it.",

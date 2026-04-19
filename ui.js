@@ -32,6 +32,14 @@ void function () {
     }
     return node;
   }
+
+  function renderIcon(name, options) {
+    const icons = window.WT_ICONS;
+    if (!icons || typeof icons.renderIcon !== "function") {
+      throw new Error("WT_ICONS.renderIcon missing. icons.js must load before ui.js.");
+    }
+    return icons.renderIcon(name, options || {});
+  }
   // Contract:
   // - Device-only UI flags are persisted through StorageManager helpers.
   // - UI must not read/write localStorage directly for these flags.
@@ -778,7 +786,7 @@ void function () {
       overlay.id = "wt-gameplay-overlay";
       overlay.className = "wt-chance-overlay";
       overlay.setAttribute("role", "alert");
-      overlay.setAttribute("aria-live", "polite");
+      overlay.setAttribute("aria-live", variant === "danger" ? "assertive" : "polite");
       document.body.appendChild(overlay);
     }
 
@@ -792,6 +800,7 @@ void function () {
     if (variant === "info") overlay.classList.add("wt-chance-overlay--info");
     else if (variant === "danger") overlay.classList.add("wt-chance-overlay--danger");
     else if (variant === "success") overlay.classList.add("wt-chance-overlay--success");
+    overlay.setAttribute("aria-live", variant === "danger" ? "assertive" : "polite");
 
     // Gameplay overlays: block taps by default (avoid "looks modal but click-through")
     overlay.classList.add("wt-chance-overlay--blocking");
@@ -899,9 +908,10 @@ void function () {
       overlay.id = "wt-chance-lost-overlay";
       overlay.className = "wt-chance-overlay";
       overlay.setAttribute("role", "alert");
-      overlay.setAttribute("aria-live", "polite");
+      overlay.setAttribute("aria-live", "assertive");
       document.body.appendChild(overlay);
     }
+    overlay.setAttribute("aria-live", "assertive");
 
     overlay.classList.remove("wt-chance-overlay--info");
     overlay.classList.add("wt-chance-overlay--danger");
@@ -6644,7 +6654,7 @@ void function () {
         data-action="open-howto"
         aria-label="${escapeHtml(howToPlayAria)}"
         title="${escapeHtml(howToPlayTitle)}"
-      >?</button>
+      >${renderIcon("help-circle")}</button>
       ${canShowChest ? `
         <button
           type="button"
@@ -6652,7 +6662,7 @@ void function () {
           class="wt-btn-icon${chestTeaseClass}"
           aria-label="${escapeHtml(chestAria)}"
           title="${escapeHtml(chestAria)}"
-        >⚡</button>
+        >${renderIcon("zap")}</button>
       ` : ``}
     </div>
   </div>
@@ -6983,9 +6993,9 @@ ${(() => {
     }
 
     const openAttr = (vars && Number(vars.backlog) > 0) ? " open" : "";
-    return `
+  return `
   <details class="wt-accordion"${openAttr} style="margin-top:10px">
-    <summary class="wt-accordion-toggle">${escapeHtml(label)}</summary>
+    <summary class="wt-accordion-toggle">${renderIcon("chevron-right")}<span>${escapeHtml(label)}</span></summary>
     <div class="wt-accordion-content">${items.join("")}</div>
   </details>
 `;
@@ -7077,7 +7087,7 @@ ${(() => {
     return `
       <details class="wt-accordion" style="margin-top:10px">
         <summary class="wt-accordion-toggle" aria-label="${escapeHtml(shareAria)}">
-          ${escapeHtml(title)}
+          ${renderIcon("chevron-right")}<span>${escapeHtml(title)}</span>
         </summary>
 
         <div class="wt-accordion-content">
@@ -7513,13 +7523,13 @@ ${(() => {
     const homeLabel = String(w.system?.home || "").trim();
     const homeBtnHtml = homeLabel
       ? `
-       <button
+      <button
         type="button"
         class="wt-btn-icon"
         data-action="go-home"
         aria-label="${escapeHtml(homeLabel)}"
         title="${escapeHtml(homeLabel)}"
-      >\u2302</button>
+      >${renderIcon("home")}</button>
     `
       : ``;
 
@@ -7638,7 +7648,7 @@ ${(() => {
           data-action="open-howto"
           aria-label="${escapeHtml(howToPlayAria)}"
           title="${escapeHtml(howToPlayAria)}"
-        >?</button>
+        >${renderIcon("help-circle")}</button>
       ` : ``}
 
       ${canShowChest ? `
@@ -7648,7 +7658,7 @@ ${(() => {
           class="wt-btn-icon${chestTeaseClass}"
           aria-label="${escapeHtml(chestAria)}"
           title="${escapeHtml(chestAria)}"
-        >⚡</button>
+        >${renderIcon("zap")}</button>
       ` : ``}
     </div>
   </div>
@@ -7831,15 +7841,6 @@ ${(() => {
     const hasChances = (chancesLeftRaw != null && Number.isFinite(maxChances) && maxChances > 0 && Number.isFinite(chancesLeft));
     const scoreFP = Number(gameState.scoreFP);
 
-    // Visual chances indicator (filled/empty circles)
-    const chancesVisual = (Number.isFinite(maxChances) && maxChances > 0 && Number.isFinite(chancesLeft))
-      ? Array(maxChances)
-        .fill(null)
-        .map((_, i) => (i < chancesLeft ? "\u25C9" : "\u25CE"))
-        .join("")
-      : "";
-
-    const chancesLabel = String(ui.chancesLabel || "").trim();
     const scoreLabel = String(ui.scoreLabel || "").trim();
 
     const fpShort = String(ui.fpShort || "").trim();
@@ -7873,12 +7874,7 @@ ${(() => {
 
     const scoreAriaFull = [scoreAria, bestAria].filter(Boolean).join(" ").trim();
 
-    const bestHtml = (bestScoreFP != null && bestLabel)
-      ? `<span class="wt-pill__sub">${escapeHtml(bestLabel)}: ${bestScoreFP}</span>`
-      : "";
-
-
-    // Header (Chances left, Score right)
+    // Header (score left, best/lives right)
     const pulseAt = Number(this._runtime?.chanceLostPulseAt || 0);
     // Expected: WT_CONFIG.ui.gameplayPulseMs (number, milliseconds)
     const pulseMs = Number(cfg?.ui?.gameplayPulseMs);
@@ -7889,14 +7885,6 @@ ${(() => {
       Number.isFinite(pulseMs) &&
       (pulseMs > 0) &&
       ((Date.now() - pulseAt) <= pulseMs);
-
-    // One-shot: "last chance" pulse (entering chancesLeft === 1)
-    const lastChancePulseAt = Number(this._runtime?.lastChancePulseAt || 0);
-    const lastChancePulseOn =
-      (lastChancePulseAt > 0) &&
-      Number.isFinite(pulseMs) &&
-      (pulseMs > 0) &&
-      ((Date.now() - lastChancePulseAt) <= pulseMs);
 
     // Score flash: mirrors danger-pulse logic (correct answer â†’ green flash)
     const scoreFlashAt = Number(this._runtime?.scoreFlashAt || 0);
@@ -7952,8 +7940,6 @@ ${(() => {
       (bestScoreFP > scoreFP) &&
       ((bestScoreFP - scoreFP) <= 2);
 
-    // HUD logo (fail-closed): only show if explicitly configured.
-    const hudLogoUrl = String(cfg?.identity?.uiLogoUrl || "").trim();
     const deckSizeRaw = Number(gameState?.deckSize);
 
     const secretBonusDeckCount =
@@ -7968,8 +7954,6 @@ ${(() => {
       )
       : "";
     const servedSoFar = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
-
-    let seenProgressHtml = "";
 
     const qHeadingTpl = String(w.questionHeadingTemplate || "").trim();
     const qNum = (this._runtime?.feedbackPending === true) ? servedSoFar : (servedSoFar + 1);
@@ -7997,21 +7981,16 @@ ${(() => {
       ? Math.max(0, Math.min(mcInt, mcInt - leftInt))
       : 0;
 
-    // Filled circles = mistakes already made
-    const mistakesVisual = (mcInt > 0)
+    const livesVisual = (mcInt > 0)
       ? Array(mcInt)
         .fill(null)
-        .map((_, i) => (i < mistakesCount ? "\u25C9" : "\u25CE"))
+        .map((_, i) => {
+          const isOn = i < leftInt;
+          const isLast = isOn && leftInt === 1 && i === 0;
+          return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
+        })
         .join("")
       : "";
-
-    // Dynamic color tier
-    let mistakeTierClass = "";
-    if (mistakesCount === mcInt) {
-      mistakeTierClass = " wt-pill--danger";
-    } else if (mistakesCount === mcInt - 1) {
-      mistakeTierClass = " wt-pill--warning";
-    }
 
     const correctStreak = clampInt(this._runtime?.microPics?.correctStreak, 0, 9999);
     const momentumLevel = clampInt(this._runtime?.microPics?.momentumLevel, 0, 6);
@@ -8035,22 +8014,25 @@ ${(() => {
     const headerHtml = `
 	   <div class="wt-hud">
           <div class="wt-hud__left">
-	        ${hasChances ? `
-	          <div class="wt-pill wt-pill--chances${mistakeTierClass}${pulseOn ? " wt-pill--danger-pulse" : ""}"
-	           aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
-	            <span>${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}</span>${mistakeDeltaHtml}<span style="margin-left:4px">${mistakesVisual}</span>
-	          </div>
-	        ` : ``}
+          ${(modeNow !== "PRACTICE") ? `
+            <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              aria-label="${escapeHtml(scoreAriaFull)}">
+              ${scoreFP}${scoreDeltaHtml}
+            </div>
+          ` : ``}
 	      </div>
-
-	       ${(modeNow !== "PRACTICE") ? `
-                           <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
-           aria-label="${escapeHtml(scoreAriaFull)}">
-        ${escapeHtml(scoreLabel)}: ${scoreFP}${scoreDeltaHtml}${bestHtml}
-      </div>
-        ` : ``}
-
-
+          <div class="wt-hud__right">
+            ${(bestScoreFP != null && bestLabel) ? `<div class="wt-hud__best">${escapeHtml(bestLabel)} ${bestScoreFP}</div>` : `<div class="wt-hud__best" aria-hidden="true"></div>`}
+            ${hasChances ? `
+              <div class="wt-hud-lives${pulseOn ? " wt-pill--danger-pulse" : ""}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
+                <span class="wt-hud-lives__count">${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}</span>
+                ${livesVisual}${mistakeDeltaHtml}
+              </div>
+            ` : ``}
+          </div>
 	    </div>
 
       ${momentumHtml}
@@ -8085,7 +8067,11 @@ ${(() => {
       Number(fall.dangerThreshold) > 0 &&
       Number(fall.dangerThreshold) < 1;
 
-    const bonusAttr = fallEnabled ? ` data-wt-bonus="fall"` : "";
+    const shellAttrs = [
+      `data-wt-mode="${escapeHtml(modeNow.toLowerCase())}"`,
+      `data-wt-state="playing"`
+    ];
+    if (fallEnabled) shellAttrs.push(`data-wt-bonus-layout="fall"`);
 
     const logoUrl = String(cfg?.identity?.uiLogoUrl || "").trim();
     const bonusTitle = String(this.wording?.secretBonus?.title || "").trim();
@@ -8113,7 +8099,7 @@ ${(() => {
 
     function renderShell(innerHtml) {
       return `
-  <div class="wt-container"${bonusAttr}>
+  <div class="wt-container" ${shellAttrs.join(" ")}>
     ${brandingHtml}
     ${headingHtml}
     ${headerHtml}
