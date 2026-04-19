@@ -3906,9 +3906,9 @@ void function () {
       // Sync HUD lives immediately (avoid stale display on the final mistake)
       try {
         const root = this.appEl || document.getElementById("app");
-        const lives = root ? root.querySelector(".wt-hud-lives") : null;
+        const pill = root ? root.querySelector(".wt-pill--chances") : null;
 
-        if (lives && Number.isFinite(nowChancesLeft)) {
+        if (pill && Number.isFinite(nowChancesLeft)) {
           const uiW = (this.wording && this.wording.ui) ? this.wording.ui : {};
           const label = String(uiW.mistakesLabel || "").trim();
 
@@ -3930,10 +3930,11 @@ void function () {
               .join("")
             : "";
 
-          lives.classList.remove("wt-pill--danger-pulse", "wt-pill--last-chance-pulse");
-          lives.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
-          lives.innerHTML = `
-            <span class="wt-hud-lives__count">${escapeHtml(label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`)}</span>
+          pill.classList.remove("wt-pill--danger-pulse", "wt-pill--last-chance-pulse");
+          pill.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
+          pill.innerHTML = `
+            ${label ? `<small>${escapeHtml(label)}</small>` : ``}
+            ${mistakes}/${mc}
             ${visual}
           `;
         }
@@ -4954,10 +4955,6 @@ void function () {
 
     <div class="wt-divider"></div>
 
-    <div class="wt-code">
-      <code id="wt-support-email">${escapeHtml(email)}</code>
-    </div>
-
       <div class="wt-actions">
       <button class="wt-btn wt-btn--secondary" data-action="copy-support-email">${escapeHtml(String(support.ctaCopy || "").trim())}</button>
       <button class="wt-btn wt-btn--primary" data-action="open-support-email">${escapeHtml(String(support.ctaOpen || "").trim())}</button>
@@ -5112,8 +5109,8 @@ void function () {
     const placeholder = String(wl.inputPlaceholder || "").trim();
     const cta = String(wl.cta || "").trim();
 
-    // No fallback: requires configured obfuscated email
-    const toEmail = decodeHtmlEntities(String(wlCfg.toEmailObfuscated || "").trim());
+    // No fallback: requires configured recipient
+    const toEmail = String(window.WT_Email?.getWaitlistEmailDecoded?.() || "").trim();
     if (!toEmail) return;
 
     // Persist "seen" (used by one-shot modal + future UX gating)
@@ -5165,7 +5162,7 @@ void function () {
     const wlCfg = cfg.waitlist || {};
     if (wlCfg.enabled !== true) return;
 
-    const toEmail = decodeHtmlEntities(String(wlCfg.toEmailObfuscated || "").trim());
+    const toEmail = String(window.WT_Email?.getWaitlistEmailDecoded?.() || "").trim();
     if (!toEmail) return;
 
     // Prefix comes from config; suffix comes from wording (no hardcoded "Waitlist")
@@ -7920,12 +7917,20 @@ ${(() => {
     const pbCfg = (cfg?.personalBest && typeof cfg.personalBest === "object") ? cfg.personalBest : null;
     const pbEnabled = !!(pbCfg && pbCfg.enabled === true);
 
+    const modeNow = String(this._runtime?.runMode || "RUN").trim();
+
     let bestScoreFP = null;
-    if (pbEnabled && premium && this.storage && typeof this.storage.getPersonalBest === "function") {
+    if (pbEnabled && premium && this.storage) {
       try {
-        const pb = this.storage.getPersonalBest() || null;
-        const b = Number(pb?.bestScoreFP);
-        if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
+        if (modeNow === "BONUS" && typeof this.storage.getBonusBest === "function") {
+          const bb = this.storage.getBonusBest() || null;
+          const b = Number(bb?.bestScoreFP);
+          if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
+        } else if (typeof this.storage.getPersonalBest === "function") {
+          const pb = this.storage.getPersonalBest() || null;
+          const b = Number(pb?.bestScoreFP);
+          if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
+        }
       } catch (_) { bestScoreFP = null; }
     }
 
@@ -7968,7 +7973,6 @@ ${(() => {
       ? `<span class="wt-pill__delta wt-pill__delta--minus" aria-hidden="true">${escapeHtml(mistakeDeltaText)}</span>`
       : "";
 
-    const modeNow = String(this._runtime?.runMode || "RUN").trim();
     const bonusBadge = String(this.wording?.secretBonus?.badge || "").trim();
 
     // At-best (RUN + premium): one-shot pulse when you REACH the best during PLAYING.
@@ -7994,7 +7998,7 @@ ${(() => {
       (!scoreFlashOn) &&
       (!atBestOn) &&
       (!newBestOn) &&
-      (modeNow === "RUN") &&
+      ((modeNow === "RUN") || (modeNow === "BONUS")) &&
       (pbEnabled === true) &&
       (premium === true) &&
       (bestScoreFP != null) &&
@@ -8075,24 +8079,26 @@ ${(() => {
     const headerHtml = `
 	   <div class="wt-hud">
           <div class="wt-hud__left">
+            ${hasChances ? `
+              <div class="wt-pill wt-pill--chances${pulseOn ? " wt-pill--danger-pulse" : ""}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
+                ${mistakesLabel ? `<small>${escapeHtml(mistakesLabel)}</small>` : ``}
+                ${mistakesCount}/${mcInt}${mistakeDeltaHtml}
+                ${livesVisual}
+              </div>
+            ` : ``}
+          </div>
+          <div class="wt-hud__right">
           ${(modeNow !== "PRACTICE") ? `
             <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
               role="status"
               aria-live="polite"
               aria-atomic="true"
               aria-label="${escapeHtml(scoreAriaFull)}">
+              ${scoreLabel ? `<small>${escapeHtml(scoreLabel)}</small>` : ``}
               ${scoreFP}${scoreDeltaHtml}
+              ${(bestScoreFP != null && bestLabel) ? `<span class="wt-pill__sub">${escapeHtml(bestLabel)} ${bestScoreFP}</span>` : ``}
             </div>
           ` : ``}
-	      </div>
-          <div class="wt-hud__right">
-            ${(bestScoreFP != null && bestLabel) ? `<div class="wt-hud__best">${escapeHtml(bestLabel)} ${bestScoreFP}</div>` : `<div class="wt-hud__best" aria-hidden="true"></div>`}
-            ${hasChances ? `
-              <div class="wt-hud-lives${pulseOn ? " wt-pill--danger-pulse" : ""}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
-                <span class="wt-hud-lives__count">${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}</span>
-                ${livesVisual}${mistakeDeltaHtml}
-              </div>
-            ` : ``}
           </div>
 	    </div>
 

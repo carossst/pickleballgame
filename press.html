@@ -131,6 +131,7 @@
                             <ul>
                                 <li><a href="https://pickleballrulesquiz.com" target="_blank" rel="noopener">pickleballrulesquiz.com</a> — Pickleball Rules Quiz</li>
                                 <li><a href="https://www.linkedin.com/in/carolestromboni/" target="_blank" rel="noopener">linkedin.com/in/carolestromboni</a> — Carole Stromboni</li>
+                                <li><a href="https://www.bonjourpickleball.fr/pickleball-france-trip/" target="_blank" rel="noopener">bonjourpickleball.fr/pickleball-france-trip</a> — Pickleball trips in France</li>
                             </ul>
                         </section>
                     </div>
@@ -160,15 +161,6 @@
                 }
             }
 
-            function applyVersion() {
-                try {
-                    const version = String(window.WT_CONFIG?.version || "").trim();
-                    const prefix = String(window.WT_WORDING?.system?.versionPrefix || "").trim();
-                    const el = document.querySelector(".wt-footer-version");
-                    if (el) el.textContent = version ? (prefix + version) : "";
-                } catch (_) { }
-            }
-
             document.addEventListener("DOMContentLoaded", () => {
                 const a = document.getElementById("wt-press-contact");
                 if (a) {
@@ -177,8 +169,6 @@
                         openSupportEmail();
                     });
                 }
-
-                applyVersion();
             });
         })();
     </script>

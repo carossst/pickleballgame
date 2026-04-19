@@ -43,8 +43,6 @@
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-press-link" class="wt-footer-link" href="./press.html" target="_blank" rel="noopener"
               data-wt-wording="footer.press"></a>
-            <span class="wt-footer-sep" aria-hidden="true">·</span>
-            <span class="wt-footer-version" data-wt-version></span>
           </div>
         </div>
       </div>
@@ -114,13 +112,6 @@
             }
         } catch (_) { /* silent */ }
 
-        // Version
-        try {
-            const vEl = root.querySelector("[data-wt-version]");
-            if (vEl) {
-                vEl.textContent = "";
-            }
-        } catch (_) { /* silent */ }
     }
 
     function tryInject() {
@@ -138,18 +129,15 @@
 
         const contact = document.getElementById("wt-contact-link");
         if (contact) {
-            const isIndex = !!document.getElementById("app");
             const txt = String(contact.textContent || "").trim();
             const looksLikeEmail = txt.includes("@");
 
             // Fail-closed rules:
             // - Never show raw email as visible text.
-            // - On secondary pages: remove Contact.
-            // - On app page: keep Contact if wording exists; email.js will wire behavior.
+            // - Keep Contact on all pages if wording exists; email.js wires behavior.
             const shouldRemove =
                 looksLikeEmail ||
-                (!txt) ||
-                (!isIndex);
+                (!txt);
 
             if (shouldRemove) {
                 const sep = contact.nextElementSibling; contact.remove();

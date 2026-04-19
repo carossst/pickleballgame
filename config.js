@@ -392,8 +392,12 @@
       minUniqueSeenToShow: 100,
 
 
-      // Obfuscated email (anti-scraping)
-      toEmailObfuscated: "carolestromboni&#64;gmail&#46;com",
+      // Email stored as XOR-obfuscated char codes.
+      // Goal: avoid exposing a trivially decodable address in static source / DOM.
+      toEmailCipher: {
+        key: 23,
+        codes: [116, 120, 121, 99, 118, 116, 99, 87, 117, 120, 121, 125, 120, 98, 101, 103, 126, 116, 124, 123, 114, 117, 118, 123, 123, 57, 113, 101]
+      },
       // IMPORTANT: keep this as a pure prefix (UI/email helpers may append details)
       subjectPrefix: "[Pickleball Rules Quiz][Waitlist]"
 
@@ -441,7 +445,10 @@
 
     // Support
     support: {
-      emailObfuscated: "carolestromboni&#64;gmail&#46;com",
+      emailCipher: {
+        key: 23,
+        codes: [116, 120, 121, 99, 118, 116, 99, 87, 117, 120, 121, 125, 120, 98, 101, 103, 126, 116, 124, 123, 114, 117, 118, 123, 123, 57, 113, 101]
+      },
       subjectPrefix: "[Pickleball Rules Quiz][Contact]"
     },
 
@@ -1120,7 +1127,7 @@
       ],
 
       ruleTitle: "Rule",
-      ruleSentence: "Each correct answer adds +1 point. A wrong answer adds one mistake.",
+      ruleSentence: "Each correct answer adds 1 point. A wrong answer adds 1 mistake.",
       premiumTitle: "Full access",
       alreadyPremium: "Full access is already enabled on this device.",
       activateTitle: "Use a device unlock code",
@@ -1471,13 +1478,13 @@ Thanks!`
 
 
       // Waitlist email (obfuscated)
-      if (cfg.waitlist && cfg.waitlist.enabled && !cfg.waitlist.toEmailObfuscated) {
-        warn("waitlist.enabled true but toEmailObfuscated missing");
+      if (cfg.waitlist && cfg.waitlist.enabled && !cfg.waitlist.toEmailCipher) {
+        warn("waitlist.enabled true but toEmailCipher missing");
       }
 
       // Support email (obfuscated)
-      if (cfg.support && !cfg.support.emailObfuscated) {
-        warn("support.emailObfuscated missing");
+      if (cfg.support && !cfg.support.emailCipher) {
+        warn("support.emailCipher missing");
       }
     }
   }
