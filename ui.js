@@ -279,22 +279,46 @@ void function () {
     const s = String(raw || "").trim();
     if (!s) return "";
 
+    function softenExplanationLine(line) {
+      const src = String(line || "").trim();
+      if (!src) return "";
+
+      // Keep citations and rule references exact.
+      if (/(Rulebook|Rule\s+\d|page\s+\d|Section\s+\d)/i.test(src)) return src;
+
+      return src
+        .replace(/^This is /, "That's ")
+        .replace(/^This was /, "That was ")
+        .replace(/^This includes /, "That includes ")
+        .replace(/^This applies /, "That applies ")
+        .replace(/^There is no /, "There's no ")
+        .replace(/\bdo not\b/g, "don't")
+        .replace(/\bdoes not\b/g, "doesn't")
+        .replace(/\bis not\b/g, "isn't")
+        .replace(/\bare not\b/g, "aren't");
+    }
+
+    const softened = s
+      .split("\n")
+      .map((line) => softenExplanationLine(line))
+      .join("\n");
+
     const ed = (cfg?.ui?.explanationDisplay && typeof cfg.ui.explanationDisplay === "object")
       ? cfg.ui.explanationDisplay
       : null;
 
-    if (!ed || ed.enabled !== true) return escapeHtml(s);
+    if (!ed || ed.enabled !== true) return escapeHtml(softened);
 
     const maxLines = clampInt(Number(ed.maxLines), 1, 4);
     const src = String(ed.splitRegex || "").trim();
-    if (!src) return escapeHtml(s);
+    if (!src) return escapeHtml(softened);
 
     let r = null;
     try { r = new RegExp(src); } catch (_) { r = null; }
-    if (!r) return escapeHtml(s);
+    if (!r) return escapeHtml(softened);
 
     const lines = [];
-    let rest = s;
+    let rest = softened;
 
     while (lines.length < (maxLines - 1)) {
       r.lastIndex = 0;
@@ -3923,8 +3947,8 @@ void function () {
             ? Array(mc)
               .fill(null)
               .map((_, i) => {
-                const isOn = i < left;
-                const isLast = isOn && left === 1 && i === 0;
+                const isOn = i < mistakes;
+                const isLast = isOn && mistakes > 0 && i === (mistakes - 1);
                 return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
               })
               .join("")
@@ -8050,8 +8074,8 @@ ${(() => {
       ? Array(mcInt)
         .fill(null)
         .map((_, i) => {
-          const isOn = i < leftInt;
-          const isLast = isOn && leftInt === 1 && i === 0;
+          const isOn = i < mistakesCount;
+          const isLast = isOn && mistakesCount > 0 && i === (mistakesCount - 1);
           return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
         })
         .join("")

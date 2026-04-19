@@ -458,7 +458,7 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   height: calc(var(--wt-title-size, 32px) * var(--wt-logo-scale));
   object-fit: contain;
   flex-shrink: 0;
-  background: rgb(var(--surface));
+  background: transparent;
   border-radius: var(--r-pill);
   padding: var(--space-4);
 }
