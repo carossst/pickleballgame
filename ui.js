@@ -523,9 +523,15 @@ void function () {
         ui._runtime.finishFadeCleanupTimerId = null;
       }
 
+      if (ui._runtime.gameOverAfterFeedbackTimerId) {
+        try { window.clearTimeout(ui._runtime.gameOverAfterFeedbackTimerId); } catch (_) { }
+        ui._runtime.gameOverAfterFeedbackTimerId = null;
+      }
+
       ui._runtime.answerLocked = false;
       ui._runtime.feedbackPending = false;
       ui._runtime.finishAfterFeedback = false;
+      ui._runtime.autoGameOverAfterFeedback = false;
       ui._runtime.frozenItem = null;
       ui._runtime.poolExhaustedToastKey = null;
       ui._runtime.gameOverPending = false;
@@ -1199,6 +1205,7 @@ void function () {
       finishFadeOutTimerId: null,
       finishFadeInStartTimerId: null,
       finishFadeCleanupTimerId: null,
+      gameOverAfterFeedbackTimerId: null,
       newBestScoreToastShown: false,
 
       // transition flags / one-shot states
@@ -1246,6 +1253,7 @@ void function () {
       feedbackRevealTimerId: null,
       frozenItem: null,
       finishAfterFeedback: false,
+      autoGameOverAfterFeedback: false,
 
       // end-of-run guard (prevents double finish during transitions)
       finishingRun: false,
@@ -3300,12 +3308,17 @@ void function () {
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;
     this._runtime.gameOverPending = false;
+    this._runtime.autoGameOverAfterFeedback = false;
     this._runtime.secretBonusPending = false;
     this._runtime.poolCompleteCelebrationPending = false;
 
     if (this._runtime.feedbackRevealTimerId) {
       try { window.clearTimeout(this._runtime.feedbackRevealTimerId); } catch (_) { }
       this._runtime.feedbackRevealTimerId = null;
+    }
+    if (this._runtime.gameOverAfterFeedbackTimerId) {
+      try { window.clearTimeout(this._runtime.gameOverAfterFeedbackTimerId); } catch (_) { }
+      this._runtime.gameOverAfterFeedbackTimerId = null;
     }
 
     if (this._runtime.bonusAnswerFeedbackTimerId) {
@@ -3832,13 +3845,6 @@ void function () {
       return;
     }
 
-
-    // Chance state overlays only (Last chance / Game over). No "-1 chance" overlay.
-    if (chanceLost && Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) <= 1) {
-      showChanceLostToast(this.config, this.wording, nowChancesLeft);
-    }
-
-
     /// One-shot: first-time pool completion (200/200) celebration.
     // Source of truth: storage coverage + persisted "celebrated" flag (not transient engine signal).
     try {
@@ -3875,6 +3881,17 @@ void function () {
       Number.isFinite(nowChancesLeft) &&
       Number(nowChancesLeft) === 0;
 
+    // Chance state overlays only (Last chance / Game over). No "-1 chance" overlay.
+    // RUN/PRACTICE game-over overlays are intentionally deferred until after the fatal feedback is shown.
+    if (
+      chanceLost &&
+      Number.isFinite(nowChancesLeft) &&
+      Number(nowChancesLeft) <= 1 &&
+      (runModeNow === MODES.BONUS || !isGameOverNow)
+    ) {
+      showChanceLostToast(this.config, this.wording, nowChancesLeft);
+    }
+
     // Bonus: still sync the HUD on the final mistake (avoid stale "2/3" display on the last error).
     const shouldSyncFinalMistakeHud =
       isGameOverNow ||
@@ -3886,12 +3903,12 @@ void function () {
       );
 
     if (shouldSyncFinalMistakeHud) {
-      // Sync HUD mistakes immediately (avoid stale "2/3" display on the final mistake)
+      // Sync HUD lives immediately (avoid stale display on the final mistake)
       try {
         const root = this.appEl || document.getElementById("app");
-        const pill = root ? root.querySelector(".wt-pill--chances") : null;
+        const lives = root ? root.querySelector(".wt-hud-lives") : null;
 
-        if (pill && Number.isFinite(nowChancesLeft)) {
+        if (lives && Number.isFinite(nowChancesLeft)) {
           const uiW = (this.wording && this.wording.ui) ? this.wording.ui : {};
           const label = String(uiW.mistakesLabel || "").trim();
 
@@ -3905,17 +3922,20 @@ void function () {
           const visual = (mc > 0)
             ? Array(mc)
               .fill(null)
-              .map((_, i) => (i < mistakes ? "\u25C9" : "\u25CE"))
+              .map((_, i) => {
+                const isOn = i < left;
+                const isLast = isOn && left === 1 && i === 0;
+                return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
+              })
               .join("")
             : "";
 
-          const text = (label ? `${label}: ${mistakes}/${mc} ${visual}` : `${mistakes}/${mc} ${visual}`)
-            .replace(/\s+/g, " ")
-            .trim();
-
-          pill.classList.remove("wt-pill--danger-pulse", "wt-pill--last-chance-pulse");
-          pill.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
-          pill.textContent = text;
+          lives.classList.remove("wt-pill--danger-pulse", "wt-pill--last-chance-pulse");
+          lives.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
+          lives.innerHTML = `
+            <span class="wt-hud-lives__count">${escapeHtml(label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`)}</span>
+            ${visual}
+          `;
         }
       } catch (_) { /* silent */ }
     }
@@ -4201,13 +4221,6 @@ void function () {
       this._runtime.feedbackRevealTimerId = null;
     }
 
-    // Product rule: Game Over (RUN/PRACTICE) → auto-transition to END (no Continue tap needed).
-    // Reuses the same _enterGameOverDelay() already used by BONUS.
-    if (isGameOverNow) {
-      this._enterGameOverDelay();
-      return;
-    }
-
     if (runMode === MODES.PRACTICE && res.done === true) {
       this._runtime.feedbackPending = true;
       this._runtime.finishAfterFeedback = true;
@@ -4217,10 +4230,38 @@ void function () {
     this._runtime.feedbackPending = true;
     // If last item, do NOT end immediately. End after Continue.
     this._runtime.finishAfterFeedback = (res.done === true);
+    this._runtime.autoGameOverAfterFeedback = isGameOverNow;
 
     // Single source of truth for timing: WT_CONFIG.ui.toast (schema plat)
     const timing = getToastTiming(this.config);
     const focusMs = timing ? Number(timing.delayMs) : NaN;
+    const postFeedbackTiming = getToastTiming(this.config, "scoreGained");
+    const postFeedbackMsRaw = postFeedbackTiming ? Number(postFeedbackTiming.durationMs) : NaN;
+    const postFeedbackMs =
+      (Number.isFinite(postFeedbackMsRaw) && postFeedbackMsRaw >= 600 && postFeedbackMsRaw <= 2000)
+        ? Math.floor(postFeedbackMsRaw)
+        : 900;
+
+    const scheduleFatalGameOver = () => {
+      if (!isGameOverNow) return;
+      if (!this._runtime) return;
+
+      if (this._runtime.gameOverAfterFeedbackTimerId) {
+        try { window.clearTimeout(this._runtime.gameOverAfterFeedbackTimerId); } catch (_) { }
+        this._runtime.gameOverAfterFeedbackTimerId = null;
+      }
+
+      this._runtime.gameOverAfterFeedbackTimerId = window.setTimeout(() => {
+        if (!this._runtime) return;
+        this._runtime.gameOverAfterFeedbackTimerId = null;
+        if (this.state !== STATES.PLAYING) return;
+        if (this._runtime.feedbackPending !== true) return;
+
+        showChanceLostToast(this.config, this.wording, nowChancesLeft);
+        this._runtime.autoGameOverAfterFeedback = false;
+        this._enterGameOverDelay();
+      }, postFeedbackMs);
+    };
 
     // UX: only apply the "solo moment" if timing is explicitly valid in WT_CONFIG.ui.toast
     if (chanceLost && Number.isFinite(focusMs) && focusMs > 0) {
@@ -4235,6 +4276,7 @@ void function () {
         this._runtime.feedbackRevealTimerId = null;
         this._runtime.feedbackReveal = true;
         this.render();
+        scheduleFatalGameOver();
       }, Math.floor(focusMs));
 
       return;
@@ -4242,6 +4284,7 @@ void function () {
 
     this._runtime.feedbackReveal = true;
     this.render();
+    scheduleFatalGameOver();
 
     try {
       const normalFlashClass = (res.isCorrect === true)
@@ -4266,6 +4309,18 @@ void function () {
     if (this.state !== STATES.PLAYING) return;
     if (!this._runtime || !this._runtime.feedbackPending) return;
 
+    if (this._runtime.autoGameOverAfterFeedback === true) {
+      if (this._runtime.gameOverAfterFeedbackTimerId) {
+        try { window.clearTimeout(this._runtime.gameOverAfterFeedbackTimerId); } catch (_) { }
+        this._runtime.gameOverAfterFeedbackTimerId = null;
+      }
+
+      showChanceLostToast(this.config, this.wording, 0);
+      this._runtime.autoGameOverAfterFeedback = false;
+      this._enterGameOverDelay();
+      return;
+    }
+
     const shouldFinish = (this._runtime.finishAfterFeedback === true);
 
     // leaving feedback: cancel any pending (not-yet-shown) toast to avoid cross-state surprises
@@ -4281,6 +4336,7 @@ void function () {
     this._runtime.lastAnswer = null;
     this._runtime.frozenItem = null;
     this._runtime.finishAfterFeedback = false;
+    this._runtime.autoGameOverAfterFeedback = false;
 
     // unlock answers for next item
     this._runtime.answerLocked = false;
@@ -4347,6 +4403,10 @@ void function () {
     if (this._runtime.feedbackRevealTimerId) {
       try { window.clearTimeout(this._runtime.feedbackRevealTimerId); } catch (_) { }
       this._runtime.feedbackRevealTimerId = null;
+    }
+    if (this._runtime.gameOverAfterFeedbackTimerId) {
+      try { window.clearTimeout(this._runtime.gameOverAfterFeedbackTimerId); } catch (_) { }
+      this._runtime.gameOverAfterFeedbackTimerId = null;
     }
 
     // 7. Schedule _finishRun after overlay duration
@@ -4530,6 +4590,7 @@ void function () {
     this._runtime.lastAnswer = null;
     this._runtime.frozenItem = null;
     this._runtime.finishAfterFeedback = false;
+    this._runtime.autoGameOverAfterFeedback = false;
     this._runtime.answerLocked = false;
 
     // BONUS returns to END (no separate BONUS_END state)
@@ -8189,6 +8250,8 @@ ${questionPrompt ? `
 
       const continueCta = String(wAll.system?.continue || "").trim();
       const tapToContinue = String(wAll.system?.tapToContinue || "").trim();
+      const autoGameOverAfterFeedback = (this._runtime?.autoGameOverAfterFeedback === true);
+      const feedbackActionAttr = autoGameOverAfterFeedback ? ` data-action="continue"` : "";
 
       // Stable explanation for the frozen item during feedback (KISS)
       const stableExplanation = String(ans.feedbackLine || "").trim();
@@ -8198,7 +8261,7 @@ ${questionPrompt ? `
         : "";
 
       return renderShell(`
-  <div class="wt-card" role="status" aria-live="polite">
+  <div class="wt-card" role="status" aria-live="polite"${feedbackActionAttr}>
     ${questionHtml}
 
     <div class="wt-feedback ${feedbackClass}" style="padding:10px; border-radius:var(--r-btn);">
@@ -8215,14 +8278,16 @@ ${questionPrompt ? `
             ${explanationHtml}
 
 
-            <div class="wt-actions" style="margin-top:16px">
-      <button class="wt-btn wt-btn--primary" data-action="continue">
-        ${escapeHtml(continueCta)}
-      </button>
-    </div>
+            ${!autoGameOverAfterFeedback ? `
+      <div class="wt-actions" style="margin-top:16px">
+        <button class="wt-btn wt-btn--primary" data-action="continue">
+          ${escapeHtml(continueCta)}
+        </button>
+      </div>
+    ` : ``}
 
 
-    ${shouldTapToContinue() && tapToContinue ? `
+    ${(!autoGameOverAfterFeedback && shouldTapToContinue() && tapToContinue) ? `
       <p class="wt-muted wt-tap-hint" style="margin-top:8px">
         ${escapeHtml(tapToContinue)}
       </p>
