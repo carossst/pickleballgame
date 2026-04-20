@@ -7042,12 +7042,11 @@ ${(() => {
     const ids = isRun ? rawIds.slice(0, maxChances) : rawIds.slice();
     const recapW = isBonus ? (bonusW || {}) : (isPractice ? (practiceW || {}) : (end || {}));
 
-    const noneMsg = String(recapW.mistakesNone || end.mistakesNone || "").trim();
-    const toggleTpl = String(recapW.mistakesToggle || end.mistakesToggle || "").trim();
-    const title = String(recapW.mistakesTitle || end.mistakesTitle || "").trim();
+    const toggleTpl = String(recapW.mistakesToggle || "").trim();
+    const title = String(recapW.mistakesTitle || "").trim();
 
     if (!ids.length) {
-      return noneMsg ? `<p class="wt-muted">${escapeHtml(noneMsg)}</p>` : "";
+      return "";
     }
 
     const labelRaw = toggleTpl ? fillTemplate(toggleTpl, { count: String(ids.length) }) : title;
@@ -7107,7 +7106,13 @@ ${(() => {
       const byId = (runtime && runtime.contentById && typeof runtime.contentById === "object")
         ? runtime.contentById
         : {};
-      const ignored = new Set(["Easy", "Medium", "Hard", "Singles", "Doubles", "Tournament", "Both", "Singles only", "Doubles only"]);
+      const ignored = new Set(["Easy", "Medium", "Intermediate", "Hard", "Singles", "Doubles", "Tournament", "Both", "Singles only", "Doubles only"]);
+      const formatEndTag = (tag) => {
+        const raw = String(tag || "").trim();
+        if (!raw) return "";
+        if (raw === "2026_changes") return "2026 rule changes";
+        return raw.replace(/_/g, " ");
+      };
 
       if (runItemIds.length > 0 && (strongestTagTpl || weakestTagTpl)) {
         const servedCounts = Object.create(null);
@@ -7159,11 +7164,11 @@ ${(() => {
         }
 
         if (!strongestTie && strongestCount > 0 && strongestTag && strongestTagTpl) {
-          microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(strongestTagTpl, { tag: strongestTag }))}</p>`);
+          microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(strongestTagTpl, { tag: formatEndTag(strongestTag) }))}</p>`);
         }
 
         if (!weakestTie && weakestCount > 0 && weakestTag && weakestTagTpl) {
-          microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(weakestTagTpl, { tag: weakestTag }))}</p>`);
+          microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(weakestTagTpl, { tag: formatEndTag(weakestTag) }))}</p>`);
         }
       }
 
@@ -7201,9 +7206,6 @@ ${(() => {
 
     if (pbLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbLine)}</p>`);
     if (bestStreakLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(bestStreakLine)}</p>`);
-    if (isRun && !poolCompleteCelebration && runIdentityTpl) {
-      microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(runIdentityTpl, vars))}</p>`);
-    }
     if (pbPremiumHint) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbPremiumHint)}</p>`);
     if (isRun && !premium && freeRunMessage) microLines.push(String(freeRunMessage || ""));
 
@@ -7454,13 +7456,13 @@ ${(() => {
     };
 
     const scoreLineTpl =
-      isBonus ? String(bonusW.scoreLine || end.scoreLine || "").trim()
-        : isPractice ? String(practiceW.scoreLine || end.scoreLine || "").trim()
+      isBonus ? String(bonusW.scoreLine || "").trim()
+        : isPractice ? String(practiceW.scoreLine || "").trim()
           : (isRun && !!lastRun.poolCompleteCelebration) ? String(end.poolCompleteScoreLine || "").trim()
             : String(end.scoreLine || "").trim();
 
     const newBestTpl = isBonus
-      ? String(bonusW.newBest || end.newBest || "").trim()
+      ? String(bonusW.newBest || "").trim()
       : String(end.newBest || "").trim();
 
     const bonusDeckSizeLine = (() => {
@@ -7491,6 +7493,25 @@ ${(() => {
       return fillTemplate(tpl, {
         cleared: String(cleared),
         shown: String(shown)
+      });
+    })();
+    const bonusStatsLine = (() => {
+      if (!isBonus) return "";
+
+      const shown = clampInt(totalPresented, 0, 99999);
+      if (shown <= 0) return "";
+
+      const cleared = clampInt(scoreFP, 0, shown);
+      const count = clampInt(seen, 0, 99999);
+      const oneTpl = String(bonusW.endStatsLineOne || "").trim();
+      const manyTpl = String(bonusW.endStatsLine || "").trim();
+      const tpl = (count === 1 && oneTpl) ? oneTpl : manyTpl;
+      if (!tpl) return "";
+
+      return fillTemplate(tpl, {
+        cleared: String(cleared),
+        shown: String(shown),
+        count: String(count)
       });
     })();
 
@@ -7584,6 +7605,14 @@ ${(() => {
     const scoreLine = scoreLineTpl ? fillTemplate(scoreLineTpl, vars) : "";
     const newBestLine = newBestTpl ? fillTemplate(newBestTpl, vars) : "";
     const endLine = endLineTpl ? fillTemplate(endLineTpl, vars) : "";
+    const runStatsLine = (() => {
+      if (!isRun || !!lastRun.poolCompleteCelebration) return "";
+
+      const tpl = String(end.endStatsLine || "").trim();
+      if (!tpl) return "";
+
+      return fillTemplate(tpl, vars);
+    })();
 
     // bonusDecisionLine replaced by bonusRecoLine (computed in bonus tier block above)
     const bonusDecisionLine = isBonus ? bonusRecoLine : "";
@@ -7720,7 +7749,7 @@ ${(() => {
     const bonusAgain =
       (isBonus && bonusLevel)
         ? String(bonusW?.ctaByTier?.[bonusLevel] || "").trim()
-        : String(bonusW.ctaPlayAgain || "").trim();
+        : "";
 
     if ((isBonus && bonusLevel) && !bonusAgain && this.config?.debug?.enabled) {
       console.warn("[WT_UI] Missing required copy: WT_WORDING.secretBonus.ctaByLevel[level]");
@@ -7729,7 +7758,7 @@ ${(() => {
     const practiceCtaRaw = poolCompleteCelebration
       ? String(end.poolCompleteCtaPractice || "").trim()
       : premium
-        ? String(end.practiceCtaPremium || end.practiceCta || "").trim()
+        ? String(end.practiceCtaPremium || "").trim()
         : String(end.practiceCta || "").trim();
 
     const practiceCtaTpl = String(end.practiceCtaTemplate || "").trim();
@@ -7876,45 +7905,42 @@ ${(() => {
 
   <div class="wt-end-copy">
   ${(() => {
-        if (!isPractice) {
-          return endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``;
+        if (isPractice) {
+          const statsLine = practiceStatsLineTpl ? fillTemplate(practiceStatsLineTpl, vars) : "";
+          const repeatLine = practiceRepeatNoteTpl ? fillTemplate(practiceRepeatNoteTpl, vars) : "";
+          const practiceStatsHtml = (() => {
+            if (!statsLine) return ``;
+            return `<p class="wt-muted">${escapeHtml(statsLine)}</p>`;
+          })();
+
+          return [
+            practiceStatsHtml,
+            endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``,
+            repeatLine ? `<p class="wt-muted">${escapeHtml(repeatLine)}</p>` : ``
+          ].join("");
         }
 
-        const statsLine = practiceStatsLineTpl ? fillTemplate(practiceStatsLineTpl, vars) : "";
-        const repeatLine = practiceRepeatNoteTpl ? fillTemplate(practiceRepeatNoteTpl, vars) : "";
-        const practiceStatsHtml = (() => {
-          if (!statsLine) return ``;
+        if (isBonus) {
+          return [
+            bonusStatsLine ? `<p class="wt-muted">${escapeHtml(bonusStatsLine)}</p>` : ``,
+            endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``,
+            bonusDecisionLine ? `<p class="wt-muted">${escapeHtml(bonusDecisionLine)}</p>` : ``
+          ].join("");
+        }
 
-          const parts = String(statsLine)
-            .split(/(?<=\.)\s+(?=Mistakes remaining:)/)
-            .map((s) => String(s || "").trim())
-            .filter(Boolean);
+        if (isRun) {
+          return [
+            runStatsLine ? `<p class="wt-muted">${escapeHtml(runStatsLine)}</p>` : ``,
+            endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``,
+            runIdentityTpl ? `<p class="wt-meta">${escapeHtml(fillTemplate(runIdentityTpl, vars))}</p>` : ``,
+            runLensTpl ? `<p class="wt-muted">${escapeHtml(fillTemplate(runLensTpl, vars))}</p>` : ``
+          ].join("");
+        }
 
-          if (parts.length < 2) {
-            return `<p class="wt-muted">${escapeHtml(statsLine)}</p>`;
-          }
-
-          return `
-              <div class="wt-muted wt-end-practice-stats">
-                ${parts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
-              </div>
-            `;
-        })();
-
-        return [
-          endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``,
-          practiceStatsHtml,
-          repeatLine ? `<p class="wt-muted">${escapeHtml(repeatLine)}</p>` : ``
-        ].join("");
+        return endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``;
       })()}
 
     ${(isRun && runPoolCompleteLine2Tpl) ? `<p class="wt-meta">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
-
-  ${(isBonus && bonusIdentityTpl) ? `<p class="wt-muted">${escapeHtml(bonusIdentityTpl)}</p>` : ``}
-  ${(isBonus && bonusLensTpl) ? `<p class="wt-muted">${escapeHtml(bonusLensTpl)}</p>` : ``}
-  ${(isBonus && bonusDeckSizeLine) ? `<p class="wt-muted">${escapeHtml(bonusDeckSizeLine)}</p>` : ``}
-  ${(isBonus && bonusPoolProgressLine) ? `<p class="wt-muted">${escapeHtml(bonusPoolProgressLine)}</p>` : ``}
-  ${(isBonus && bonusDecisionLine) ? `<p class="wt-meta">${escapeHtml(bonusDecisionLine)}</p>` : ``}
   </div>
 
   ${``}
@@ -8046,15 +8072,16 @@ ${(() => {
     // Copy visible => WT_WORDING.ui (pas WT_CONFIG)
     const scoreDeltaText = String(ui?.scoreGainedDeltaText || "").trim();
     const scoreDeltaHtml = (scoreFlashOn && scoreDeltaText)
-      ? `<span class="wt-pill__delta" aria-hidden="true">${escapeHtml(scoreDeltaText)}</span>`
+      ? `<span class="wt-pill__delta wt-pill__delta--score" aria-hidden="true">${escapeHtml(scoreDeltaText)}</span>`
       : "";
 
     const mistakeDeltaText = String(ui?.mistakeGainedDeltaText || "").trim();
     const mistakeDeltaHtml = (pulseOn && mistakeDeltaText)
-      ? `<span class="wt-pill__delta wt-pill__delta--minus" aria-hidden="true">${escapeHtml(mistakeDeltaText)}</span>`
+      ? ``
       : "";
 
     const bonusBadge = String(this.wording?.secretBonus?.badge || "").trim();
+    const practiceBadge = String(this.wording?.practice?.title || "").trim();
 
     // At-best (RUN + premium): one-shot pulse when you REACH the best during PLAYING.
     // UI-only: driven by this._runtime.atBestPulseAt (timestamp). Fail-closed => false.
@@ -8165,6 +8192,11 @@ ${(() => {
                 ${mistakesLabel ? `<small>${escapeHtml(mistakesLabel)}</small>` : ``}
                 ${mistakesCount}/${mcInt}${mistakeDeltaHtml}
                 ${livesVisual}
+              </div>
+            ` : ``}
+            ${(modeNow === "PRACTICE" && practiceBadge) ? `
+              <div class="wt-pill" aria-label="${escapeHtml(practiceBadge)}">
+                <span>${escapeHtml(practiceBadge)}</span>
               </div>
             ` : ``}
           </div>
@@ -8351,12 +8383,12 @@ ${questionPrompt ? `
   <div class="wt-card" role="status" aria-live="polite"${feedbackActionAttr}>
     ${questionHtml}
 
-    <div class="wt-feedback ${feedbackClass}" style="padding:10px; border-radius:var(--r-btn);">
+    <div class="wt-feedback ${feedbackClass}">
       <strong class="wt-feedback-title">
                     ${escapeHtml(titleLine)}
       </strong>
       ${youChoseLine ? `
-        <div class="wt-muted" style="margin-top:4px">
+        <div class="wt-muted wt-feedback__subline">
           ${escapeHtml(youChoseLine)}
         </div>
       ` : ``}
@@ -8576,8 +8608,7 @@ ${questionPrompt ? `
 
     const ctaEarly = String(pay.ctaEarly || "").trim();
     const ctaStandard = String(pay.ctaStandard || "").trim();
-    const ctaFallback = String(pay.cta || "").trim();
-    const primaryCta = isEarly ? (ctaEarly || ctaFallback) : (ctaStandard || ctaFallback);
+    const primaryCta = isEarly ? ctaEarly : ctaStandard;
 
     // EARLY savings bump (no fallback: requires template + valid cents)
     const savingsTpl = String(pay.savingsLineTemplate || "").trim();
@@ -8618,11 +8649,6 @@ ${questionPrompt ? `
     const socialProofTitle = String(pay.socialProofTitle || "").trim();
     const socialProofQuotes = Array.isArray(pay.socialProofQuotes) ? pay.socialProofQuotes : [];
 
-    // Backward compat: scalar socialProofQuote/Author still works if array is absent
-    if (!socialProofQuotes.length && pay.socialProofQuote) {
-      socialProofQuotes.push({ quote: String(pay.socialProofQuote || "").trim(), author: String(pay.socialProofAuthor || "").trim() });
-    }
-
     const renderSocialProof = () => {
       if (!socialProofTitle && !socialProofQuotes.length) return "";
 
@@ -8631,7 +8657,7 @@ ${questionPrompt ? `
           const qt = String(q?.quote || "").trim();
           const au = String(q?.author || "").trim();
           if (!qt) return "";
-          return `<div style="margin-top:10px"><div style="font-weight:500">&ldquo;${escapeHtml(qt)}&rdquo;</div>${au ? `<div class="wt-muted" style="margin-top:4px">${escapeHtml(au)}</div>` : ``}</div>`;
+          return `<div class="wt-paywall-quote"><div style="font-weight:500">&ldquo;${escapeHtml(qt)}&rdquo;</div>${au ? `<div class="wt-muted wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}</div>`;
         })
         .filter(Boolean)
         .join("");
@@ -8656,7 +8682,7 @@ ${questionPrompt ? `
       return `
         <div class="${cls}" role="status" aria-live="polite">
           <div class="wt-meta">${escapeHtml(label)}</div>
-          <div class="wt-h2${urgencyPulse ? ' wt-pulse' : ''}" style="margin:4px 0 0;color:rgb(var(--primary-dark))">${escapeHtml(timer)}</div>
+          <div class="wt-h2 wt-timer-value${urgencyPulse ? ' wt-pulse' : ''}">${escapeHtml(timer)}</div>
         </div>
       `;
     };
@@ -8678,13 +8704,13 @@ ${questionPrompt ? `
       <div class="${wrapClass}">
         <div class="wt-row wt-row--spaced wt-row--top">
           <div>
-            <p class="wt-meta" style="margin:0">
+            <p class="wt-meta wt-paywall-price-value">
               ${escapeHtml(earlyBadge || String(pay.earlyLabel || "").trim())}
             </p>
           </div>
-          <div style="text-align:right">
-            <p class="wt-h2" style="margin:0">${escapeHtml(early)}</p>
-            <p class="wt-muted" style="margin:4px 0 0;text-decoration:line-through">${escapeHtml(standard)}</p>
+          <div class="wt-paywall-price-side">
+            <p class="wt-h2 wt-paywall-price-value">${escapeHtml(early)}</p>
+            <p class="wt-muted wt-paywall-price-note">${escapeHtml(standard)}</p>
           </div>
         </div>
       </div>
@@ -8695,12 +8721,12 @@ ${questionPrompt ? `
       <div class="${wrapClass}">
         <div class="wt-row wt-row--spaced wt-row--top">
           <div>
-            <p class="wt-meta" style="margin:0">${escapeHtml(String(pay.standardLabel || "").trim())}</p>
-            ${post1 ? `<p class="wt-muted" style="margin:4px 0 0">${escapeHtml(post1)}</p>` : ``}
-            ${post2 ? `<p class="wt-muted" style="margin:4px 0 0">${escapeHtml(post2)}</p>` : ``}
+            <p class="wt-meta wt-paywall-price-value">${escapeHtml(String(pay.standardLabel || "").trim())}</p>
+            ${post1 ? `<p class="wt-muted wt-paywall-price-note">${escapeHtml(post1)}</p>` : ``}
+            ${post2 ? `<p class="wt-muted wt-paywall-price-note">${escapeHtml(post2)}</p>` : ``}
           </div>
-          <div style="text-align:right">
-            <p class="wt-h2" style="margin:0">${escapeHtml(standard)}</p>
+          <div class="wt-paywall-price-side">
+            <p class="wt-h2 wt-paywall-price-value">${escapeHtml(standard)}</p>
           </div>
         </div>
       </div>
@@ -8744,10 +8770,10 @@ ${questionPrompt ? `
       ${savingsLine ? `<p class="wt-muted" style="margin:10px 0 0">${escapeHtml(savingsLine)}</p>` : ``}
 
       <div class="wt-actions">
-        <button
+        ${primaryCta ? `<button
           class="wt-btn wt-btn--primary"
           data-action="${isEarly ? "checkout-early" : "checkout-standard"}"
-        >${escapeHtml(primaryCta)}</button>
+        >${escapeHtml(primaryCta)}</button>` : ``}
 
        <button
           class="wt-btn wt-btn--secondary"

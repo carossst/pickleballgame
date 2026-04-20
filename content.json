@@ -30,7 +30,7 @@
   "items": [
     {
       "id": 1,
-      "question": "If the ball lands in the opponent's court and then hits the net post, it is a dead ball.",
+      "question": "If the ball lands in the opponent's court and then hits the net post, the rally ends with no winner.",
       "correctAnswer": false,
       "explanationShort": "That was the old rule.\nIf the ball lands in and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\n2026 USA Pickleball Rulebook Change Document, page 5.",
       "tags": [
@@ -1480,7 +1480,7 @@
     },
     {
       "id": 122,
-      "question": "A called hinder results in a dead ball.",
+      "question": "A called hinder stops the rally.",
       "correctAnswer": true,
       "explanationShort": "Any player may call a hinder to stop play.\nExample: a ball rolling in from another court.\n2026 USA Pickleball Official Rulebook, Rule 9.C.",
       "tags": [
@@ -1635,7 +1635,7 @@
     },
     {
       "id": 135,
-      "question": "Stopping a rally before the ball is dead is always a fault.",
+      "question": "Stopping a rally before it ends is always a fault.",
       "correctAnswer": false,
       "explanationShort": "Some reasons to stop a rally are valid exceptions.\nA hinder, a position error, or a score challenge can qualify.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
       "tags": [
@@ -1684,9 +1684,9 @@
     },
     {
       "id": 139,
-      "question": "Play may continue after a dead ball if both teams agree.",
+      "question": "The rally may continue after it has been stopped if both teams agree.",
       "correctAnswer": false,
-      "explanationShort": "Once the ball is dead, play must stop immediately.\nStopping a rally prematurely without a valid reason is a fault.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
+      "explanationShort": "Once play has been stopped, the rally can't continue.\nStopping a rally prematurely without a valid reason is a fault.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1.",
       "tags": [
         "Faults & Dead Ball",
         "Easy",
@@ -1767,9 +1767,9 @@
     },
     {
       "id": 146,
-      "question": "If a player's hat falls onto their end of the court, the ball is dead if it hits the hat.",
+      "question": "If a player's hat falls onto their end of the court, the rally ends if the ball hits the hat.",
       "correctAnswer": false,
-      "explanationShort": "Items on a player's side don't stop play.\nThe ball stays live even if it hits a fallen item.\n2026 USA Pickleball Official Rulebook, Rule 10.J.",
+      "explanationShort": "Items on a player's side don't stop play.\nThe rally continues even if the ball hits a fallen item.\n2026 USA Pickleball Official Rulebook, Rule 10.J.",
       "tags": [
         "Rally Situations",
         "Hard",

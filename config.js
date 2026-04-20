@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "2.6",
+    version: "2.7",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -750,6 +750,8 @@
 
       // END screen (BONUS)
       endTitle: "",
+      endStatsLine: "You got {cleared} out of {shown} right.",
+      endStatsLineOne: "You got {cleared} out of {shown} right.",
       endDeckSizeLine: "Rapid Fire pool: {count} questions.",
       endDeckSizeLineOne: "Rapid Fire pool: 1 question.",
       endPoolProgressTemplate: "{cleared} out of {shown} correct this round.",
@@ -857,21 +859,21 @@
 
       // END screen (PRACTICE)
       endTitle: "",
-      endLine: "Good progress. More of what you know is starting to hold.",
+      endLine: "Good recovery.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
-        last: "Nice recovery. One last mistake to clear.",
-        light: "Nice recovery. More of what you know is starting to hold.",
-        firm: "Good progress. More of the right answers are starting to stick.",
-        direct: "Better. A few questions still need another pass."
+        last: "Nice recovery.",
+        light: "Good recovery.",
+        firm: "That's progress.",
+        direct: "You're making progress."
       },
-      endStatsLine: "Mistakes fixed: {fixed}. Mistakes remaining: {remaining}.",
+      endStatsLine: "You fixed {fixed}. You still have {remaining} left.",
 
       // Repeat guidance by tier (selected via WT_CONFIG.routing.practiceRepeatTiers)
       // Fail-closed: missing tier key => no note
       endRepeatNoteByTier: {
         last: "One question left. Clear it now.",
-        light: "Only a few questions left to clear.",
+        light: "",
         firm: "A few questions still need another pass.",
         direct: "Stay in Mistakes Mode. These are the questions that need the work."
       },
@@ -965,6 +967,7 @@
 
       // No redundancy: do not mention chances on END (player already knows).
       endLine: "",
+      endStatsLine: "You got {score} out of {total} right. You've now seen {seen}/{poolSize} questions.",
 
 
       // (verdict grid removed — identityByVerdict is now the primary END signal)
@@ -1005,8 +1008,8 @@
       // Definition: longest sequence of consecutive correct answers within the run
       bestStreakLine: "Best streak: {bestStreak} correct in a row.",
 
-      strongestTagLine: "Strongest category this game: {tag}.",
-      weakestTagLine: "Most missed category this game: {tag}.",
+      strongestTagLine: "You were strongest in {tag} this game.",
+      weakestTagLine: "{tag} gave you the most trouble this game.",
 
       endTagHighlights: {
         "2026_changes": "The 2026 rule changes were the toughest part of this game."

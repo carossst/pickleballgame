@@ -8,7 +8,8 @@
   <meta name="robots" content="noindex, nofollow">
 
   <!-- PWA & UI (match index.html) -->
-  <meta name="theme-color" content="#38bdf8">
+  <meta name="theme-color" content="#38bdf8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -35,9 +36,9 @@
 
         <!-- Header (landing-like branding) -->
         <div class="wt-card wt-card--hero">
-          <div class="wt-row wt-row--spaced" style="align-items:center; gap:var(--gap-2)">
+          <div class="wt-row wt-row--spaced wt-success-hero-row">
             <a class="wt-branding" href="./index.html" id="wt-success-branding" aria-label="Pickleball Rules Quiz home">
-              <img id="wt-success-logo" src="" alt="" class="wt-branding-logo" style="display:none" />
+              <img id="wt-success-logo" src="" alt="" class="wt-branding-logo wt-hidden" />
               <span id="wt-success-name" class="wt-branding-name"></span>
             </a>
             <div class="wt-badge" data-wt-wording="success.deviceBadge"></div>
@@ -145,11 +146,11 @@
 
 
         <!-- Footer note -->
-        <p class="wt-muted" style="text-align:center; margin-top:var(--gap-3)" data-wt-wording="success.thankYouLine">
+        <p class="wt-muted wt-success-note" style="margin-top:var(--gap-3)" data-wt-wording="success.thankYouLine">
         </p>
 
         <!-- Support (single source of truth via WT_Email / WT_CONFIG.support) -->
-        <p class="wt-muted" style="text-align:center; margin-top:var(--gap-2); font-size:var(--fs-xs)">
+        <p class="wt-muted wt-success-note" style="margin-top:var(--gap-2); font-size:var(--fs-xs)">
           <span data-wt-wording="success.supportLabel"></span>
           <a href="#" id="wt-success-support-link">Contact us</a>
         </p>
