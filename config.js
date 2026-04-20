@@ -632,7 +632,7 @@
       statsMasterySummaryTemplate: "{mastered}/{poolSize} questions answered correctly",
 
       postPaywallTitle: "Free games completed.",
-      postPaywallBody: "Unlock the full question set, unlimited play, Mistakes Mode, and Rapid Fire Mode on this device.",
+      postPaywallBody: "Unlock the full set of 200 pickleball rules questions, plus explanations after every answer.",
       practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
       postPaywallCta: "Unlock full access",
 
@@ -1046,10 +1046,10 @@
 
     paywall: {
       // Default headline
-      headline: "Keep going with the full question set.",
+      headline: "Unlock the full pickleball rules quiz.",
 
       // LAST FREE RUN - stronger but factual
-      headlineLastFree: "That was your last free game. Unlock the full question set and keep going.",
+      headlineLastFree: "That was your last free game. Unlock the full pickleball rules quiz and keep going.",
 
       // Projection personnalisée (PAYWALL only)
       // Vars: {seen} {poolSize} {remaining}
@@ -1061,15 +1061,15 @@
       trustTitle: "Simple unlock",
 
       valueBullets: [
-        "**The full set** of questions",
+        "**All 200 pickleball rules questions**",
         "**Explanations after every answer**",
-        "**Mistakes Mode** for your mistakes",
+        "**Mistakes Mode** to fix what you missed",
         "**Rapid Fire Mode** and unlimited replays"
       ],
 
       // Shared bridge copy (LANDING post-paywall + END runs exhausted)
-      bridgeTitle: "Keep building your rule knowledge.",
-      bridgeBody: "Unlock the full set, fix your mistakes, and keep replaying with every mode open.",
+      bridgeTitle: "Keep improving your pickleball rules knowledge.",
+      bridgeBody: "Unlock all 200 questions, fix what you missed, and keep replaying with every mode open.",
 
       trustLine: "**One-time unlock**",
       trustBullets: [
@@ -1094,6 +1094,7 @@
       savingsLineTemplate: "Save {saveAmount} with the early price.",
       // Micro reassurance under CTA (optional, no fallback)
       checkoutNote: "Secure checkout with Stripe. Usually about 30 seconds.",
+      checkoutRedirecting: "Redirecting to secure checkout...",
 
       // Primary CTA changes with price phase (EARLY vs STANDARD)
       ctaEarly: "Unlock full access for $4.99",

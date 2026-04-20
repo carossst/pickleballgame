@@ -103,6 +103,15 @@ Important values:
 - if you want users to receive fresh cached assets, bump `WT_CONFIG.version`
 - offline support is strongest for the main app shell after first load
 
+## Payment Notes
+
+- the early-price timer is a local UX timer tied to the first paywall view on that device
+- it is not a server-verified countdown and it resets if local storage is cleared
+- the Stripe Payment Links must be configured manually to redirect to your hosted `success.html`
+- `successRedirectUrl` in [config.js](./config.js) is documentation/config context only; the live redirect is controlled in Stripe
+- with the current static stack, `success.html` is not a payment-verification layer
+- a real payment lock would require a server-verified Stripe return or a signed unlock mechanism that cannot be generated locally
+
 ## Storage And Analytics
 
 All user progress is stored locally in the browser by [storage.js](./storage.js).

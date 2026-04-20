@@ -1585,11 +1585,11 @@ void function () {
 
 
         case "checkout-early":
-          self.checkout("EARLY");
+          self.checkout("EARLY", event);
           break;
 
         case "checkout-standard":
-          self.checkout("STANDARD");
+          self.checkout("STANDARD", event);
           break;
 
         case "redeem-code":
@@ -1801,7 +1801,7 @@ void function () {
         const action = String(btn.getAttribute("data-action") || "").trim();
         if (!action) return false;
         e.preventDefault();
-        dispatchAction(action);
+        dispatchAction(action, e);
         return true;
       };
 
@@ -4774,7 +4774,7 @@ void function () {
     this._paywallTickerId = null;
   };
 
-  UI.prototype.checkout = function (priceKey) {
+  UI.prototype.checkout = function (priceKey, event) {
     if (!isOnline()) {
       const msg = String(this.wording?.system?.offlinePayment || "").trim();
       if (msg) toastNow(this.config, msg);
@@ -4792,7 +4792,24 @@ void function () {
       ? String(cfg.stripeEarlyPaymentUrl || "").trim()
       : String(cfg.stripeStandardPaymentUrl || "").trim();
 
-    if (!url) return;
+    const sourceBtn = (event && event.target && event.target.closest)
+      ? event.target.closest("button[data-action], a[data-action]")
+      : null;
+
+    const redirectLabel = String(this.wording?.paywall?.checkoutRedirecting || "").trim();
+    const previousLabel = sourceBtn ? String(sourceBtn.textContent || "").trim() : "";
+
+    const resetCheckoutButton = () => {
+      if (!sourceBtn) return;
+      sourceBtn.disabled = false;
+      sourceBtn.removeAttribute("aria-busy");
+      if (previousLabel) sourceBtn.textContent = previousLabel;
+    };
+
+    if (!url) {
+      resetCheckoutButton();
+      return;
+    }
 
     // Security: validate Stripe domain before redirect
     try {
@@ -4800,11 +4817,19 @@ void function () {
       const allowedHosts = ["buy.stripe.com", "checkout.stripe.com"];
       if (!allowedHosts.includes(urlObj.hostname)) {
         console.error("[WT Security] Invalid Stripe URL hostname:", urlObj.hostname);
+        resetCheckoutButton();
         return;
       }
     } catch (_) {
       console.error("[WT Security] Invalid Stripe URL:", url);
+      resetCheckoutButton();
       return;
+    }
+
+    if (sourceBtn) {
+      sourceBtn.disabled = true;
+      sourceBtn.setAttribute("aria-busy", "true");
+      if (redirectLabel) sourceBtn.textContent = redirectLabel;
     }
 
     window.location.href = url;

@@ -3,6 +3,16 @@
 (() => {
   "use strict";
 
+  function buildUpdateReloadUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set("wt-refresh", String(Date.now()));
+    return url.toString();
+  }
+
+  function reloadForUpdate() {
+    window.location.replace(buildUpdateReloadUrl());
+  }
+
   function escapeHtmlSafe(str) {
     const s = String(str == null ? "" : str);
     const fn = window.WT_UTILS && typeof window.WT_UTILS.escapeHtml === "function"
@@ -59,7 +69,7 @@
     `;
 
     const btn = document.getElementById("wtFatalReloadBtn");
-    if (btn) btn.addEventListener("click", () => location.reload());
+    if (btn) btn.addEventListener("click", reloadForUpdate);
   }
 
 
@@ -153,10 +163,58 @@
       window.__WT_SW_UPDATE_READY__ = true;
     }
 
-    window.__WT_APPLY_SW_UPDATE__ = function () {
-      const waiting = window.__WT_SW_WAITING__ || null;
+    async function tryPromoteInstallingWorker(worker) {
+      if (!worker) return false;
+      if (worker.state === "installed") {
+        setWaitingWorker(worker);
+        return true;
+      }
+
+      return await new Promise((resolve) => {
+        let done = false;
+
+        function finish(ok) {
+          if (done) return;
+          done = true;
+          resolve(ok === true);
+        }
+
+        worker.addEventListener("statechange", () => {
+          if (worker.state === "installed") {
+            setWaitingWorker(worker);
+            finish(true);
+            return;
+          }
+
+          if (worker.state === "redundant") {
+            finish(false);
+          }
+        });
+
+        window.setTimeout(() => finish(false), 4000);
+      });
+    }
+
+    window.__WT_APPLY_SW_UPDATE__ = async function () {
+      const registration = window.__WT_SW_REGISTRATION__ || null;
+      let waiting = window.__WT_SW_WAITING__ || registration?.waiting || null;
+
+      if (!waiting && registration) {
+        try {
+          await registration.update();
+        } catch (_) { }
+        waiting = registration.waiting || null;
+      }
+
+      if (!waiting && registration?.installing) {
+        const ready = await tryPromoteInstallingWorker(registration.installing);
+        if (ready) {
+          waiting = window.__WT_SW_WAITING__ || registration.waiting || null;
+        }
+      }
+
       if (!waiting || typeof waiting.postMessage !== "function") {
-        location.reload();
+        reloadForUpdate();
         return;
       }
 
@@ -166,14 +224,14 @@
         waiting.postMessage({ type: "SKIP_WAITING" });
       } catch (_) {
         try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false; } catch (_) { }
-        location.reload();
+        reloadForUpdate();
       }
     };
 
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       if (window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ !== true) return;
       try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false; } catch (_) { }
-      location.reload();
+      reloadForUpdate();
     });
 
     window.addEventListener("load", () => {
@@ -189,6 +247,7 @@
       navigator.serviceWorker
         .register(swUrl, { scope: "./" })
         .then((registration) => {
+          window.__WT_SW_REGISTRATION__ = registration;
           Logger.log("✅ Service Worker registered:", registration.scope);
 
           // Update already waiting from a previous page session: surface it immediately.
