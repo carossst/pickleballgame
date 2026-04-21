@@ -2959,6 +2959,13 @@ void function () {
     const w = this.wording || {};
     const mpc = (w.micropics && typeof w.micropics === "object") ? w.micropics : {};
     const cfg = this.config || {};
+    const phaseCtx = getRuleKnowledgePhaseContext({
+      cfg,
+      w,
+      storage: this.storage,
+      poolSize: clampInt(cfg?.game?.poolSize, 0, 99999)
+    });
+    const phaseMpc = Object.assign({}, mpc, phaseCtx.micropics || {});
 
     const mpCfg = (cfg && cfg.microPics) ? cfg.microPics : null;
     if (!mpCfg) return;
@@ -3083,7 +3090,7 @@ void function () {
     if (chanceLost) {
       // Near-miss (one-shot per RUN): error that brings you down to 1 chance left.
       if (cfg?.microPics?.nearMissEnabled === true && chancesLeft === 1 && mp.nearMissShown !== true) {
-        const msg = String(mpc.nearMiss || "").trim();
+        const msg = String(phaseMpc.nearMiss || mpc.nearMiss || "").trim();
         setEndHighlight(msg, "info", 55);
         mp.nearMissShown = true;
       }
@@ -3096,7 +3103,7 @@ void function () {
           const st = this.storage.getItemStats(idNum) || null;
           const wc = Number(st?.wrongCount || 0);
           if (Number.isFinite(wc) && wc >= Math.floor(minWrong)) {
-            const msg = String(mpc.repeatMistake || "").trim();
+            const msg = String(phaseMpc.repeatMistake || mpc.repeatMistake || "").trim();
             setEndHighlight(msg, "info", 50);
             mp.repeatMistakeShown = true;
           }
@@ -3110,7 +3117,7 @@ void function () {
     // Survival highlight: reached 1 chance remaining at least once (RUN)
     // Rule: 1 message per answer max -> if survival shows, skip tier streak on this answer.
     if (isCorrect && chancesLeft === 1 && mp.survivalShown !== true) {
-      const msg = String(mpc.runContinues || "").trim();
+      const msg = String(phaseMpc.runContinues || mpc.runContinues || "").trim();
       if (tryShowRunOverlay(msg, "info")) {
         mp.survivalShown = true;
       }
@@ -3144,7 +3151,7 @@ void function () {
     // Show at most one tier per answer (priority: highest)
     const tierOnce = (mp.tierShownOnce && typeof mp.tierShownOnce === "object") ? mp.tierShownOnce : null;
 
-    const againTpl = String(mpc.streakAgainTemplate || "").trim();
+    const againTpl = String(phaseMpc.streakAgainTemplate || "").trim();
     function againMsgFor(threshold) {
       if (!againTpl) return "";
       return String(fillTemplate(againTpl, { n: Math.floor(Number(threshold)), streak: s }) || "").trim();
@@ -3152,7 +3159,7 @@ void function () {
 
     // #3 Recovery non-chiffré (one-shot), même sans record
     if (mp.justRecoveredFromMistake === true && s >= tBuilding && mp.flowTierShown < tBuilding) {
-      const msg = String(mpc.recovery || "").trim();
+      const msg = String(phaseMpc.recovery || "").trim();
       if (tryShowRunOverlay(msg, "info")) {
         mp.flowTierShown = tBuilding;
         mp.justRecoveredFromMistake = false;
@@ -3165,7 +3172,7 @@ void function () {
 
     if (s >= tLegendary && mp.flowTierShown < tLegendary) {
       const already = !!(tierOnce && tierOnce.legendary === true);
-      const baseMsg = String(mpc.streakLegendary || "").trim();
+      const baseMsg = String(phaseMpc.streakLegendary || "").trim();
       const msg = (already ? againMsgFor(tLegendary) : "") || baseMsg;
 
       if (tryShowRunOverlay(msg, "info")) {
@@ -3179,7 +3186,7 @@ void function () {
     }
     if (s >= tElite && mp.flowTierShown < tElite) {
       const already = !!(tierOnce && tierOnce.elite === true);
-      const baseMsg = String(mpc.streakElite || "").trim();
+      const baseMsg = String(phaseMpc.streakElite || "").trim();
       const msg = (already ? againMsgFor(tElite) : "") || baseMsg;
 
       if (tryShowRunOverlay(msg, "info")) {
@@ -3193,7 +3200,7 @@ void function () {
     }
     if (s >= tStrong && mp.flowTierShown < tStrong) {
       const already = !!(tierOnce && tierOnce.strong === true);
-      const baseMsg = String(mpc.streakStrong || "").trim();
+      const baseMsg = String(phaseMpc.streakStrong || "").trim();
       const msg = (already ? againMsgFor(tStrong) : "") || baseMsg;
 
       if (tryShowRunOverlay(msg, "success")) {
@@ -3207,7 +3214,7 @@ void function () {
     }
     if (s >= tBuilding && mp.flowTierShown < tBuilding) {
       const already = !!(tierOnce && tierOnce.building === true);
-      const baseMsg = String(mpc.streakBuilding || "").trim();
+      const baseMsg = String(phaseMpc.streakBuilding || "").trim();
       const msg = (already ? againMsgFor(tBuilding) : "") || baseMsg;
 
       if (tryShowRunOverlay(msg, "info")) {
@@ -3222,7 +3229,7 @@ void function () {
 
     if (s >= tStart && mp.flowTierShown < tStart) {
       const already = !!(tierOnce && tierOnce.start === true);
-      const baseMsg = String(mpc.streakStart || "").trim();
+      const baseMsg = String(phaseMpc.streakStart || "").trim();
       const msg = (already ? againMsgFor(tStart) : "") || baseMsg;
 
       if (tryShowRunOverlay(msg, "info")) {
@@ -6489,7 +6496,7 @@ void function () {
           (b == null) ? a :
             Math.max(a, b);
 
-    // LANDING stats rely on RUN history (pace calculation), so we gate on RUN completes.
+    // LANDING stats are shown only after enough completed runs to make the phase framing meaningful.
     const runPlays = Math.max(runCompletes, (c == null ? 0 : c));
 
 
@@ -6499,11 +6506,10 @@ void function () {
       const statsCfg = cfg?.landingStats || {};
       const enabled = (statsCfg?.enabled === true);
 
-      const paceNRaw = Number(statsCfg?.paceRunsCount);
-      const minRunsToShow = (Number.isFinite(paceNRaw) && paceNRaw >= 1 && paceNRaw <= 999) ? Math.floor(paceNRaw) : null;
+      const minRunsRaw = Number(statsCfg?.minCompletedRuns);
+      const minRunsToShow = (Number.isFinite(minRunsRaw) && minRunsRaw >= 1 && minRunsRaw <= 999) ? Math.floor(minRunsRaw) : null;
       if (enabled && minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= 1) {
         const seenTpl = String(landing.statsSeenSummaryTemplate || "").trim();
-        const paceTpl = String(landing.statsPaceSummaryTemplate || "").trim();
 
         const poolSizeSafe = clampInt(cfg?.game?.poolSize, 1, 9999);
 
@@ -6562,59 +6568,35 @@ void function () {
         const progressClass = isComplete ? " wt-progress--mastery" : "";
 
         const completeLabelTpl = String(landing.statsSeenCompleteLabel || "").trim();
-        const mistakesLabel = String(landing.statsMistakesLabel || "").trim();
-        const mistakesTpl = String(landing.statsMistakesSummaryTemplate || "").trim();
-        const phaseBadgeDiscovery = String(landing.statsPhaseBadgeDiscovery || "").trim();
-        const phaseBadgeCorrection = String(landing.statsPhaseBadgeCorrection || "").trim();
-        const phaseBadgeConsolidation = String(landing.statsPhaseBadgeConsolidation || "").trim();
+        const phaseCtx = getRuleKnowledgePhaseContext({
+          cfg,
+          w,
+          storage: this.storage,
+          poolSize: poolSizeSafe,
+          seen,
+          mistakes
+        });
 
         let title = "";
         let sub = "";
 
         if (!isComplete) {
-          title = "";
+          const summaryTpl = String(phaseCtx.landingSummaryTemplate || "").trim();
+          const phaseBadge = String(phaseCtx.badge || "").trim();
+          title = summaryTpl
+            ? fillTemplate(summaryTpl, { seen, poolSize: poolSizeSafe, remaining, mistakes, mastered })
+            : fillTemplate(seenTpl, { seen, poolSize: poolSizeSafe });
+          sub = phaseCtx.landingDetailTemplate
+            ? fillTemplate(String(phaseCtx.landingDetailTemplate || "").trim(), { seen, poolSize: poolSizeSafe, remaining, mistakes, mastered })
+            : String(phaseCtx.landingDetail || "").trim();
 
-          const seenLine = fillTemplate(seenTpl, { seen, poolSize: poolSizeSafe });
-          const phaseBadge = phaseBadgeDiscovery;
-
-          let paceLine = "";
-          try {
-            if (
-              seen < poolSizeSafe &&
-              paceTpl &&
-              this.storage &&
-              typeof this.storage.getRunPaceTotals === "function"
-            ) {
-              const totals = this.storage.getRunPaceTotals();
-              const totalRunCount = clampInt(Number(totals?.runCount), 0, 999999);
-              const totalNewSeen = clampInt(Number(totals?.totalNewSeen), 0, 999999);
-
-              if (totalRunCount >= minRunsToShow && totalRunCount >= 1) {
-                const avgNewSeen = totalNewSeen / totalRunCount;
-                if (avgNewSeen >= 1 && remaining > 0) {
-                  const runsLeft = Math.ceil(remaining / avgNewSeen);
-                  paceLine = fillTemplate(paceTpl, {
-                    poolSize: poolSizeSafe,
-                    remaining,
-                    runsLeft,
-                    pluralS: runsLeft === 1 ? "" : "s"
-                  });
-                }
-              }
-            }
-          } catch (_) { paceLine = ""; }
-
-          sub = seenLine;
-
-          const detailsLine = [paceLine].filter(Boolean).join(" ");
-
-          if (sub || phaseBadge) {
+          if (title || sub || phaseBadge) {
             welcomeBackHtml = `
               <div class="wt-landing-stats">
                 ${phaseBadge ? `<div class="wt-landing-stat__badge"><span class="wt-badge">${escapeHtml(phaseBadge)}</span></div>` : ``}
                 <div class="wt-landing-stat">
-                  ${sub ? `<div class="wt-landing-stat__title">${escapeHtml(sub)}</div>` : ``}
-                  ${detailsLine ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(detailsLine)}</div>` : ``}
+                  ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
+                  ${sub ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(sub)}</div>` : ``}
                     <div class="wt-progress${progressClass}" aria-hidden="true">
                     <div class="wt-progress__fill" data-pct="${pct}" style="width:${pct}%"></div>
                   </div>
@@ -6625,24 +6607,20 @@ void function () {
 
         } else {
           // Fail-closed: after completion, do not fall back to other labels/lines.
-          const phaseBadge = (mistakes > 0) ? phaseBadgeCorrection : phaseBadgeConsolidation;
-          title = (completeLabelTpl ? fillTemplate(completeLabelTpl, { poolSize: poolSizeSafe }) : "");
+          const phaseBadge = String(phaseCtx.badge || "").trim();
+          const summaryTpl = String(phaseCtx.landingSummaryTemplate || "").trim();
+          title = summaryTpl
+            ? fillTemplate(summaryTpl, { seen, poolSize: poolSizeSafe, remaining, mistakes, mastered })
+            : (completeLabelTpl ? fillTemplate(completeLabelTpl, { poolSize: poolSizeSafe }) : "");
+          const detailLine = String(phaseCtx.landingDetail || "").trim();
 
-          const masteryLine = `${mastered}/${poolSizeSafe} questions answered correctly`;
-          const mistakesLine =
-            (mistakes > 0 && practiceAvailable && mistakesLabel && mistakesTpl)
-              ? `${mistakesLabel}: ${fillTemplate(mistakesTpl, { mistakes })}`
-              : "";
-
-          const displayLine = (mistakes > 0) ? mistakesLine : masteryLine;
-
-          if (title || displayLine || phaseBadge) {
+          if (title || detailLine || phaseBadge) {
             welcomeBackHtml = `
               <div class="wt-landing-stats">
                 ${phaseBadge ? `<div class="wt-landing-stat__badge"><span class="wt-badge">${escapeHtml(phaseBadge)}</span></div>` : ``}
                 <div class="wt-landing-stat">
                   ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
-                  ${displayLine ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(displayLine)}</div>` : ``}
+                  ${detailLine ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(detailLine)}</div>` : ``}
                   <div class="wt-progress${progressClass}" aria-hidden="true">
                     <div class="wt-progress__fill" data-pct="${pct}" style="width:${pct}%"></div>
                   </div>
@@ -7136,6 +7114,15 @@ ${(() => {
         const raw = String(tag || "").trim();
         if (!raw) return "";
         if (raw === "2026_changes") return "2026 rule changes";
+        if (raw === "The Net") return "net play";
+        if (raw === "Score & Readiness") return "scoring and readiness";
+        if (raw === "Serving Rules") return "serving rules";
+        if (raw === "Line Calls") return "line calls";
+        if (raw === "Faults & Dead Ball") return "faults and dead balls";
+        if (raw === "Non-Volley Zone") return "the kitchen";
+        if (raw === "Player Conduct & Apparel") return "player conduct";
+        if (raw === "Rally Situations") return "rally situations";
+        if (raw === "Court & Equipment") return "court and equipment";
         return raw.replace(/_/g, " ");
       };
 
@@ -7290,9 +7277,54 @@ ${(() => {
     `;
   }
 
+  function getRuleKnowledgePhaseContext(input) {
+    const cfg = input && input.cfg ? input.cfg : {};
+    const w = input && input.w ? input.w : {};
+    const storage = input && input.storage ? input.storage : null;
+    const landing = w.landing || {};
+
+    const poolSize = clampInt(input?.poolSize, 0, 99999);
+
+    let seen = clampInt(input?.seen, 0, 99999);
+    if (!seen && storage && typeof storage.getUniqueSeenCount === "function") {
+      try { seen = clampInt(storage.getUniqueSeenCount(), 0, 99999); } catch (_) { seen = 0; }
+    }
+
+    let mistakes = clampInt(input?.mistakes, 0, 99999);
+    if (input?.mistakes == null && storage && typeof storage.getActiveMistakesCount === "function") {
+      try { mistakes = clampInt(storage.getActiveMistakesCount(), 0, 99999); } catch (_) { mistakes = 0; }
+    }
+
+    const isComplete = poolSize > 0 && seen >= poolSize;
+    const mastered = clampInt(poolSize - mistakes, 0, poolSize);
+    const key = !isComplete ? "discovery" : (mistakes > 0 ? "correction" : "consolidation");
+
+    const phaseW = (w.phaseJourney && typeof w.phaseJourney === "object") ? (w.phaseJourney[key] || {}) : {};
+    const fallbackBadge =
+      key === "discovery"
+        ? String(landing.statsPhaseBadgeDiscovery || "").trim()
+        : key === "correction"
+          ? String(landing.statsPhaseBadgeCorrection || "").trim()
+          : String(landing.statsPhaseBadgeConsolidation || "").trim();
+
+    return {
+      key,
+      seen,
+      mistakes,
+      mastered,
+      isComplete,
+      badge: String(phaseW.badge || fallbackBadge || "").trim(),
+      landingSummaryTemplate: String(phaseW.landingSummaryTemplate || "").trim(),
+      landingDetail: String(phaseW.landingDetail || "").trim(),
+      landingDetailTemplate: String(phaseW.landingDetailTemplate || "").trim(),
+      endLens: String(phaseW.endLens || "").trim(),
+      micropics: (phaseW.micropics && typeof phaseW.micropics === "object") ? phaseW.micropics : {}
+    };
+  }
+
   function buildEndActionsHtml(ctx) {
     const {
-      storage, w, vars, premium, end, postW, isRun, isPractice, isBonus,
+      storage, w, cfg, vars, premium, end, postW, isRun, isPractice, isBonus,
       runShouldPromotePractice, practiceCta, runsExhausted, upgradeCta, runPlayAgain,
       runShouldPromoteBonus, runBonusPrimaryLabel, canPractice, practiceAgain, bonusW,
       bonusDeckTier, bonusAgain, poolCompleteCelebration, seen, poolSize, runLensBonusPrimaryTpl,
@@ -7393,12 +7425,21 @@ ${(() => {
       `
         : ``;
 
+    const phaseCtx = getRuleKnowledgePhaseContext({
+      cfg,
+      w,
+      storage,
+      poolSize,
+      seen,
+      mistakes: clampInt(vars.backlog, 0, 99999)
+    });
+
     const runLensHtml =
-      (isRun && !poolCompleteCelebration && clampInt(seen, 0, poolSize) < poolSize)
+      (isRun && !poolCompleteCelebration)
         ? (() => {
           const lensText = runShouldPromoteBonus && runLensBonusPrimaryTpl
             ? runLensBonusPrimaryTpl
-            : (runLensTpl ? fillTemplate(runLensTpl, vars) : "");
+            : (String(phaseCtx.endLens || "").trim() || (runLensTpl ? fillTemplate(runLensTpl, vars) : ""));
           return lensText ? `<p class="wt-muted wt-end-lens">${escapeHtml(lensText)}</p>` : ``;
         })()
         : ``;
@@ -7954,11 +7995,17 @@ ${(() => {
         }
 
         if (isRun) {
+          const directToConsolidation =
+            !!(poolCompleteCelebration && clampInt(vars.backlog, 0, 99999) === 0);
+          const directToConsolidationLine = directToConsolidation
+            ? String(end.directToConsolidationLine || "").trim()
+            : "";
+
           return [
             runStatsLine ? `<p class="wt-muted">${escapeHtml(runStatsLine)}</p>` : ``,
             endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``,
-            runIdentityTpl ? `<p class="wt-meta">${escapeHtml(fillTemplate(runIdentityTpl, vars))}</p>` : ``,
-            runLensTpl ? `<p class="wt-muted">${escapeHtml(fillTemplate(runLensTpl, vars))}</p>` : ``
+            directToConsolidationLine ? `<p class="wt-muted">${escapeHtml(directToConsolidationLine)}</p>` : ``,
+            runIdentityTpl ? `<p class="wt-meta">${escapeHtml(fillTemplate(runIdentityTpl, vars))}</p>` : ``
           ].join("");
         }
 
@@ -7974,6 +8021,7 @@ ${(() => {
     ${buildEndActionsHtml({
         storage: this.storage,
         w,
+        cfg,
         vars,
         premium,
         end,

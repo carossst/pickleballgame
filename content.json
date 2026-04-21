@@ -32,7 +32,7 @@
       "id": 1,
       "question": "If the ball lands in the opponent's court and then hits the net post, the rally ends with no winner.",
       "correctAnswer": false,
-      "explanationShort": "That was the old rule.\nIf the ball lands in and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\n2026 USA Pickleball Rulebook Change Document, page 5.",
+      "explanationShort": "Before 2026, the rule was different.\nIf the ball lands in and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\n2026 USA Pickleball Rulebook Change Document, page 5.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -44,7 +44,7 @@
       "id": 2,
       "question": "Players may ask spectators for help on a call.",
       "correctAnswer": false,
-      "explanationShort": "The old rule said players 'should not' ask spectators.\nNow it says 'must not,' which makes the ban mandatory.\n2026 USA Pickleball Rulebook Change Document, page 7.",
+      "explanationShort": "Before 2026, the rule said players 'should not' ask spectators.\nNow it says 'must not,' which makes the ban mandatory.\n2026 USA Pickleball Rulebook Change Document, page 7.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -56,7 +56,7 @@
       "id": 3,
       "question": "Spin may be applied to the ball at paddle contact.",
       "correctAnswer": true,
-      "explanationShort": "Spin at paddle contact is allowed in 2026.\nWhat is still banned is adding spin with the hand or fingers during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "explanationShort": "In 2026, spin at paddle contact is allowed.\nWhat is still banned is adding spin with the hand or fingers during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -68,7 +68,7 @@
       "id": 4,
       "question": "After missing the return, a player may wait until the next serve to call the ball out.",
       "correctAnswer": false,
-      "explanationShort": "That delay was allowed under the old wording.\nNow the out call still has to be made promptly.\n2026 USA Pickleball Rulebook Change Document, page 12.",
+      "explanationShort": "Before 2026, that delay was allowed under the wording.\nNow the out call still has to be made promptly.\n2026 USA Pickleball Rulebook Change Document, page 12.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -80,7 +80,7 @@
       "id": 5,
       "question": "The receiving team can win the game on a technical foul.",
       "correctAnswer": true,
-      "explanationShort": "Before, only the serving side could get the winning point.\nNow the receiving team can win the game on a technical foul.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "explanationShort": "Before 2026, only the serving side could get the winning point.\nNow the receiving team can win the game on a technical foul.\n2026 USA Pickleball Rulebook Change Document, page 11.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -117,7 +117,7 @@
       "id": 8,
       "question": "If an opponent can see an extra ball you are carrying during a live rally, it is a fault.",
       "correctAnswer": true,
-      "explanationShort": "Before, the extra ball just had to be hidden.\nNow a visible extra ball during a live rally is specifically a fault.\n2026 USA Pickleball Rulebook Change Document, page 22.",
+      "explanationShort": "Before 2026, the extra ball just had to be hidden.\nNow a visible extra ball during a live rally is specifically a fault.\n2026 USA Pickleball Rulebook Change Document, page 22.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -129,7 +129,7 @@
       "id": 9,
       "question": "A time-out must be called clearly by voice, hand signal, or both.",
       "correctAnswer": true,
-      "explanationShort": "Before, the rule mainly said when to call time-out.\nNow it also says how to call it: by voice, hand signal, or both.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "explanationShort": "Before 2026, the rule mainly said when to call time-out.\nNow it also says how to call it: by voice, hand signal, or both.\n2026 USA Pickleball Rulebook Change Document, page 24.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -142,7 +142,7 @@
       "id": 10,
       "question": "If a player calls time-out after the serve has been hit, it is a fault.",
       "correctAnswer": true,
-      "explanationShort": "Before, the rule focused on calling time-out before the next serve.\nNow a late time-out call after the serve is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 24.",
+      "explanationShort": "Before 2026, the rule focused on calling time-out before the next serve.\nNow a late time-out call after the serve is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 24.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -155,7 +155,7 @@
       "id": 11,
       "question": "In rally scoring, the receiving team can win the game by winning the rally at game point.",
       "correctAnswer": true,
-      "explanationShort": "Before, the receiving team could not win at game point.\nNow either team can win the game on the rally.\n2026 USA Pickleball Rulebook Change Document, page 16.",
+      "explanationShort": "Before 2026, the receiving team could not win at game point.\nNow either team can win the game on the rally.\n2026 USA Pickleball Rulebook Change Document, page 16.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -179,7 +179,7 @@
       "id": 13,
       "question": "In doubles, if one player retires after a medical time-out, the partner may keep playing.",
       "correctAnswer": true,
-      "explanationShort": "The old rule didn't state this doubles situation clearly.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
+      "explanationShort": "Before 2026, this doubles situation was not stated clearly.\nNow the retiring player's partner may continue alone.\n2026 USA Pickleball Rulebook Change Document, page 13.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -313,7 +313,7 @@
       "id": 24,
       "question": "For a volley serve, the paddle may move in any direction at contact.",
       "correctAnswer": false,
-      "explanationShort": "The old rule focused on the arm moving in an upward arc.\nNow the paddle itself must move in an upward arc at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1.",
+      "explanationShort": "Before 2026, the rule focused on the arm moving in an upward arc.\nNow the paddle itself must move in an upward arc at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1.",
       "tags": [
         "Serving Rules",
         "Intermediate",

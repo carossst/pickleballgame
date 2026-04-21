@@ -309,7 +309,7 @@
 
     landingStats: {
       enabled: true,
-      paceRunsCount: 4,
+      minCompletedRuns: 4,
       showBeforeFirstRun: false
     },
 
@@ -481,24 +481,31 @@
 
   // 9.3 UI copy (visible -> WT_WORDING only; no legacy aliases)
   // ------------------------------------------
-  // WORD TRAPS — LEXICAL IDENTITY (Momentum)
+  // PICKLEBALL RULES QUIZ — EDITORIAL IDENTITY
   // ------------------------------------------
   //
   // Core Intention:
-  // Pickleball Rules Quiz uses the same momentum-first shell with quiz copy.
-  // The tone encourages flow and continuity.
-  // It rewards staying engaged and moving forward.
+  // Pickleball Rules Quiz should sound clear, grounded, and useful.
+  // The core promise is better rule knowledge, not speed for its own sake.
+  // Momentum language is acceptable only when it supports learning, not when it replaces it.
   //
   // Emotional posture:
-  // - Steady
+  // - Clear
+  // - Grounded
   // - Focused
-  // - Controlled
-  // - In rhythm
-  // - Forward-moving
+  // - Encouraging
+  // - Useful
   //
-  // Dominant lexical field:
-  // - keep going
-  // - keep it moving
+  // Dominant lexical field for the main game:
+  // - rules
+  // - mistakes
+  // - learn
+  // - know
+  // - know
+  // - clear
+  //
+  // Rapid Fire can use a bit more pace / pressure language,
+  // but it should still stay tied to rule recall, not generic performance talk.
 
   // Explicit exclusions:
   // - No aggressive vocabulary (ruthless, destroy, crush, dominate, savage)
@@ -507,13 +514,13 @@
   // - Avoid "streak" as the core motivation (allowed only when explicitly contrasting with real improvement).
   //
   // Identity direction:
-  // Pickleball Rules Quiz keeps the same calm performance-coach posture.
-  // Clear. Grounded. Forward.
-  // Always about maintaining rhythm and momentum.
+  // Pickleball Rules Quiz should sound like a smart practice tool for learning the rules.
+  // Short. Direct. Natural.
+  // Never abstract for the sake of sounding polished.
   //
   // Validation rule for new copy:
-  // If it reinforces flow and continuity -> valid.
-  // If it sounds aggressive, ego-heavy, technical, or like "play for streaks" -> reject.
+  // If it reinforces rule knowledge -> valid.
+  // If it sounds aggressive, ego-heavy, too abstract, or too performance-driven for the context -> reject.
   window.WT_WORDING = {
     brand: {
       creatorLine: "Created by Carole at Bonjour Pickleball. Explore pickleball trips in France.",
@@ -620,7 +627,6 @@
 
       // Before completion (goal gradient) 
       statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} questions",
-      statsPaceSummaryTemplate: "About {runsLeft} more game{pluralS} to complete the full set.",
       statsPhaseBadgeDiscovery: "Phase 1/3: Discovery",
       statsPhaseBadgeCorrection: "Phase 2/3: Fixing mistakes",
       statsPhaseBadgeConsolidation: "Phase 3/3: Locked in",
@@ -662,8 +668,8 @@
         title: "First quarter complete.",
         bodyLines: [
           "You've seen the first quarter of the question set.",
-          "The patterns are starting to separate.",
-          "Keep going. Prove what you really know."
+          "This is still phase 1: discovery.",
+          "Keep going. You're building your first pass through the rules."
         ],
         cta: "Next"
       },
@@ -672,8 +678,8 @@
         title: "Halfway there.",
         bodyLines: [
           "You've seen half of the question set.",
-          "You are getting better at separating real rules from common mistakes.",
-          "Keep going. This is where it starts to show."
+          "You're still in the discovery phase.",
+          "Finish the full set first. Then you'll fix what still catches you."
         ],
         cta: "Next"
       },
@@ -682,10 +688,58 @@
         title: "Three quarters complete.",
         bodyLines: [
           "You've seen three quarters of the question set.",
-          "More answers are starting to feel obvious.",
-          "Keep going. You're close to proving it."
+          "You're close to finishing phase 1.",
+          "One more push, then you'll know exactly what still needs work."
         ],
         cta: "Next"
+      }
+    },
+
+    phaseJourney: {
+      discovery: {
+        badge: "Phase 1/3: Discovery",
+        landingSummaryTemplate: "{seen}/{poolSize} questions seen.",
+        landingDetailTemplate: "{remaining} rules still to discover.",
+        endLens: "You're still discovering the rules. Right now the goal is to see more of them clearly.",
+        micropics: {
+          streakStart: "3 in a row. Good read.",
+          streakBuilding: "6 in a row. Good read.",
+          streakStrong: "10 in a row. Clear rules.",
+          streakElite: "15 in a row. You know these.",
+          streakLegendary: "20 in a row. Strong run.",
+          streakAgainTemplate: "{streak} again.",
+          recovery: "There you go."
+        }
+      },
+      correction: {
+        badge: "Phase 2/3: Fixing mistakes",
+        landingSummaryTemplate: "Mistakes left: {mistakes}",
+        landingDetail: "You've seen the full set. Now you're clearing up what still trips you up.",
+        endLens: "You've seen the full set. Now you're clearing up the rules that still catch you.",
+        micropics: {
+          streakStart: "3 in a row. Better.",
+          streakBuilding: "6 in a row. Clearing up.",
+          streakStrong: "10 in a row. Better now.",
+          streakElite: "15 in a row. Mistakes fading.",
+          streakLegendary: "20 in a row. Strong correction.",
+          streakAgainTemplate: "{streak} again.",
+          recovery: "Back on it."
+        }
+      },
+      consolidation: {
+        badge: "Phase 3/3: Locked in",
+        landingSummaryTemplate: "{mastered}/{poolSize} questions answered correctly.",
+        landingDetail: "You've cleared the mistakes. Now you're keeping the rules clear over time.",
+        endLens: "You've cleared the mistakes. Now the job is to keep the rules clear over time.",
+        micropics: {
+          streakStart: "3 in a row. Still clear.",
+          streakBuilding: "6 in a row. Still clear.",
+          streakStrong: "10 in a row. Holding up.",
+          streakElite: "15 in a row. Very clear.",
+          streakLegendary: "20 in a row. Rules clear.",
+          streakAgainTemplate: "{streak} again.",
+          recovery: "Back on it."
+        }
       }
     },
 
@@ -768,16 +822,16 @@
           "You answered those questions instantly."
         ],
         high: [
-          "You stayed sharp under pressure.",
+          "You held up under pressure.",
           "Your rule knowledge held up well."
         ],
         medium: [
-          "You adjusted quickly.",
-          "This mode rewards quick rule recall."
+          "You settled in.",
+          "This mode rewards solid rule recall."
         ],
         low: [
           "The pace got ahead of you.",
-          "Here, memory alone is not enough."
+          "You need both recall and control here."
         ]
       },
 
@@ -793,12 +847,12 @@
         high_large: "Stay in Rapid Fire: that was a strong game.",
 
         medium_small: "Expand your deck first. More seen questions will make Rapid Fire stronger.",
-        medium_medium: "Try another Rapid Fire game to get faster under pressure.",
-        medium_large: "Keep going. Speed and accuracy will come with repetition.",
+        medium_medium: "Try another Rapid Fire game to build your recall.",
+        medium_large: "Keep going. Recall gets stronger with repetition.",
 
         low_small: "Expand your deck first. More seen questions will make Rapid Fire stronger.",
         low_medium: "Try another Rapid Fire game to rebuild confidence.",
-        low_large: "Try again: speed comes with practice."
+        low_large: "Try again: recall comes with practice."
       },
 
       // BONUS END — emotionally congruent CTA label by accuracy tier
@@ -837,7 +891,7 @@
       // End toasts (BONUS ends by returning to END screen)
       // Keep existing (even if you later stop using the modal)
       modalTitle: "Rapid Fire Mode",
-      modalBody: "Rapid Fire Mode is faster and more demanding. It uses only questions you've already seen in the game. Test your rule knowledge under pressure.",
+      modalBody: "Rapid Fire Mode is faster and more demanding. It uses only questions you've already seen in the game. Test your rule recall under pressure.",
       modalCta: "Play Rapid Fire Mode"
     },
 
@@ -931,19 +985,19 @@
 
 
       // First time reaching the tier in this game
-      streakStart: "3 in a row. You're locked in.",
-      streakBuilding: "6 in a row. The pattern is starting to click.",
-      streakStrong: "10 in a row. Sharp reading.",
-      streakElite: "15 in a row. Very little gets past you now.",
-      streakLegendary: "20 in a row. You saw it before it landed.",
+      streakStart: "3 in a row. Good start.",
+      streakBuilding: "6 in a row. You know these.",
+      streakStrong: "10 in a row. You know these.",
+      streakElite: "15 in a row. Strong run.",
+      streakLegendary: "20 in a row. Rules locked in.",
 
 
       // Reaching a tier again in the same game (after a mistake)
       // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
-      streakAgainTemplate: "{streak} in a row again. Back in rhythm.",
+      streakAgainTemplate: "{streak} in a row again.",
 
       // First non-chiffré micro-pic after a mistake (one-shot)
-      recovery: "There you go. Back in rhythm.",
+      recovery: "There you go.",
 
       runEndedAllChancesUsed: ""
     },
@@ -954,13 +1008,14 @@
 
       // Pool complete (one-shot celebration when 200/200 reached)
       poolCompleteTitle: "All questions complete.",
-      poolCompleteLine1: "You made it through the full set. Now replay, fix mistakes, and make the answers stick.",
+      poolCompleteLine1: "You made it through the full set. Now replay, fix mistakes, and know the rules better.",
       poolCompleteLine2: "Come back later and see what you still remember.",
+      directToConsolidationLine: "You finished the full set with no active mistakes, so you move straight to phase 3.",
       poolCompleteScoreLine: "This game: {score} {fpShort}",
       poolCompleteCtaPrimary: "Replay in a new order",
       poolCompleteCtaPractice: "Fix your mistakes",
 
-      freeLimitReachedTitle: "Nice game. Solid hands.",
+      freeLimitReachedTitle: "Nice game.",
       freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full question set, unlimited play, Mistakes Mode, and Rapid Fire Mode.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
@@ -977,19 +1032,20 @@
       identityByVerdict: {
         none: "A few questions are still slipping past you.",
         start: "You're getting your bearings.",
-        building: "You're building momentum.",
-        strong: "You're reading these faster now.",
-        elite: "You're getting sharp.",
-        legendary: "You're in control."
+        building: "You're starting to sort these out.",
+        strong: "You know more of these rules now.",
+        elite: "You know these rules well.",
+        legendary: "You really know these rules."
       },
 
+      // Legacy fallback only. The active END progression copy now comes from phaseJourney.*.endLens.
       lensByVerdict: {
         none: "You have {backlog} questions to revisit. One more game will already feel better.",
         start: "Good start. Aim a little higher next game.",
-        building: "{seen}/{poolSize} questions seen. The patterns are starting to click.",
-        strong: "{seen}/{poolSize} questions seen. More of these answers are becoming automatic.",
+        building: "{seen}/{poolSize} questions seen. You're starting to sort these out.",
+        strong: "{seen}/{poolSize} questions seen. You know more of these rules now.",
         elite: "{seen}/{poolSize} questions seen. You're close to real mastery now.",
-        legendary: "{seen}/{poolSize} questions seen. Keep replaying and lock it in.",
+        legendary: "{seen}/{poolSize} questions seen. Keep replaying and keep it clear.",
       },
 
       lensBonusPrimary: "You're ready for Rapid Fire Mode.",
@@ -1008,8 +1064,8 @@
       // Definition: longest sequence of consecutive correct answers within the run
       bestStreakLine: "Best streak: {bestStreak} correct in a row.",
 
-      strongestTagLine: "You were strongest in {tag} this game.",
-      weakestTagLine: "{tag} gave you the most trouble this game.",
+      strongestTagLine: "Strongest category this game: {tag}.",
+      weakestTagLine: "Category that gave you the most trouble: {tag}.",
 
       endTagHighlights: {
         "2026_changes": "The 2026 rule changes were the toughest part of this game."
@@ -1086,7 +1142,7 @@
       socialProofTitle: "What players say",
       socialProofQuotes: [
         { quote: "Fast, clear, and surprisingly useful. I thought I knew the rules, but the explanations kept correcting me.", author: "Maya, club player" },
-        { quote: "The true or false format makes it easy to keep playing, and Mistakes Mode is what made the rules stick.", author: "Jon, doubles regular" }
+        { quote: "The true or false format makes it easy to keep playing, and Mistakes Mode is what helped me clear up the rules I kept missing.", author: "Jon, doubles regular" }
       ],
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)
@@ -1128,7 +1184,7 @@
 
       modesTitle: "Game modes",
       modesBullets: [
-        "The game: discover the full set and build your best score.",
+        "The game: discover the full set and learn the rules.",
         "Rapid Fire Mode: faster and more demanding. Uses only questions you've already seen.",
         "Mistakes Mode: replay what you missed (up to 10 questions)."
       ],
@@ -1159,7 +1215,7 @@
 
     postCompletion: {
       title: "You've seen everything.",
-      body: "Now make it stick. Practice your mistakes, explore Rapid Fire Mode, or replay full games.",
+      body: "Now keep improving. Practice your mistakes, explore Rapid Fire Mode, or replay full games.",
 
       // Mastered (pool exhausted + 0 active mistakes)
       masteredTitle: "Bravo ! You answered the full question set correctly.",
