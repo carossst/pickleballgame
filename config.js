@@ -886,7 +886,7 @@
 
       // Block modal when free limit reached
       freeLimitReachedTitle: "That was intense. Time to towel off.",
-      freeLimitReachedBody: "You've used your {limit} free Rapid Fire games.\n\nFull access unlocks unlimited Rapid Fire Mode. Same pace. No limits.",
+      freeLimitReachedBody: "You've used your {limit} free Rapid Fire games.\n\nFull access unlocks unlimited Rapid Fire Mode.\nSame pace.\nNo limits.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
       startOverlayTapAnywhere: "Tap anywhere to start",
@@ -902,7 +902,7 @@
       // End toasts (BONUS ends by returning to END screen)
       // Keep existing (even if you later stop using the modal)
       modalTitle: "Rapid Fire Mode",
-      modalBody: "Rapid Fire Mode is faster and more demanding. It uses only questions you've already seen in the game. Test your rule recall under pressure.",
+      modalBody: "Rapid Fire Mode is faster and more demanding.\nIt uses only questions you've already seen in the game.\nTest your rule recall under pressure.",
       modalCta: "Play Rapid Fire Mode"
     },
 
@@ -918,7 +918,7 @@
       descUnlocked: "Only the questions you previously got wrong.",
 
       freeLimitReachedTitle: "End of Free Games.",
-      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes Mode. Keep fixing your mistakes without limits.",
+      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes Mode.\nKeep fixing your mistakes without limits.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -1029,7 +1029,7 @@
       poolCompleteCtaPractice: "Fix your mistakes",
 
       freeLimitReachedTitle: "Nice game.",
-      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full question set, unlimited play, Mistakes Mode, and Rapid Fire Mode.",
+      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full question set,\nunlimited play,\nMistakes Mode,\nand Rapid Fire Mode.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -1301,8 +1301,8 @@ Can you beat me?
 
     installPrompt: {
       title: "Keep the game handy",
-      body: "Add Pickleball Rules Quiz to your home screen and come back in one tap.",
-      bodyIOS: "This will not install automatically on iPhone. Tap Share, then Add to Home Screen.",
+      body: "Add Pickleball Rules Quiz to your home screen.\nCome back in one tap.",
+      bodyIOS: "This will not install automatically on iPhone.\nTap Share, then Add to Home Screen.",
       ctaPrimary: "Add to home screen",
       ctaPrimaryIOS: "Got it",
       ctaSecondary: "Later"
@@ -1323,7 +1323,7 @@ Can you beat me?
 
       // Full modal (manual access + prompt primary)
       modalTitle: "Help improve the game",
-      modalDescription: "Share your anonymous gameplay stats with the creator. No personal data is collected - you can see exactly what will be sent below.",
+      modalDescription: "Share your anonymous gameplay stats with the creator.\nNo personal data is collected.\nYou can see exactly what will be sent below.",
       previewLabel: "Data to be shared:",
       ctaSend: "Send via email",
       ctaCancel: "Cancel",

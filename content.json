@@ -30,7 +30,7 @@
   "items": [
     {
       "id": 1,
-      "question": "If the ball lands in the opponent's court and then hits the net post, the rally ends with no winner.",
+      "question": "If the ball lands in the opponent's court and then hits the net post, the rally is replayed.",
       "correctAnswer": false,
       "explanationShort": "Before 2026, the rule was different.\nIf the ball lands in and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\n2026 USA Pickleball Rulebook Change Document, page 5.",
       "tags": [
@@ -551,7 +551,7 @@
     },
     {
       "id": 44,
-      "question": "The served ball must land in the correct service court without touching the net.",
+      "question": "A serve that touches the net is automatically a fault.",
       "correctAnswer": false,
       "explanationShort": "The served ball can touch the net before landing.\nTouching the net doesn't invalidate the serve.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
       "tags": [
@@ -667,7 +667,7 @@
     },
     {
       "id": 54,
-      "question": "Saying 'not ready' is a valid way to signal not ready.",
+      "question": "Saying 'not ready' counts as a valid ready signal.",
       "correctAnswer": false,
       "explanationShort": "Only physical signals count here, like raising the paddle.\nSaying 'not ready' doesn't count.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1.",
       "tags": [
@@ -679,7 +679,7 @@
     },
     {
       "id": 55,
-      "question": "A 'not ready' signal still counts after the score call starts.",
+      "question": "After the score call starts, a 'not ready' signal stops play.",
       "correctAnswer": false,
       "explanationShort": "Once the score call starts, a 'not ready' signal no longer counts.\nThe only exception is a hinder signal.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2.",
       "tags": [
@@ -821,7 +821,7 @@
     },
     {
       "id": 67,
-      "question": "In standard scoring, the receiving team has no way to score a point.",
+      "question": "In standard scoring, the receiving team scores a point when the serving team loses a rally.",
       "correctAnswer": false,
       "explanationShort": "A technical foul can give a point to the receivers.\nThat's the exception to serve-only scoring.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
       "tags": [
@@ -1420,7 +1420,7 @@
     },
     {
       "id": 117,
-      "question": "If a player asks the opponent's opinion and gets no definitive call, the ball is out.",
+      "question": "If a player asks the opponent's opinion and the opponent declines to make a call, the ball is out.",
       "correctAnswer": false,
       "explanationShort": "No definitive call from the opponent means 'in.'\nOnly a clear 'in' or 'out' overrides the call.\n2026 USA Pickleball Official Rulebook, Rule 8.I.",
       "tags": [
@@ -2121,7 +2121,7 @@
     },
     {
       "id": 175,
-      "question": "Shoes must have soles that do not mark or damage the playing surface.",
+      "question": "In tournament play, shoes must have soles that do not mark or damage the playing surface.",
       "correctAnswer": true,
       "explanationShort": "Inappropriate footwear can be required to be changed by the Tournament Director.\nRefusing to change apparel can result in a match forfeit.\n2026 USA Pickleball Official Rulebook, Rule 18.B.2.",
       "tags": [

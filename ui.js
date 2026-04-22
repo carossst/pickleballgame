@@ -1102,7 +1102,13 @@ void function () {
     const bonusLine3 = String(wording?.secretBonus?.startOverlayLine3 || "").trim();
     const bonusLimitLine = String(extra?.bonusLimitLine || "").trim();
     const bonusTapHint = String(wording?.secretBonus?.startOverlayTapAnywhere || "").trim();
-    const bonusLines = [bonusLine1, bonusLine2, bonusLine3, bonusLimitLine, msg].filter(Boolean);
+    const bonusLines = [
+      bonusLine1,
+      bonusLine2,
+      bonusLine3,
+      bonusLimitLine,
+      ...msg.split("\n").map((line) => String(line || "").trim()).filter(Boolean)
+    ];
 
     const goalLine1 = String(extra?.goalLine1 || "").trim();
     const goalLine2 = String(extra?.goalLine2 || "").trim();
@@ -2021,7 +2027,7 @@ void function () {
 
           if (self._runtime) self._runtime.secretBonusPending = true;
           const html = `
-              <p>${escapeHtml(body)}</p>
+              <p style="white-space:pre-line">${escapeHtml(body)}</p>
               <div class="wt-actions">
                 <button class="wt-btn wt-btn--primary" data-action="enter-secret-bonus">${escapeHtml(cta)}</button>
                 ${notNow ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(notNow)}</button>` : ``}
@@ -2485,7 +2491,7 @@ void function () {
   // Modal helpers
   // ============================================
 
-  UI.prototype.openModal = function (html, title) {
+  UI.prototype.openModal = function (html, title, options) {
     if (!this.modalEl || !this.modalContentEl) {
       if (window.WT_CONFIG?.debug?.enabled) console.error("[WT Debug] openModal ABORT: modalEl=", !!this.modalEl, "modalContentEl=", !!this.modalContentEl);
       return;
@@ -2507,12 +2513,13 @@ void function () {
 
     const t = escapeHtml(String(title || "").trim());
     const closeLabel = escapeHtml(String(this.wording?.system?.close || "").trim());
+    const hideCloseButton = !!(options && options.hideCloseButton === true);
 
     this.modalContentEl.innerHTML = `
   <div class="wt-modal-header">
     <div class="wt-row wt-row--spaced">
       <h2 id="wt-modal-title" class="wt-h2">${t}</h2>
-      <button class="wt-btn wt-btn--ghost" data-action="close-modal" aria-label="${closeLabel}">&times;</button>
+      ${hideCloseButton ? `` : `<button class="wt-btn wt-btn--ghost" data-action="close-modal" aria-label="${closeLabel}">&times;</button>`}
     </div>
   </div>
   ${html}
@@ -3547,7 +3554,7 @@ void function () {
       </div>
     `;
 
-    this.openModal(html, title);
+    this.openModal(html, title, { hideCloseButton: true });
     return true;
   };
 
@@ -5354,7 +5361,7 @@ void function () {
     const jsonStr = JSON.stringify(payload, null, 2);
 
     const html = `
-      <p>${escapeHtml(String(ss.modalDescription || "").trim())}</p>
+      <p style="white-space:pre-line">${escapeHtml(String(ss.modalDescription || "").trim())}</p>
 
       <div class="wt-divider"></div>
 
@@ -5518,7 +5525,7 @@ void function () {
     if (!title || !body || !ctaPrimary) return false;
 
     const html = `
-      <p>${escapeHtml(body)}</p>
+      <p style="white-space:pre-line">${escapeHtml(body)}</p>
       <div class="wt-actions" style="margin-top:14px">
         <button class="wt-btn wt-btn--primary" data-action="${primaryAction}">${escapeHtml(ctaPrimary)}</button>
         <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(ctaSecondary)}</button>
@@ -6228,7 +6235,9 @@ void function () {
     // Screen-scoped body class (CSS can react without DOM branching)
     try {
       const playing = (this.state === STATES.PLAYING);
+      const ended = (this.state === STATES.END);
       document.body.classList.toggle("wt-state--playing", playing);
+      document.body.classList.toggle("wt-state--end", ended);
     } catch (_) { /* silent */ }
 
     try {
@@ -7867,12 +7876,12 @@ ${(() => {
 
     const endActionsClass = `wt-actions wt-actions--stack${isPractice ? " wt-actions--grid" : ""}`;
     const endHeaderRowHtml = `
-  <div class="wt-row wt-row--spaced">
-    <div style="min-width:0">
+  <div class="wt-row wt-row--spaced wt-end-header">
+    <div class="wt-end-header__brand">
       ${renderBrandingRow(cfg, true)}
     </div>
 
-    <div class="wt-row wt-row--tight" style="flex-shrink:0">
+    <div class="wt-row wt-row--tight wt-end-header__actions">
       ${homeBtnHtml}
 
       ${canShowChest ? `
