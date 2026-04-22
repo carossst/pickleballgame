@@ -5582,11 +5582,24 @@ void function () {
 
   UI.prototype.applyUpdateToast = function () {
     const node = el("update-toast");
+    try {
+      if (window.Logger && typeof window.Logger.log === "function") {
+        window.Logger.log("[UPDATE] applyUpdateToast", {
+          hasNode: !!node,
+          ready: window.__WT_SW_UPDATE_READY__ === true,
+          inFlight: window.__WT_SW_UPDATE_IN_FLIGHT__ === true
+        });
+      }
+    } catch (_) { }
+    try {
+      if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
+        window.__WT_UPDATE_DEBUG_STEP__("Reload button tapped...");
+      }
+    } catch (_) { }
     if (!node) return;
 
     // If an update is ready, user intent = apply it now.
     if (window.__WT_SW_UPDATE_READY__ === true) {
-      try { window.__WT_SW_UPDATE_READY__ = false; } catch (_) { }
       if (typeof window.__WT_APPLY_SW_UPDATE__ === "function") {
         window.__WT_APPLY_SW_UPDATE__();
       } else {
