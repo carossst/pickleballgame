@@ -1169,9 +1169,9 @@
     },
     {
       "id": 96,
-      "question": "Writing on the paddle's playing surface makes the paddle non-compliant.",
+      "question": "Any writing on the paddle face makes the paddle non-compliant.",
       "correctAnswer": false,
-      "explanationShort": "Name and contact information on the face are allowed.\nThis is an explicitly permitted marking.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.c.",
+      "explanationShort": "Some writing on the face is allowed.\nName and contact information are explicitly permitted.\n2025 USA Pickleball Equipment Standards Manual, Rule 2.E.5.c.",
       "tags": [
         "Court & Equipment",
         "Intermediate",
@@ -1470,7 +1470,7 @@
       "id": 121,
       "question": "Play may continue after a fault.",
       "correctAnswer": false,
-      "explanationShort": "A fault immediately stops play and ends the rally.\nThe ball becomes dead the moment a fault occurs.\n2026 USA Pickleball Official Rulebook, Rule 9.B.",
+      "explanationShort": "A fault immediately stops play and ends the rally.\nThe rally ends the moment a fault occurs.\n2026 USA Pickleball Official Rulebook, Rule 9.B.",
       "tags": [
         "Faults & Dead Ball",
         "Easy",
@@ -2020,9 +2020,9 @@
     },
     {
       "id": 167,
-      "question": "A game is won by the first team to reach 11 points.",
+      "question": "A team wins as soon as it reaches 11 points, even with only a 1-point lead.",
       "correctAnswer": false,
-      "explanationShort": "A game must be won by at least 2 points.\nThere's no score cap if teams keep tying.\n2026 USA Pickleball Official Rulebook, Rule 15.C.",
+      "explanationShort": "A game must be won by at least 2 points.\nReaching 11 is not enough at 11-10.\n2026 USA Pickleball Official Rulebook, Rule 15.C.",
       "tags": [
         "Score & Readiness",
         "Intermediate",

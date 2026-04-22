@@ -305,10 +305,7 @@ body {
   margin: 0;
   font: var(--fs-base)/var(--lh-base) system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: rgb(var(--text));
-  background:
-    radial-gradient(900px 420px at 50% -120px, rgb(var(--primary) / var(--wt-a-16)), transparent 70%),
-    linear-gradient(180deg, rgb(var(--primary) / var(--wt-a-08)), rgb(var(--bg)) 220px),
-    rgb(var(--bg));
+  background: rgb(var(--bg));
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   overscroll-behavior-y: auto;
@@ -2112,6 +2109,10 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   font-weight: 500;
 }
 
+.wt-explanation__cite {
+  font-style: italic;
+}
+
 @media (min-height: 741px) {
   .wt-explanation {
     padding: var(--gap-2) var(--space-14);
@@ -2327,6 +2328,14 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
 .wt-chance-overlay--success .wt-chance-overlay__text {
   color: rgb(var(--success-dark));
   font-weight: 700;
+}
+
+.wt-chance-overlay__title {
+  font-weight: 700;
+}
+
+.wt-chance-overlay__hint {
+  font-style: italic;
 }
 
 /* Content card */
@@ -3165,6 +3174,11 @@ arcade" feel; deviation from --fs-* scale is expected. */
   margin-top: 8px;
 }
 
+.wt-card--end .wt-muted,
+.wt-card--end .wt-end-lens {
+  color: rgb(var(--text));
+}
+
 .wt-end-copy p,
 .wt-end-copy .wt-end-practice-stats {
   margin: 0;
@@ -3457,9 +3471,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
   }
 
   body {
-    background:
-      radial-gradient(760px 360px at 50% -120px, rgb(var(--primary) / var(--wt-a-12)), transparent 70%),
-      linear-gradient(180deg, rgb(var(--primary) / var(--wt-a-06)), rgb(var(--bg)) 260px),
-      rgb(var(--bg));
+    background: rgb(var(--bg));
   }
 }

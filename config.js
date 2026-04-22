@@ -523,8 +523,8 @@
   // If it sounds aggressive, ego-heavy, too abstract, or too performance-driven for the context -> reject.
   window.WT_WORDING = {
     brand: {
-      creatorLine: "Created by Carole at Bonjour Pickleball. Explore pickleball trips in France.",
-      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a> at <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>. Explore <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">pickleball trips in France</a>."
+      creatorLine: "Created by Carole at Bonjour Pickleball.",
+      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a> at <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>."
     },
 
     system: {
@@ -646,18 +646,31 @@
       postPaywallSbBody: "Rapid Fire Mode is also available from the lightning icon."
     },
     firstRun: {
+      titleRun1: "How to play",
       titleRun2: "Quick reminder",
       titleRun3: "Last tip before you play",
 
-      framingLines: [
-        "You don't need to know everything yet.",
-        "Read carefully and trust what you know.",
-        "Discover the full question set.",
+      run1Lines: [
+        "Correct answer: +1 point.",
+        "Wrong answer: +1 mistake.",
+        "After {maxChances} mistakes, the game ends.",
+        "Read carefully and back what you know.",
+        "Think You Know Pickleball? Prove It."
       ],
 
-      trustLines: [
-        "No ads. No tricks.",
-        "Think You Know Pickleball? Prove It.",
+      run2Lines: [
+        "Correct answer: +1 point.",
+        "Wrong answer: +1 mistake.",
+        "After {maxChances} mistakes, the game ends.",
+        "Read carefully.",
+        "Think You Know Pickleball? Prove It."
+      ],
+
+      run3Lines: [
+        "Game ends after {maxChances} mistakes.",
+        "Read carefully.",
+        "Back what you know.",
+        "Think You Know Pickleball? Prove It."
       ],
 
       ctaLabel: "Play"
@@ -698,7 +711,7 @@
     phaseJourney: {
       discovery: {
         badge: "Phase 1/3: Discovery",
-        landingSummaryTemplate: "{seen}/{poolSize} questions seen.",
+        landingSummaryTemplate: "{seen}/{poolSize} rules seen.",
         landingDetailTemplate: "{remaining} rules still to discover.",
         endLens: "You're still discovering the rules. Right now the goal is to see more of them clearly.",
         micropics: {
@@ -771,12 +784,12 @@
       startRunTypePractice: "Mistakes Mode",
 
       // Start-of-run overlay (education)
-      // Ligne unique, lien mental avec le HUD
-      startRunChancesOverlay: "Up to {maxChances} mistakes.",
+      // Court et scannable, avant le premier tap
+      startRunChancesOverlay: "Correct: +1 point.\nWrong: +1 mistake.\nGame ends after {maxChances} mistakes.",
       startOverlayTapAnywhere: "Tap anywhere to start",
 
       // Chance state overlays (no \"-1\" text)
-      lastChanceOverlay: "One mistake left. Choose carefully.",
+      lastChanceOverlay: "One mistake left.",
       gameOverOverlay: "Game over.",
 
       // HUD deltas (PLAYING)
@@ -866,9 +879,9 @@
       ctaExpandDeck: "Expand your deck",
 
       // Start overlay (same component as FREE runs)
-      startOverlayLine1: "Rapid Fire Mode. Faster pace. More pressure.",
-      startOverlayLine2: "Only questions you've already seen in the game.",
-      startOverlayLine3: "Play more games to grow your Rapid Fire pool.",
+      startOverlayLine1: "Rapid Fire Mode.",
+      startOverlayLine2: "Only questions you've already seen.",
+      startOverlayLine3: "Play more games to grow your pool.",
 
       // Teaser premium (filled by ui.js): {remaining}, {limit}
       startOverlayFreeRunsLimitLine: "",
@@ -914,6 +927,7 @@
       // END screen (PRACTICE)
       endTitle: "",
       endLine: "Good recovery.",
+      endLineAllFixed: "You cleared them all.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
         last: "Nice recovery.",
@@ -938,7 +952,7 @@
       playingProgressLine: "{current}/{total}",
 
       // Start overlay (PRACTICE): explain the mode (2 lines shown via typeLine + msg)
-      startRunChancesOverlayPractice: "Mistakes Mode helps you lock in what you missed.\nUp to 10 questions per game.\nFix one and it leaves the list.\nMiss it again and it comes back.",
+      startRunChancesOverlayPractice: "Only questions you missed.\nUp to 10 per game.\nFix one and it drops out. Miss it again and it comes back.",
       startOverlayTapAnywhere: "Tap anywhere to start",
       // Fallback CTA when no repeat tier is selected
       ctaPracticeAgain: "Practice again",
@@ -1022,7 +1036,7 @@
 
       // No redundancy: do not mention chances on END (player already knows).
       endLine: "",
-      endStatsLine: "You got {score} out of {total} right. You've now seen {seen}/{poolSize} questions.",
+      endStatsLine: "You got {score} out of {total} right. You've now seen {seen}/{poolSize} rules.",
 
 
       // (verdict grid removed — identityByVerdict is now the primary END signal)
@@ -1060,12 +1074,8 @@
         legendary: "Play again"
       },
 
-      // Explicit best sequence surfacing (RUN only)
-      // Definition: longest sequence of consecutive correct answers within the run
-      bestStreakLine: "Best streak: {bestStreak} correct in a row.",
-
       strongestTagLine: "Strongest category this game: {tag}.",
-      weakestTagLine: "Category that gave you the most trouble: {tag}.",
+      weakestTagLine: "Toughest category this game: {tag}.",
 
       endTagHighlights: {
         "2026_changes": "The 2026 rule changes were the toughest part of this game."
@@ -1097,7 +1107,7 @@
       // Post-completion routing (pool exhausted + mistakes)
       // Vars: {backlog}
       practiceCtaCountPremium: "Fix what you missed",
-      shareTitle: "Challenge a friend"
+      shareTitle: "Challenge a friend with one rule"
     },
 
     paywall: {
@@ -1190,7 +1200,7 @@
       ],
 
       ruleTitle: "Rule",
-      ruleSentence: "Each correct answer adds 1 point. A wrong answer adds 1 mistake.",
+      ruleSentence: "Each correct answer adds 1 point. A wrong answer adds 1 mistake. After {maxChances} mistakes, the game ends.",
       premiumTitle: "Full access",
       alreadyPremium: "Full access is already enabled on this device.",
       activateTitle: "Use a device unlock code",
@@ -1276,17 +1286,17 @@ Thanks!`
 
 
     share: {
-      ctaLabel: "Copy text",
-      emailLabel: "Send email",
+      ctaLabel: "Copy challenge",
+      emailLabel: "Email challenge",
       emailSubject: "Pickleball Rules Quiz",
-      previewLabel: "Preview message",
+      previewLabel: "Challenge preview",
       toastCopied: "Copied.",
-      template: `Hey!
-I've been playing Pickleball Rules Quiz.
-This made me think of you.
-Best score yet: {bestScore}
+      template: `Think you know pickleball?
+Try this one:
 {funFact}
-Think you'd get it right?
+
+I got {score} right in Pickleball Rules Quiz.
+Can you beat me?
 {url}`,
 
       teaserTrap: "Looks obvious... until it isn't.",
