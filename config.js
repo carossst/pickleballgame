@@ -133,8 +133,6 @@
         legendary: 20
       },
 
-      // END: show best-streak line only if bestStreakNum >= this threshold.
-      bestStreakLineMin: 2
     },
 
     // Personal best (premium history)
@@ -654,7 +652,7 @@
         "Correct answer: +1 point.",
         "Wrong answer: +1 mistake.",
         "After {maxChances} mistakes, the game ends.",
-        "Read carefully and back what you know.",
+        "Read carefully. Go with what you know.",
         "Think You Know Pickleball? Prove It."
       ],
 
@@ -669,7 +667,7 @@
       run3Lines: [
         "Game ends after {maxChances} mistakes.",
         "Read carefully.",
-        "Back what you know.",
+        "Go with what you know.",
         "Think You Know Pickleball? Prove It."
       ],
 
@@ -928,6 +926,7 @@
       endTitle: "",
       endLine: "Good recovery.",
       endLineAllFixed: "You cleared them all.",
+      endStatsLineAllFixed: "You fixed {fixed}. Nothing left to review.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
         last: "Nice recovery.",
@@ -1051,19 +1050,6 @@
         elite: "You know these rules well.",
         legendary: "You really know these rules."
       },
-
-      // Legacy fallback only. The active END progression copy now comes from phaseJourney.*.endLens.
-      lensByVerdict: {
-        none: "You have {backlog} questions to revisit. One more game will already feel better.",
-        start: "Good start. Aim a little higher next game.",
-        building: "{seen}/{poolSize} questions seen. You're starting to sort these out.",
-        strong: "{seen}/{poolSize} questions seen. You know more of these rules now.",
-        elite: "{seen}/{poolSize} questions seen. You're close to real mastery now.",
-        legendary: "{seen}/{poolSize} questions seen. Keep replaying and keep it clear.",
-      },
-
-      lensBonusPrimary: "You're ready for Rapid Fire Mode.",
-
 
       ctaByVerdict: {
         none: "Play again",

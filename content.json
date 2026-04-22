@@ -115,7 +115,7 @@
     },
     {
       "id": 8,
-      "question": "If an opponent can see an extra ball you are carrying during a live rally, it is a fault.",
+      "question": "If an extra ball a player is carrying is visible to an opponent during a live rally, it is a fault.",
       "correctAnswer": true,
       "explanationShort": "Before 2026, the extra ball just had to be hidden.\nNow a visible extra ball during a live rally is specifically a fault.\n2026 USA Pickleball Rulebook Change Document, page 22.",
       "tags": [
@@ -383,7 +383,7 @@
     },
     {
       "id": 30,
-      "question": "A server may have both feet off the ground at contact.",
+      "question": "A server is allowed to have both feet off the ground at contact.",
       "correctAnswer": false,
       "explanationShort": "One foot must be grounded behind the baseline.\nThis applies to both volley and drop serves.\n2026 USA Pickleball Official Rulebook, Rule 7.A.1.",
       "tags": [
@@ -762,9 +762,9 @@
     },
     {
       "id": 62,
-      "question": "A player may ask their opponent for the score before the serve is hit.",
+      "question": "Before the serve is hit, a player may ask their opponent for the correct score.",
       "correctAnswer": true,
-      "explanationShort": "A player can ask the opponent for the score.\nThat right exists before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.E.1.",
+      "explanationShort": "A player may ask the opponent for the correct score.\nThat right exists before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.F.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -1720,7 +1720,7 @@
     },
     {
       "id": 142,
-      "question": "A player may stop play immediately if they suspect the ball is broken.",
+      "question": "A player may stop play immediately because they think the ball is broken.",
       "correctAnswer": false,
       "explanationShort": "Play must continue even if the ball seems broken.\nPlayers may check and challenge after the rally.\n2026 USA Pickleball Official Rulebook, Rule 10.G.",
       "tags": [

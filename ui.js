@@ -6920,7 +6920,6 @@ ${(() => {
     let practiceRepeatNoteTpl = "";
     let runVerdictKey = "";
     let runIdentityTpl = "";
-    let runLensTpl = "";
     let runPoolCompleteLine2Tpl = "";
     let bonusDeckTier = "";
     let bonusRecoLine = "";
@@ -6968,6 +6967,7 @@ ${(() => {
     } else if (isPractice) {
       let practiceEndLineTpl = String(practiceW.endLine || "").trim();
       const practiceEndStatsTpl = String(practiceW.endStatsLine || "").trim();
+      const practiceEndStatsAllFixedTpl = String(practiceW.endStatsLineAllFixed || "").trim();
       const rawMistakeCount = Array.isArray(lastRun.mistakeIds) ? lastRun.mistakeIds.length : 0;
       const total = clampInt(totalPresented, 0, 99999);
       const mistakeCount = clampInt(rawMistakeCount, 0, total);
@@ -7028,7 +7028,10 @@ ${(() => {
       }
 
       endLineTpl = practiceEndLineTpl;
-      practiceStatsLineTpl = (practiceEndStatsTpl && remainingBacklog != null) ? practiceEndStatsTpl : "";
+      practiceStatsLineTpl =
+        (remainingBacklog === 0 && practiceEndStatsAllFixedTpl)
+          ? practiceEndStatsAllFixedTpl
+          : ((practiceEndStatsTpl && remainingBacklog != null) ? practiceEndStatsTpl : "");
       practiceRepeatNoteTpl = repeatNote;
     } else {
       if (isRun && !!lastRun.poolCompleteCelebration) {
@@ -7040,7 +7043,6 @@ ${(() => {
 
       runVerdictKey = getRunVerdictKeyFromScore(cfg, scoreFP);
       runIdentityTpl = String(end?.identityByVerdict?.[runVerdictKey] || "").trim();
-      runLensTpl = String(end?.lensByVerdict?.[runVerdictKey] || "").trim();
     }
 
     return {
@@ -7148,6 +7150,9 @@ ${(() => {
         return raw.replace(/_/g, " ");
       };
 
+      let strongestShown = false;
+      let weakestShown = false;
+
       if (runItemIds.length > 0 && (strongestTagTpl || weakestTagTpl)) {
         const servedCounts = Object.create(null);
         const mistakeCounts = Object.create(null);
@@ -7199,14 +7204,16 @@ ${(() => {
 
         if (!strongestTie && strongestCount > 0 && strongestTag && strongestTagTpl) {
           microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(strongestTagTpl, { tag: formatEndTag(strongestTag) }))}</p>`);
+          strongestShown = true;
         }
 
         if (!weakestTie && weakestCount > 0 && weakestTag && weakestTagTpl) {
           microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(weakestTagTpl, { tag: formatEndTag(weakestTag) }))}</p>`);
+          weakestShown = true;
         }
       }
 
-      if (copyByTag && runMistakeIds.length > 0) {
+      if (!strongestShown && !weakestShown && copyByTag && runMistakeIds.length > 0) {
         const counts = Object.create(null);
 
         for (const rawId of runMistakeIds) {
@@ -7604,7 +7611,6 @@ ${(() => {
       practiceRepeatNoteTpl,
       runVerdictKey,
       runIdentityTpl,
-      runLensTpl,
       runPoolCompleteLine2Tpl,
       bonusDeckTier,
       bonusRecoLine
@@ -7996,7 +8002,7 @@ ${(() => {
         return endLine ? `<p class="wt-meta">${escapeHtml(endLine)}</p>` : ``;
       })()}
 
-    ${(isRun && runPoolCompleteLine2Tpl) ? `<p class="wt-meta">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
+    ${(isRun && runPoolCompleteLine2Tpl && !(poolCompleteCelebration && clampInt(vars.backlog, 0, 99999) === 0)) ? `<p class="wt-meta">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
   </div>
 
   ${``}
