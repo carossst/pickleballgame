@@ -625,7 +625,7 @@
 
       // Before completion (goal gradient) 
       statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} questions",
-      statsPhaseBadgeDiscovery: "Phase 1/3: Discovery",
+      statsPhaseBadgeDiscovery: "Phase 1/3: First pass",
       statsPhaseBadgeCorrection: "Phase 2/3: Fixing mistakes",
       statsPhaseBadgeConsolidation: "Phase 3/3: Locked in",
 
@@ -708,9 +708,9 @@
 
     phaseJourney: {
       discovery: {
-        badge: "Phase 1/3: Discovery",
+        badge: "Phase 1/3: First pass",
         landingSummaryTemplate: "{seen}/{poolSize} rules seen.",
-        landingDetailTemplate: "{remaining} rules still to discover.",
+        landingDetailTemplate: "{remaining} rules left to see.",
         endLens: "You're still discovering the rules. Right now the goal is to see more of them clearly.",
         micropics: {
           streakStart: "3 in a row. Good read.",
