@@ -2347,8 +2347,9 @@ body.wt-state--playing .wt-main .wt-container>.wt-card:last-child {
   gap: var(--gap-2);
   padding: var(--gap-4) var(--space-18);
 
-  /* KISS: never full width */
-  width: min(var(--max), 92vw);
+  /* Keep short micro-hints visually compact instead of stretching like a modal card. */
+  width: fit-content;
+  max-width: min(34rem, 92vw);
 
   background: rgb(var(--surface));
   border-radius: var(--r-card);
