@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "2.9",
+    version: "3.1",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -534,8 +534,8 @@
       loadingIcon: "",
       loadingHint: "Preparing your pickleball rules quiz",
       loadingSlowHint: "Still loading... Check your connection if this takes too long.",
-      updateAvailable: "Update ready. Reload to apply it.",
-      updateNow: "Reload",
+      updateAvailable: "New version available.",
+      updateNow: "Refresh app",
 
       offlinePayment: "Payment requires an internet connection.",
       copied: "Copied",
@@ -824,6 +824,7 @@
 
       // BONUS new best label (END)
       newBest: "NEW BEST SCORE.",
+      celebrationPerfect: "PERFECT RUN",
 
       // END BONUS — cognitive mirror by accuracy tier
       // Contract: arrays MUST contain exactly 2 sentences each. No fallback in UI.
@@ -925,8 +926,10 @@
       // END screen (PRACTICE)
       endTitle: "",
       endLine: "Good recovery.",
-      endLineAllFixed: "You cleared them all.",
-      endStatsLineAllFixed: "You fixed {fixed}. Nothing left to review.",
+      allFixedLine: "You closed it out.",
+      celebrationAllCleared: "STRONG FINISH",
+      endLineAllFixed: "You closed it out.",
+      endStatsLineAllFixed: "You fixed {fixed}.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
         last: "Nice recovery.",
@@ -945,7 +948,7 @@
         direct: "Stay in Mistakes Mode. These are the questions that need the work."
       },
 
-      scoreLine: "{total} questions reviewed.",
+      scoreLine: "{total} questions reviewed",
 
       // PLAYING: calm progress line (replaces assertion in PRACTICE)
       playingProgressLine: "{current}/{total}",
@@ -1114,7 +1117,7 @@
 
       valueBullets: [
         "**All 200 pickleball rules questions**",
-        "A mix of easy, intermediate, and hard questions",
+        "**A mix of easy, intermediate, and hard questions**",
         "**Explanations after every answer**",
         "**Mistakes Mode** to fix what you missed",
         "**Rapid Fire Mode** and unlimited replays"

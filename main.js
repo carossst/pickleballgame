@@ -11,11 +11,6 @@
 
   function reloadForUpdate() {
     try { Logger.log("[UPDATE] reloadForUpdate", { href: window.location.href }); } catch (_) { }
-    try {
-      if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-        window.__WT_UPDATE_DEBUG_STEP__("Reloading now...");
-      }
-    } catch (_) { }
     window.location.assign(buildUpdateReloadUrl());
   }
 
@@ -29,11 +24,6 @@
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      try {
-        if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-          window.__WT_UPDATE_DEBUG_STEP__("Reload button tapped...");
-        }
-      } catch (_) { }
       if (typeof window.__WT_APPLY_SW_UPDATE__ === "function") {
         window.__WT_APPLY_SW_UPDATE__();
       } else {
@@ -187,17 +177,6 @@
       node.classList.add("wt-toast--visible");
     }
 
-    function showUpdateDebugStep(message) {
-      const msg = String(message || "").trim();
-      if (!msg) return;
-      const node = document.getElementById("update-toast");
-      if (!node) return;
-      const text = node.querySelector("[data-wt-update-text]");
-      if (text) text.textContent = msg;
-      node.classList.add("wt-toast--visible");
-    }
-
-    window.__WT_UPDATE_DEBUG_STEP__ = showUpdateDebugStep;
     bindUpdateToastButton();
 
     function setWaitingWorker(worker) {
@@ -239,36 +218,11 @@
     }
 
     window.__WT_APPLY_SW_UPDATE__ = async function () {
-      try {
-        Logger.log("[UPDATE] apply-start", {
-          hasRegistration: !!window.__WT_SW_REGISTRATION__,
-          hasWaitingRef: !!window.__WT_SW_WAITING__,
-          ready: window.__WT_SW_UPDATE_READY__ === true
-        });
-      } catch (_) { }
-      try {
-        if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-          window.__WT_UPDATE_DEBUG_STEP__("Update tap received...");
-        }
-      } catch (_) { }
-
       let fallbackTimer = null;
       function armFallbackReload() {
         if (fallbackTimer) return;
-        try { Logger.log("[UPDATE] arm-fallback-reload"); } catch (_) { }
-        try {
-          if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-            window.__WT_UPDATE_DEBUG_STEP__("Applying update... if it stalls, reload will be forced.");
-          }
-        } catch (_) { }
         fallbackTimer = window.setTimeout(() => {
           fallbackTimer = null;
-          try { Logger.warn("[UPDATE] fallback-reload-fired"); } catch (_) { }
-          try {
-            if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-              window.__WT_UPDATE_DEBUG_STEP__("Fallback reload triggered...");
-            }
-          } catch (_) { }
           reloadForUpdate();
         }, 2500);
       }
@@ -278,24 +232,12 @@
 
       if (!waiting && registration) {
         try {
-          try { Logger.log("[UPDATE] registration.update()"); } catch (_) { }
-          try {
-            if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-              window.__WT_UPDATE_DEBUG_STEP__("Checking for the new version...");
-            }
-          } catch (_) { }
           await registration.update();
         } catch (_) { }
         waiting = registration.waiting || null;
       }
 
       if (!waiting && registration?.installing) {
-        try { Logger.log("[UPDATE] try-promote-installing-worker", { state: registration.installing.state }); } catch (_) { }
-        try {
-          if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-            window.__WT_UPDATE_DEBUG_STEP__("Waiting for the new version to finish installing...");
-          }
-        } catch (_) { }
         const ready = await tryPromoteInstallingWorker(registration.installing);
         if (ready) {
           waiting = window.__WT_SW_WAITING__ || registration.waiting || null;
@@ -303,12 +245,6 @@
       }
 
       if (!waiting || typeof waiting.postMessage !== "function") {
-        try { Logger.warn("[UPDATE] no-waiting-worker -> hard reload"); } catch (_) { }
-        try {
-          if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-            window.__WT_UPDATE_DEBUG_STEP__("No waiting update found. Forcing reload...");
-          }
-        } catch (_) { }
         reloadForUpdate();
         return;
       }
@@ -317,34 +253,17 @@
       try { window.__WT_SW_UPDATE_IN_FLIGHT__ = true; } catch (_) { }
 
       try {
-        try { Logger.log("[UPDATE] postMessage SKIP_WAITING"); } catch (_) { }
-        try {
-          if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-            window.__WT_UPDATE_DEBUG_STEP__("Applying the update...");
-          }
-        } catch (_) { }
         armFallbackReload();
         waiting.postMessage({ type: "SKIP_WAITING" });
       } catch (_) {
         try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false; } catch (_) { }
         try { window.__WT_SW_UPDATE_IN_FLIGHT__ = false; } catch (_) { }
-        try { Logger.warn("[UPDATE] postMessage failed -> hard reload"); } catch (_) { }
-        try {
-          if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-            window.__WT_UPDATE_DEBUG_STEP__("Update apply failed. Forcing reload...");
-          }
-        } catch (_) { }
         reloadForUpdate();
       }
     };
 
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       try { Logger.log("[UPDATE] controllerchange"); } catch (_) { }
-      try {
-        if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-          window.__WT_UPDATE_DEBUG_STEP__("New version ready. Reloading...");
-        }
-      } catch (_) { }
       if (window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ !== true) return;
       try { window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false; } catch (_) { }
       try { window.__WT_SW_UPDATE_IN_FLIGHT__ = false; } catch (_) { }

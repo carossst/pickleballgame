@@ -2406,15 +2406,13 @@ void function () {
         }
       } catch (_) { /* silent */ }
 
-      // END "Record moment" (RUN+Premium+newBest only): temporarily replace scoreLine with newBest copy.
+      // END celebration moment: new best, all mistakes cleared, or perfect bonus run.
       try {
         const cfg = this.config || {};
         const w = this.wording || {};
         const endW = w.end || {};
-
-        const premium = (this.storage && typeof this.storage.isPremium === "function")
-          ? (this.storage.isPremium() === true)
-          : false;
+        const practiceW = w.practice || {};
+        const bonusW = w.secretBonus || {};
 
         const lastRun = this._runtime?.lastRun || {};
 
@@ -2434,15 +2432,46 @@ void function () {
         const mode = String(lastRun.mode || "").trim();
         const isRun = (mode === "RUN");
         const isBonus = (mode === "BONUS");
+        const isPractice = (mode === "PRACTICE");
         const newBest = (isRun || isBonus) && (lastRun.newBest === true);
+        let practiceAllCleared = false;
+        if (isPractice && this.storage && typeof this.storage.getActiveMistakesCount === "function") {
+          try { practiceAllCleared = clampInt(this.storage.getActiveMistakesCount(), 0, 99999) === 0; } catch (_) { practiceAllCleared = false; }
+        }
+
+        let bonusPerfect = false;
+        if (isBonus) {
+          const shown = Array.isArray(lastRun.runItemIds) ? lastRun.runItemIds.length : 0;
+          const score = clampInt(Number(lastRun.scoreFP || 0), 0, 99999);
+          const accuracy = shown > 0 ? (score / shown) : -1;
+          const tiers = Array.isArray(cfg?.secretBonus?.endTiers) ? cfg.secretBonus.endTiers : [];
+          let bonusLevel = "";
+          for (const t of tiers) {
+            const key = String(t?.key || "").trim();
+            const min = Number(t?.minAccuracy);
+            if (!key || !Number.isFinite(min)) continue;
+            if (accuracy >= min) {
+              bonusLevel = key;
+              break;
+            }
+          }
+          bonusPerfect = (bonusLevel === "perfect");
+        }
 
         const ms = Number(cfg?.ui?.endRecordMomentMs);
 
         const newBestTpl = isBonus
           ? String((w && w.secretBonus && w.secretBonus.newBest) || endW.newBest || "").trim()
           : String(endW.newBest || "").trim();
+        const practiceCelebrateTpl = String(practiceW.celebrationAllCleared || practiceW.endLineAllFixed || "").trim();
+        const bonusCelebrateTpl = String(bonusW.celebrationPerfect || "").trim();
+        const celebrationLabel =
+          newBest ? newBestTpl
+            : practiceAllCleared ? practiceCelebrateTpl
+              : bonusPerfect ? bonusCelebrateTpl
+                : "";
 
-        const enabled = (newBest && newBestTpl && Number.isFinite(ms) && ms > 0);
+        const enabled = (!!celebrationLabel && Number.isFinite(ms) && ms > 0);
         if (enabled) {
           if (!this._runtime) this._runtime = {};
           if (this._runtime.endRecordMomentTimer) {
@@ -5590,11 +5619,6 @@ void function () {
         });
       }
     } catch (_) { }
-    try {
-      if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
-        window.__WT_UPDATE_DEBUG_STEP__("Reload button tapped...");
-      }
-    } catch (_) { }
     if (!node) return;
 
     // If an update is ready, user intent = apply it now.
@@ -7693,6 +7717,8 @@ ${(() => {
     const scoreLine = scoreLineTpl ? fillTemplate(scoreLineTpl, vars) : "";
     const newBestLine = newBestTpl ? fillTemplate(newBestTpl, vars) : "";
     const endLine = endLineTpl ? fillTemplate(endLineTpl, vars) : "";
+    const practiceCelebrateLine = String(practiceW.celebrationAllCleared || practiceW.endLineAllFixed || "").trim();
+    const bonusCelebrateLine = String(bonusW.celebrationPerfect || "").trim();
     const runStatsLine = (() => {
       if (!isRun || !!lastRun.poolCompleteCelebration) return "";
 
@@ -7707,7 +7733,14 @@ ${(() => {
 
     // END "Record moment" display (visual only): keep score line, but show burst/spark briefly.
     const recordUntil = Number(this._runtime?.endRecordMomentUntil || 0);
-    const recordActive = (newBest && newBestLine) ? (Date.now() < recordUntil) : false;
+    const practiceAllCleared = isPractice && clampInt(vars.remaining, 0, 99999) === 0;
+    const bonusPerfect = isBonus && bonusLevel === "perfect";
+    const celebrationLabel =
+      newBest ? newBestLine
+        : practiceAllCleared ? practiceCelebrateLine
+          : bonusPerfect ? bonusCelebrateLine
+            : "";
+    const recordActive = (!!celebrationLabel) ? (Date.now() < recordUntil) : false;
 
     // Always show the score (requested), never replace it.
     const displayScoreLine = scoreLine;
@@ -7965,7 +7998,7 @@ ${(() => {
         ${escapeHtml(displayScoreLine)}
       </span>
 
-      ${(newBest && newBestLine) ? `<span class="wt-end-score__label">${escapeHtml(newBestLine)}</span>` : ``}
+      ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
 
       ${recordActive ? `
         <span class="wt-end-score__burst" aria-hidden="true"></span>

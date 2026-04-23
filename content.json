@@ -753,7 +753,7 @@
       "id": 61,
       "question": "In doubles, the first score call of the game is 'zero \u2013 zero \u2013 one.'",
       "correctAnswer": false,
-      "explanationShort": "The first doubles score call is 'zero\u2013zero\u2013two.'\nThe 'two' means the opening server is treated as server 2, so that team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
+      "explanationShort": "The first doubles score call is 'zero\u2013zero\u2013two.'\nThe opening team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
