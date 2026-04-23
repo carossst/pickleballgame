@@ -4635,7 +4635,6 @@ void function () {
       chancesLeft,
       newBest,
       bestScoreFP,
-      bestStreak: clampInt(this._runtime.microPics?.maxCorrectStreak, 0, 9999),
       mistakeIds: Array.isArray(this._runtime.runMistakeIds) ? this._runtime.runMistakeIds.slice() : [],
       runItemIds: Array.isArray(this._runtime.runItemIds) ? this._runtime.runItemIds.slice() : [],
       poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending
