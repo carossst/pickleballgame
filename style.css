@@ -130,7 +130,7 @@
   /* Text */
   --text-strong: 15 23 42;
   --text: 30 41 59;
-  --text-muted: 71 85 105;
+  --text-muted: 51 65 85;
 
   /* Semantic */
   --on-primary: 255 255 255;
@@ -441,6 +441,8 @@ body.wt-state--end .wt-card--end {
 .wt-end-header {
   flex-wrap: wrap;
   align-items: flex-start;
+  row-gap: var(--gap-2);
+  margin-bottom: var(--gap-3);
 }
 
 .wt-end-header__brand {
@@ -480,12 +482,6 @@ body.wt-state--end .wt-card--end {
 .wt-end-header__actions {
   flex: 0 0 auto;
   flex-wrap: nowrap;
-}
-
-body.wt-state--end .wt-card--end .wt-end-header + .wt-h1,
-body.wt-state--end .wt-card--end .wt-end-header + .wt-h2,
-body.wt-state--end .wt-card--end .wt-end-header + .wt-end-score {
-  margin-top: var(--gap-3);
 }
 
 @media (min-width: 900px) {
@@ -716,8 +712,9 @@ body.wt-state--end .wt-card--end .wt-end-header + .wt-end-score {
 }
 
 .wt-landing-header__brand .wt-branding-logo {
-  width: calc(var(--wt-title-size, 32px) * (var(--wt-logo-scale) + 0.42));
-  height: calc(var(--wt-title-size, 32px) * (var(--wt-logo-scale) + 0.42));
+  width: calc(var(--wt-title-size, 32px) * (var(--wt-logo-scale) + 0.62));
+  height: calc(var(--wt-title-size, 32px) * (var(--wt-logo-scale) + 0.62));
+  padding: 2px;
 }
 
 @media (min-width: 481px) {
@@ -1754,7 +1751,7 @@ body.wt-state--end .wt-card--end .wt-end-header + .wt-end-score {
   box-shadow: var(--shadow-2);
   position: relative;
   padding-right: 36px;
-  overflow: clip;
+  overflow: visible;
   white-space: nowrap;
 }
 
@@ -1877,7 +1874,7 @@ body.wt-state--end .wt-card--end .wt-end-header + .wt-end-score {
   margin-left: var(--gap-1);
   font-size: var(--fs-xs);
   font-weight: 500;
-  color: rgb(var(--text-strong) / var(--wt-a-70));
+  color: rgb(var(--text-strong) / var(--wt-a-82));
 }
 
 .wt-hud-lives__dot {
@@ -2011,7 +2008,7 @@ body.wt-state--end .wt-card--end .wt-end-header + .wt-end-score {
 /* Very small screens: keep HUD readable without forcing wrap too often */
 @media (max-width: 480px) {
   .wt-hud {
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 10px;
   }
 
@@ -2029,6 +2026,8 @@ body.wt-state--end .wt-card--end .wt-end-header + .wt-end-score {
     padding: 5px var(--space-8);
     padding-right: 32px;
     box-shadow: var(--shadow-1);
+    min-width: 132px;
+    justify-content: center;
   }
 
   .wt-pill__delta {
@@ -3534,7 +3533,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
     --border: 51 65 85;
     --text-strong: 241 245 249;
     --text: 226 232 240;
-    --text-muted: 148 163 184;
+    --text-muted: 165 180 200;
     --shadow-color: 2 6 23;
 
     /* Dark mode accessibility: links + focus rings must pass WCAG AA on --bg */

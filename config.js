@@ -150,7 +150,7 @@
     currency: "USD",
     earlyPriceCents: 499,
     standardPriceCents: 699,
-    earlyPriceWindowMs: 20 * 60 * 1000, // 20 minutes
+    earlyPriceWindowMs: 15 * 60 * 1000, // 15 minutes
     stripeEarlyPaymentUrl: "https://buy.stripe.com/dRmcN53jhc63evD3EOejK00",
     stripeStandardPaymentUrl: "https://buy.stripe.com/bJe3cv2fd7PNbjr7V4ejK01",
     successRedirectUrl: "./success.html",
@@ -725,8 +725,8 @@
       correction: {
         badge: "Phase 2/3: Fixing mistakes",
         landingSummaryTemplate: "Mistakes left: {mistakes}",
-        landingDetail: "You've seen the full set. Now you're clearing up what still trips you up.",
-        endLens: "You've seen the full set. Now you're clearing up the rules that still catch you.",
+        landingDetail: "You've seen the full set. Now clear up the rules that still catch you.",
+        endLens: "You've seen the full set. Now clear up the rules that still catch you.",
         micropics: {
           streakStart: "3 in a row. Better.",
           streakBuilding: "6 in a row. Clearing up.",
@@ -740,8 +740,8 @@
       consolidation: {
         badge: "Phase 3/3: Locked in",
         landingSummaryTemplate: "{mastered}/{poolSize} questions answered correctly.",
-        landingDetail: "You've cleared the mistakes. Now you're keeping the rules clear over time.",
-        endLens: "You've cleared the mistakes. Now the job is to keep the rules clear over time.",
+        landingDetail: "You've cleared the mistakes. Now keep the rules clear.",
+        endLens: "You've cleared the mistakes. Now keep the rules clear.",
         micropics: {
           streakStart: "3 in a row. Still clear.",
           streakBuilding: "6 in a row. Still clear.",
@@ -1114,22 +1114,23 @@
 
       valueBullets: [
         "**All 200 pickleball rules questions**",
+        "A mix of easy, intermediate, and hard questions",
         "**Explanations after every answer**",
         "**Mistakes Mode** to fix what you missed",
         "**Rapid Fire Mode** and unlimited replays"
       ],
 
       // Shared bridge copy (LANDING post-paywall + END runs exhausted)
-      bridgeTitle: "Keep improving your pickleball rules knowledge.",
-      bridgeBody: "Unlock all 200 questions, fix what you missed, and keep replaying with every mode open.",
+      bridgeTitle: "Know the pickleball rules better.",
+      bridgeBody: "Unlock all 200 questions, fix what you missed, and keep playing with every mode open.",
 
       trustLine: "**One-time unlock**",
       trustBullets: [
-        "Pay once, no subscription",
-        "No account or signup needed",
-        "Full access stays on this device",
-        "Works offline after first load",
-        "Secure payment through Stripe"
+        "**Pay once**, no subscription",
+        "**No account** or signup needed",
+        "**Full access** stays on this device",
+        "**Works offline** after first load",
+        "**Secure payment** through Stripe"
       ],
 
 
@@ -1137,8 +1138,8 @@
       // If all are empty, nothing is rendered.
       socialProofTitle: "What players say",
       socialProofQuotes: [
-        { quote: "Fast, clear, and surprisingly useful. I thought I knew the rules, but the explanations kept correcting me.", author: "Maya, club player" },
-        { quote: "The true or false format makes it easy to keep playing, and Mistakes Mode is what helped me clear up the rules I kept missing.", author: "Jon, doubles regular" }
+        { quote: "★★★★★\nFast, clear, and useful. I thought I knew the rules, but the explanations caught a lot I had wrong.", author: "Maya, tournament player" },
+        { quote: "★★★★★\nEasy to keep playing, and Mistakes Mode helped me clean up the rules I kept missing.", author: "Jon, doubles regular" }
       ],
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)

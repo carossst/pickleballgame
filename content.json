@@ -553,7 +553,7 @@
       "id": 44,
       "question": "A serve that touches the net is automatically a fault.",
       "correctAnswer": false,
-      "explanationShort": "The served ball can touch the net before landing.\nTouching the net doesn't invalidate the serve.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
+      "explanationShort": "The served ball can touch the net before landing.\nA net touch does not make the serve a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.E.",
       "tags": [
         "Serving Rules",
         "Easy",
@@ -669,7 +669,7 @@
       "id": 54,
       "question": "Saying 'not ready' counts as a valid ready signal.",
       "correctAnswer": false,
-      "explanationShort": "Only physical signals count here, like raising the paddle.\nSaying 'not ready' doesn't count.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1.",
+      "explanationShort": "Only physical signals count here, like raising the paddle.\nSaying 'not ready' is not a valid signal.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -681,7 +681,7 @@
       "id": 55,
       "question": "After the score call starts, a 'not ready' signal stops play.",
       "correctAnswer": false,
-      "explanationShort": "Once the score call starts, a 'not ready' signal no longer counts.\nThe only exception is a hinder signal.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2.",
+      "explanationShort": "Once the score call starts, a 'not ready' signal no longer stops play.\nOnly a hinder signal still counts at that point.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -764,7 +764,7 @@
       "id": 62,
       "question": "Before the serve is hit, a player may ask their opponent for the correct score.",
       "correctAnswer": true,
-      "explanationShort": "A player may ask the opponent for the correct score.\nThat right exists before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.F.",
+      "explanationShort": "A player may ask the opponent for the correct score.\nThis is allowed before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.F.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -823,7 +823,7 @@
       "id": 67,
       "question": "In standard scoring, the receiving team scores a point when the serving team loses a rally.",
       "correctAnswer": false,
-      "explanationShort": "A technical foul can give a point to the receivers.\nThat's the exception to serve-only scoring.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
+      "explanationShort": "In standard scoring, the receiving team does not score by winning a rally.\nReceivers get a point only through a technical foul on the serving team.\n2026 USA Pickleball Official Rulebook, Rule 4.A.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -1960,7 +1960,7 @@
       "id": 162,
       "question": "A standard time-out may be called before a match starts.",
       "correctAnswer": false,
-      "explanationShort": "A time-out can't be called before a match starts.\nTime-outs are only available between rallies or games.\n2026 USA Pickleball Official Rulebook, Rule 21.A.1.",
+      "explanationShort": "A standard time-out cannot be called before a match starts.\nYou can only call one once the match is underway.\n2026 USA Pickleball Official Rulebook, Rule 21.A.1.",
       "tags": [
         "Score & Readiness",
         "Intermediate",
@@ -2048,7 +2048,7 @@
       "id": 169,
       "question": "The standard tournament format is best 2-of-3 games to 11 points.",
       "correctAnswer": true,
-      "explanationShort": "This is the standard for USAP sanctioned events.\nBest 3-of-5 or one game to 15/21 are also allowed.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.a.",
+      "explanationShort": "This is the standard for USA Pickleball sanctioned events.\nBest 3-of-5 or one game to 15/21 are also allowed.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.a.",
       "tags": [
         "Score & Readiness",
         "Intermediate",

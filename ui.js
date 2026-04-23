@@ -8100,7 +8100,7 @@ ${(() => {
       ? fillTemplate(scoreAriaTpl, { scoreLabel, score: scoreFP, fpShort: "" }).replace(/\s+/g, " ").trim()
       : "";
 
-    // Personal best (HUD anchor): show only if explicitly enabled + Premium + best exists
+    // Personal best (HUD anchor): show for everyone if explicitly enabled + a best exists
     const bestLabel = String(ui?.bestScoreLabel || "").trim();
     const bestAriaTpl = String(ui?.bestScoreAriaTemplate || "").trim();
 
@@ -8110,7 +8110,7 @@ ${(() => {
     const modeNow = String(this._runtime?.runMode || "RUN").trim();
 
     let bestScoreFP = null;
-    if (pbEnabled && premium && this.storage) {
+    if (pbEnabled && this.storage) {
       try {
         if (modeNow === "BONUS" && typeof this.storage.getBonusBest === "function") {
           const bb = this.storage.getBonusBest() || null;

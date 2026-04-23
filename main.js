@@ -19,6 +19,29 @@
     window.location.assign(buildUpdateReloadUrl());
   }
 
+  function bindUpdateToastButton() {
+    const node = document.getElementById("update-toast");
+    if (!node) return;
+    const btn = node.querySelector('[data-action="apply-update"]');
+    if (!btn) return;
+    if (btn.getAttribute("data-wt-bound-update-direct") === "1") return;
+    btn.setAttribute("data-wt-bound-update-direct", "1");
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        if (typeof window.__WT_UPDATE_DEBUG_STEP__ === "function") {
+          window.__WT_UPDATE_DEBUG_STEP__("Reload button tapped...");
+        }
+      } catch (_) { }
+      if (typeof window.__WT_APPLY_SW_UPDATE__ === "function") {
+        window.__WT_APPLY_SW_UPDATE__();
+      } else {
+        reloadForUpdate();
+      }
+    });
+  }
+
   function escapeHtmlSafe(str) {
     const s = String(str == null ? "" : str);
     const fn = window.WT_UTILS && typeof window.WT_UTILS.escapeHtml === "function"
@@ -160,6 +183,7 @@
       const text = node.querySelector("[data-wt-update-text]");
       if (text) text.textContent = msg;
 
+      bindUpdateToastButton();
       node.classList.add("wt-toast--visible");
     }
 
@@ -174,6 +198,7 @@
     }
 
     window.__WT_UPDATE_DEBUG_STEP__ = showUpdateDebugStep;
+    bindUpdateToastButton();
 
     function setWaitingWorker(worker) {
       if (!worker) return;
