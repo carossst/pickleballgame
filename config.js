@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "3.1",
+    version: "3.2",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1063,8 +1063,8 @@
         legendary: "Play again"
       },
 
-      strongestTagLine: "Strongest category this game: {tag}.",
-      weakestTagLine: "Toughest category this game: {tag}.",
+      strongestTagLine: "Category you handled best: {tag}.",
+      weakestTagLine: "Category that gave you the most trouble: {tag}.",
 
       endTagHighlights: {
         "2026_changes": "The 2026 rule changes were the toughest part of this game."
@@ -1096,7 +1096,7 @@
       // Post-completion routing (pool exhausted + mistakes)
       // Vars: {backlog}
       practiceCtaCountPremium: "Fix what you missed",
-      shareTitle: "Challenge a friend with one rule"
+      shareTitle: "Challenge a friend"
     },
 
     paywall: {

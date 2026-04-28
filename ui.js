@@ -7044,7 +7044,7 @@ ${(() => {
       try {
         const tiers = Array.isArray(cfg?.routing?.practiceRepeatTiers) ? cfg.routing.practiceRepeatTiers : null;
 
-        if (tiers && remainingBacklog != null && remainingBacklog >= 1) {
+        if (tiers && remainingBacklog != null && remainingBacklog >= 1 && fixedCount >= 1) {
           for (const t of tiers) {
             const key = String(t?.key || "").trim();
             const rawMin = Number(t?.minRemaining);
@@ -7974,14 +7974,7 @@ ${(() => {
       getShareText: this._getShareText ? this._getShareText.bind(this) : null
     });
 
-    const shouldPromoteShare =
-      isRun && (
-        newBest ||
-        !!pbLine ||
-        runVerdictKey === "elite" ||
-        runVerdictKey === "legendary" ||
-        poolCompleteCelebration
-      );
+    const shouldPromoteShare = isRun;
 
     const shareBeforeRecapHtml = shouldPromoteShare ? shareHtml : "";
     const shareAfterRecapHtml = shouldPromoteShare ? "" : shareHtml;
