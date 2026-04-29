@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "3.2",
+    version: "3.4",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -521,8 +521,8 @@
   // If it sounds aggressive, ego-heavy, too abstract, or too performance-driven for the context -> reject.
   window.WT_WORDING = {
     brand: {
-      creatorLine: "Created by Carole at Bonjour Pickleball.",
-      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a> at <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>."
+      creatorLine: "Created by Carole at Bonjour Pickleball",
+      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a> at <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
     },
 
     system: {
@@ -612,7 +612,7 @@
       tagline: "**Think you know pickleball? Prove it.**",
       subtitle: "A fast true-or-false pickleball rules game.\n{poolSize} questions about serving, faults, scoring, line calls, and rule changes.",
       microFun: "Quick games · No signup · Free to try",
-      microTrust: "Learn fast, replay often, and fix your mistakes as you go.",
+      microTrust: "Play a few quick games and see what really holds up.",
 
       runsLabel: "",
       runsFreeMode: "",
@@ -649,10 +649,10 @@
       titleRun3: "Last tip before you play",
 
       run1Lines: [
+        "You'll see pickleball rules one by one.\nDecide whether each one is true or false.",
         "Correct answer: +1 point.",
         "Wrong answer: +1 mistake.",
         "After {maxChances} mistakes, the game ends.",
-        "Read carefully. Go with what you know.",
         "Think You Know Pickleball? Prove It."
       ],
 
@@ -709,9 +709,9 @@
     phaseJourney: {
       discovery: {
         badge: "Phase 1/3: First pass",
-        landingSummaryTemplate: "{seen}/{poolSize} rules seen.",
-        landingDetailTemplate: "{remaining} rules left to see.",
-        endLens: "You're still discovering the rules. Right now the goal is to see more of them clearly.",
+        landingSummaryTemplate: "{seen}/{poolSize} questions played.",
+        landingDetailTemplate: "{remaining} still to go in your first pass.",
+        endLens: "You're still on your first pass. Right now the goal is to cover more of the set.",
         micropics: {
           streakStart: "3 in a row. Good read.",
           streakBuilding: "6 in a row. Good read.",
@@ -815,6 +815,7 @@
 
       // END screen (BONUS)
       endTitle: "",
+      scoreLine: "Score: {score}",
       endStatsLine: "You got {cleared} out of {shown} right.",
       endStatsLineOne: "You got {cleared} out of {shown} right.",
       endDeckSizeLine: "Rapid Fire pool: {count} questions.",
@@ -1048,7 +1049,7 @@
       identityByVerdict: {
         none: "A few questions are still slipping past you.",
         start: "You're getting your bearings.",
-        building: "You're starting to sort these out.",
+        building: "You're starting to get the feel for these rules.",
         strong: "You know more of these rules now.",
         elite: "You know these rules well.",
         legendary: "You really know these rules."
@@ -1141,8 +1142,8 @@
       // If all are empty, nothing is rendered.
       socialProofTitle: "What players say",
       socialProofQuotes: [
-        { quote: "★★★★★\nFast, clear, and useful. I thought I knew the rules, but the explanations caught a lot I had wrong.", author: "Maya, tournament player" },
-        { quote: "★★★★★\nEasy to keep playing, and Mistakes Mode helped me clean up the rules I kept missing.", author: "Jon, doubles regular" }
+        { quote: "★★★★★\nI felt confident going in, and this still caught a few things I was getting wrong.", author: "Maya, tournament player" },
+        { quote: "★★★★★\nA few quick games was enough to show me which rules I was still shaky on.", author: "Jon, doubles regular" }
       ],
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)

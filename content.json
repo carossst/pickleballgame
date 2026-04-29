@@ -1311,9 +1311,9 @@
     },
     {
       "id": 108,
-      "question": "A player may overrule their own line call to their own disadvantage.",
+      "question": "If a player does not return the ball, a prompt \"out\" call may still count even after the rally has already stopped.",
       "correctAnswer": true,
-      "explanationShort": "Players may override calls to their own disadvantage.\nOverriding to gain an advantage is not allowed.\n2026 USA Pickleball Official Rulebook, Rule 8.G.",
+      "explanationShort": "This applies only when the player does not return the ball.\nThe \"out\" call still has to come right away, not after a pause.\n2026 USA Pickleball Official Rulebook, Rule 8.F.3.",
       "tags": [
         "Line Calls",
         "Intermediate",
