@@ -521,8 +521,8 @@
   // If it sounds aggressive, ego-heavy, too abstract, or too performance-driven for the context -> reject.
   window.WT_WORDING = {
     brand: {
-      creatorLine: "Created by Carole at Bonjour Pickleball",
-      creatorLineHtml: "Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a> at <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
+      creatorLine: "An indie game by Bonjour Pickleball",
+      creatorLineHtml: "An indie game by <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a><br>Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>"
     },
 
     system: {
@@ -822,6 +822,9 @@
       endDeckSizeLineOne: "Rapid Fire pool: 1 question.",
       endPoolProgressTemplate: "{cleared} out of {shown} correct this round.",
       endDeckExhaustedToast: "All available questions played.",
+      mistakesTitle: "Questions to revisit",
+      mistakesToggle: "{count} mistakes",
+      mistakesNone: "No mistakes.",
 
       // BONUS new best label (END)
       newBest: "NEW BEST SCORE.",
@@ -926,7 +929,7 @@
 
       // END screen (PRACTICE)
       endTitle: "",
-      endLine: "Good recovery.",
+      endLine: "Keep going.",
       allFixedLine: "You closed it out.",
       celebrationAllCleared: "STRONG FINISH",
       endLineAllFixed: "You closed it out.",
@@ -1105,7 +1108,7 @@
       headline: "Unlock the full pickleball rules quiz.",
 
       // LAST FREE RUN - stronger but factual
-      headlineLastFree: "That was your last free game. Unlock the full pickleball rules quiz and keep going.",
+      headlineLastFree: "That was your last free game. Keep going with full access.",
 
       // Projection personnalisée (PAYWALL only)
       // Vars: {seen} {poolSize} {remaining}
@@ -1142,7 +1145,7 @@
       // If all are empty, nothing is rendered.
       socialProofTitle: "What players say",
       socialProofQuotes: [
-        { quote: "★★★★★\nI felt confident going in, and this still caught a few things I was getting wrong.", author: "Maya, tournament player" },
+        { quote: "★★★★★\nI felt confident going in, and this still caught a few things I was getting wrong. The explanations are clear and genuinely helpful.", author: "Maya, tournament player" },
         { quote: "★★★★★\nA few quick games was enough to show me which rules I was still shaky on.", author: "Jon, doubles regular" }
       ],
 

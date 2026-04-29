@@ -7153,8 +7153,8 @@ ${(() => {
     const ids = isRun ? rawIds.slice(0, maxChances) : rawIds.slice();
     const recapW = isBonus ? (bonusW || {}) : (isPractice ? (practiceW || {}) : (end || {}));
 
-    const toggleTpl = String(recapW.mistakesToggle || "").trim();
-    const title = String(recapW.mistakesTitle || "").trim();
+    const toggleTpl = String(recapW.mistakesToggle || end.mistakesToggle || "").trim();
+    const title = String(recapW.mistakesTitle || end.mistakesTitle || "").trim();
 
     if (!ids.length) {
       return "";
@@ -7753,6 +7753,7 @@ ${(() => {
       vars.remaining = clampInt(poolSize - totalPresented, 0, poolSize);
     }
     const scoreLine = scoreLineTpl ? fillTemplate(scoreLineTpl, vars) : "";
+    const scoreHeading = String(ui.scoreLabel || "").trim();
     const newBestLine = newBestTpl ? fillTemplate(newBestTpl, vars) : "";
     const endLine = endLineTpl ? fillTemplate(endLineTpl, vars) : "";
     const practiceCelebrateLine = String(practiceW.celebrationAllCleared || practiceW.endLineAllFixed || "").trim();
@@ -7782,6 +7783,8 @@ ${(() => {
 
     // Always show the score (requested), never replace it.
     const displayScoreLine = scoreLine;
+    const displayScoreHeading = ((isRun || isBonus) && scoreHeading && scoreFP >= 0) ? scoreHeading : "";
+    const displayScoreValue = ((isRun || isBonus) && scoreLine) ? String(scoreFP) : "";
 
     const pbLineTpl = String(end.personalBestLine || "").trim();
     const nearBestTpl = String(end.nearBestLine || "").trim();
@@ -8025,8 +8028,9 @@ ${(() => {
 
   ${displayScoreLine ? `
     <p class="wt-h2 wt-end-score${newBest ? " wt-end-score--newbest" : ""}">
+      ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
       <span class="wt-end-score__value">
-        ${escapeHtml(displayScoreLine)}
+        ${escapeHtml(displayScoreValue || displayScoreLine)}
       </span>
 
       ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
