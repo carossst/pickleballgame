@@ -208,6 +208,16 @@
         }
       },
 
+      progression: {
+        currentLevel: 0,
+        unlockedAtByLevel: {
+          1: 0,
+          2: 0,
+          3: 0,
+          4: 0
+        }
+      },
+
       // Per-item stats (anti-repetition + practice)
       statsByItem: {},
 
@@ -321,6 +331,7 @@
     if (!this.data.waitlist) this.data.waitlist = deepCopy(this.defaultData.waitlist);
     if (!this.data.counters) this.data.counters = deepCopy(this.defaultData.counters);
     if (!this.data.history) this.data.history = deepCopy(this.defaultData.history);
+    if (!this.data.progression) this.data.progression = deepCopy(this.defaultData.progression);
     if (!this.data.statsByItem) this.data.statsByItem = {};
     if (!this.data.personalBest) this.data.personalBest = deepCopy(this.defaultData.personalBest);
     if (!this.data.bonusBest) this.data.bonusBest = deepCopy(this.defaultData.bonusBest);
@@ -368,6 +379,10 @@
       this.data.analytics.premiumUnlockedAt = 0;
     } else {
       this.data.analytics.premiumUnlockedAt = Math.floor(Number(this.data.analytics.premiumUnlockedAt));
+    }
+
+    if (this._backfillProgressionFromCurrentState()) {
+      this._save();
     }
 
     // Legacy migration: UI used to bypass StorageManager and write localStorage directly.
@@ -1666,6 +1681,116 @@
     return {
       bestScoreFP: clampNonNegativeInt(bb.bestScoreFP),
       achievedAt: clampNonNegativeInt(bb.achievedAt)
+    };
+  };
+
+  StorageManager.prototype.getLevelState = function () {
+    const p = this.data?.progression || {};
+    const unlockedAtByLevelRaw = p.unlockedAtByLevel || {};
+    return {
+      currentLevel: Math.min(4, clampNonNegativeInt(p.currentLevel)),
+      unlockedAtByLevel: {
+        1: clampNonNegativeInt(unlockedAtByLevelRaw[1]),
+        2: clampNonNegativeInt(unlockedAtByLevelRaw[2]),
+        3: clampNonNegativeInt(unlockedAtByLevelRaw[3]),
+        4: clampNonNegativeInt(unlockedAtByLevelRaw[4])
+      }
+    };
+  };
+
+  StorageManager.prototype._backfillProgressionFromCurrentState = function () {
+    if (!this.data) return false;
+    if (!this.data.progression || typeof this.data.progression !== "object") {
+      this.data.progression = deepCopy(this.defaultData.progression);
+    }
+    if (!this.data.progression.unlockedAtByLevel || typeof this.data.progression.unlockedAtByLevel !== "object") {
+      this.data.progression.unlockedAtByLevel = deepCopy(this.defaultData.progression.unlockedAtByLevel);
+    }
+
+    const cur = Math.min(4, clampNonNegativeInt(this.data.progression.currentLevel));
+    let next = cur;
+
+    if (cur < 1 && this.isPoolExhausted()) next = 1;
+    if (next < 2 && this.isMastered()) next = 2;
+
+    if (next <= cur) return false;
+
+    this.data.progression.currentLevel = next;
+    const stamp = now();
+    for (let level = cur + 1; level <= next; level += 1) {
+      if (!clampNonNegativeInt(this.data.progression.unlockedAtByLevel[level])) {
+        this.data.progression.unlockedAtByLevel[level] = stamp;
+      }
+    }
+    return true;
+  };
+
+  StorageManager.prototype.updateLevelProgression = function (meta) {
+    if (!this.data) {
+      return { previousLevel: 0, currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
+    }
+
+    if (!this.data.progression || typeof this.data.progression !== "object") {
+      this.data.progression = deepCopy(this.defaultData.progression);
+    }
+    if (!this.data.progression.unlockedAtByLevel || typeof this.data.progression.unlockedAtByLevel !== "object") {
+      this.data.progression.unlockedAtByLevel = deepCopy(this.defaultData.progression.unlockedAtByLevel);
+    }
+
+    const prevLevel = Math.min(4, clampNonNegativeInt(this.data.progression.currentLevel));
+    let nextLevel = prevLevel;
+
+    const mode = String(meta?.mode || "").trim().toUpperCase();
+    const totalPresented = clampNonNegativeInt(meta?.totalPresented);
+    const scoreFP = clampNonNegativeInt(meta?.scoreFP);
+    const accuracy = totalPresented > 0 ? (scoreFP / totalPresented) : 0;
+
+    const levelsCfg = (this.config?.levels && typeof this.config.levels === "object") ? this.config.levels : {};
+    const level3MinSeen = clampNonNegativeInt(levelsCfg.level3MinSeen);
+    const level4MinSeen = clampNonNegativeInt(levelsCfg.level4MinSeen);
+    const level3MinAccuracy = Number(levelsCfg.level3MinAccuracy);
+    const level4MinAccuracy = Number(levelsCfg.level4MinAccuracy);
+
+    const seenPool = this.getUniqueSeenCount();
+    const mastered = this.isMastered();
+    const exhausted = this.isPoolExhausted();
+
+    if (prevLevel === 0 && exhausted) {
+      nextLevel = 1;
+    } else if (prevLevel === 1 && mastered) {
+      nextLevel = 2;
+    } else if (
+      prevLevel === 2 &&
+      mode === "BONUS" &&
+      mastered &&
+      seenPool >= level3MinSeen &&
+      Number.isFinite(level3MinAccuracy) &&
+      accuracy >= level3MinAccuracy
+    ) {
+      nextLevel = 3;
+    } else if (
+      prevLevel === 3 &&
+      mode === "BONUS" &&
+      mastered &&
+      seenPool >= level4MinSeen &&
+      Number.isFinite(level4MinAccuracy) &&
+      accuracy >= level4MinAccuracy
+    ) {
+      nextLevel = 4;
+    }
+
+    const justUnlocked = nextLevel > prevLevel;
+    if (justUnlocked) {
+      this.data.progression.currentLevel = nextLevel;
+      this.data.progression.unlockedAtByLevel[nextLevel] = now();
+      this._save();
+    }
+
+    return {
+      previousLevel: prevLevel,
+      currentLevel: justUnlocked ? nextLevel : prevLevel,
+      unlockedLevel: justUnlocked ? nextLevel : 0,
+      justUnlocked
     };
   };
 

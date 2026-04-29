@@ -1401,6 +1401,10 @@ void function () {
           self.openHowToModal();
           break;
 
+        case "open-level-progress":
+          self.openLevelProgressModal();
+          break;
+
         case "close-modal":
           self.closeModal();
           break;
@@ -2543,6 +2547,13 @@ void function () {
     const t = escapeHtml(String(title || "").trim());
     const closeLabel = escapeHtml(String(this.wording?.system?.close || "").trim());
     const hideCloseButton = !!(options && options.hideCloseButton === true);
+    const modalClass = String(options?.modalClass || "").trim();
+
+    if (this._runtime) this._runtime._modalExtraClass = modalClass;
+    this.modalContentEl.classList.remove("wt-modal--sheet", "wt-modal--levelsheet");
+    if (modalClass) {
+      modalClass.split(/\s+/).filter(Boolean).forEach((cls) => this.modalContentEl.classList.add(cls));
+    }
 
     this.modalContentEl.innerHTML = `
   <div class="wt-modal-header">
@@ -2632,7 +2643,9 @@ void function () {
 
     this.modalEl.classList.add("wt-hidden");
     this.modalEl.setAttribute("aria-hidden", "true");
+    this.modalContentEl.classList.remove("wt-modal--sheet", "wt-modal--levelsheet");
     this.modalContentEl.innerHTML = "";
+    if (this._runtime) this._runtime._modalExtraClass = "";
 
     // A11Y: re-enable main content
     try {
@@ -2720,6 +2733,102 @@ void function () {
 
 
     this.openModal(html, String(how.title || "").trim());
+  };
+
+  UI.prototype.openLevelProgressModal = function () {
+    const w = this.wording || {};
+    const cfg = this.config || {};
+    const levelsW = (w.levels && typeof w.levels === "object") ? w.levels : {};
+    const model = getAppLevelModel(this.storage, cfg, w);
+    const currentLevel = clampInt(model.state?.currentLevel, 0, 4);
+    const current = model.current;
+    const next = model.next;
+
+    const currentLabel = String(levelsW.currentLabel || "").trim();
+    const unlockedByLabel = String(levelsW.unlockedByLabel || "").trim();
+    const nextLabel = String(levelsW.nextLabel || "").trim();
+    const reachItLabel = String(levelsW.reachItLabel || "").trim();
+    const progressionLabel = String(levelsW.progressionLabel || "").trim();
+    const noLevelTitle = String(levelsW.noLevelTitle || "").trim();
+    const noLevelBody = String(levelsW.noLevelBody || "").trim();
+    const maxLevelBody = String(levelsW.maxLevelBody || "").trim();
+    const currentPill = String(levelsW.currentPill || "").trim();
+    const unlockedPill = String(levelsW.unlockedPill || "").trim();
+    const lockedPill = String(levelsW.lockedPill || "").trim();
+
+    const currentBlockHtml = (() => {
+      if (!current) {
+        return `
+          <div class="wt-level-sheet__section">
+            ${noLevelTitle ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(noLevelTitle)}</p>` : ``}
+            ${noLevelBody ? `<p class="wt-level-sheet__body">${escapeHtml(noLevelBody)}</p>` : ``}
+          </div>
+        `;
+      }
+      return `
+        <div class="wt-level-sheet__section">
+          ${currentLabel ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(currentLabel)}</p>` : ``}
+          <div class="wt-level-chip wt-level-chip--static">
+            <span class="wt-level-chip__dot" aria-hidden="true"></span>
+            <span>${escapeHtml(current.label)}</span>
+          </div>
+          ${unlockedByLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(unlockedByLabel)}</p>` : ``}
+          ${current.unlock ? `<p class="wt-level-sheet__body">${escapeHtml(current.unlock)}</p>` : ``}
+        </div>
+      `;
+    })();
+
+    const nextBlockHtml = (() => {
+      if (currentLevel >= 4) {
+        return `
+          <div class="wt-level-sheet__section wt-level-sheet__section--soft">
+            ${maxLevelBody ? `<p class="wt-level-sheet__body">${escapeHtml(maxLevelBody)}</p>` : ``}
+          </div>
+        `;
+      }
+      if (!next) return ``;
+      return `
+        <div class="wt-level-sheet__section wt-level-sheet__section--soft">
+          ${nextLabel ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(nextLabel)}</p>` : ``}
+          <div class="wt-level-chip wt-level-chip--static wt-level-chip--muted">
+            <span class="wt-level-chip__dot" aria-hidden="true"></span>
+            <span>${escapeHtml(next.label)}</span>
+          </div>
+          ${reachItLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(reachItLabel)}</p>` : ``}
+          <p class="wt-level-sheet__body">${escapeHtml(next.unlock || "")}</p>
+        </div>
+      `;
+    })();
+
+    const progressionHtml = model.defs.map((item) => {
+      const pill = item.current ? currentPill : (item.unlocked ? unlockedPill : lockedPill);
+      const stateClass = item.current ? " wt-level-strip__item--current" : (item.unlocked ? " wt-level-strip__item--done" : "");
+      return `
+        <li class="wt-level-strip__item${stateClass}">
+          <div class="wt-level-strip__main">
+            <span class="wt-level-strip__dot" aria-hidden="true"></span>
+            <div class="wt-level-strip__copy">
+              <strong class="wt-level-strip__label">${escapeHtml(item.label)}</strong>
+              <span class="wt-level-strip__meta">${escapeHtml(item.unlock)}</span>
+            </div>
+          </div>
+          ${pill ? `<span class="wt-level-strip__pill">${escapeHtml(pill)}</span>` : ``}
+        </li>
+      `;
+    }).join("");
+
+    const html = `
+      ${currentBlockHtml}
+      ${nextBlockHtml}
+      <div class="wt-level-sheet__section wt-level-sheet__section--progress">
+        ${progressionLabel ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(progressionLabel)}</p>` : ``}
+        <ul class="wt-level-strip" role="list">
+          ${progressionHtml}
+        </ul>
+      </div>
+    `;
+
+    this.openModal(html, String(levelsW.modalTitle || "").trim(), { modalClass: "wt-modal--sheet wt-modal--levelsheet" });
   };
 
 
@@ -4605,6 +4714,7 @@ void function () {
 
     let newBest = false;
     let bestScoreFP = 0;
+    let levelProgress = { previousLevel: 0, currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
 
     if (mode === "RUN" && this.storage && typeof this.storage.recordRunComplete === "function") {
       const prevRunNumber = (typeof this.storage.getRunNumber === "function")
@@ -4656,6 +4766,17 @@ void function () {
       newBest = !!(res && res.newBest);
       bestScoreFP = Number(res && res.bestScoreFP || 0);
     }
+
+    if (this.storage && typeof this.storage.updateLevelProgression === "function") {
+      try {
+        levelProgress = this.storage.updateLevelProgression({
+          mode,
+          scoreFP,
+          totalPresented: Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0
+        }) || levelProgress;
+      } catch (_) { /* silent */ }
+    }
+
     // Store for END screen
     this._runtime.lastRun = {
       mode,
@@ -4666,7 +4787,8 @@ void function () {
       bestScoreFP,
       mistakeIds: Array.isArray(this._runtime.runMistakeIds) ? this._runtime.runMistakeIds.slice() : [],
       runItemIds: Array.isArray(this._runtime.runItemIds) ? this._runtime.runItemIds.slice() : [],
-      poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending
+      poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending,
+      levelProgress
     };
 
     try {
@@ -6842,6 +6964,31 @@ void function () {
       return ``;
     })();
 
+    const levelModel = getAppLevelModel(this.storage, cfg, w);
+    const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
+    const landingLevelHtml = (() => {
+      const placeholder = String(levelModel.levelsW?.placeholder || "").trim();
+      if (levelModel.state.currentLevel <= 0) {
+        if (!placeholder) return ``;
+        return `
+          <div class="wt-level-landing wt-level-landing--empty" aria-hidden="true">
+            <span class="wt-level-landing__placeholder" aria-hidden="true"></span>
+            <span class="wt-level-landing__text">${escapeHtml(placeholder)}</span>
+          </div>
+        `;
+      }
+
+      if (!levelModel.current || !levelModel.current.label) return ``;
+      return `
+        <div class="wt-level-landing">
+          <button type="button" class="wt-level-chip" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
+            <span class="wt-level-chip__dot" aria-hidden="true"></span>
+            <span>${escapeHtml(levelModel.current.label)}</span>
+          </button>
+        </div>
+      `;
+    })();
+
     const landingHeaderRowHtml = `
   <div class="wt-landing-header">
     <div class="wt-landing-header__brand">
@@ -6970,6 +7117,8 @@ ${(() => {
         })()
         : ``)}
     </div>
+
+    ${landingLevelHtml}
 
     ${welcomeBackHtml}
 
@@ -7214,6 +7363,8 @@ ${(() => {
       const copyByTag = (end && typeof end.endTagHighlights === "object") ? end.endTagHighlights : null;
       const runMistakeIds = Array.isArray(lastRun?.mistakeIds) ? lastRun.mistakeIds : [];
       const runItemIds = Array.isArray(lastRun?.runItemIds) ? lastRun.runItemIds : [];
+      const correctAnswers = clampInt(runItemIds.length - runMistakeIds.length, 0, 99999);
+      const allowCategoryInsights = correctAnswers >= 5;
       const byId = (runtime && runtime.contentById && typeof runtime.contentById === "object")
         ? runtime.contentById
         : {};
@@ -7237,7 +7388,7 @@ ${(() => {
       let strongestShown = false;
       let weakestShown = false;
 
-      if (runItemIds.length > 0 && (strongestTagTpl || weakestTagTpl)) {
+      if (allowCategoryInsights && runItemIds.length > 0 && (strongestTagTpl || weakestTagTpl)) {
         const servedCounts = Object.create(null);
         const mistakeCounts = Object.create(null);
 
@@ -7297,7 +7448,7 @@ ${(() => {
         }
       }
 
-      if (!strongestShown && !weakestShown && copyByTag && runMistakeIds.length > 0) {
+      if (allowCategoryInsights && !strongestShown && !weakestShown && copyByTag && runMistakeIds.length > 0) {
         const counts = Object.create(null);
 
         for (const rawId of runMistakeIds) {
@@ -7430,6 +7581,72 @@ ${(() => {
       landingDetailTemplate: String(phaseW.landingDetailTemplate || "").trim(),
       endLens: String(phaseW.endLens || "").trim(),
       micropics: (phaseW.micropics && typeof phaseW.micropics === "object") ? phaseW.micropics : {}
+    };
+  }
+
+  function getLevelPreviewState(cfg) {
+    const previewCfg = (cfg?.levels?.preview && typeof cfg.levels.preview === "object") ? cfg.levels.preview : null;
+    if (!previewCfg || previewCfg.enabled !== true) return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+
+    const paramName = String(previewCfg.queryParam || "").trim();
+    if (!paramName || typeof window === "undefined" || !window.location) {
+      return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+    }
+
+    let raw = "";
+    try {
+      raw = String(new URLSearchParams(window.location.search).get(paramName) || "").trim().toLowerCase();
+    } catch (_) {
+      raw = "";
+    }
+    if (!raw) return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+
+    if (raw === "none") return { currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
+
+    const unlockMatch = raw.match(/^unlock([1-4])$/);
+    if (unlockMatch) {
+      const lvl = clampInt(unlockMatch[1], 0, 4);
+      return { currentLevel: lvl, unlockedLevel: lvl, justUnlocked: true };
+    }
+
+    const levelMatch = raw.match(/^level([1-4])$/);
+    if (levelMatch) {
+      const lvl = clampInt(levelMatch[1], 0, 4);
+      return { currentLevel: lvl, unlockedLevel: 0, justUnlocked: false };
+    }
+
+    return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+  }
+
+  function getAppLevelModel(storage, cfg, w) {
+    const levelsW = (w && w.levels && typeof w.levels === "object") ? w.levels : {};
+    const baseState = (storage && typeof storage.getLevelState === "function")
+      ? storage.getLevelState()
+      : { currentLevel: 0, unlockedAtByLevel: { 1: 0, 2: 0, 3: 0, 4: 0 } };
+    const preview = getLevelPreviewState(cfg);
+    const effectiveLevel = (preview.currentLevel == null) ? clampInt(baseState.currentLevel, 0, 4) : clampInt(preview.currentLevel, 0, 4);
+
+    const defs = [1, 2, 3, 4].map((level) => {
+      const raw = (levelsW.byLevel && typeof levelsW.byLevel === "object") ? (levelsW.byLevel[level] || {}) : {};
+      return {
+        level,
+        label: String(raw.label || "").trim(),
+        unlock: String(raw.unlock || "").trim(),
+        unlocked: effectiveLevel >= level,
+        current: effectiveLevel === level
+      };
+    });
+
+    return {
+      state: {
+        currentLevel: effectiveLevel,
+        unlockedAtByLevel: baseState.unlockedAtByLevel || {}
+      },
+      defs,
+      current: defs.find((item) => item.level === effectiveLevel) || null,
+      next: defs.find((item) => item.level === (effectiveLevel + 1)) || null,
+      levelsW,
+      preview
     };
   }
 
@@ -7780,6 +7997,28 @@ ${(() => {
           : bonusPerfect ? bonusCelebrateLine
             : "";
     const recordActive = (!!celebrationLabel) ? (Date.now() < recordUntil) : false;
+    const levelModel = getAppLevelModel(this.storage, cfg, w);
+    const levelProgress = (lastRun && typeof lastRun.levelProgress === "object") ? lastRun.levelProgress : null;
+    const levelPreview = levelModel.preview || { unlockedLevel: 0, justUnlocked: false };
+    const unlockedLevel = levelPreview.justUnlocked
+      ? clampInt(levelPreview.unlockedLevel, 0, 4)
+      : clampInt(levelProgress?.unlockedLevel, 0, 4);
+    const unlockDef = levelModel.defs.find((item) => item.level === unlockedLevel) || null;
+    const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
+    const levelUnlockHtml = ((levelPreview.justUnlocked || levelProgress?.justUnlocked) && unlockDef)
+      ? `
+        <div class="wt-level-unlock">
+          <p class="wt-level-unlock__kicker">${escapeHtml(String(levelModel.levelsW?.unlockKicker || "").trim())}</p>
+          <div class="wt-level-unlock__card">
+            <button type="button" class="wt-level-chip" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
+              <span class="wt-level-chip__dot" aria-hidden="true"></span>
+              <span>${escapeHtml(unlockDef.label)}</span>
+            </button>
+            <p class="wt-level-unlock__line">${escapeHtml(fillTemplate(String(levelModel.levelsW?.reachedTemplate || "").trim(), { label: unlockDef.label }))}</p>
+          </div>
+        </div>
+      `
+      : "";
 
     // Always show the score (requested), never replace it.
     const displayScoreLine = scoreLine;
@@ -8045,6 +8284,8 @@ ${(() => {
       ` : ``}
     </p>
   ` : ``}
+
+  ${levelUnlockHtml}
 
   ${microLinesHtml}
 

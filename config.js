@@ -135,6 +135,28 @@
 
     },
 
+    // Persistent level system
+    // - No default badge before phase 1 is completed
+    // - Levels are permanent once unlocked
+    // - Unlocks are phase-gated:
+    //   L1: full first pass complete
+    //   L2: all active mistakes cleared
+    //   L3: L2 + Rapid Fire pool >= level3MinSeen + Rapid Fire run >= level3MinAccuracy
+    //   L4: L3 + Rapid Fire pool >= level4MinSeen + Rapid Fire run >= level4MinAccuracy
+    // - Preview is UI-only and fail-closed:
+    //   ?levelPreview=none|level1|level2|level3|level4|unlock1|unlock2|unlock3|unlock4
+    levels: {
+      enabled: true,
+      level3MinSeen: 16,
+      level3MinAccuracy: 0.70,
+      level4MinSeen: 50,
+      level4MinAccuracy: 0.85,
+      preview: {
+        enabled: true,
+        queryParam: "levelPreview"
+      }
+    },
+
     // Personal best (premium history)
     personalBest: {
       enabled: true,
@@ -521,8 +543,8 @@
   // If it sounds aggressive, ego-heavy, too abstract, or too performance-driven for the context -> reject.
   window.WT_WORDING = {
     brand: {
-      creatorLine: "An indie game by Bonjour Pickleball",
-      creatorLineHtml: "An indie game by <a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a><br>Created by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a>"
+      creatorLine: "An indie game by Carole",
+      creatorLineHtml: "An indie game by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a><br><a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
     },
 
     system: {
@@ -754,6 +776,43 @@
       }
     },
 
+    levels: {
+      modalTitle: "Pickleball levels",
+      placeholder: "Levels unlock as you move through the game.",
+      openDetailsAria: "Open level details",
+      unlockKicker: "New level",
+      reachedTemplate: "You reached {label}.",
+      currentLabel: "Your level",
+      unlockedByLabel: "Unlocked by",
+      nextLabel: "Next level",
+      reachItLabel: "How to reach it",
+      progressionLabel: "Full progression",
+      noLevelTitle: "No level yet",
+      noLevelBody: "Finish your first full pass to unlock your first level.",
+      maxLevelBody: "You've completed the full progression in this game.",
+      currentPill: "Current",
+      unlockedPill: "Unlocked",
+      lockedPill: "Locked",
+      byLevel: {
+        1: {
+          label: "COURT-READY",
+          unlock: "Finish your first full pass."
+        },
+        2: {
+          label: "CLUB-LEVEL",
+          unlock: "Finish your first full pass and clear all active mistakes."
+        },
+        3: {
+          label: "TOURNAMENT-LEVEL",
+          unlock: "Clear your mistakes, build a Rapid Fire pool of 16+, and post a 70%+ run."
+        },
+        4: {
+          label: "PRO-LEVEL",
+          unlock: "Reach Tournament-Level, build a Rapid Fire pool of 50+, and post an 85%+ run."
+        }
+      }
+    },
+
     ui: {
       chancesLabel: "Lives",
       mistakesLabel: "Mistakes",
@@ -829,6 +888,12 @@
       // BONUS new best label (END)
       newBest: "NEW BEST SCORE.",
       celebrationPerfect: "PERFECT RUN",
+      labelByTier: {
+        perfect: "FAST AND CLEAN",
+        high: "QUICK HANDS",
+        medium: "FINDING PACE",
+        low: "PACE CHECK"
+      },
 
       // END BONUS — cognitive mirror by accuracy tier
       // Contract: arrays MUST contain exactly 2 sentences each. No fallback in UI.
@@ -932,6 +997,12 @@
       endLine: "Keep going.",
       allFixedLine: "You closed it out.",
       celebrationAllCleared: "STRONG FINISH",
+      labelByTier: {
+        last: "LAST ONE",
+        light: "GOOD RECOVERY",
+        firm: "WORKING BACK",
+        direct: "STAY WITH IT"
+      },
       endLineAllFixed: "You closed it out.",
       endStatsLineAllFixed: "You fixed {fixed}.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
@@ -1088,6 +1159,14 @@
       mistakesToggle: "{count} mistakes",
 
       newBest: "NEW PERSONAL BEST",
+      labelByVerdict: {
+        none: "EARLY RALLY",
+        start: "FIRST PASS",
+        building: "GETTING A READ",
+        strong: "SOLID GAME",
+        elite: "RULES READY",
+        legendary: "LOCKED IN"
+      },
       houseAdSummaryLabel: "Keep going with another game",
       playAgain: "Play again",
 

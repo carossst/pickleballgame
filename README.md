@@ -89,6 +89,31 @@ Important values:
 - `WT_CONFIG.limits.freeRuns`: number of free main games
 - `WT_CONFIG.game.poolSize`: total question pool size
 
+## Level System
+
+The app includes a persistent 4-level progression system defined in [config.js](./config.js) and stored locally by [storage.js](./storage.js).
+
+- level 1: full first pass complete
+- level 2: all active mistakes cleared
+- level 3: level 2 plus a Rapid Fire pool of at least `16` and a Rapid Fire run of at least `70%`
+- level 4: level 3 plus a Rapid Fire pool of at least `50` and a Rapid Fire run of at least `85%`
+
+Levels never go down once unlocked.
+
+For UI testing only, Pickleball also supports a preview query param:
+
+- `?levelPreview=none`
+- `?levelPreview=level1`
+- `?levelPreview=level2`
+- `?levelPreview=level3`
+- `?levelPreview=level4`
+- `?levelPreview=unlock1`
+- `?levelPreview=unlock2`
+- `?levelPreview=unlock3`
+- `?levelPreview=unlock4`
+
+Preview is visual only. It does not write fake progression into storage.
+
 ## End Screen Notes
 
 - The main game end screen stays intentionally compact: score, verdict, progress lens, CTA, and recap when useful
