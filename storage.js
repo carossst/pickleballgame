@@ -344,9 +344,6 @@
     if (!this.data.endgame) this.data.endgame = deepCopy(this.defaultData.endgame);
     if (!this.data.analytics) this.data.analytics = deepCopy(this.defaultData.analytics);
 
-    if (this._migrateUiDeviceFlagsFromLegacyKeys()) {
-      this._save();
-    }
     if (!Number.isFinite(Number(this.data.analytics.statsSharingPromptStage))) {
       this.data.analytics.statsSharingPromptStage = -1;
     } else {
@@ -384,33 +381,6 @@
     } else {
       this.data.analytics.premiumUnlockedAt = Math.floor(Number(this.data.analytics.premiumUnlockedAt));
     }
-
-    if (this._backfillProgressionFromCurrentState()) {
-      this._save();
-    }
-
-    // Legacy migration: UI used to bypass StorageManager and write localStorage directly.
-    // Sync once into StorageManager, then delete legacy key to stop drift.
-    if (this._syncLegacyStatsSharingPromptStage()) {
-      this._save();
-    }
-
-    // Stage -> Flags (best-effort, avoids re-prompting existing users)
-    // stage>=1 => 30%, stage>=2 => 50%, stage>=3 => power user (approx)
-    try {
-      const st = Math.floor(Number(this.data.analytics.statsSharingPromptStage));
-      if (Number.isFinite(st) && st > 0) {
-        let f = Math.floor(Number(this.data.analytics.statsSharingPromptFlags));
-        if (!Number.isFinite(f)) f = 0;
-
-        if (st >= 1) f = (f | 1);
-        if (st >= 2) f = (f | 2);
-        if (st >= 3) f = (f | 8);
-
-        this.data.analytics.statsSharingPromptFlags = f;
-      }
-    } catch (_) { /* silent */ }
-
 
     if (!this.data.codes) this.data.codes = deepCopy(this.defaultData.codes);
 
@@ -751,46 +721,6 @@
     return code;
   };
 
-  // Legacy migration: stats sharing prompt stage was previously stored outside StorageManager.
-  // Old key: `${storageKey}:statsSharingPromptStage`
-
-  StorageManager.prototype._syncLegacyStatsSharingPromptStage = function () {
-    if (!this.data) return false;
-
-    const base = String(this.storageKey || "").trim();
-    if (!base) return false;
-
-    const legacyKey = `${base}:statsSharingPromptStage`;
-
-    let raw = null;
-    try { raw = window.localStorage.getItem(legacyKey); } catch (_) { raw = null; }
-    if (raw == null) return false;
-
-    const n = Number(raw);
-    if (Number.isFinite(n)) {
-      if (!this.data.analytics || typeof this.data.analytics !== "object") {
-        this.data.analytics = deepCopy(this.defaultData.analytics);
-      }
-      this.data.analytics.statsSharingPromptStage = Math.floor(n);
-    }
-
-    try { window.localStorage.removeItem(legacyKey); } catch (_) { }
-    return true;
-  };
-
-  StorageManager.prototype._getUiDeviceFlagKey = function (suffix) {
-    const base = String(this.storageKey || "").trim();
-    const s = String(suffix || "").trim();
-    if (!base || !s) return "";
-    return `${base}:${s}`;
-  };
-
-  StorageManager.prototype._readLegacyUiDeviceFlag = function (suffix) {
-    const key = this._getUiDeviceFlagKey(suffix);
-    if (!key) return false;
-    try { return window.localStorage.getItem(key) === "1"; } catch (_) { return false; }
-  };
-
   StorageManager.prototype._readUiDeviceFlag = function (suffix) {
     const s = String(suffix || "").trim();
     if (!s) return false;
@@ -814,39 +744,6 @@
 
     this.data.uiDeviceFlags[s] = true;
     this._save();
-  };
-
-  StorageManager.prototype._migrateUiDeviceFlagsFromLegacyKeys = function () {
-    if (!this.data) return false;
-
-    if (!this.data.uiDeviceFlags || typeof this.data.uiDeviceFlags !== "object") {
-      this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
-    }
-
-    const map = [
-      "firstRunFramingSeen",
-      "premiumFirstRunFramingSeen",
-      "secretChestHintSolved",
-      "secretChestWelcomeShown"
-    ];
-
-    let changed = false;
-
-    map.forEach((suffix) => {
-      if (this.data.uiDeviceFlags[suffix] === true) return;
-      if (this._readLegacyUiDeviceFlag(suffix) !== true) return;
-
-      this.data.uiDeviceFlags[suffix] = true;
-      changed = true;
-    });
-
-    map.forEach((suffix) => {
-      const key = this._getUiDeviceFlagKey(suffix);
-      if (!key) return;
-      try { window.localStorage.removeItem(key); } catch (_) { }
-    });
-
-    return changed;
   };
 
   StorageManager.prototype.hasSeenFirstRunFraming = function () {
@@ -886,18 +783,6 @@
 
     this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
     this._save();
-
-    const keys = [
-      this._getUiDeviceFlagKey("firstRunFramingSeen"),
-      this._getUiDeviceFlagKey("premiumFirstRunFramingSeen"),
-      this._getUiDeviceFlagKey("secretChestHintSolved"),
-      this._getUiDeviceFlagKey("secretChestWelcomeShown")
-    ];
-
-    keys.forEach((key) => {
-      if (!key) return;
-      try { window.localStorage.removeItem(key); } catch (_) { }
-    });
   };
 
 
@@ -1700,33 +1585,6 @@
         4: clampNonNegativeInt(unlockedAtByLevelRaw[4])
       }
     };
-  };
-
-  StorageManager.prototype._backfillProgressionFromCurrentState = function () {
-    if (!this.data) return false;
-    if (!this.data.progression || typeof this.data.progression !== "object") {
-      this.data.progression = deepCopy(this.defaultData.progression);
-    }
-    if (!this.data.progression.unlockedAtByLevel || typeof this.data.progression.unlockedAtByLevel !== "object") {
-      this.data.progression.unlockedAtByLevel = deepCopy(this.defaultData.progression.unlockedAtByLevel);
-    }
-
-    const cur = Math.min(4, clampNonNegativeInt(this.data.progression.currentLevel));
-    let next = cur;
-
-    if (cur < 1 && this.isPoolExhausted()) next = 1;
-    if (next < 2 && this.isMastered()) next = 2;
-
-    if (next <= cur) return false;
-
-    this.data.progression.currentLevel = next;
-    const stamp = now();
-    for (let level = cur + 1; level <= next; level += 1) {
-      if (!clampNonNegativeInt(this.data.progression.unlockedAtByLevel[level])) {
-        this.data.progression.unlockedAtByLevel[level] = stamp;
-      }
-    }
-    return true;
   };
 
   StorageManager.prototype.updateLevelProgression = function (meta) {

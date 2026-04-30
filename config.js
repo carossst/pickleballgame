@@ -48,7 +48,7 @@
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
-    storageSchemaVersion: "2.0.0",
+    storageSchemaVersion: "3.0.0",
 
     // Le cache du Service Worker dérive exclusivement de WT_CONFIG.version via ?v=
     // (source unique de vérité pour le cache)

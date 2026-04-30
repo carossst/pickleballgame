@@ -278,7 +278,8 @@
       }
 
       const v = encodeURIComponent(version);
-      const swUrl = `./sw.js?v=${v}`;
+      const appScope = encodeURIComponent(String(cfg?.storage?.storageKey || "").trim());
+      const swUrl = `./sw.js?v=${v}&app=${appScope}`;
 
       navigator.serviceWorker
         .register(swUrl, { scope: "./" })

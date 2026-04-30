@@ -763,7 +763,7 @@ body.wt-state--end .wt-card--end {
    ====================== */
 .wt-landing-stats {
   margin-top: var(--gap-3);
-  padding: 14px 16px;
+  padding: var(--space-14) var(--space-16);
   background: rgb(var(--surface));
   border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
   border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
@@ -774,13 +774,13 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-landing-stat__badge {
-  margin: 0 0 10px 0;
+  margin: 0 0 var(--space-10) 0;
 }
 
 .wt-landing-stat {
   display: grid;
   grid-template-columns: 1fr;
-  row-gap: 4px;
+  row-gap: var(--space-4);
   align-items: start;
   padding: 0;
   border-radius: 0;
@@ -790,7 +790,7 @@ body.wt-state--end .wt-card--end {
 
 .wt-landing-stat__title {
   display: block;
-  font-size: clamp(28px, 7vw, 32px);
+  font-size: clamp(24px, 6vw, 30px);
   line-height: 1;
   font-weight: 500;
   color: rgb(var(--primary-dark));
@@ -803,7 +803,7 @@ body.wt-state--end .wt-card--end {
   justify-self: start;
   margin: 0 0 10px;
 
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 1.35;
   color: rgb(var(--text-muted));
@@ -833,8 +833,8 @@ body.wt-state--end .wt-card--end {
   margin-top: 0;
 
   width: 100%;
-  height: 4px;
-  border-radius: 2px;
+  height: var(--space-4);
+  border-radius: var(--space-2);
   background: rgb(var(--primary) / var(--wt-a-25));
   overflow: hidden;
 }
@@ -1292,6 +1292,10 @@ body.wt-state--end .wt-card--end {
   margin: 0;
 }
 
+.wt-stack > * + * {
+  margin-top: var(--gap-1);
+}
+
 .wt-stack--xs > * + * {
   margin-top: 4px;
 }
@@ -1302,6 +1306,69 @@ body.wt-state--end .wt-card--end {
 
 .wt-stack--md > * + * {
   margin-top: var(--gap-2);
+}
+
+.wt-m-0 {
+  margin: 0 !important;
+}
+
+.wt-mb-4 {
+  margin-bottom: 4px !important;
+}
+
+.wt-mb-10 {
+  margin-bottom: 10px !important;
+}
+
+.wt-mt-4 {
+  margin-top: 4px !important;
+}
+
+.wt-mt-6 {
+  margin-top: 6px !important;
+}
+
+.wt-mt-10 {
+  margin-top: 10px !important;
+}
+
+.wt-mt-12 {
+  margin-top: 12px !important;
+}
+
+.wt-mt-14 {
+  margin-top: 14px !important;
+}
+
+.wt-mt-16 {
+  margin-top: 16px !important;
+}
+
+.wt-spacer-8 {
+  height: 8px;
+}
+
+.wt-text-preline {
+  white-space: pre-line;
+}
+
+.wt-text-wrap-anywhere {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.wt-code--modal {
+  text-align: left;
+  font-size: var(--fs-xs);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+}
+
+.wt-btn--block {
+  width: 100%;
 }
 
 /* Box — bordered container (urgency, social, price, etc.) */
@@ -1383,11 +1450,6 @@ body.wt-state--end .wt-card--end {
 
 .wt-paywall-device-note {
   margin-top: 4px;
-}
-
-.wt-success-hero-row {
-  align-items: center;
-  gap: var(--gap-2);
 }
 
 .wt-success-note {
@@ -1492,11 +1554,6 @@ button.wt-level-chip {
   font-weight: 700;
   letter-spacing: 0.3px;
   color: rgb(var(--primary-dark));
-}
-
-/* Stack — vertical rhythm between children */
-.wt-stack>*+* {
-  margin-top: var(--gap-1);
 }
 
 .wt-stack--tight {
@@ -2752,6 +2809,73 @@ button.wt-level-chip {
   grid-column: span 12;
 }
 
+.wt-press-lead {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.wt-press-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.wt-press-table__label {
+  padding: 6px 12px 6px 0;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.wt-press-table__value {
+  padding: 6px 0;
+}
+
+.wt-success-hero-row {
+  align-items: center;
+  gap: var(--gap-2);
+}
+
+.wt-success-hero-copy,
+.wt-success-status,
+.wt-success-cheatsheet-body,
+.wt-success-cheatsheet-link-wrap,
+.wt-success-note--spaced {
+  margin-top: var(--space-10);
+}
+
+.wt-success-code {
+  margin-top: var(--gap-2);
+}
+
+.wt-success-note--tight {
+  margin-top: 0;
+}
+
+.wt-success-note--follow {
+  margin-top: var(--space-6);
+}
+
+.wt-success-cheatsheet-mount {
+  margin-top: var(--gap-2);
+}
+
+.wt-success-legal {
+  margin-top: var(--space-10);
+  font-size: var(--fs-xs);
+}
+
+.wt-success-center-note {
+  text-align: center;
+  margin-top: var(--gap-3);
+}
+
+.wt-success-support {
+  text-align: center;
+  margin-top: var(--gap-2);
+  font-size: var(--fs-xs);
+}
+
 @media (max-width: 900px) {
   .wt-press-grid {
     grid-template-columns: 1fr;
@@ -3478,20 +3602,23 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: grid;
   justify-items: center;
   gap: 2px;
-  width: min(100%, 280px);
+  width: min(100%, 390px);
   max-width: 100%;
   margin: var(--space-16) auto 0;
-  padding: var(--space-8) var(--space-10) var(--space-6);
+  padding: var(--space-12) var(--space-12) var(--space-10);
   text-align: center;
-  border-radius: calc(var(--r-card) - 4px);
-  background: rgb(var(--surface-muted) / var(--wt-a-72));
-  border: 1px solid rgb(var(--border) / var(--wt-a-70));
-  box-shadow: var(--shadow-1);
+  border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-bottom: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-left: 3px solid rgb(var(--primary-dark));
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: rgb(var(--surface));
+  box-shadow: none;
 }
 
 .wt-end-score__value {
   display: block;
-  font-size: clamp(40px, 11vw, 56px);
+  font-size: clamp(36px, 10vw, 52px);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 0.94;
@@ -3541,7 +3668,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
    ============================================ */
 
 .wt-end-table {
-  margin-top: var(--space-10);
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -3553,7 +3680,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   align-items: center;
   justify-content: center;
   max-width: 100%;
-  padding: 9px 14px;
+  padding: var(--space-10) var(--space-14);
   text-align: center;
   border-radius: var(--r-pill);
   background: rgb(var(--surface-muted) / var(--wt-a-72));
@@ -3586,8 +3713,21 @@ arcade" feel; deviation from --fs-* scale is expected. */
   margin-top: 4px;
 }
 
+.wt-end-summary {
+  width: min(100%, 390px);
+  margin: var(--space-14) auto 0;
+  padding: var(--space-12) var(--space-12) var(--space-14);
+  border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-bottom: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-left: 3px solid rgb(var(--primary-dark));
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: rgb(var(--surface));
+  box-shadow: none;
+}
+
 .wt-end-copy {
-  margin-top: var(--space-18);
+  margin-top: var(--space-14);
   display: grid;
   row-gap: var(--space-6);
   text-align: center;
@@ -3705,7 +3845,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 @media (min-width: 481px) {
   .wt-end-table {
-    margin-top: var(--space-14);
     gap: var(--space-8);
   }
 }
@@ -3737,8 +3876,14 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
   .wt-end-score {
     margin-top: var(--space-8);
-    width: min(100%, 260px);
+    width: 100%;
     padding: var(--space-8) var(--space-8) var(--space-6);
+  }
+
+  .wt-end-summary {
+    width: 100%;
+    margin-top: var(--space-10);
+    padding: var(--space-10) var(--space-8) var(--space-12);
   }
 
   .wt-end-score__label {

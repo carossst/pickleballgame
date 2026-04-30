@@ -1711,7 +1711,6 @@ void function () {
           self.applyUpdateToast();
           break;
 
-        case "dismiss-house-ad": // legacy alias
         case "remind-house-ad":
           self.remindHouseAdLater();
           break;
@@ -2037,7 +2036,7 @@ void function () {
 
           if (self._runtime) self._runtime.secretBonusPending = true;
           const html = `
-              <p style="white-space:pre-line">${escapeHtml(body)}</p>
+              <p class="wt-text-preline">${escapeHtml(body)}</p>
               <div class="wt-actions">
                 <button class="wt-btn wt-btn--primary" data-action="enter-secret-bonus">${escapeHtml(cta)}</button>
                 ${notNow ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(notNow)}</button>` : ``}
@@ -3712,7 +3711,7 @@ void function () {
     if (!title || !body || typeof this.openModal !== "function") return false;
 
     const html = `
-      <p style="white-space:pre-line">${escapeHtml(body)}</p>
+      <p class="wt-text-preline">${escapeHtml(body)}</p>
       <div class="wt-actions">
         ${cta ? `<button class="wt-btn wt-btn--primary" data-action="open-paywall">${escapeHtml(cta)}</button>` : ``}
         ${close ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(close)}</button>` : ``}
@@ -5309,13 +5308,13 @@ void function () {
       : "";
 
     const html = `
-      ${scoreLine ? `<p class="wt-hero-kpi" style="margin:0 0 10px 0">${escapeHtml(scoreLine)}</p>` : ``}
+      ${scoreLine ? `<p class="wt-hero-kpi wt-m-0 wt-mb-10">${escapeHtml(scoreLine)}</p>` : ``}
       ${line1 ? `<p>${escapeHtml(line1)}</p>` : ``}
       ${line2 ? `<p class="wt-muted">${escapeHtml(line2)}</p>` : ``}
 
       <div class="wt-divider"></div>
 
-      <div class="wt-actions" style="margin-top:14px">
+      <div class="wt-actions wt-mt-14">
         <button class="wt-btn wt-btn--primary" data-action="close-modal">${escapeHtml(cta)}</button>
       </div>
     `;
@@ -5354,7 +5353,7 @@ void function () {
 
     const bodyHtml = lines.map((s) => {
       const line = String(s || "");
-      if (!line) return `<div style="height:8px"></div>`;
+      if (!line) return `<div class="wt-spacer-8"></div>`;
       return `<p>${escapeHtml(line)}</p>`;
     }).join("");
 
@@ -5363,7 +5362,7 @@ void function () {
 
       <div class="wt-divider"></div>
 
-      <div class="wt-actions" style="margin-top:14px">
+      <div class="wt-actions wt-mt-14">
         <button class="wt-btn wt-btn--primary" data-action="close-modal">${escapeHtml(cta)}</button>
       </div>
     `;
@@ -5413,7 +5412,7 @@ void function () {
       <label class="wt-label" for="wt-waitlist-idea">${escapeHtml(label)}</label>
       <textarea id="wt-waitlist-idea" class="wt-input" rows="3"${phAttr}></textarea>
 
-      <div class="wt-actions" style="margin-top:14px">
+      <div class="wt-actions wt-mt-14">
         <button class="wt-btn wt-btn--primary" data-action="send-waitlist-email">${escapeHtml(cta)}</button>
         <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(String(this.wording?.system?.close || "").trim())}</button>
       </div>
@@ -5545,14 +5544,14 @@ void function () {
     const jsonStr = JSON.stringify(payload, null, 2);
 
     const html = `
-      <p style="white-space:pre-line">${escapeHtml(String(ss.modalDescription || "").trim())}</p>
+      <p class="wt-text-preline">${escapeHtml(String(ss.modalDescription || "").trim())}</p>
 
       <div class="wt-divider"></div>
 
       <strong class="wt-meta">${escapeHtml(String(ss.previewLabel || "").trim())}</strong>
-      <pre class="wt-code" style="text-align:left; font-size:12px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; max-height:200px;">${escapeHtml(jsonStr)}</pre>
+      <pre class="wt-code wt-code--modal">${escapeHtml(jsonStr)}</pre>
 
-      <div class="wt-actions" style="margin-top:16px">
+      <div class="wt-actions wt-mt-16">
         <button class="wt-btn wt-btn--primary" data-action="send-stats-email">${escapeHtml(String(ss.ctaSend || "").trim())}</button>
         <button class="wt-btn wt-btn--secondary" data-action="copy-stats">${escapeHtml(String(ss.ctaCopy || "").trim())}</button>
         <button class="wt-btn wt-btn--ghost" data-action="snooze-stats">${escapeHtml(String(ss.ctaLater || "").trim())}</button>
@@ -5709,8 +5708,8 @@ void function () {
     if (!title || !body || !ctaPrimary) return false;
 
     const html = `
-      <p style="white-space:pre-line">${escapeHtml(body)}</p>
-      <div class="wt-actions" style="margin-top:14px">
+      <p class="wt-text-preline">${escapeHtml(body)}</p>
+      <div class="wt-actions wt-mt-14">
         <button class="wt-btn wt-btn--primary" data-action="${primaryAction}">${escapeHtml(ctaPrimary)}</button>
         <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(ctaSecondary)}</button>
       </div>
@@ -6673,11 +6672,11 @@ void function () {
         postCompletionHtml = `
           <div class="wt-divider"></div>
           ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
-          ${body1 ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(body1)}</p>` : ``}
-          ${waitlistEligible && body2 ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(body2)}</p>` : ``}
-          ${waitlistEligible && body3 ? `<p class="wt-muted" style="margin-top:4px">${escapeHtml(body3)}</p>` : ``}
+          ${body1 ? `<p class="wt-muted wt-mt-6">${escapeHtml(body1)}</p>` : ``}
+          ${waitlistEligible && body2 ? `<p class="wt-muted wt-mt-6">${escapeHtml(body2)}</p>` : ``}
+          ${waitlistEligible && body3 ? `<p class="wt-muted wt-mt-4">${escapeHtml(body3)}</p>` : ``}
 
-          <div class="wt-actions" style="margin-top:12px">
+          <div class="wt-actions wt-mt-12">
             ${waitlistEligible && waitlistCta ? `
               <button class="wt-btn ${houseAdEligible ? `wt-btn--secondary` : `wt-btn--primary`}" data-action="open-waitlist">${escapeHtml(waitlistCta)}</button>
             ` : ``}
@@ -6687,7 +6686,7 @@ void function () {
             ` : ``}
           </div>
 
-          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted" style="margin-top:10px">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
+          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted wt-mt-10">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
         `;
       }
     } catch (_) { postCompletionHtml = ""; }
@@ -6766,7 +6765,7 @@ void function () {
           (b == null) ? a :
             Math.max(a, b);
 
-    // LANDING stats are shown only after enough completed runs to make the phase framing meaningful.
+    // LANDING stats are shown only after enough completed runs to make the dashboard meaningful.
     const runPlays = Math.max(runCompletes, (c == null ? 0 : c));
 
 
@@ -6778,9 +6777,7 @@ void function () {
 
       const minRunsRaw = Number(statsCfg?.minCompletedRuns);
       const minRunsToShow = (Number.isFinite(minRunsRaw) && minRunsRaw >= 1 && minRunsRaw <= 999) ? Math.floor(minRunsRaw) : null;
-      if (enabled && minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= 1) {
-        const seenTpl = String(landing.statsSeenSummaryTemplate || "").trim();
-
+      if (enabled && minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= minRunsToShow) {
         const poolSizeSafe = clampInt(cfg?.game?.poolSize, 1, 9999);
 
         // Unique seen count
@@ -6826,8 +6823,6 @@ void function () {
         }
 
         const isComplete = (seen >= poolSizeSafe);
-        const remaining = clampInt(poolSizeSafe - seen, 0, poolSizeSafe);
-
         // Progress:
         // - before completion: seen progress
         // - after completion: mastery progress (mastered = poolSize - mistakes)
@@ -6836,15 +6831,6 @@ void function () {
           ? Math.max(0, Math.min(100, Math.round(((isComplete ? mastered : seen) / poolSizeSafe) * 100)))
           : 0;
         const progressClass = isComplete ? " wt-progress--mastery" : "";
-
-        const phaseCtx = getRuleKnowledgePhaseContext({
-          cfg,
-          w,
-          storage: this.storage,
-          poolSize: poolSizeSafe,
-          seen,
-          mistakes
-        });
 
         const title = `${pct}%`;
         let sub = "";
@@ -7118,20 +7104,20 @@ ${(() => {
       ${((this._runtime && this._runtime.contentLoading === true)
         ? (() => {
           const msg = String(this.wording?.ui?.contentLoadingToast || "").trim();
-          return msg ? `<p class="wt-muted" style="margin:0">${escapeHtml(msg)}</p>` : ``;
+          return msg ? `<p class="wt-muted wt-m-0">${escapeHtml(msg)}</p>` : ``;
         })()
         : ``)}
     </div>
 
     ${welcomeBackHtml}
 
-    ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted" style="margin-top:10px">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
+    ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted wt-mt-10">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
 
     ${postBlock}
 
     ${postCompletionHtml}
 
-    ${(!isPostPaywallVariant && microTrust) ? `<p class="wt-sub wt-muted" style="margin-top:12px">${escapeHtml(microTrust)}</p>` : ``}
+    ${(!isPostPaywallVariant && microTrust) ? `<p class="wt-sub wt-muted wt-mt-12">${escapeHtml(microTrust)}</p>` : ``}
 
 </div>
 `;
@@ -7345,7 +7331,7 @@ ${(() => {
 
     const openAttr = (vars && Number(vars.backlog) > 0) ? " open" : "";
   return `
-  <details class="wt-accordion"${openAttr} style="margin-top:10px">
+  <details class="wt-accordion"${openAttr}>
     <summary class="wt-accordion-toggle">${renderIcon("chevron-right")}<span>${escapeHtml(label)}</span></summary>
     <div class="wt-accordion-content">${items.join("")}</div>
   </details>
@@ -7514,13 +7500,13 @@ ${(() => {
     if (!canCopy && !canEmail && !text) return "";
 
     return `
-      <details class="wt-accordion" style="margin-top:10px">
+      <details class="wt-accordion">
         <summary class="wt-accordion-toggle" aria-label="${escapeHtml(shareAria)}">
           ${renderIcon("chevron-right")}<span>${escapeHtml(title)}</span>
         </summary>
 
         <div class="wt-accordion-content">
-          ${text ? `<p class="wt-muted" style="white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word;">${escapeHtml(text)}</p>` : ``}
+          ${text ? `<p class="wt-muted wt-text-wrap-anywhere">${escapeHtml(text)}</p>` : ``}
 
           ${(canCopy || canEmail) ? `
             <div class="wt-actions">
@@ -7673,7 +7659,7 @@ ${(() => {
     const masteredHtml =
       (mastered && (masteredTitle || masteredL1 || masteredL2))
         ? `
-        <div style="margin-top:6px">
+        <div class="wt-mt-6">
           ${masteredTitle ? `<p class="wt-meta"><strong>${escapeHtml(masteredTitle)}</strong></p>` : ``}
           ${masteredL1 ? `<p class="wt-muted">${escapeHtml(masteredL1)}</p>` : ``}
           ${masteredL2 ? `<p class="wt-muted">${escapeHtml(masteredL2)}</p>` : ``}
@@ -7749,7 +7735,7 @@ ${(() => {
     const secondaryBtn =
       (secondaryLabel && secondaryAction)
         ? `
-        <button class="wt-btn wt-btn--secondary" data-action="${escapeHtml(secondaryAction)}" style="width:100%">
+        <button class="wt-btn wt-btn--secondary" data-action="${escapeHtml(secondaryAction)}">
           ${escapeHtml(secondaryLabel)}
         </button>
       `
@@ -7757,7 +7743,7 @@ ${(() => {
 
     return `
   ${masteredHtml}
-  <button class="wt-btn wt-btn--primary" data-action="${escapeHtml(primaryAction)}" style="width:100%">
+  <button class="wt-btn wt-btn--primary" data-action="${escapeHtml(primaryAction)}">
     ${escapeHtml(primaryLabel)}
   </button>
   ${secondaryBtn}
@@ -8290,10 +8276,11 @@ ${(() => {
 
   ${levelUnlockHtml}
 
-  ${microLinesHtml}
+  <div class="wt-end-summary">
+    ${microLinesHtml}
 
-  <div class="wt-end-copy">
-  ${(() => {
+    <div class="wt-end-copy">
+    ${(() => {
         if (isPractice) {
           const statsLine = practiceStatsLineTpl ? fillTemplate(practiceStatsLineTpl, vars) : "";
           const repeatLine = practiceRepeatNoteTpl ? fillTemplate(practiceRepeatNoteTpl, vars) : "";
@@ -8336,10 +8323,9 @@ ${(() => {
         return endLine ? `<p class="wt-end-copy__verdict">${escapeHtml(endLine)}</p>` : ``;
       })()}
 
-    ${(isRun && runPoolCompleteLine2Tpl && !(poolCompleteCelebration && clampInt(vars.backlog, 0, 99999) === 0)) ? `<p class="wt-end-copy__note">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
+      ${(isRun && runPoolCompleteLine2Tpl && !(poolCompleteCelebration && clampInt(vars.backlog, 0, 99999) === 0)) ? `<p class="wt-end-copy__note">${escapeHtml(fillTemplate(runPoolCompleteLine2Tpl, vars))}</p>` : ``}
+    </div>
   </div>
-
-  ${``}
 
   <div class="${endActionsClass}">
     ${buildEndActionsHtml({
@@ -8526,7 +8512,7 @@ ${(() => {
     const qHeadingTpl = String(w.questionHeadingTemplate || "").trim();
     const qNum = (this._runtime?.feedbackPending === true) ? servedSoFar : (servedSoFar + 1);
     const headingHtml = (qHeadingTpl && Number.isFinite(qNum) && qNum > 0)
-      ? `<p class="wt-muted" style="margin:0 0 4px">${escapeHtml(fillTemplate(qHeadingTpl, { n: qNum }))}</p>`
+      ? `<p class="wt-muted wt-m-0 wt-mb-4">${escapeHtml(fillTemplate(qHeadingTpl, { n: qNum }))}</p>`
       : "";
 
     const showSeenOnlyRule =
@@ -8793,7 +8779,7 @@ ${questionPrompt ? `
 
 
             ${!autoGameOverAfterFeedback ? `
-      <div class="wt-actions" style="margin-top:16px">
+      <div class="wt-actions wt-mt-16">
         <button class="wt-btn wt-btn--primary" data-action="continue">
           ${escapeHtml(continueCta)}
         </button>
@@ -8802,7 +8788,7 @@ ${questionPrompt ? `
 
 
     ${(!autoGameOverAfterFeedback && shouldTapToContinue() && tapToContinue) ? `
-      <p class="wt-muted wt-tap-hint" style="margin-top:8px">
+      <p class="wt-muted wt-tap-hint wt-mt-10">
         ${escapeHtml(tapToContinue)}
       </p>
     ` : ``}
