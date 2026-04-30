@@ -6661,13 +6661,11 @@ void function () {
 
     const levelModel = getAppLevelModel(this.storage, cfg, w);
     const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
-    const landingLevelInlineHtml = (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
+    const landingLevelBadgeHtml = (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
       ? `
-          <div class="wt-landing-stat__level">
-            <span class="wt-landing-stat__level-label">Level</span>
-            <button type="button" class="wt-level-chip wt-level-chip--landing" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
-              <span class="wt-level-chip__dot" aria-hidden="true"></span>
-              <span>${escapeHtml(levelModel.current.label)}</span>
+          <div class="wt-landing-stat__badge">
+            <button type="button" class="wt-badge" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
+              ${escapeHtml(levelModel.current.label)}
             </button>
           </div>
         `
@@ -6806,7 +6804,6 @@ void function () {
           : 0;
         const progressClass = isComplete ? " wt-progress--mastery" : "";
 
-        const completeLabelTpl = String(landing.statsSeenCompleteLabel || "").trim();
         const phaseCtx = getRuleKnowledgePhaseContext({
           cfg,
           w,
@@ -6816,28 +6813,19 @@ void function () {
           mistakes
         });
 
-        let title = "";
+        const title = `${pct}%`;
         let sub = "";
 
         if (!isComplete) {
-          const summaryTpl = String(phaseCtx.landingSummaryTemplate || "").trim();
-          const phaseBadge = String(phaseCtx.badge || "").trim();
-          title = summaryTpl
-            ? fillTemplate(summaryTpl, { seen, poolSize: poolSizeSafe, remaining, mistakes, mastered })
-            : fillTemplate(seenTpl, { seen, poolSize: poolSizeSafe });
-          sub = phaseCtx.landingDetailTemplate
-            ? fillTemplate(String(phaseCtx.landingDetailTemplate || "").trim(), { seen, poolSize: poolSizeSafe, remaining, mistakes, mastered })
-            : String(phaseCtx.landingDetail || "").trim();
-
-          if (title || sub || phaseBadge) {
+          sub = `${seen} of ${poolSizeSafe} questions played`;
+          if (title || sub || landingLevelBadgeHtml) {
             welcomeBackHtml = `
               <div class="wt-landing-stats">
-                ${phaseBadge ? `<div class="wt-landing-stat__badge"><span class="wt-badge">${escapeHtml(phaseBadge)}</span></div>` : ``}
+                ${landingLevelBadgeHtml}
                 <div class="wt-landing-stat">
                   ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
                   ${sub ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(sub)}</div>` : ``}
-                  ${landingLevelInlineHtml}
-                    <div class="wt-progress${progressClass}" aria-hidden="true">
+                  <div class="wt-progress${progressClass}" aria-hidden="true">
                     <div class="wt-progress__fill" data-pct="${pct}" style="width:${pct}%"></div>
                   </div>
                 </div>
@@ -6846,22 +6834,14 @@ void function () {
           }
 
         } else {
-          // Fail-closed: after completion, do not fall back to other labels/lines.
-          const phaseBadge = String(phaseCtx.badge || "").trim();
-          const summaryTpl = String(phaseCtx.landingSummaryTemplate || "").trim();
-          title = summaryTpl
-            ? fillTemplate(summaryTpl, { seen, poolSize: poolSizeSafe, remaining, mistakes, mastered })
-            : (completeLabelTpl ? fillTemplate(completeLabelTpl, { poolSize: poolSizeSafe }) : "");
-          const detailLine = String(phaseCtx.landingDetail || "").trim();
-
-          if (title || detailLine || phaseBadge) {
+          sub = `${mastered} of ${poolSizeSafe} questions answered correctly`;
+          if (title || sub || landingLevelBadgeHtml) {
             welcomeBackHtml = `
               <div class="wt-landing-stats">
-                ${phaseBadge ? `<div class="wt-landing-stat__badge"><span class="wt-badge">${escapeHtml(phaseBadge)}</span></div>` : ``}
+                ${landingLevelBadgeHtml}
                 <div class="wt-landing-stat">
                   ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
-                  ${detailLine ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(detailLine)}</div>` : ``}
-                  ${landingLevelInlineHtml}
+                  ${sub ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(sub)}</div>` : ``}
                   <div class="wt-progress${progressClass}" aria-hidden="true">
                     <div class="wt-progress__fill" data-pct="${pct}" style="width:${pct}%"></div>
                   </div>

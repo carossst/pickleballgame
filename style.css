@@ -763,27 +763,37 @@ body.wt-state--end .wt-card--end {
    ====================== */
 .wt-landing-stats {
   margin-top: var(--gap-3);
+  padding: 14px 16px;
+  background: rgb(var(--surface));
+  border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-bottom: 1px solid rgb(var(--border) / var(--wt-a-70));
+  border-left: 3px solid rgb(var(--primary-dark));
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  box-shadow: none;
 }
 
 .wt-landing-stat__badge {
-  margin: 0 0 var(--space-6) 0;
+  margin: 0 0 10px 0;
 }
 
 .wt-landing-stat {
   display: grid;
   grid-template-columns: 1fr;
-  row-gap: var(--space-6);
+  row-gap: 4px;
   align-items: start;
-  padding: var(--gap-1) var(--space-10);
-  border-radius: var(--r-md);
-  background: rgb(var(--surface-muted));
-  border: 1px solid rgb(var(--border));
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
 }
 
 .wt-landing-stat__title {
   display: block;
-  font-weight: 700;
-  color: rgb(var(--text-strong));
+  font-size: clamp(28px, 7vw, 32px);
+  line-height: 1;
+  font-weight: 500;
+  color: rgb(4 44 83);
 }
 
 .wt-landing-stat__sub {
@@ -791,31 +801,16 @@ body.wt-state--end .wt-card--end {
   grid-column: 1 / -1;
   grid-row: 2;
   justify-self: start;
-  margin: 0;
+  margin: 0 0 10px;
 
-  font-size: var(--fs-md);
-  font-weight: 700;
-  line-height: 1.2;
-  color: rgb(var(--text-strong));
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: rgb(var(--text-muted));
 
   white-space: normal;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
-}
-
-.wt-landing-stat__level {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-8);
-}
-
-.wt-landing-stat__level-label {
-  color: rgb(var(--text-muted));
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 /* Wide layouts: KPI à droite sur la même ligne que le titre */
@@ -835,12 +830,12 @@ body.wt-state--end .wt-card--end {
 .wt-progress {
   grid-column: 1 / -1;
   grid-row: 3;
-  margin-top: var(--space-6);
+  margin-top: 0;
 
   width: 100%;
-  height: var(--space-6);
-  border-radius: var(--r-pill);
-  background: rgb(var(--border));
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(var(--primary) / var(--wt-a-25));
   overflow: hidden;
 }
 
@@ -1343,14 +1338,31 @@ body.wt-state--end .wt-card--end {
 /* Badge (success page, premium indicators) */
 .wt-badge {
   display: inline-block;
-  padding: var(--space-4) var(--space-10);
-  border-radius: var(--r-pill);
-  background: rgb(var(--primary) / var(--wt-a-10));
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
   color: rgb(var(--primary-dark));
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  text-transform: none;
-  letter-spacing: 0.3px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+button.wt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+button.wt-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  background: rgb(var(--primary));
 }
 
 .wt-level-chip {
