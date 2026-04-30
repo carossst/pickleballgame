@@ -45,6 +45,13 @@
     return String(fn(s));
   }
 
+  function pickOne(arr, fallback) {
+    const list = Array.isArray(arr) ? arr.map((x) => String(x || "").trim()).filter(Boolean) : [];
+    if (!list.length) return String(fallback || "").trim();
+    const index = Math.floor(Math.random() * list.length);
+    return list[index] || String(fallback || "").trim();
+  }
+
 
   // ============================================
   // Logger (like TYF)
@@ -439,7 +446,7 @@
 
       if (!sys) return;
 
-      const slowHint = String(sys.loadingSlowHint || "").trim();
+      const slowHint = pickOne(sys.loadingSlowHints, sys.loadingSlowHint);
       if (!slowHint) return;
 
       const hint = root.querySelector(".wt-muted");

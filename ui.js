@@ -115,6 +115,13 @@ void function () {
     try { storage.setStatsSharingPromptFlags(flags); } catch (_) { }
   }
 
+  function pickOne(arr, fallback) {
+    const list = Array.isArray(arr) ? arr.map((x) => String(x || "").trim()).filter(Boolean) : [];
+    if (!list.length) return String(fallback || "").trim();
+    const index = Math.floor(Math.random() * list.length);
+    return list[index] || String(fallback || "").trim();
+  }
+
   function markStatsSharingPromptFlag(storage, flagBit) {
     if (!storage || typeof storage.markStatsSharingPromptFlag !== "function") return;
     try { storage.markStatsSharingPromptFlag(flagBit); } catch (_) { }
@@ -1425,7 +1432,7 @@ void function () {
         case "start-run": {
           const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
           if (!ready) {
-            const msg = String(self.wording?.ui?.contentLoadingToast || "").trim();
+            const msg = String(self.getContentLoadingCopy() || "").trim();
             if (msg) toastNow(self.config, msg, { variant: "info" });
             break;
           }
@@ -1591,7 +1598,7 @@ void function () {
         case "play-again": {
           const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
           if (!ready) {
-            const msg = String(self.wording?.ui?.contentLoadingToast || "").trim();
+            const msg = String(self.getContentLoadingCopy() || "").trim();
             if (msg) toastNow(self.config, msg, { variant: "info" });
             break;
           }
@@ -1692,6 +1699,18 @@ void function () {
 
         case "open-support-email":
           self.openSupportEmailApp();
+          break;
+
+        case "open-support-email-bug":
+          self.openSupportEmailApp("bug");
+          break;
+
+        case "open-support-email-question":
+          self.openSupportEmailApp("question");
+          break;
+
+        case "open-support-email-idea":
+          self.openSupportEmailApp("idea");
           break;
 
         case "install-app":
@@ -2128,6 +2147,13 @@ void function () {
   UI.prototype.setContentLoading = function (isLoading) {
     if (!this._runtime) return;
     this._runtime.contentLoading = (isLoading === true);
+    this._runtime.contentLoadingMessage = this._runtime.contentLoading
+      ? pickOne(this.wording?.ui?.contentLoadingToasts, this.wording?.ui?.contentLoadingToast)
+      : "";
+  };
+
+  UI.prototype.getContentLoadingCopy = function () {
+    return String(this._runtime?.contentLoadingMessage || "").trim();
   };
 
   UI.prototype.init = function () {
@@ -5235,6 +5261,14 @@ void function () {
 
     <div class="wt-divider"></div>
 
+    <div class="wt-actions wt-actions--compact">
+      <button class="wt-btn wt-btn--secondary" data-action="open-support-email-bug">${escapeHtml(String(support.ctaBug || "").trim())}</button>
+      <button class="wt-btn wt-btn--secondary" data-action="open-support-email-question">${escapeHtml(String(support.ctaQuestion || "").trim())}</button>
+      <button class="wt-btn wt-btn--secondary" data-action="open-support-email-idea">${escapeHtml(String(support.ctaIdea || "").trim())}</button>
+    </div>
+
+    <div class="wt-divider"></div>
+
       <div class="wt-actions">
       <button class="wt-btn wt-btn--secondary" data-action="copy-support-email">${escapeHtml(String(support.ctaCopy || "").trim())}</button>
       <button class="wt-btn wt-btn--primary" data-action="open-support-email">${escapeHtml(String(support.ctaOpen || "").trim())}</button>
@@ -5259,7 +5293,7 @@ void function () {
   };
 
 
-  UI.prototype.openSupportEmailApp = function () {
+  UI.prototype.openSupportEmailApp = function (kind) {
     const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
     if (!email) return;
 
@@ -5268,8 +5302,20 @@ void function () {
 
     const w = this.wording || {};
     const support = w.support || {};
-    const suffix = String(support.emailSubjectSuffix || "").trim();
-    const bodyTemplate = String(support.emailBodyTemplate || "").trim();
+    const mode = String(kind || "").trim().toLowerCase();
+    let suffix = String(support.emailSubjectSuffix || "").trim();
+    let bodyTemplate = String(support.emailBodyTemplate || "").trim();
+
+    if (mode === "bug") {
+      suffix = String(support.bugSubjectSuffix || suffix).trim();
+      bodyTemplate = String(support.bugBodyTemplate || bodyTemplate).trim();
+    } else if (mode === "question") {
+      suffix = String(support.questionSubjectSuffix || suffix).trim();
+      bodyTemplate = String(support.questionBodyTemplate || bodyTemplate).trim();
+    } else if (mode === "idea") {
+      suffix = String(support.ideaSubjectSuffix || suffix).trim();
+      bodyTemplate = String(support.ideaBodyTemplate || bodyTemplate).trim();
+    }
 
     if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
       window.WT_Email.openSupportEmail({
@@ -6981,22 +7027,27 @@ void function () {
     })();
 
     const landingHeaderRowHtml = `
-  <div class="wt-landing-header">
-    <div class="wt-landing-header__brand">
-      ${renderBrandingRow(cfg, true)}
+  <div class="wt-landing-hero">
+    <div class="wt-landing-header">
+      <div class="wt-landing-header__brand">
+        ${renderBrandingRow(cfg, true)}
+      </div>
+     <div class="wt-landing-top-right">
+        ${chestHintTextLanding ? `<div class="wt-chest-hint-inline">${escapeHtml(chestHintTextLanding)}</div>` : ``}
+        ${canShowChest ? `
+          <button
+            type="button"
+            data-wt-secret="chest"
+            class="wt-btn-icon${chestTeaseClass}"
+            aria-label="${escapeHtml(chestAria)}"
+            title="${escapeHtml(chestAria)}"
+          >${renderIcon("zap")}</button>
+        ` : ``}
+      </div>
     </div>
-   <div class="wt-landing-top-right">
-      ${chestHintTextLanding ? `<div class="wt-chest-hint-inline">${escapeHtml(chestHintTextLanding)}</div>` : ``}
-      ${canShowChest ? `
-        <button
-          type="button"
-          data-wt-secret="chest"
-          class="wt-btn-icon${chestTeaseClass}"
-          aria-label="${escapeHtml(chestAria)}"
-          title="${escapeHtml(chestAria)}"
-        >${renderIcon("zap")}</button>
-      ` : ``}
-    </div>
+    ${landingUrgencyHtml}
+    ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
+    <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
   </div>
 `;
 
@@ -7005,12 +7056,6 @@ void function () {
 
 
 ${landingHeaderRowHtml}
-
-   ${landingUrgencyHtml}
-
-        ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
-
-        <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
   ${(() => {
         // L1: limit stacked muted lines (avoid grey wall)
         const hasHeavyBlock = Boolean(
@@ -7103,7 +7148,7 @@ ${(() => {
 
       ${((this._runtime && this._runtime.contentLoading === true)
         ? (() => {
-          const msg = String(this.wording?.ui?.contentLoadingToast || "").trim();
+          const msg = String(this.getContentLoadingCopy() || "").trim();
           return msg ? `<p class="wt-muted wt-m-0">${escapeHtml(msg)}</p>` : ``;
         })()
         : ``)}
@@ -8190,23 +8235,25 @@ ${(() => {
 
     const endActionsClass = `wt-actions wt-actions--stack${isPractice ? " wt-actions--grid" : ""}`;
     const endHeaderRowHtml = `
-  <div class="wt-row wt-row--spaced wt-end-header">
-    <div class="wt-end-header__brand">
-      ${renderBrandingRow(cfg, true)}
-    </div>
+  <div class="wt-end-hero">
+    <div class="wt-row wt-row--spaced wt-end-header">
+      <div class="wt-end-header__brand">
+        ${renderBrandingRow(cfg, true)}
+      </div>
 
-    <div class="wt-row wt-row--tight wt-end-header__actions">
-      ${homeBtnHtml}
+      <div class="wt-row wt-row--tight wt-end-header__actions">
+        ${homeBtnHtml}
 
-      ${canShowChest ? `
-        <button
-          type="button"
-          data-wt-secret="chest"
-          class="wt-btn-icon${chestTeaseClass}"
-          aria-label="${escapeHtml(chestAria)}"
-          title="${escapeHtml(chestAria)}"
-        >${renderIcon("zap")}</button>
-      ` : ``}
+        ${canShowChest ? `
+          <button
+            type="button"
+            data-wt-secret="chest"
+            class="wt-btn-icon${chestTeaseClass}"
+            aria-label="${escapeHtml(chestAria)}"
+            title="${escapeHtml(chestAria)}"
+          >${renderIcon("zap")}</button>
+        ` : ``}
+      </div>
     </div>
   </div>
 `;
@@ -8661,9 +8708,11 @@ ${(() => {
     function renderShell(innerHtml) {
       return `
   <div class="wt-container" ${shellAttrs.join(" ")}>
-    ${brandingHtml}
-    ${headingHtml}
-    ${headerHtml}
+    <div class="wt-playing-hero">
+      ${brandingHtml}
+      ${headingHtml}
+      ${headerHtml}
+    </div>
     ${innerHtml}
   </div>
 `;
@@ -8920,10 +8969,13 @@ ${questionPrompt ? `
 
     const valueTitle = String(pay.valueTitle || "").trim();
     const trustTitle = String(pay.trustTitle || "").trim();
+    const compactTitle = String(pay.compactTitle || valueTitle || "").trim();
+    const payOnceLine = String(pay.payOnceLine || "").trim();
 
     const valueBullets = Array.isArray(pay.valueBullets) ? pay.valueBullets : [];
     const trustLine = String(pay.trustLine || "").trim();
     const trustBullets = Array.isArray(pay.trustBullets) ? pay.trustBullets : [];
+    const compactBullets = Array.isArray(pay.compactBullets) ? pay.compactBullets : [];
     const notNowLabel = String(w.system?.notNow || "").trim();
     const redeemLabel = String(pay.alreadyHaveCode || "").trim();
 
@@ -9038,7 +9090,11 @@ ${questionPrompt ? `
           const qt = String(q?.quote || "").trim();
           const au = String(q?.author || "").trim();
           if (!qt) return "";
-          return `<div class="wt-paywall-quote"><div class="wt-paywall-quote-text">&ldquo;${escapeHtml(qt)}&rdquo;</div>${au ? `<div class="wt-muted wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}</div>`;
+          const parts = qt.split(/\n+/).map((part) => String(part || "").trim()).filter(Boolean);
+          const maybeStars = parts.length > 1 && /^[★☆\s]+$/.test(parts[0]) ? parts.shift() : "";
+          const body = parts.join(" ").trim();
+          if (!body && !maybeStars) return "";
+          return `<div class="wt-paywall-quote">${maybeStars ? `<div class="wt-paywall-stars" aria-hidden="true">${escapeHtml(maybeStars)}</div>` : ``}${body ? `<div class="wt-paywall-quote-text">&ldquo;${escapeHtml(body)}&rdquo;</div>` : ``}${au ? `<div class="wt-muted wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}</div>`;
         })
         .filter(Boolean)
         .join("");
@@ -9117,32 +9173,20 @@ ${questionPrompt ? `
 
 
 
+    const hasCompactSection = (compactTitle || compactBullets.length);
     const hasValueSection = (valueTitle || valueBullets.length);
     const hasTrustSection = (trustTitle || trustLine || trustBullets.length);
 
     return `
-    ${renderBrandingRow(cfg, true)}
-    <div class="wt-card wt-card--hero">
-      <h1 class="wt-h1">${escapeHtml(headline)}</h1>
+    <div class="wt-card wt-card--hero wt-card--paywall">
+      <div class="wt-paywall-hero">
+        ${renderBrandingRow(cfg, true)}
+        <h1 class="wt-h1">${escapeHtml(headline)}</h1>
+        ${progressLine1 ? `<p class="wt-muted wt-paywall-progress-line--lead">${escapeHtml(progressLine1)}</p>` : ``}
+        ${progressLine2 ? `<p class="wt-muted wt-paywall-progress-line--follow">${escapeHtml(progressLine2)}</p>` : ``}
+      </div>
 
-      ${progressLine1 ? `<p class="wt-muted wt-paywall-progress-line--lead">${escapeHtml(progressLine1)}</p>` : ``}
-      ${progressLine2 ? `<p class="wt-muted wt-paywall-progress-line--follow">${escapeHtml(progressLine2)}</p>` : ``}
-
-      ${hasValueSection ? `
-       ${valueTitle ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(valueTitle)}</div>` : ``}
-        ${valueBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(valueBullets, false)}</div>` : ``}
-      ` : ``}
-
-      ${(hasValueSection && hasTrustSection) ? `<div class="wt-divider"></div>` : ``}
-
-      ${hasTrustSection ? `
-       ${trustLine ? `<div class="wt-meta wt-meta--strong wt-paywall-trust-line">${renderTextWithStrong(trustLine)}</div>` : ``}
-        ${trustBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(trustBullets, true)}</div>` : ``}
-      ` : ``}
-
-      ${renderSocialProof()}
-
-      <div class="wt-divider"></div>
+      ${payOnceLine ? `<div class="wt-meta wt-meta--strong wt-paywall-payonce">${escapeHtml(payOnceLine)}</div>` : ``}
 
       ${renderUrgencyBanner()}
 
@@ -9155,18 +9199,33 @@ ${questionPrompt ? `
           class="wt-btn wt-btn--primary"
           data-action="${isEarly ? "checkout-early" : "checkout-standard"}"
         >${escapeHtml(primaryCta)}</button>` : ``}
-
-       <button
-          class="wt-btn wt-btn--secondary"
-          data-action="go-home"
-        >${escapeHtml(notNowLabel)}</button>
       </div>
 
-            ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
+      ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-paywall-link" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
 
-    ${"" /* trustLine already rendered above in trust section */}
-    ${checkoutNote ? `<p class="wt-muted wt-paywall-checkout-note">${escapeHtml(checkoutNote)}</p>` : ``}
+      ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
+
+      ${checkoutNote ? `<p class="wt-muted wt-paywall-checkout-note">${escapeHtml(checkoutNote)}</p>` : ``}
       ${deviceNote ? `<p class="wt-muted wt-paywall-device-note">${escapeHtml(deviceNote)}</p>` : ``}
+
+      ${hasCompactSection ? `
+       ${compactTitle ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(compactTitle)}</div>` : ``}
+        ${compactBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(compactBullets, false)}</div>` : ``}
+      ` : ``}
+
+      ${(!hasCompactSection && hasValueSection) ? `
+       ${valueTitle ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(valueTitle)}</div>` : ``}
+        ${valueBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(valueBullets, false)}</div>` : ``}
+      ` : ``}
+
+      ${(!hasCompactSection && hasValueSection && hasTrustSection) ? `<div class="wt-divider"></div>` : ``}
+
+      ${(!hasCompactSection && hasTrustSection) ? `
+       ${trustLine ? `<div class="wt-meta wt-meta--strong wt-paywall-trust-line">${renderTextWithStrong(trustLine)}</div>` : ``}
+        ${trustBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(trustBullets, true)}</div>` : ``}
+      ` : ``}
+
+      ${renderSocialProof()}
     </div>
     `;
 

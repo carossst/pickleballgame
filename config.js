@@ -556,6 +556,11 @@
       loadingIcon: "",
       loadingHint: "Preparing your pickleball rules quiz",
       loadingSlowHint: "Still loading... Check your connection if this takes too long.",
+      loadingSlowHints: [
+        "Arguing politely about the kitchen...",
+        "Reviewing highly suspicious line calls...",
+        "Preparing an unnecessary Erne..."
+      ],
       updateAvailable: "New version available.",
       updateNow: "Refresh app",
 
@@ -826,6 +831,11 @@
 
       // Content loading (LANDING guard)
       contentLoadingToast: "Loading questions...",
+      contentLoadingToasts: [
+        "Arguing politely about the kitchen...",
+        "Reviewing highly suspicious line calls...",
+        "Preparing an unnecessary Erne..."
+      ],
 
       // Pool loop announcement (RUN)
       poolReshuffledToast: "All questions reshuffled. New order.",
@@ -967,7 +977,7 @@
       questionPrompt: "True or false?",
       dangerLineLabel: "TIMEOUT LINE",
       dangerLineAria: "Timeout line. If the card reaches this line, the item is lost.",
-      seenOnlyLine: "{count} seen pickleball rules in your Rapid Fire pool.",
+      seenOnlyLine: "{count} pickleball rules in your Rapid Fire pool.",
 
       // End toasts (BONUS ends by returning to END screen)
       // Keep existing (even if you later stop using the modal)
@@ -1187,16 +1197,25 @@
       headline: "Unlock the full pickleball rules quiz.",
 
       // LAST FREE RUN - stronger but factual
-      headlineLastFree: "That was your last free game. Keep going with full access.",
+      headlineLastFree: "You've got the feel for it. Now finish the set.",
 
       // Projection personnalisée (PAYWALL only)
       // Vars: {seen} {poolSize} {remaining}
-      progressLine1: "You've already seen {seen} questions. {remaining} more are still waiting in the full set.",
+      progressLine1: "You've seen {seen} questions. {remaining} more are waiting in the full set.",
       progressLine2: "",
+
+      payOnceLine: "Pay once. No subscription.",
 
       // Section headers (anti “mur de mots”)
       valueTitle: "What you get",
       trustTitle: "Simple unlock",
+      compactTitle: "What unlocks",
+      compactBullets: [
+        "**All 200 pickleball rules questions**",
+        "**Explanations after every answer**",
+        "**Mistakes Mode** and **Rapid Fire**",
+        "**Works offline** after first load"
+      ],
 
       valueBullets: [
         "**All 200 pickleball rules questions**",
@@ -1225,14 +1244,14 @@
       socialProofTitle: "What players say",
       socialProofQuotes: [
         { quote: "★★★★★\nI felt confident going in, and this still caught a few things I was getting wrong. The explanations are clear and genuinely helpful.", author: "Maya, tournament player" },
-        { quote: "★★★★★\nA few quick games was enough to show me which rules I was still shaky on.", author: "Jon, doubles regular" }
+        { quote: "★★★★★\nTwo quick games were enough to show me I needed the full set.", author: "Jon, doubles regular" }
       ],
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)
       // Vars: {saveAmount} {earlyPrice} {standardPrice}
       savingsLineTemplate: "Save {saveAmount} with the early price.",
       // Micro reassurance under CTA (optional, no fallback)
-      checkoutNote: "Secure checkout with Stripe. Usually about 30 seconds.",
+      checkoutNote: "Payment handled securely by Stripe. Usually about 30 seconds.",
       checkoutRedirecting: "Redirecting to secure checkout...",
 
       // Primary CTA changes with price phase (EARLY vs STANDARD)
@@ -1427,10 +1446,16 @@ Can you beat me?
       label: "Contact",
       modalTitle: "Write us",
       modalBodyLine1: "Email is the fastest way to reach us.",
-      modalBodyLine2: "Copy the address below or open your email app.",
+      modalBodyLine2: "Pick a reason below or copy the address.",
       emailSubjectSuffix: "Feedback",
       ctaCopy: "Copy email",
       ctaOpen: "Open email app",
+      ctaBug: "Bug report",
+      ctaQuestion: "Question",
+      ctaIdea: "Idea",
+      bugSubjectSuffix: "Bug report",
+      questionSubjectSuffix: "Question",
+      ideaSubjectSuffix: "Idea",
 
       // Email compose (prefill)
       emailBodyTemplate: `Hi!
@@ -1439,6 +1464,38 @@ I'm writing about Pickleball Rules Quiz.
 
 Message:
 
+
+
+
+Thanks!`,
+      bugBodyTemplate: `Hi!
+
+I'm writing about Pickleball Rules Quiz.
+
+Bug report:
+
+What happened:
+
+What I expected:
+
+Device / browser:
+
+
+Thanks!`,
+      questionBodyTemplate: `Hi!
+
+I'm writing about Pickleball Rules Quiz.
+
+Question:
+
+
+
+Thanks!`,
+      ideaBodyTemplate: `Hi!
+
+I'm writing about Pickleball Rules Quiz.
+
+Idea:
 
 
 
