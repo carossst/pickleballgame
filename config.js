@@ -658,7 +658,7 @@
       statsMasterySummaryTemplate: "{mastered}/{poolSize} questions answered correctly",
 
       postPaywallTitle: "Free games completed.",
-      postPaywallBody: "Unlock the full set of 200 pickleball rules questions, plus explanations after every answer.",
+      postPaywallBody: "Unlock all 200 pickleball rules questions, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
       practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
       postPaywallCta: "Unlock full access",
 
@@ -778,7 +778,7 @@
 
     levels: {
       modalTitle: "Pickleball levels",
-      placeholder: "Levels unlock as you move through the game.",
+      placeholder: "",
       openDetailsAria: "Open level details",
       unlockKicker: "New level",
       reachedTemplate: "You reached {label}.",
@@ -967,7 +967,7 @@
       questionPrompt: "True or false?",
       dangerLineLabel: "TIMEOUT LINE",
       dangerLineAria: "Timeout line. If the card reaches this line, the item is lost.",
-      seenOnlyLine: "{count} questions in your Rapid Fire pool. Only questions you've already seen in the game.",
+      seenOnlyLine: "{count} seen pickleball rules in your Rapid Fire pool.",
 
       // End toasts (BONUS ends by returning to END screen)
       // Keep existing (even if you later stop using the modal)
@@ -987,8 +987,8 @@
       valueLine: "Focus on the questions that still need work.",
       descUnlocked: "Only the questions you previously got wrong.",
 
-      freeLimitReachedTitle: "End of Free Games.",
-      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes Mode.\nKeep fixing your mistakes without limits.",
+      freeLimitReachedTitle: "That helped.",
+      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes Mode.\nKeep fixing what you missed.\nNo limits.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -1029,7 +1029,7 @@
       playingProgressLine: "{current}/{total}",
 
       // Start overlay (PRACTICE): explain the mode (2 lines shown via typeLine + msg)
-      startRunChancesOverlayPractice: "Only questions you missed.\nUp to 10 per game.\nFix one and it drops out. Miss it again and it comes back.",
+      startRunChancesOverlayPractice: "Only questions you missed.\nUp to 10 per game.\nFix it and it drops out. Miss it and it comes back.",
       startOverlayTapAnywhere: "Tap anywhere to start",
       // Fallback CTA when no repeat tier is selected
       ctaPracticeAgain: "Practice again",
@@ -1107,7 +1107,7 @@
       poolCompleteCtaPractice: "Fix your mistakes",
 
       freeLimitReachedTitle: "Nice game.",
-      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full question set,\nunlimited play,\nMistakes Mode,\nand Rapid Fire Mode.",
+      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks all 200 pickleball rules questions, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 

@@ -1102,12 +1102,13 @@ void function () {
     const bonusLine3 = String(wording?.secretBonus?.startOverlayLine3 || "").trim();
     const bonusLimitLine = String(extra?.bonusLimitLine || "").trim();
     const bonusTapHint = String(wording?.secretBonus?.startOverlayTapAnywhere || "").trim();
+    const messageLines = msg.split("\n").map((line) => String(line || "").trim()).filter(Boolean);
     const bonusLines = [
       bonusLine1,
       bonusLine2,
       bonusLine3,
       bonusLimitLine,
-      ...msg.split("\n").map((line) => String(line || "").trim()).filter(Boolean)
+      ...messageLines
     ];
 
     const goalLine1 = String(extra?.goalLine1 || "").trim();
@@ -1127,7 +1128,7 @@ void function () {
                 ${typeLine ? `<span class="wt-chance-overlay__title">${escapeHtml(typeLine)}</span><br>` : ``}
                 ${goalLine1 ? `<span class="wt-muted">${escapeHtml(goalLine1)}</span><br>` : ``}
                 ${goalLine2 ? `<span class="wt-muted">${escapeHtml(goalLine2)}</span><br>` : ``}
-             ${msg.split("\n").filter(Boolean).map(l => `<span>${escapeHtml(l)}</span>`).join("<br>")}
+             ${messageLines.map((line, index) => `<span${isPractice && index === 0 ? ` class="wt-chance-overlay__lead"` : ``}>${escapeHtml(line)}</span>`).join("<br>")}
                 ${(practiceTapHint || defaultTapHint) ? `<br><span class="wt-chance-overlay__hint">${escapeHtml(practiceTapHint || defaultTapHint)}</span>` : ``}
               `
       }
@@ -6658,6 +6659,20 @@ void function () {
       }
     } catch (_) { postCompletionHtml = ""; }
 
+    const levelModel = getAppLevelModel(this.storage, cfg, w);
+    const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
+    const landingLevelInlineHtml = (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
+      ? `
+          <div class="wt-landing-stat__level">
+            <span class="wt-landing-stat__level-label">Level</span>
+            <button type="button" class="wt-level-chip wt-level-chip--landing" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
+              <span class="wt-level-chip__dot" aria-hidden="true"></span>
+              <span>${escapeHtml(levelModel.current.label)}</span>
+            </button>
+          </div>
+        `
+      : "";
+
     // Welcome back removed intentionally (UX simplification)
     let welcomeBackHtml = "";
 
@@ -6821,6 +6836,7 @@ void function () {
                 <div class="wt-landing-stat">
                   ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
                   ${sub ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(sub)}</div>` : ``}
+                  ${landingLevelInlineHtml}
                     <div class="wt-progress${progressClass}" aria-hidden="true">
                     <div class="wt-progress__fill" data-pct="${pct}" style="width:${pct}%"></div>
                   </div>
@@ -6845,6 +6861,7 @@ void function () {
                 <div class="wt-landing-stat">
                   ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
                   ${detailLine ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(detailLine)}</div>` : ``}
+                  ${landingLevelInlineHtml}
                   <div class="wt-progress${progressClass}" aria-hidden="true">
                     <div class="wt-progress__fill" data-pct="${pct}" style="width:${pct}%"></div>
                   </div>
@@ -6964,18 +6981,9 @@ void function () {
       return ``;
     })();
 
-    const levelModel = getAppLevelModel(this.storage, cfg, w);
-    const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
     const landingLevelHtml = (() => {
-      const placeholder = String(levelModel.levelsW?.placeholder || "").trim();
       if (levelModel.state.currentLevel <= 0) {
-        if (!placeholder) return ``;
-        return `
-          <div class="wt-level-landing wt-level-landing--empty" aria-hidden="true">
-            <span class="wt-level-landing__placeholder" aria-hidden="true"></span>
-            <span class="wt-level-landing__text">${escapeHtml(placeholder)}</span>
-          </div>
-        `;
+        return ``;
       }
 
       if (!levelModel.current || !levelModel.current.label) return ``;
@@ -7118,7 +7126,7 @@ ${(() => {
         : ``)}
     </div>
 
-    ${landingLevelHtml}
+    ${welcomeBackHtml ? `` : landingLevelHtml}
 
     ${welcomeBackHtml}
 
