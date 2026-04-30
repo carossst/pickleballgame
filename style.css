@@ -1353,12 +1353,6 @@ body.wt-state--end .wt-card--end {
   letter-spacing: 0.3px;
 }
 
-.wt-level-landing {
-  margin-top: var(--space-10);
-  display: flex;
-  justify-content: center;
-}
-
 .wt-level-chip {
   display: inline-flex;
   align-items: center;

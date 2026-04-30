@@ -6981,22 +6981,6 @@ void function () {
       return ``;
     })();
 
-    const landingLevelHtml = (() => {
-      if (levelModel.state.currentLevel <= 0) {
-        return ``;
-      }
-
-      if (!levelModel.current || !levelModel.current.label) return ``;
-      return `
-        <div class="wt-level-landing">
-          <button type="button" class="wt-level-chip" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
-            <span class="wt-level-chip__dot" aria-hidden="true"></span>
-            <span>${escapeHtml(levelModel.current.label)}</span>
-          </button>
-        </div>
-      `;
-    })();
-
     const landingHeaderRowHtml = `
   <div class="wt-landing-header">
     <div class="wt-landing-header__brand">
@@ -7125,8 +7109,6 @@ ${(() => {
         })()
         : ``)}
     </div>
-
-    ${welcomeBackHtml ? `` : landingLevelHtml}
 
     ${welcomeBackHtml}
 
