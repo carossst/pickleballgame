@@ -1464,6 +1464,11 @@ void function () {
 
 
         case "start-practice":
+          if (self.state === STATES.LANDING) {
+            if (self.storage && typeof self.storage.markLandingPracticeClicked === "function") {
+              self.storage.markLandingPracticeClicked();
+            }
+          }
           self.closeModal();
           self.startRun(true);
           break;
@@ -2332,6 +2337,13 @@ void function () {
     if (prev === STATES.LANDING && next !== STATES.LANDING && next !== STATES.PAYWALL) {
       this._stopPaywallTicker();
     }
+    if (prev === STATES.LANDING && next !== STATES.LANDING) {
+      const enteredAt = Number(this._runtime?.landingEnteredAt || 0);
+      if (enteredAt > 0 && this.storage && typeof this.storage.recordLandingTime === "function") {
+        try { this.storage.recordLandingTime(Date.now() - enteredAt); } catch (_) { /* silent */ }
+      }
+      if (this._runtime) this._runtime.landingEnteredAt = 0;
+    }
 
     // Remember where PAYWALL was opened from (for "Not now" routing)
     if (next === STATES.PAYWALL && prev !== STATES.PAYWALL) {
@@ -2371,6 +2383,9 @@ void function () {
 
     // Entering LANDING: show the EARLY timer only if the window is active (after PAYWALL)
     if (next === STATES.LANDING && prev !== STATES.LANDING) {
+      if (this._runtime) {
+        this._runtime.landingEnteredAt = Date.now();
+      }
       let ep = null;
       if (this.storage && typeof this.storage.getEarlyPriceState === "function") {
         try { ep = this.storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
@@ -2709,7 +2724,7 @@ void function () {
 
       premiumHtml = `
         <div class="wt-divider"></div>
-        <div class="wt-actions" style="gap:8px">
+        <div class="wt-actions wt-actions--compact">
           ${redeemLabel ? `<button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button>` : ``}
           ${upgradeCta ? `<button class="wt-btn wt-btn--ghost" data-action="open-paywall">${escapeHtml(upgradeCta)}</button>` : ``}
         </div>
@@ -2722,12 +2737,14 @@ void function () {
 
 <div class="wt-divider"></div>
 
-      <p class="wt-question-title" style="margin:0 0 8px 0;">
-        ${escapeHtml(String(how.ruleTitle || "").trim())}
-      </p>
-      <p class="wt-muted" style="margin:0;">
-        ${escapeHtml(fillTemplate(String(how.ruleSentence || "").trim(), vars))}
-      </p>
+      <div class="wt-stack wt-stack--sm">
+        <p class="wt-question-title">
+          ${escapeHtml(String(how.ruleTitle || "").trim())}
+        </p>
+        <p class="wt-muted">
+          ${escapeHtml(fillTemplate(String(how.ruleSentence || "").trim(), vars))}
+        </p>
+      </div>
 
       ${premiumHtml}
     `;
@@ -3427,6 +3444,7 @@ void function () {
     const cfg = this.config || {};
     const moCfg = cfg.mistakesOnly || {};
     const premium = (this.storage && typeof this.storage.isPremium === "function") ? this.storage.isPremium() : false;
+    const startedFromLanding = (this.state === STATES.LANDING);
 
     // Hook for live stats refresh during run (deck rebuild)
     // Exposed on the UI instance to avoid scope-related ReferenceError.
@@ -3492,6 +3510,14 @@ void function () {
     }
 
     this._runtime.practiceBacklogAtStart = practiceBacklogAtStart;
+    if (startedFromLanding) {
+      if (this.storage && typeof this.storage.markLandingNextRunStarted === "function") {
+        this.storage.markLandingNextRunStarted();
+      }
+      this._runtime.landingRunCompletionPending = true;
+    } else {
+      this._runtime.landingRunCompletionPending = false;
+    }
 
     // Provide a stable function reference to the engine (no free variable)
     const getStatsByItem = this.getStatsByItem;
@@ -4776,6 +4802,13 @@ void function () {
           totalPresented: Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0
         }) || levelProgress;
       } catch (_) { /* silent */ }
+    }
+
+    if (this._runtime?.landingRunCompletionPending) {
+      if (mode !== "BONUS" && this.storage && typeof this.storage.markLandingNextRunCompleted === "function") {
+        try { this.storage.markLandingNextRunCompleted(); } catch (_) { /* silent */ }
+      }
+      this._runtime.landingRunCompletionPending = false;
     }
 
     // Store for END screen
@@ -9019,7 +9052,7 @@ ${questionPrompt ? `
           const qt = String(q?.quote || "").trim();
           const au = String(q?.author || "").trim();
           if (!qt) return "";
-          return `<div class="wt-paywall-quote"><div style="font-weight:500">&ldquo;${escapeHtml(qt)}&rdquo;</div>${au ? `<div class="wt-muted wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}</div>`;
+          return `<div class="wt-paywall-quote"><div class="wt-paywall-quote-text">&ldquo;${escapeHtml(qt)}&rdquo;</div>${au ? `<div class="wt-muted wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}</div>`;
         })
         .filter(Boolean)
         .join("");
@@ -9106,19 +9139,19 @@ ${questionPrompt ? `
     <div class="wt-card wt-card--hero">
       <h1 class="wt-h1">${escapeHtml(headline)}</h1>
 
-      ${progressLine1 ? `<p class="wt-muted" style="margin-top:6px">${escapeHtml(progressLine1)}</p>` : ``}
-      ${progressLine2 ? `<p class="wt-muted" style="margin-top:2px">${escapeHtml(progressLine2)}</p>` : ``}
+      ${progressLine1 ? `<p class="wt-muted wt-paywall-progress-line--lead">${escapeHtml(progressLine1)}</p>` : ``}
+      ${progressLine2 ? `<p class="wt-muted wt-paywall-progress-line--follow">${escapeHtml(progressLine2)}</p>` : ``}
 
       ${hasValueSection ? `
-       ${valueTitle ? `<div class="wt-meta wt-meta--strong" style="margin-top:var(--gap-2)">${escapeHtml(valueTitle)}</div>` : ``}
-        ${valueBullets.length ? `<div style="margin-top:var(--gap-1)">${renderBullets(valueBullets, false)}</div>` : ``}
+       ${valueTitle ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(valueTitle)}</div>` : ``}
+        ${valueBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(valueBullets, false)}</div>` : ``}
       ` : ``}
 
       ${(hasValueSection && hasTrustSection) ? `<div class="wt-divider"></div>` : ``}
 
       ${hasTrustSection ? `
-       ${trustLine ? `<div class="wt-meta wt-meta--strong" style="margin-top:6px">${renderTextWithStrong(trustLine)}</div>` : ``}
-        ${trustBullets.length ? `<div style="margin-top:var(--gap-1)">${renderBullets(trustBullets, true)}</div>` : ``}
+       ${trustLine ? `<div class="wt-meta wt-meta--strong wt-paywall-trust-line">${renderTextWithStrong(trustLine)}</div>` : ``}
+        ${trustBullets.length ? `<div class="wt-paywall-list-wrap">${renderBullets(trustBullets, true)}</div>` : ``}
       ` : ``}
 
       ${renderSocialProof()}
@@ -9129,7 +9162,7 @@ ${questionPrompt ? `
 
       ${renderPriceBlock()}
 
-      ${savingsLine ? `<p class="wt-muted" style="margin:10px 0 0">${escapeHtml(savingsLine)}</p>` : ``}
+      ${savingsLine ? `<p class="wt-muted wt-paywall-savings">${escapeHtml(savingsLine)}</p>` : ``}
 
       <div class="wt-actions">
         ${primaryCta ? `<button
@@ -9143,11 +9176,11 @@ ${questionPrompt ? `
         >${escapeHtml(notNowLabel)}</button>
       </div>
 
-            ${redeemLabel ? `<p class="wt-muted" style="margin-top:10px"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
+            ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 
     ${"" /* trustLine already rendered above in trust section */}
-    ${checkoutNote ? `<p class="wt-muted" style="margin-top:8px">${escapeHtml(checkoutNote)}</p>` : ``}
-      ${deviceNote ? `<p class="wt-muted" style="margin-top:4px">${escapeHtml(deviceNote)}</p>` : ``}
+    ${checkoutNote ? `<p class="wt-muted wt-paywall-checkout-note">${escapeHtml(checkoutNote)}</p>` : ``}
+      ${deviceNote ? `<p class="wt-muted wt-paywall-device-note">${escapeHtml(deviceNote)}</p>` : ``}
     </div>
     `;
 

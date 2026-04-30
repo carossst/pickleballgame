@@ -169,6 +169,10 @@
         // Funnel (local-only, aggregated)
         landingViewed: 0,
         landingPlayClicked: 0,
+        landingPracticeClicked: 0,
+        landingNextRunStarted: 0,
+        landingNextRunCompleted: 0,
+        landingTimeTotalMs: 0,
 
         shareClicked: 0,
         installPromptShown: 0,
@@ -1918,6 +1922,32 @@
     this._save();
   };
 
+  StorageManager.prototype.markLandingPracticeClicked = function () {
+    if (!this.data) return;
+    this.data.counters.landingPracticeClicked = clampNonNegativeInt(this.data.counters.landingPracticeClicked) + 1;
+    this._save();
+  };
+
+  StorageManager.prototype.markLandingNextRunStarted = function () {
+    if (!this.data) return;
+    this.data.counters.landingNextRunStarted = clampNonNegativeInt(this.data.counters.landingNextRunStarted) + 1;
+    this._save();
+  };
+
+  StorageManager.prototype.markLandingNextRunCompleted = function () {
+    if (!this.data) return;
+    this.data.counters.landingNextRunCompleted = clampNonNegativeInt(this.data.counters.landingNextRunCompleted) + 1;
+    this._save();
+  };
+
+  StorageManager.prototype.recordLandingTime = function (ms) {
+    if (!this.data) return;
+    const delta = clampNonNegativeInt(ms);
+    if (delta <= 0) return;
+    this.data.counters.landingTimeTotalMs = clampNonNegativeInt(this.data.counters.landingTimeTotalMs) + delta;
+    this._save();
+  };
+
   StorageManager.prototype.markPaywallShown = function (source) {
     if (!this.data) return;
     this.data.counters.paywallShown = clampNonNegativeInt(this.data.counters.paywallShown) + 1;
@@ -2190,6 +2220,10 @@
       funnel: {
         landingViewed: clampNonNegativeInt(this.data.counters?.landingViewed),
         landingPlayClicked: clampNonNegativeInt(this.data.counters?.landingPlayClicked),
+        landingPracticeClicked: clampNonNegativeInt(this.data.counters?.landingPracticeClicked),
+        landingNextRunStarted: clampNonNegativeInt(this.data.counters?.landingNextRunStarted),
+        landingNextRunCompleted: clampNonNegativeInt(this.data.counters?.landingNextRunCompleted),
+        landingTimeTotalMs: clampNonNegativeInt(this.data.counters?.landingTimeTotalMs),
         paywallShown: clampNonNegativeInt(this.data.counters?.paywallShown),
         paywallShownFromLanding: clampNonNegativeInt(this.data.counters?.paywallShownFromLanding),
         paywallShownFromEnd: clampNonNegativeInt(this.data.counters?.paywallShownFromEnd),

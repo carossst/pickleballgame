@@ -777,19 +777,19 @@
     },
 
     levels: {
-      modalTitle: "Pickleball levels",
+      modalTitle: "Levels",
       placeholder: "",
       openDetailsAria: "Open level details",
       unlockKicker: "New level",
       reachedTemplate: "You reached {label}.",
-      currentLabel: "Your level",
-      unlockedByLabel: "Unlocked by",
-      nextLabel: "Next level",
-      reachItLabel: "How to reach it",
-      progressionLabel: "Full progression",
-      noLevelTitle: "No level yet",
-      noLevelBody: "Finish your first full pass to unlock your first level.",
-      maxLevelBody: "You've completed the full progression in this game.",
+      currentLabel: "Current",
+      unlockedByLabel: "",
+      nextLabel: "Next",
+      reachItLabel: "",
+      progressionLabel: "Path",
+      noLevelTitle: "Locked",
+      noLevelBody: "Finish your first full pass.",
+      maxLevelBody: "You reached the top level.",
       currentPill: "Current",
       unlockedPill: "Unlocked",
       lockedPill: "Locked",
@@ -800,15 +800,15 @@
         },
         2: {
           label: "CLUB-LEVEL",
-          unlock: "Finish your first full pass and clear all active mistakes."
+          unlock: "Clear all active mistakes."
         },
         3: {
           label: "TOURNAMENT-LEVEL",
-          unlock: "Clear your mistakes, build a Rapid Fire pool of 16+, and post a 70%+ run."
+          unlock: "Build a Rapid Fire pool of 16+ and post a 70%+ run."
         },
         4: {
           label: "PRO-LEVEL",
-          unlock: "Reach Tournament-Level, build a Rapid Fire pool of 50+, and post an 85%+ run."
+          unlock: "Build a Rapid Fire pool of 50+ and post an 85%+ run."
         }
       }
     },
