@@ -8303,9 +8303,11 @@ ${(() => {
 
   ${displayScoreLine ? `
     <p class="wt-h2 wt-end-score${newBest ? " wt-end-score--newbest" : ""}">
-      ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
-      <span class="wt-end-score__value">
-        ${escapeHtml(displayScoreValue || displayScoreLine)}
+      <span class="wt-end-score__headline">
+        ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
+        <span class="wt-end-score__value">
+          ${escapeHtml(displayScoreValue || displayScoreLine)}
+        </span>
       </span>
 
       ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
@@ -9117,9 +9119,9 @@ ${questionPrompt ? `
       const cls = `wt-box wt-box--tinted`;
 
       return `
-        <div class="${cls}" role="status" aria-live="polite">
-          <div class="wt-meta">${escapeHtml(label)}</div>
-          <div class="wt-h2 wt-timer-value${urgencyPulse ? ' wt-pulse' : ''}">${escapeHtml(timer)}</div>
+        <div class="${cls} wt-paywall-urgency" role="status" aria-live="polite">
+          <div class="wt-paywall-urgency__label">${escapeHtml(label)}</div>
+          <div class="wt-paywall-urgency__timer${urgencyPulse ? ' wt-pulse' : ''}">${escapeHtml(timer)}</div>
         </div>
       `;
     };
@@ -9194,7 +9196,7 @@ ${questionPrompt ? `
 
       ${savingsLine ? `<p class="wt-muted wt-paywall-savings">${escapeHtml(savingsLine)}</p>` : ``}
 
-      <div class="wt-actions">
+      <div class="wt-actions wt-actions--single">
         ${primaryCta ? `<button
           class="wt-btn wt-btn--primary"
           data-action="${isEarly ? "checkout-early" : "checkout-standard"}"

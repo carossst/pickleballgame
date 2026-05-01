@@ -210,6 +210,8 @@
   --fs-3xl: 32px;
   --fs-hero: 48px;
   --fs-mega: 64px;
+  --fs-readable: 17px;
+  --fs-compact: 15px;
 
   /* Motion */
   --fast: 120ms;
@@ -685,7 +687,7 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-paywall-hero .wt-branding {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--space-16);
 }
 
 .wt-paywall-hero .wt-branding-name,
@@ -734,7 +736,7 @@ body.wt-state--end .wt-card--end {
 
 .wt-landing-hero .wt-branding,
 .wt-end-hero .wt-branding {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--space-16);
 }
 
 .wt-landing-hero .wt-branding-name,
@@ -773,7 +775,7 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-card--landing .wt-landing-subtitle {
-  margin-top: var(--space-14);
+  margin-top: var(--space-16);
 }
 
 .wt-playing-hero .wt-branding {
@@ -935,7 +937,7 @@ body.wt-state--end .wt-card--end {
   justify-self: start;
   margin: 0 0 10px;
 
-  font-size: var(--fs-sm);
+  font-size: var(--fs-readable);
   font-weight: 400;
   line-height: 1.35;
   color: rgb(var(--text-muted));
@@ -1056,7 +1058,7 @@ body.wt-state--end .wt-card--end {
 
 .wt-sub {
   margin: 0;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-readable);
   line-height: var(--lh-base);
   font-weight: 400;
   color: rgb(var(--text));
@@ -1064,7 +1066,7 @@ body.wt-state--end .wt-card--end {
 
 /* Landing: keep a slight emphasis, not a different “font feel” */
 .wt-card--landing .wt-sub {
-  font-size: inherit;
+  font-size: var(--fs-readable);
   font-weight: 400;
   color: rgb(var(--text));
 }
@@ -1322,16 +1324,28 @@ body.wt-state--end .wt-card--end {
   gap: var(--gap-1);
 }
 
+.wt-actions--single {
+  grid-template-columns: 1fr;
+}
+
 @media (min-width: 481px) {
   .wt-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
+  }
+
+  .wt-actions--single {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (min-width: 900px) {
   .wt-actions {
     grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+
+  .wt-actions--single {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1517,6 +1531,31 @@ body.wt-state--end .wt-card--end {
   box-shadow: var(--shadow-1);
 }
 
+.wt-paywall-urgency {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-10);
+}
+
+.wt-paywall-urgency__label {
+  min-width: 0;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgb(var(--text-strong));
+}
+
+.wt-paywall-urgency__timer {
+  flex: 0 0 auto;
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1;
+  color: rgb(var(--primary-dark));
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .wt-paywall-timer {
   margin: var(--space-4) 0 0;
   color: rgb(var(--primary-dark));
@@ -1541,6 +1580,8 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-paywall-quote-text {
+  font-size: var(--fs-readable);
+  line-height: 1.5;
   font-weight: 500;
   user-select: text;
   -webkit-user-select: text;
@@ -1572,14 +1613,20 @@ body.wt-state--end .wt-card--end {
 
 .wt-paywall-progress-line--lead {
   margin-top: var(--space-6);
+  font-size: var(--fs-readable);
+  line-height: 1.5;
 }
 
 .wt-paywall-progress-line--follow {
   margin-top: var(--space-2);
+  font-size: var(--fs-readable);
+  line-height: 1.5;
 }
 
 .wt-paywall-payonce {
   margin-top: var(--space-10);
+  font-size: var(--fs-readable);
+  line-height: 1.45;
 }
 
 .wt-paywall-section-title {
@@ -1588,6 +1635,8 @@ body.wt-state--end .wt-card--end {
 
 .wt-paywall-list-wrap {
   margin-top: var(--gap-1);
+  font-size: var(--fs-readable);
+  line-height: 1.5;
 }
 
 .wt-paywall-trust-line {
@@ -1613,7 +1662,7 @@ body.wt-state--end .wt-card--end {
   background: transparent;
   color: rgb(var(--text));
   font: inherit;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-readable);
   line-height: 1.4;
   min-height: 44px;
   padding: var(--space-10) var(--space-8);
@@ -1629,10 +1678,14 @@ body.wt-state--end .wt-card--end {
 
 .wt-paywall-checkout-note {
   margin-top: var(--space-8);
+  font-size: var(--fs-readable);
+  line-height: 1.45;
 }
 
 .wt-paywall-device-note {
   margin-top: var(--space-4);
+  font-size: var(--fs-readable);
+  line-height: 1.45;
 }
 
 .wt-success-note {
@@ -3785,7 +3838,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: grid;
   place-items: center;
   justify-items: center;
-  gap: var(--space-4);
+  gap: var(--space-6);
   width: 100%;
   max-width: none;
   margin: var(--space-16) auto 0;
@@ -3797,14 +3850,22 @@ arcade" feel; deviation from --fs-* scale is expected. */
   box-shadow: none;
 }
 
+.wt-end-score__headline {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-10);
+  flex-wrap: wrap;
+}
+
 .wt-end-score__value {
-  display: block;
-  width: 100%;
+  display: inline-block;
+  width: auto;
   text-align: center;
-  font-size: clamp(56px, 12vw, 84px);
+  font-size: clamp(52px, 11vw, 78px);
   font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 0.88;
+  line-height: 0.92;
   color: rgb(var(--primary-depth));
 }
 
@@ -3816,22 +3877,22 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 .wt-end-score__eyebrow {
-  display: block;
-  width: 100%;
-  margin-bottom: var(--space-4);
-  font-size: var(--fs-sm);
+  display: inline-block;
+  width: auto;
+  margin-bottom: 0;
+  font-size: var(--fs-lg);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-align: center;
-  text-transform: uppercase;
-  color: rgb(var(--text-muted));
+  text-transform: none;
+  color: rgb(var(--text-strong));
 }
 
 .wt-end-score__label {
   display: block;
   width: 100%;
   margin-top: var(--space-4);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-readable);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
@@ -3894,29 +3955,36 @@ arcade" feel; deviation from --fs-* scale is expected. */
 .wt-end-summary {
   width: min(100%, 390px);
   margin: var(--space-14) auto 0;
-  padding: var(--space-12) var(--space-12) var(--space-14);
-  border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
-  border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
-  border-bottom: 1px solid rgb(var(--border) / var(--wt-a-70));
-  border-left: 3px solid rgb(var(--primary-dark));
-  border-radius: 0 var(--r-md) var(--r-md) 0;
-  background: rgb(var(--surface));
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 }
 
 .wt-end-copy {
-  margin-top: var(--space-14);
+  margin-top: var(--space-12);
   display: grid;
-  row-gap: var(--space-6);
+  row-gap: var(--space-8);
   text-align: center;
 }
 
 .wt-end-copy__stats {
-  margin: 0;
-  font-size: var(--fs-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: rgb(var(--surface-muted) / var(--wt-a-72));
+  border: 1px solid rgb(var(--border) / var(--wt-a-70));
+  font-size: var(--fs-compact);
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.45;
   color: rgb(var(--text));
+  text-align: center;
 }
 
 .wt-end-copy__badge {
@@ -3995,7 +4063,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 .wt-end-copy__verdict {
   margin: 0;
-  font-size: var(--fs-lg);
+  font-size: var(--fs-xl);
   font-weight: 700;
   line-height: 1.4;
   color: rgb(var(--text-strong));
@@ -4004,7 +4072,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 .wt-end-copy__note,
 .wt-end-copy__free {
   margin: 0;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-readable);
   line-height: 1.55;
   color: rgb(var(--text));
 }
@@ -4059,10 +4127,22 @@ arcade" feel; deviation from --fs-* scale is expected. */
     padding: 0;
   }
 
+  .wt-end-score__headline {
+    gap: var(--space-8);
+  }
+
+  .wt-end-score__eyebrow {
+    font-size: var(--fs-md);
+  }
+
+  .wt-end-score__value {
+    font-size: clamp(44px, 12vw, 64px);
+  }
+
   .wt-end-summary {
     width: 100%;
     margin-top: var(--space-10);
-    padding: var(--space-10) var(--space-8) var(--space-12);
+    padding: 0;
   }
 
   .wt-end-score__label {
@@ -4127,14 +4207,13 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 @media (min-width: 900px) {
-  .wt-end-copy__stats,
   .wt-end-copy__note,
   .wt-end-copy__free {
-    font-size: 14px;
+    font-size: var(--fs-readable);
   }
 
   .wt-end-copy__verdict {
-    font-size: 16px;
+    font-size: 19px;
   }
 }
 
