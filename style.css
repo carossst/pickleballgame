@@ -1015,6 +1015,12 @@ body.wt-state--end .wt-card--end {
   color: rgb(var(--text-strong));
 }
 
+.wt-card--landing .wt-h1,
+.wt-card--end .wt-h1,
+.wt-card--paywall .wt-h1 {
+  margin-bottom: var(--space-10);
+}
+
 @media (min-width: 481px) {
   .wt-h1 {
     font-size: var(--fs-3xl);
@@ -3862,7 +3868,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: inline-block;
   width: auto;
   text-align: center;
-  font-size: clamp(52px, 11vw, 78px);
+  font-size: clamp(44px, 10vw, 64px);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 0.92;
@@ -3880,7 +3886,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: inline-block;
   width: auto;
   margin-bottom: 0;
-  font-size: var(--fs-lg);
+  font-size: var(--fs-md);
   font-weight: 700;
   letter-spacing: 0;
   text-align: center;
@@ -3970,16 +3976,14 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 .wt-end-copy__stats {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   justify-self: center;
   max-width: 100%;
   margin: 0 auto;
-  padding: 8px 14px;
-  border-radius: var(--r-pill);
-  background: rgb(var(--surface-muted) / var(--wt-a-72));
-  border: 1px solid rgb(var(--border) / var(--wt-a-70));
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
   font-size: var(--fs-compact);
   font-weight: 500;
   line-height: 1.45;
@@ -4136,7 +4140,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   }
 
   .wt-end-score__value {
-    font-size: clamp(44px, 12vw, 64px);
+    font-size: clamp(40px, 11vw, 56px);
   }
 
   .wt-end-summary {

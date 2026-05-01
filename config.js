@@ -334,7 +334,7 @@
 
     landingStats: {
       enabled: true,
-      minCompletedRuns: 4,
+      minCompletedRuns: 1,
       showBeforeFirstRun: false
     },
 
