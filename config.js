@@ -258,6 +258,11 @@
         scoreGained: {
           delayMs: 0,
           durationMs: 900
+        },
+
+        contentLoading: {
+          delayMs: 0,
+          durationMs: 3400
         }
       },
 

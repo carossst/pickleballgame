@@ -174,8 +174,20 @@
       const node = document.getElementById("update-toast");
       if (!node) return;
 
+      const waiting = window.__WT_SW_WAITING__ || null;
+      const waitingKey = String(
+        waiting?.scriptURL ||
+        waiting?.state ||
+        "waiting"
+      ).trim();
+
+      if (window.__WT_SW_LAST_TOAST_KEY__ === waitingKey) {
+        return;
+      }
+
       // Mark update ready so UI can decide when to apply it (user-controlled)
       window.__WT_SW_UPDATE_READY__ = true;
+      window.__WT_SW_LAST_TOAST_KEY__ = waitingKey;
 
       const text = node.querySelector("[data-wt-update-text]");
       if (text) text.textContent = msg;
@@ -453,7 +465,7 @@
       if (hint) {
         hint.textContent = slowHint;
       }
-    }, 3000);
+    }, 4500);
 
 
     try {

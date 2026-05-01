@@ -1433,7 +1433,7 @@ void function () {
           const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
           if (!ready) {
             const msg = String(self.getContentLoadingCopy() || "").trim();
-            if (msg) toastNow(self.config, msg, { variant: "info" });
+            if (msg) toastNow(self.config, msg, { variant: "info", timingKey: "contentLoading" });
             break;
           }
 
@@ -1599,7 +1599,7 @@ void function () {
           const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
           if (!ready) {
             const msg = String(self.getContentLoadingCopy() || "").trim();
-            if (msg) toastNow(self.config, msg, { variant: "info" });
+            if (msg) toastNow(self.config, msg, { variant: "info", timingKey: "contentLoading" });
             break;
           }
 

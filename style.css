@@ -443,7 +443,7 @@ body.wt-state--end .wt-card--end {
   flex-wrap: wrap;
   align-items: flex-start;
   row-gap: var(--gap-2);
-  margin-bottom: var(--space-12);
+  margin-bottom: var(--space-16);
 }
 
 .wt-end-header__brand {
@@ -773,7 +773,7 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-card--landing .wt-landing-subtitle {
-  margin-top: var(--space-10);
+  margin-top: var(--space-14);
 }
 
 .wt-playing-hero .wt-branding {
@@ -3784,17 +3784,16 @@ arcade" feel; deviation from --fs-* scale is expected. */
   position: relative;
   display: grid;
   place-items: center;
-  align-content: center;
+  justify-items: center;
   gap: var(--space-4);
-  width: clamp(180px, 52vw, 232px);
-  max-width: min(100%, 232px);
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: none;
   margin: var(--space-16) auto 0;
-  padding: var(--space-14);
+  padding: 0;
   text-align: center;
-  border: 2px solid rgb(var(--primary-dark) / var(--wt-a-35));
-  border-radius: 50%;
-  background: rgb(var(--surface));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 }
 
@@ -3802,10 +3801,10 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: block;
   width: 100%;
   text-align: center;
-  font-size: clamp(38px, 11vw, 56px);
+  font-size: clamp(56px, 12vw, 84px);
   font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 0.92;
+  line-height: 0.88;
   color: rgb(var(--primary-depth));
 }
 
@@ -3832,7 +3831,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: block;
   width: 100%;
   margin-top: var(--space-4);
-  font-size: var(--fs-md);
+  font-size: var(--fs-sm);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
@@ -3914,10 +3913,10 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 .wt-end-copy__stats {
   margin: 0;
-  font-size: var(--fs-md);
+  font-size: var(--fs-sm);
   font-weight: 500;
   line-height: 1.5;
-  color: rgb(var(--text-strong));
+  color: rgb(var(--text));
 }
 
 .wt-end-copy__badge {
@@ -3996,16 +3995,16 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 .wt-end-copy__verdict {
   margin: 0;
-  font-size: var(--fs-xl);
+  font-size: var(--fs-lg);
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.4;
   color: rgb(var(--text-strong));
 }
 
 .wt-end-copy__note,
 .wt-end-copy__free {
   margin: 0;
-  font-size: var(--fs-md);
+  font-size: var(--fs-sm);
   line-height: 1.55;
   color: rgb(var(--text));
 }
@@ -4055,9 +4054,9 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
   .wt-end-score {
     margin-top: var(--space-8);
-    width: clamp(180px, 60vw, 216px);
-    max-width: min(100%, 216px);
-    padding: var(--space-12);
+    width: 100%;
+    max-width: none;
+    padding: 0;
   }
 
   .wt-end-summary {
@@ -4124,6 +4123,18 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
   .wt-divider {
     margin: var(--space-12) 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .wt-end-copy__stats,
+  .wt-end-copy__note,
+  .wt-end-copy__free {
+    font-size: 14px;
+  }
+
+  .wt-end-copy__verdict {
+    font-size: 16px;
   }
 }
 
