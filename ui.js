@@ -7045,9 +7045,6 @@ void function () {
         ` : ``}
       </div>
     </div>
-    ${landingUrgencyHtml}
-    ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
-    <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
   </div>
 `;
 
@@ -7056,6 +7053,9 @@ void function () {
 
 
 ${landingHeaderRowHtml}
+  ${landingUrgencyHtml}
+  ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
+  <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
   ${(() => {
         // L1: limit stacked muted lines (avoid grey wall)
         const hasHeavyBlock = Boolean(

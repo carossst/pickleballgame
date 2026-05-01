@@ -676,14 +676,12 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-card--paywall {
-  padding: 0;
+  padding: var(--wt-card-pad);
 }
 
 .wt-paywall-hero {
-  background:
-    radial-gradient(circle at top right, rgb(var(--primary-depth) / var(--wt-a-28)), transparent 46%),
-    linear-gradient(160deg, rgb(var(--primary-dark)), rgb(var(--primary-depth)));
-  padding: var(--space-18) var(--space-16) var(--space-16);
+  background: transparent;
+  padding: 0;
 }
 
 .wt-paywall-hero .wt-branding {
@@ -692,42 +690,46 @@ body.wt-state--end .wt-card--end {
 
 .wt-paywall-hero .wt-branding-name,
 .wt-paywall-hero .wt-h1 {
-  color: rgb(var(--on-primary));
+  color: inherit;
 }
 
 .wt-paywall-hero .wt-branding-logo {
-  background: rgb(var(--surface) / var(--wt-a-92));
+  background: transparent;
 }
 
 .wt-paywall-hero .wt-paywall-progress-line--lead,
 .wt-paywall-hero .wt-paywall-progress-line--follow {
-  color: rgb(var(--on-primary) / var(--wt-a-92));
+  color: inherit;
 }
 
 .wt-card--paywall > :not(.wt-paywall-hero) {
-  margin-left: var(--space-16);
-  margin-right: var(--space-16);
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .wt-landing-hero,
 .wt-end-hero {
-  margin: calc(var(--wt-card-pad) * -1) calc(var(--wt-card-pad) * -1) var(--space-16);
-  padding: var(--space-18) var(--space-16) var(--space-16);
-  background:
-    radial-gradient(circle at top right, rgb(var(--primary-depth) / var(--wt-a-28)), transparent 46%),
-    linear-gradient(160deg, rgb(var(--primary-dark)), rgb(var(--primary-depth)));
-  border-radius: calc(var(--r-card) - 1px) calc(var(--r-card) - 1px) 0 0;
+  margin: 0 0 var(--space-16);
+  padding: 0;
+  border-radius: 0;
+}
+
+.wt-landing-hero {
+  margin-bottom: var(--space-12);
+  background: transparent;
+}
+
+.wt-end-hero {
+  background: transparent;
 }
 
 .wt-playing-hero {
   margin: 0 0 var(--space-14);
-  padding: var(--space-14) var(--space-14) var(--space-12);
-  background:
-    radial-gradient(circle at top right, rgb(var(--primary) / var(--wt-a-16)), transparent 44%),
-    linear-gradient(160deg, rgb(var(--primary-dark) / var(--wt-a-16)), rgb(var(--primary) / var(--wt-a-10)));
-  border: 1px solid rgb(var(--primary) / var(--wt-a-25));
-  border-radius: var(--r-card);
-  box-shadow: var(--shadow-1);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .wt-landing-hero .wt-branding,
@@ -737,47 +739,41 @@ body.wt-state--end .wt-card--end {
 
 .wt-landing-hero .wt-branding-name,
 .wt-end-hero .wt-branding-name {
-  color: rgb(var(--on-primary));
+  color: inherit;
 }
 
 .wt-landing-hero .wt-branding-logo,
 .wt-end-hero .wt-branding-logo {
-  background: rgb(var(--surface) / var(--wt-a-92));
-}
-
-.wt-landing-hero .wt-tagline,
-.wt-landing-hero .wt-landing-subtitle {
-  color: rgb(var(--on-primary) / var(--wt-a-92));
-}
-
-.wt-landing-hero .wt-tagline {
-  margin-top: var(--space-10) !important;
-}
-
-.wt-landing-hero .wt-landing-subtitle {
-  margin-top: var(--space-6);
+  background: transparent;
 }
 
 .wt-landing-hero .wt-box--tinted {
-  background: rgb(var(--surface) / var(--wt-a-14));
-  border-color: rgb(var(--surface) / var(--wt-a-30));
+  background: rgb(var(--primary) / var(--wt-a-12));
+  border-color: rgb(var(--primary) / var(--wt-a-40));
 }
 
 .wt-landing-hero .wt-meta,
 .wt-landing-hero .wt-paywall-timer {
-  color: rgb(var(--on-primary));
+  color: inherit;
 }
 
 .wt-landing-hero .wt-btn-icon,
 .wt-end-hero .wt-btn-icon {
-  background: rgb(var(--surface) / var(--wt-a-16));
-  border-color: rgb(var(--surface) / var(--wt-a-28));
-  color: rgb(var(--on-primary));
-  box-shadow: none;
+  background: var(--glass-65);
+  border-color: rgb(var(--border));
+  color: rgb(var(--text-muted));
 }
 
 .wt-landing-hero .wt-chest-hint-inline {
-  color: rgb(var(--on-primary) / var(--wt-a-90));
+  color: inherit;
+}
+
+.wt-card--landing .wt-tagline {
+  margin-top: 0 !important;
+}
+
+.wt-card--landing .wt-landing-subtitle {
+  margin-top: var(--space-6);
 }
 
 .wt-playing-hero .wt-branding {
@@ -816,6 +812,13 @@ body.wt-state--end .wt-card--end {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding: var(--wt-card-pad);
+  overflow: visible;
+}
+
+.wt-card--landing > :not(.wt-landing-hero) {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 @media (min-height: 741px) {
@@ -3911,9 +3914,9 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 .wt-end-copy__stats {
   margin: 0;
-  font-size: var(--fs-lg);
-  font-weight: 700;
-  line-height: 1.45;
+  font-size: var(--fs-md);
+  font-weight: 500;
+  line-height: 1.5;
   color: rgb(var(--text-strong));
 }
 
