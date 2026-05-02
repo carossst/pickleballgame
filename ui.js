@@ -9377,7 +9377,7 @@ ${questionPrompt ? `
 
     return `
     <div class="wt-card wt-card--hero wt-card--paywall">
-      <div class="wt-paywall-hero">
+      <div class="wt-paywall-hero${isLastFree ? " wt-paywall-hero--lastfree" : ""}">
         ${renderBrandingRow(cfg, true)}
         <h1 class="wt-h1">${escapeHtml(headline)}</h1>
         ${progressLine1 ? `<p class="wt-muted wt-paywall-progress-line--lead">${escapeHtml(progressLine1)}</p>` : ``}

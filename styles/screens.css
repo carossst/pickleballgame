@@ -136,6 +136,11 @@
   line-height: 1.5;
 }
 
+.wt-paywall-hero--lastfree .wt-h1 {
+  font-weight: 700;
+  line-height: 1.08;
+}
+
 .wt-paywall-progress-line--follow {
   margin-top: var(--space-2);
   font-size: var(--fs-body);
@@ -404,7 +409,7 @@
   border-radius: 0;
   background: transparent;
   border: 0;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-body);
   font-weight: 500;
   line-height: 1.45;
   color: rgb(var(--text));
@@ -475,9 +480,9 @@
 
 .wt-end-copy__verdict {
   margin: 0;
-  font-size: var(--fs-lg);
+  font-size: var(--fs-body);
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.45;
   color: rgb(var(--text-strong));
 }
 

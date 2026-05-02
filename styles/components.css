@@ -1448,11 +1448,18 @@ button.wt-level-chip {
 }
 
 .wt-chance-overlay__title {
+  display: inline-block;
+  font-size: var(--fs-body);
   font-weight: 700;
+  line-height: 1.35;
+  color: rgb(var(--text-strong));
 }
 
 .wt-chance-overlay__lead {
+  display: inline-block;
+  font-size: var(--fs-body);
   font-weight: 700;
+  line-height: 1.35;
   color: rgb(var(--text-strong));
 }
 
