@@ -5259,9 +5259,6 @@ void function () {
 
     const lastRun = (this._runtime && this._runtime.lastRun) ? this._runtime.lastRun : {};
 
-    // Share is RUN-only to avoid mixing score semantics (BONUS/PRACTICE).
-    if (String(lastRun.mode || "RUN").trim() !== "RUN") return "";
-
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
 
@@ -8360,7 +8357,7 @@ ${(() => {
       vars
     });
 
-    const shareEnabled = isRun && !!(cfg.share && cfg.share.enabled);
+    const shareEnabled = !!(cfg.share && cfg.share.enabled);
 
     const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
 
@@ -8517,7 +8514,7 @@ ${(() => {
       getShareText: this._getShareText ? this._getShareText.bind(this) : null
     });
 
-    const shouldPromoteShare = isRun;
+    const shouldPromoteShare = true;
 
     const shareBeforeRecapHtml = shouldPromoteShare ? shareHtml : "";
     const shareAfterRecapHtml = shouldPromoteShare ? "" : shareHtml;

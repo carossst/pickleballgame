@@ -595,7 +595,7 @@ body.wt-state--end .wt-card--end {
    ====================== */
 .wt-landing-stats {
   margin-top: var(--gap-3);
-  padding: var(--space-14) var(--space-16);
+  padding: var(--space-14) var(--space-16) var(--space-14) var(--space-20);
   background: rgb(var(--surface));
   border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
   border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
