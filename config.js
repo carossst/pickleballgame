@@ -806,11 +806,13 @@
       byLevel: {
         1: {
           label: "COURT-READY",
-          unlock: "Finish your first full pass."
+          unlock: "Finish your first full pass.",
+          sheetBody: "You’ve got the rules in your hands. Now make them stick."
         },
         2: {
           label: "CLUB-LEVEL",
-          unlock: "Clear all active mistakes."
+          unlock: "Clear all active mistakes.",
+          sheetBody: "Clean up your mistakes and make your rule knowledge reliable."
         },
         3: {
           label: "TOURNAMENT-LEVEL",

@@ -389,7 +389,7 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-paywall-hero .wt-branding {
-  padding-bottom: var(--space-16);
+  padding-bottom: var(--space-18);
 }
 
 .wt-paywall-hero .wt-branding-name,
@@ -595,7 +595,7 @@ body.wt-state--end .wt-card--end {
    ====================== */
 .wt-landing-stats {
   margin-top: var(--gap-3);
-  padding: var(--space-14) var(--space-16) var(--space-14) var(--space-20);
+  padding: var(--space-14) var(--gap-3) var(--space-14) var(--gap-4);
   background: rgb(var(--surface));
   border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
   border-right: 1px solid rgb(var(--border) / var(--wt-a-70));
@@ -612,12 +612,21 @@ body.wt-state--end .wt-card--end {
 .wt-landing-stat {
   display: grid;
   grid-template-columns: 1fr;
-  row-gap: var(--space-4);
+  row-gap: var(--space-6);
   align-items: start;
   padding: 0;
   border-radius: 0;
   background: transparent;
   border: 0;
+}
+
+.wt-landing-stat__kicker {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--ls-ui-wide);
+  text-transform: uppercase;
+  color: rgb(var(--text));
 }
 
 .wt-landing-stat__title {

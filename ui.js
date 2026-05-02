@@ -3038,7 +3038,7 @@ void function () {
             <span>${escapeHtml(current.label)}</span>
           </div>
           ${unlockedByLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(unlockedByLabel)}</p>` : ``}
-          ${current.unlock ? `<p class="wt-level-sheet__body">${escapeHtml(current.unlock)}</p>` : ``}
+          ${(current.sheetBody || current.unlock) ? `<p class="wt-level-sheet__body">${escapeHtml(current.sheetBody || current.unlock)}</p>` : ``}
         </div>
       `;
     })();
@@ -3060,7 +3060,7 @@ void function () {
             <span>${escapeHtml(next.label)}</span>
           </div>
           ${reachItLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(reachItLabel)}</p>` : ``}
-          <p class="wt-level-sheet__body">${escapeHtml(next.unlock || "")}</p>
+          <p class="wt-level-sheet__body">${escapeHtml(next.sheetBody || next.unlock || "")}</p>
         </div>
       `;
     })();
@@ -6783,17 +6783,19 @@ void function () {
 
   function renderLandingStatsCard(opts) {
     const badgeHtml = String(opts?.badgeHtml || "");
+    const label = String(opts?.label || "").trim();
     const title = String(opts?.title || "").trim();
     const sub = String(opts?.sub || "").trim();
     const pct = clampInt(Number(opts?.pct), 0, 100);
     const progressClass = String(opts?.progressClass || "");
 
-    if (!badgeHtml && !title && !sub) return "";
+    if (!badgeHtml && !label && !title && !sub) return "";
 
     return `
       <div class="wt-landing-stats">
         ${badgeHtml}
         <div class="wt-landing-stat">
+          ${label ? `<div class="wt-landing-stat__kicker">${escapeHtml(label)}</div>` : ``}
           ${title ? `<div class="wt-landing-stat__title">${escapeHtml(title)}</div>` : ``}
           ${sub ? `<div class="wt-meta wt-landing-stat__sub">${escapeHtml(sub)}</div>` : ``}
           <div class="wt-progress${progressClass}" aria-hidden="true">
@@ -7105,15 +7107,16 @@ void function () {
         const progressClass = isComplete ? " wt-progress--mastery" : "";
 
         const title = `${pct}%`;
+        const label = isComplete ? "Mastery" : "Coverage";
         let sub = "";
 
         if (!isComplete) {
           sub = `${seen} of ${poolSizeSafe} questions played`;
-          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, title, sub, pct, progressClass });
+          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass });
 
         } else {
           sub = `${mastered} of ${poolSizeSafe} questions answered correctly`;
-          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, title, sub, pct, progressClass });
+          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass });
         }
 
       }
@@ -7920,6 +7923,7 @@ ${(() => {
         level,
         label: String(raw.label || "").trim(),
         unlock: String(raw.unlock || "").trim(),
+        sheetBody: String(raw.sheetBody || "").trim(),
         unlocked: effectiveLevel >= level,
         current: effectiveLevel === level
       };

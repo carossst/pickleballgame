@@ -409,10 +409,10 @@
   border-radius: 0;
   background: transparent;
   border: 0;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  line-height: 1.45;
-  color: rgb(var(--text));
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgb(var(--text-strong));
   text-align: center;
 }
 
@@ -496,6 +496,11 @@
 
 .wt-card > .wt-actions--stack + .wt-muted {
   margin-top: var(--space-10);
+}
+
+.wt-card > .wt-feedback + .wt-actions,
+.wt-card > .wt-explanation + .wt-actions {
+  margin-top: var(--space-18);
 }
 
 .wt-end-practice-stats p {
