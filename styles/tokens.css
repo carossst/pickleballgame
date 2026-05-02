@@ -1,0 +1,232 @@
+/* ============================================================
+   RESPONSIVE BREAKPOINTS - DOCUMENTATION (INTENT + LIMITATION)
+   ------------------------------------------------------------
+   IMPORTANT:
+   Les media queries CSS ne supportent PAS l'usage de var().
+   -> Impossible d'utiliser des variables CSS dans @media.
+   -> Ces valeurs en dur ne sont PAS une violation du principe
+      config-first. C'est une limitation CSS native.
+
+   Breakpoints utilises dans ce fichier :
+
+   1) 481px (11 occurrences)
+      - Transition mobile -> large phone / small tablet
+      - Ajustements de typographie, paddings, cartes, boutons
+      - Optimise pour lisibilite et touch targets
+
+   2) 501px (2 occurrences)
+      - Breakpoint ponctuel, usage cible
+      - Justification requise au niveau des regles concernees
+      - Ne pas dupliquer sans raison explicite
+
+   3) 661px (3 occurrences) - min-height
+      - Gestion de la densite verticale et de la respiration UI
+
+   4) 741px (6 occurrences) - min-height
+      - Optimisation des layouts avec contenus plus riches
+
+   5) 900px (9 occurrences)
+      - Passage vers layout desktop
+      - Augmentation espacements, largeur max, gaps, hero
+
+   6) 361px (1 occurrence) + max-width: 360px (1 occurrence)
+      - Micro-breakpoint pour lisibilite (code / HUD) sur petits ecrans
+      - A n'utiliser que si un breakpoint existant ne convient pas
+
+   ============================================
+   Regle de maintenance:
+   - Aucun nouveau breakpoint sans rationale claire
+   - Toujours reutiliser un breakpoint existant si possible
+   - Les breakpoints restent documentes ici comme source de verite
+   ============================================================ */
+:root {
+  color-scheme: light;
+
+  /* Colors */
+  --primary: 46 161 216;
+  --primary-dark: 11 78 124;
+  --primary-depth: 8 118 182;
+  --success: 22 163 74;
+  --success-dark: 21 128 61;
+  --danger: 239 68 68;
+  --danger-dark: 185 28 28;
+  --rating-star: 202 138 4;
+
+  /* Info (semantic, used by overlays) */
+  --info: var(--primary);
+
+  /* Overlay accent (default; per-state overrides below) */
+  --wt-overlay-accent: var(--primary-dark);
+
+  /* Surfaces */
+  --bg: 248 250 252;
+  --surface: 255 255 255;
+  --surface-muted: 241 245 249;
+  --border: 226 232 240;
+
+  /* Text */
+  --text-strong: 15 23 42;
+  --text: 30 41 59;
+  --text-muted: 71 85 105;
+
+  /* Semantic */
+  --on-primary: 255 255 255;
+
+  /* Accent (used by mistakes list, etc.) */
+  --accent: var(--primary-dark);
+
+  /* Opacity tokens (single source of truth) */
+  --wt-a-05: 0.05;
+  --wt-a-06: 0.06;
+  --wt-a-08: 0.08;
+  --wt-a-10: 0.10;
+  --wt-a-12: 0.12;
+  --wt-a-13: 0.13;
+  --wt-a-14: 0.14;
+  --wt-a-16: 0.16;
+  --wt-a-18: 0.18;
+  --wt-a-20: 0.20;
+  --wt-a-25: 0.25;
+  --wt-a-28: 0.28;
+  --wt-a-30: 0.30;
+  --wt-a-35: 0.35;
+  --wt-a-40: 0.40;
+  --wt-a-45: 0.45;
+  --wt-a-55: 0.55;
+  --wt-a-65: 0.65;
+  --wt-a-70: 0.70;
+  --wt-a-72: 0.72;
+  --wt-a-75: 0.75;
+  --wt-a-78: 0.78;
+  --wt-a-82: 0.82;
+  --wt-a-85: 0.85;
+  --wt-a-90: 0.90;
+  --wt-a-92: 0.92;
+  --wt-a-95: 0.95;
+
+  /* Glass (derived from --surface; auto-adapts in dark mode) */
+  --glass-65: rgb(var(--surface) / var(--wt-a-65));
+  --glass-72: rgb(var(--surface) / var(--wt-a-72));
+  --glass-92: rgb(var(--surface) / var(--wt-a-92));
+  --wt-blur-md: blur(12px) saturate(1.4);
+
+  /* Shadows */
+  --shadow-color: 15 23 42;
+
+  /* Base */
+  --shadow-1: 0 8px 22px rgb(var(--shadow-color) / var(--wt-a-08));
+  --shadow-2: 0 18px 44px rgb(var(--shadow-color) / var(--wt-a-12));
+
+  /* Hero: slightly deeper than default (premium separation) */
+  --shadow-hero: 0 18px 44px rgb(var(--shadow-color) / var(--wt-a-10));
+
+  /* Shadow variant (active/press state) */
+  --shadow-press: 0 6px 14px rgb(var(--shadow-color) / var(--wt-a-12));
+
+  /* Radius */
+  --r-card: 18px;
+  --r-btn: 14px;
+  --r-md: 12px;
+  --r-sm: 4px;
+  --r-pill: 999px;
+
+  /* Typography */
+  --lh-tight: 1.15;
+  --lh-base: 1.5;
+  --lh-relaxed: 1.45;
+
+  /* Font scale (single source of truth) */
+  --fs-xs: 13px;
+  --fs-sm: 15px;
+  --fs-md: 16px;
+  --fs-base: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 20px;
+  --fs-2xl: 24px;
+  --fs-3xl: 32px;
+  --fs-hero: 48px;
+  --fs-mega: 64px;
+  --fs-2xs: 11px;
+  --fs-body: 18px;
+
+  /* Motion */
+  --fast: 120ms;
+  --normal: 180ms;
+
+  /* Keyframe animation durations (single source of truth) */
+  --wt-anim-fade-in: 120ms;
+  --wt-anim-bonus-spawn: 220ms;
+  --wt-anim-bonus-warning-once: 240ms;
+  --wt-anim-danger-pulse: 880ms;
+  --wt-anim-answer-feedback: 360ms;
+  --wt-anim-score-flash: 700ms;
+  --wt-anim-chip-flash: 600ms;
+  --wt-anim-overlay-pop: 500ms;
+  --wt-anim-overlay-shake: 220ms;
+  --wt-anim-celebrate: 520ms;
+  --wt-anim-pulse: 1s;
+  --wt-anim-tease: 1600ms;
+  --wt-anim-near-best: 1200ms;
+  --wt-anim-loading: 1.2s;
+  --wt-anim-spin: 1s;
+
+  /* ============================================
+       MOTION - CONTRAT
+       ============================================
+       - Les transitions UI utilisent exclusivement les tokens (--fast, --normal)
+         et peuvent etre alignees sur des timings JS.
+       - Les animations keyframes utilisent des durees autonomes via tokens CSS
+         (pas de dependance ni synchronisation avec le JS).
+    */
+
+  /* Layout */
+  --max: 520px;
+  --max-desktop: 760px;
+  --pad: 16px;
+  --gap-1: 8px;
+  --gap-2: 12px;
+  --gap-3: 16px;
+  --gap-4: 24px;
+  --gap-5: 32px;
+
+  /* Micro spacing (single source of truth) */
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-18: 18px;
+
+  /* Micro typography */
+  --ls-ui-tight: 0.4px;
+  --ls-ui-wide: 1.2px;
+
+  /* Branding */
+  --wt-title-size: 27px;
+  --wt-logo-scale: 1.18;
+
+  /* Calmer “premium” glow (less corporate, less neon) */
+  --hero-glow: 0.10;
+}
+
+@media (min-width: 481px) {
+  :root {
+    --wt-title-size: 31px;
+    --wt-logo-scale: 1.56;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --fs-base: 18px;
+    --fs-md: 16px;
+    --fs-sm: 15px;
+
+    /* Desktop branding stays compact enough for long rule questions */
+    --wt-title-size: 40px;
+    --wt-logo-scale: 1.75;
+  }
+}

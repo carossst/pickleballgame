@@ -296,8 +296,14 @@
         return;
       }
 
+      const storageKey = String(cfg?.storage?.storageKey || "").trim();
+      if (!storageKey) {
+        Logger.warn("WT_CONFIG.storage.storageKey missing/empty: skipping Service Worker registration (fail-closed)");
+        return;
+      }
+
       const v = encodeURIComponent(version);
-      const appScope = encodeURIComponent(String(cfg?.storage?.storageKey || "").trim());
+      const appScope = encodeURIComponent(storageKey);
       const swUrl = `./sw.js?v=${v}&app=${appScope}`;
 
       navigator.serviceWorker

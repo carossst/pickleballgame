@@ -116,6 +116,7 @@
 
   <!-- Scripts (defer pour performance - spec section 11.1) -->
   <script defer src="./config.js"></script>
+  <script defer src="./wording.js"></script>
   <script defer src="./icons.js"></script>
   <script defer src="./storage.js"></script>
   <script defer src="./game.js"></script>
@@ -124,49 +125,6 @@
   <script defer src="./email.js"></script>
   <script defer src="./footer.js"></script>
   <script defer src="./main.js"></script>
-
-  <script>
-    (() => {
-      function getByPath(root, path) {
-        const p = String(path || "").trim();
-        if (!p) return null;
-
-        const parts = p.split(".");
-        let cur = root;
-
-        for (const k of parts) {
-          if (!cur || typeof cur !== "object") return null;
-          cur = cur[k];
-        }
-        return (typeof cur === "string") ? cur : null;
-      }
-
-      function applyWordingToDom() {
-        const w = window.WT_WORDING;
-        if (!w || typeof w !== "object") return;
-
-        try {
-          const nodes = document.querySelectorAll("[data-wt-wording]");
-          nodes.forEach((el) => {
-            const key = el ? el.getAttribute("data-wt-wording") : "";
-            const text = getByPath(w, key);
-            if (typeof text === "string") el.textContent = text;
-          });
-        } catch (_) { }
-
-        try {
-          const nodes = document.querySelectorAll("[data-wt-aria-label]");
-          nodes.forEach((el) => {
-            const key = el ? el.getAttribute("data-wt-aria-label") : "";
-            const text = getByPath(w, key);
-            if (typeof text === "string") el.setAttribute("aria-label", text);
-          });
-        } catch (_) { }
-      }
-
-      document.addEventListener("DOMContentLoaded", applyWordingToDom);
-    })();
-  </script>
 </body>
 
 

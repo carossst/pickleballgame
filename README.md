@@ -18,15 +18,41 @@ Built with plain HTML, CSS, and JavaScript, this mobile-first pickleball rules q
 
 - [index.html](./index.html): main app shell
 - [config.js](./config.js): single source of truth for product config, wording, routing, limits, and identity
+- [wording.js](./wording.js): shared wording hydrator for `data-wt-wording`, `data-wt-aria-label`, and static brand text
 - [content.json](./content.json): question bank
 - [ui.js](./ui.js): rendering, screen routing, CTA logic, modals
 - [game.js](./game.js): game mechanics
 - [storage.js](./storage.js): local storage, counters, progression, analytics payload
 - [main.js](./main.js): bootstrap, content loading, service worker registration
-- [style.css](./style.css): full UI styling
+- [style.css](./style.css): CSS entrypoint that imports the modular UI styles from [`styles/`](./styles)
 - [sw.js](./sw.js): service worker
 - [manifest.json](./manifest.json): PWA manifest
 - [success.html](./success.html): post-checkout success / unlock page
+
+## CSS Guardrails
+
+These rules are now part of the working contract for Pickleball.
+
+1. Do not introduce ad-hoc margin utilities in generated HTML.
+   Use structure classes, stack variants, or component spacing instead.
+
+2. New visual need: prefer a component or a variant first.
+   Do not patch a one-off local style if the pattern already exists elsewhere.
+
+3. Do not solve repeated UI adjustments with isolated tweaks.
+   If the same pattern appears twice, consolidate it before adding more CSS.
+
+4. Treat the paywall as a composition of shared components.
+   It must not grow a separate page-specific micro-framework.
+
+5. Prefer readable solid copy over translucent copy.
+   Alpha is for decor first, not for primary or secondary reading text.
+
+6. Avoid persistent decorative motion.
+   Keep animation for feedback and state change, not for permanent attention-seeking.
+
+7. Keep DOM wording hydration in one shared place.
+   Static pages, the footer, and shell-level labels must use `wording.js` instead of inline page-specific hydrators.
 
 ## Start Locally
 

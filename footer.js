@@ -53,37 +53,10 @@
         if (!root) return;
 
         const cfg = window.WT_CONFIG;
-        const w = window.WT_WORDING;
-        if (!cfg || typeof cfg !== "object" || !w || typeof w !== "object") return;
+        const wording = window.WT_Wording;
+        if (!cfg || typeof cfg !== "object" || !wording || typeof wording.hydrate !== "function") return;
 
-        // Apply wording (scoped to footer only)
-        try {
-            const nodes = root.querySelectorAll("[data-wt-wording]"); nodes.forEach((el) => {
-                const key = String(el.getAttribute("data-wt-wording") || "").trim();
-                if (!key) return;
-
-                const parts = key.split(".");
-                let cur = w;
-                for (const p of parts) {
-                    if (!cur || typeof cur !== "object") { cur = null; break; }
-                    cur = cur[p];
-                }
-
-                const txt = String(cur || "").trim();
-                el.textContent = txt || "";
-            });
-        } catch (_) { /* silent */ }
-
-        // Creator line (prefer HTML if provided)
-        try {
-            const creatorEl = root.querySelector('[data-wt-brand="creatorLine"]');
-            if (creatorEl) {
-                const html = String(w.brand?.creatorLineHtml || "").trim();
-                const line = String(w.brand?.creatorLine || "").trim();
-                if (html) creatorEl.innerHTML = html;
-                else creatorEl.textContent = line || "";
-            }
-        } catch (_) { /* silent */ }
+        wording.hydrate(root);
 
         // Parent app/site link (optional segment)
         try {
