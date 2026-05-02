@@ -69,6 +69,10 @@
   gap: var(--space-10);
 }
 
+.wt-paywall-urgency + .wt-box {
+  margin-top: var(--space-12);
+}
+
 .wt-paywall-urgency__label {
   min-width: 0;
   font-size: var(--fs-md);
@@ -480,7 +484,7 @@
 
 .wt-end-copy__verdict {
   margin: 0;
-  font-size: var(--fs-body);
+  font-size: var(--fs-xl);
   font-weight: 700;
   line-height: 1.45;
   color: rgb(var(--text-strong));
@@ -489,7 +493,7 @@
 .wt-end-copy__note,
 .wt-end-copy__free {
   margin: 0;
-  font-size: var(--fs-body);
+  font-size: var(--fs-xl);
   line-height: 1.55;
   color: rgb(var(--text));
 }
@@ -631,11 +635,11 @@
 @media (min-width: 900px) {
   .wt-end-copy__note,
   .wt-end-copy__free {
-    font-size: var(--fs-body);
+    font-size: var(--fs-xl);
   }
 
   .wt-end-copy__verdict {
-    font-size: var(--fs-body);
+    font-size: var(--fs-xl);
   }
 }
 

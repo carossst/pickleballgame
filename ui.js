@@ -3329,7 +3329,7 @@ void function () {
       return arr
         .map(s => String(s || "").trim())
         .filter(Boolean)
-        .map(s => `<p class="wt-meta">${escapeHtml(fillTemplate(s, vars))}</p>`)
+        .map((s, i) => `<p class="wt-meta${i === 0 ? ` wt-meta--strong` : ``}">${escapeHtml(fillTemplate(s, vars))}</p>`)
         .join("");
     };
 
