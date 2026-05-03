@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#38bdf8" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
     <meta name="description" content="Privacy Policy for Pickleball Rules Quiz.">
     <title>Privacy Policy - Pickleball Rules Quiz</title>
     <link rel="canonical" href="https://pickleballrulesquiz.com/privacy.html">
@@ -37,7 +36,7 @@
                     <p>
                         Pickleball Rules Quiz is published by <strong>Bonjour Pickleball</strong>.<br>
                         Contact for data and privacy questions:
-                        <a id="wt-privacy-contact-1" href="#">Contact us</a>
+                        <a id="wt-privacy-contact-1" href="#" data-wt-support-link>Contact us</a>
                     </p>
                     <p>
                         Related: <a href="./terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
@@ -105,7 +104,7 @@
                     </p>
                     <p>
                         To exercise your rights, contact:
-                        <a id="wt-privacy-contact-2" href="#">Contact us</a>
+                        <a id="wt-privacy-contact-2" href="#" data-wt-support-link>Contact us</a>
                     </p>
                     <p>
                         You also have the right to lodge a complaint with your local data protection authority.
@@ -128,32 +127,6 @@
     <script src="./wording.js"></script>
     <script src="./email.js"></script>
     <script src="./footer.js"></script>
-
-    <script>
-        (() => {
-            "use strict";
-
-            function openSupportEmail() {
-                if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
-                    window.WT_Email.openSupportEmail();
-                }
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const a1 = document.getElementById("wt-privacy-contact-1");
-                const a2 = document.getElementById("wt-privacy-contact-2");
-
-                [a1, a2].forEach((a) => {
-                    if (!a) return;
-                    a.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        openSupportEmail();
-                    });
-                });
-            });
-        })();
-    </script>
-
 </body>
 
 </html>

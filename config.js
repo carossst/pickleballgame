@@ -180,6 +180,7 @@
     // Marketing (opt-in only; Stripe receipt email is NOT marketing consent)
     marketing: {
       // External signup form URL (Mailchimp / ConvertKit / Buttondown / etc.)
+      // Intentionally empty: no external update list is active yet.
       // Fail-closed in success.html if not set / still placeholder.
       updatesUrl: "",
 
@@ -188,7 +189,7 @@
       // Order bump (Cheat Sheet PDF) - serverless "trust-by-design" via ConvertKit embed.
       // Fail-closed in success.html unless explicitly enabled AND fully configured.
       cheatSheetOrderBump: {
-        enabled: true,
+        enabled: false,
         convertKitUid: "ed7df33449",
         convertKitScriptSrc: "https://onlinenewsletter.kit.com/ed7df33449/index.js"
       }
@@ -644,7 +645,7 @@
       tagline: "**Think you know pickleball? Prove it.**",
       subtitle: "A fast true-or-false pickleball rules game.\n{poolSize} questions about serving, faults, scoring, line calls, and rule changes.",
       microFun: "Quick games · No signup · Free to try",
-      microTrust: "Play a few quick games and see what really holds up.",
+      microTrust: "Two quick games will tell you what you actually know.",
 
       runsLabel: "",
       runsFreeMode: "",
@@ -673,7 +674,7 @@
       postPaywallCta: "Unlock full access",
 
       postPaywallSbTitle: "Before you decide...",
-      postPaywallSbBody: "Rapid Fire Mode is also available from the lightning icon."
+      postPaywallSbBody: "Rapid Fire Mode tests how quickly the rules come back to you — tap the ⚡ to try it."
     },
     firstRun: {
       titleRun1: "How to play",
@@ -826,7 +827,7 @@
     },
 
     ui: {
-      chancesLabel: "Lives",
+      chancesLabel: "Mistakes",
       mistakesLabel: "Mistakes",
       scoreLabel: "Score",
       scoreAriaTemplate: "Score: {score} {fpShort}",
@@ -838,11 +839,6 @@
 
       // Content loading (LANDING guard)
       contentLoadingToast: "Loading questions...",
-      contentLoadingToasts: [
-        "Arguing politely about the kitchen...",
-        "Reviewing highly suspicious line calls...",
-        "Preparing an unnecessary Erne..."
-      ],
 
       // Pool loop announcement (RUN)
       poolReshuffledToast: "All questions reshuffled. New order.",
@@ -1130,7 +1126,7 @@
 
       // No redundancy: do not mention chances on END (player already knows).
       endLine: "",
-      endStatsLine: "You got {score} out of {total} right. You've now seen {seen}/{poolSize} rules.",
+      endStatsLine: "You got {score} out of {total} right.",
 
 
       // (verdict grid removed — identityByVerdict is now the primary END signal)

@@ -194,3 +194,42 @@ node --check storage.js
 
 - `wt-btn--ghost` is reserved for secondary, non-destructive actions such as `Later` or `Not now`
 - destructive or high-stakes exits should stay on `wt-btn--secondary` or stronger variants
+
+## Pickleball-Only Rollout Notes
+
+These UI/copy changes are live on Pickleball and should be treated as the reference set before aligning Coffee and Word Traps.
+
+- Levels modal:
+  - `Current` and `Next` can use aspirational `sheetBody` copy
+  - `Path` stays factual and uses the existing `unlock` conditions
+  - current Pickleball copy:
+    - `COURT-READY`: `You’ve got the rules in your hands. Now make them stick.`
+    - `CLUB-LEVEL`: `Clean up your mistakes and make your rule knowledge reliable.`
+
+- Landing dashboard:
+  - the KPI now shows a label above the percentage:
+    - `Coverage` before the first full pass is complete
+    - `Mastery` after the full set has been seen
+  - the landing stats card has more left padding so the content does not crowd the accent border
+
+- End screens:
+  - stats, verdict, and note lines are aligned to the same type size on Pickleball END screens
+  - `Challenge a friend` is available on all END modes, not only standard runs
+  - footer branding is intentionally hidden in `PLAYING`, but more visible in END / non-playing states
+
+- Paywall:
+  - the last-free headline is visually reinforced without changing the rest of the paywall tone
+  - paywall hero spacing is handled at the component level; the branding row must keep visible space above the headline
+  - if the urgency/countdown row is shown, the following price block needs explicit breathing room
+
+- Start / explanation modals:
+  - the first line of the first-run framing modal is emphasized via existing typography utilities
+  - no page-specific inline styling should be added for this
+
+- Feedback / flow spacing:
+  - feedback cards need real space before the `Next` / continue action row
+  - this should be handled with block-to-block spacing rules, not per-screen patches
+
+- Question sizing:
+  - Pickleball statements and prompts were reduced slightly to preserve rhythm and keep answer choices higher on screen
+  - keep the statement dominant, but avoid letting it push core interactions too far down on mobile

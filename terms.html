@@ -8,7 +8,6 @@
     <title>Terms of Service - Pickleball Rules Quiz</title>
     <link rel="canonical" href="https://pickleballrulesquiz.com/terms.html">
     <meta name="theme-color" content="#38bdf8" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
     <link rel="icon" href="./icons/favicon.ico" sizes="any">
@@ -71,7 +70,7 @@
                     <h2 class="wt-h2">7. Contact</h2>
                     <p>
                         For support or questions about these Terms:
-                        <a id="wt-terms-contact" href="#">Contact us</a>
+                        <a id="wt-terms-contact" href="#" data-wt-support-link>Contact us</a>
                     </p>
 
                     <div class="wt-divider"></div>
@@ -89,29 +88,6 @@
     <script src="./wording.js"></script>
     <script src="./email.js"></script>
     <script src="./footer.js"></script>
-
-    <script>
-        (() => {
-            "use strict";
-
-            function openSupportEmail() {
-                if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
-                    window.WT_Email.openSupportEmail();
-                }
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const a = document.getElementById("wt-terms-contact");
-                if (a) {
-                    a.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        openSupportEmail();
-                    });
-                }
-            });
-        })();
-    </script>
-
 </body>
 
 </html>

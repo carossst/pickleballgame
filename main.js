@@ -14,24 +14,6 @@
     window.location.assign(buildUpdateReloadUrl());
   }
 
-  function bindUpdateToastButton() {
-    const node = document.getElementById("update-toast");
-    if (!node) return;
-    const btn = node.querySelector('[data-action="apply-update"]');
-    if (!btn) return;
-    if (btn.getAttribute("data-wt-bound-update-direct") === "1") return;
-    btn.setAttribute("data-wt-bound-update-direct", "1");
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof window.__WT_APPLY_SW_UPDATE__ === "function") {
-        window.__WT_APPLY_SW_UPDATE__();
-      } else {
-        reloadForUpdate();
-      }
-    });
-  }
-
   function escapeHtmlSafe(str) {
     const s = String(str == null ? "" : str);
     const fn = window.WT_UTILS && typeof window.WT_UTILS.escapeHtml === "function"
@@ -192,11 +174,8 @@
       const text = node.querySelector("[data-wt-update-text]");
       if (text) text.textContent = msg;
 
-      bindUpdateToastButton();
       node.classList.add("wt-toast--visible");
     }
-
-    bindUpdateToastButton();
 
     function setWaitingWorker(worker) {
       if (!worker) return;
@@ -237,6 +216,8 @@
     }
 
     window.__WT_APPLY_SW_UPDATE__ = async function () {
+      if (window.__WT_SW_UPDATE_IN_FLIGHT__ === true) return;
+
       let fallbackTimer = null;
       function armFallbackReload() {
         if (fallbackTimer) return;
@@ -399,12 +380,18 @@
     // IMPORTANT:
     // StorageManager is a reserved native name in browsers (Storage API).
     // Our app storage class must NOT use that global name.
-    const required = ["WT_StorageManager", "WT_Game", "WT_UI"];
+    const required = ["WT_StorageManager", "WT_Game", "WT_UI", "WT_ICONS"];
     const missing = required.filter((name) => !window[name]);
 
     if (missing.length > 0) {
       Logger.error(`Missing modules: ${missing.join(", ")}`);
       showFatal(`Unable to load game components: ${missing.join(", ")}. Please refresh the page.`);
+      return false;
+    }
+
+    if (typeof window.WT_ICONS.renderIcon !== "function") {
+      Logger.error("WT_ICONS.renderIcon missing");
+      showFatal("Unable to load game components: WT_ICONS.renderIcon. Please refresh the page.");
       return false;
     }
 

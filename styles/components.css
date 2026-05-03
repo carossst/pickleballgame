@@ -107,7 +107,7 @@
   letter-spacing: var(--ls-ui-wide);
 }
 
-.wt-quote__text {
+.wt-copy-quote {
   font-size: var(--fs-body);
   line-height: 1.5;
   font-weight: 500;
@@ -117,23 +117,19 @@
   margin-top: var(--space-4);
 }
 
-.wt-quote__author,
-.wt-list-copy,
-.wt-note {}
-
-.wt-note--lead {
+.wt-copy-lead {
   margin-top: var(--space-6);
   font-size: var(--fs-body);
   line-height: 1.5;
 }
 
-.wt-note--follow {
+.wt-copy-follow {
   margin-top: var(--space-2);
   font-size: var(--fs-body);
   line-height: 1.5;
 }
 
-.wt-note--payonce {
+.wt-copy-emphasis {
   margin-top: var(--space-10);
   font-size: var(--fs-body);
   line-height: 1.45;
@@ -503,7 +499,7 @@ button.wt-level-chip {
   border-color: rgb(var(--primary) / var(--wt-a-75));
   box-shadow: var(--shadow-2);
   animation: wtChoiceFlash var(--wt-anim-answer-feedback) ease-out 1;
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 .wt-choice--flash-ok {
@@ -519,17 +515,14 @@ button.wt-level-chip {
 @keyframes wtChoiceFlash {
   0% {
     transform: translateY(0) scale(1);
-    filter: saturate(1);
   }
 
   45% {
     transform: translateY(-1px) scale(1.02);
-    filter: saturate(1.08);
   }
 
   100% {
     transform: translateY(0) scale(1);
-    filter: none;
   }
 }
 
@@ -537,7 +530,7 @@ button.wt-level-chip {
 .wt-question-prompt {
   margin: 0 0 12px;
   text-align: center;
-  font-size: clamp(17px, 3vw, 18px);
+  font-size: clamp(16px, 2.8vw, 17px);
   line-height: 1.35;
   font-weight: 700;
 }
@@ -595,7 +588,7 @@ button.wt-level-chip {
 }
 
 .wt-term-word {
-  font-size: clamp(24px, 5vw, var(--fs-3xl));
+  font-size: clamp(22px, 4.6vw, 28px);
   font-weight: 700;
   color: rgb(var(--text-strong));
 }
@@ -1024,7 +1017,7 @@ button.wt-level-chip {
 }
 
 .wt-feedback__subline {
-  margin-top: 4px;
+  margin-top: var(--space-6);
 }
 
 .wt-timer-value {
@@ -2085,7 +2078,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 .wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-term-word {
-  font-size: clamp(16px, 2.2vw, 24px);
+  font-size: clamp(15px, 2vw, 22px);
 }
 
 .wt-bonus-chip--warning {

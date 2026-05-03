@@ -8,7 +8,6 @@
     <title>Press - Pickleball Rules Quiz</title>
     <link rel="canonical" href="https://pickleballrulesquiz.com/press.html">
     <meta name="theme-color" content="#38bdf8" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
     <link rel="icon" href="./icons/favicon.ico" sizes="any">
@@ -123,7 +122,7 @@
                             <h2 class="wt-h2">Contact</h2>
                             <p>
                                 For press inquiries, partnerships, or licensing questions:
-                                <a id="wt-press-contact" href="#">Contact us</a>
+                                <a id="wt-press-contact" href="#" data-wt-support-link>Contact us</a>
                             </p>
                         </section>
 
@@ -152,29 +151,6 @@
     <script src="./wording.js"></script>
     <script src="./email.js"></script>
     <script src="./footer.js"></script>
-
-    <script>
-        (() => {
-            "use strict";
-
-            function openSupportEmail() {
-                if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
-                    window.WT_Email.openSupportEmail();
-                }
-            }
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const a = document.getElementById("wt-press-contact");
-                if (a) {
-                    a.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        openSupportEmail();
-                    });
-                }
-            });
-        })();
-    </script>
-
 </body>
 
 </html>

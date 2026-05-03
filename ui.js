@@ -1617,15 +1617,8 @@ void function () {
 
           // First-run framing must open only from the LANDING screen itself.
           // If the click already comes from the first-run modal CTA, we must start the run.
-          // Mobile-first safeguard: on touch devices, start directly instead of routing through
-          // an extra modal step that can feel broken or be missed.
-          const bypassFirstRunFraming = !!(
-            window.matchMedia && (
-              window.matchMedia("(pointer: coarse)").matches ||
-              window.matchMedia("(max-width: 768px)").matches
-            )
-          );
-          if (!startedFromModal && self.state === STATES.LANDING && self._canShowFirstRunFraming() && !bypassFirstRunFraming) {
+          // The first-run modal is intentionally shown on mobile too: it explains the game before the first answer.
+          if (!startedFromModal && self.state === STATES.LANDING && self._canShowFirstRunFraming()) {
             self._openFirstRunFraming();
             break;
           }
@@ -2323,7 +2316,7 @@ void function () {
     if (!this._runtime) return;
     this._runtime.contentLoading = (isLoading === true);
     this._runtime.contentLoadingMessage = this._runtime.contentLoading
-      ? pickOne(this.wording?.ui?.contentLoadingToasts, this.wording?.ui?.contentLoadingToast)
+      ? String(this.wording?.ui?.contentLoadingToast || "").trim()
       : "";
   };
 
@@ -5556,11 +5549,11 @@ void function () {
       }
     } catch (_) { /* silent */ }
 
-    const bodyHtml = lines.map((s) => {
-      const line = String(s || "");
-      if (!line) return `<div class="wt-spacer-8"></div>`;
-      return `<p>${escapeHtml(line)}</p>`;
-    }).join("");
+    const bodyHtml = lines
+      .map((s) => String(s || "").trim())
+      .filter(Boolean)
+      .map((line) => `<p>${escapeHtml(line)}</p>`)
+      .join("");
 
     const html = `
       ${bodyHtml}
@@ -5750,7 +5743,7 @@ void function () {
       <strong class="wt-meta">${escapeHtml(String(ss.previewLabel || "").trim())}</strong>
       <pre class="wt-code wt-code--modal">${escapeHtml(jsonStr)}</pre>
 
-      <div class="wt-actions wt-modal-actions wt-modal-actions--lg">
+      <div class="wt-actions wt-actions--feedback wt-modal-actions wt-modal-actions--lg">
         <button class="wt-btn wt-btn--primary" data-action="send-stats-email">${escapeHtml(String(ss.ctaSend || "").trim())}</button>
         <button class="wt-btn wt-btn--secondary" data-action="copy-stats">${escapeHtml(String(ss.ctaCopy || "").trim())}</button>
         <button class="wt-btn wt-btn--ghost" data-action="snooze-stats">${escapeHtml(String(ss.ctaLater || "").trim())}</button>
@@ -6839,7 +6832,7 @@ void function () {
         return `
           <div class="wt-quote wt-paywall-quote">
             ${maybeStars ? `<div class="wt-quote__stars wt-paywall-stars" aria-hidden="true">${escapeHtml(maybeStars)}</div>` : ``}
-            ${body ? `<div class="wt-quote__text wt-paywall-quote-text">&ldquo;${escapeHtml(body)}&rdquo;</div>` : ``}
+            ${body ? `<div class="wt-copy-quote">&ldquo;${escapeHtml(body)}&rdquo;</div>` : ``}
             ${au ? `<div class="wt-muted wt-quote__author wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}
           </div>
         `;
@@ -9384,11 +9377,11 @@ ${questionPrompt ? `
       <div class="wt-paywall-hero${isLastFree ? " wt-paywall-hero--lastfree" : ""}">
         ${renderBrandingRow(cfg, true)}
         <h1 class="wt-h1">${escapeHtml(headline)}</h1>
-        ${progressLine1 ? `<p class="wt-muted wt-paywall-progress-line--lead">${escapeHtml(progressLine1)}</p>` : ``}
-        ${progressLine2 ? `<p class="wt-muted wt-paywall-progress-line--follow">${escapeHtml(progressLine2)}</p>` : ``}
+        ${progressLine1 ? `<p class="wt-muted wt-copy-lead">${escapeHtml(progressLine1)}</p>` : ``}
+        ${progressLine2 ? `<p class="wt-muted wt-copy-follow">${escapeHtml(progressLine2)}</p>` : ``}
       </div>
 
-      ${payOnceLine ? `<div class="wt-meta wt-meta--strong wt-paywall-payonce">${escapeHtml(payOnceLine)}</div>` : ``}
+      ${payOnceLine ? `<div class="wt-meta wt-meta--strong wt-copy-emphasis">${escapeHtml(payOnceLine)}</div>` : ``}
 
       ${renderUrgencyBanner()}
 
@@ -9403,12 +9396,12 @@ ${questionPrompt ? `
         >${escapeHtml(primaryCta)}</button>` : ``}
       </div>
 
-      ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-paywall-link" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
+      ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
 
       ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 
-      ${checkoutNote ? `<p class="wt-muted wt-paywall-checkout-note">${escapeHtml(checkoutNote)}</p>` : ``}
-      ${deviceNote ? `<p class="wt-muted wt-paywall-device-note">${escapeHtml(deviceNote)}</p>` : ``}
+      ${checkoutNote ? `<p class="wt-muted wt-note wt-note--checkout">${escapeHtml(checkoutNote)}</p>` : ``}
+      ${deviceNote ? `<p class="wt-muted wt-note wt-note--device">${escapeHtml(deviceNote)}</p>` : ``}
 
       ${compactSectionHtml}
 

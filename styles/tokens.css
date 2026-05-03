@@ -135,7 +135,9 @@
   --lh-base: 1.5;
   --lh-relaxed: 1.45;
 
-  /* Font scale (single source of truth) */
+  /* Font scale (single source of truth)
+     --fs-body is the main reading size, intentionally comfortable for older players.
+     --fs-base is reserved for compact UI controls and dense interface elements. */
   --fs-xs: 13px;
   --fs-sm: 15px;
   --fs-md: 16px;

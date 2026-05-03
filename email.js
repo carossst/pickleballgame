@@ -195,6 +195,30 @@
 
         link.href = `mailto:${user}@${domain}`;
       });
+
+
+      // ─── 3) Static page support links ───
+      // Privacy / press pages use data-wt-support-link so they do not need inline scripts.
+
+      const supportLinks = document.querySelectorAll("a[data-wt-support-link]");
+      supportLinks.forEach((link) => {
+        if (!link) return;
+
+        const label = String(link.textContent || wording.support?.label || wording.footer?.contact || "").trim();
+        if (label) {
+          link.textContent = label;
+          link.setAttribute("aria-label", label);
+        }
+
+        link.setAttribute("href", "#");
+        link.removeAttribute("target");
+        link.removeAttribute("rel");
+
+        link.onclick = (e) => {
+          e.preventDefault();
+          openSupportEmail();
+        };
+      });
     } catch (_) {
       // Silent fail — fail-closed.
     }
