@@ -1246,8 +1246,8 @@
       // If all are empty, nothing is rendered.
       socialProofTitle: "What players say",
       socialProofQuotes: [
-        { quote: "★★★★★\nI felt confident going in, and this still caught a few things I was getting wrong. The explanations are clear and genuinely helpful.", author: "Maya, tournament player" },
-        { quote: "★★★★★\nTwo quick games were enough to show me I needed the full set.", author: "Jon, doubles regular" }
+        { quote: "★★★★★\nI was sure I'd ace it. Caught three rules I've been getting wrong at the club. The explanations actually help.", author: "Maya, tournament player" },
+        { quote: "★★★★★\nTwo games in and I realized I'd been calling some things wrong for months.", author: "Jon, doubles regular" }
       ],
 
       // EARLY-only conversion bump (no fallback; shown only if template is provided)
