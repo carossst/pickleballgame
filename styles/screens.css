@@ -1293,10 +1293,10 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: grid;
   place-items: center;
   justify-items: center;
-  gap: var(--space-6);
+  gap: var(--space-2);
   width: 100%;
   max-width: none;
-  margin: var(--space-16) auto 0;
+  margin: var(--space-12) auto 0;
   padding: 0;
   text-align: center;
   border: 0;
@@ -1306,24 +1306,24 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 .wt-end-score__headline {
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: var(--space-8);
-  flex-wrap: wrap;
-  font-size: clamp(44px, 10vw, 64px);
-  line-height: 0.96;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  font-size: clamp(68px, 18vw, 104px);
+  line-height: 0.92;
 }
 
 .wt-end-score__value {
-  display: inline-block;
+  display: block;
   width: auto;
   text-align: center;
   font-size: 1em;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
   color: rgb(var(--primary-depth));
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 .wt-end-score--newbest .wt-end-score__value {
@@ -1332,16 +1332,16 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 .wt-end-score__eyebrow {
-  display: inline-block;
+  display: block;
   width: auto;
-  margin-bottom: 0;
-  font-size: 1em;
+  margin: 0;
+  font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--ls-ui-wide);
   text-align: center;
-  text-transform: none;
-  color: rgb(var(--text-strong));
-  line-height: 1;
+  text-transform: uppercase;
+  color: rgb(var(--text-muted));
+  line-height: 1.1;
 }
 
 .wt-end-score__label {
@@ -1557,22 +1557,23 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 
   .wt-end-score {
-    margin-top: var(--space-8);
+    margin-top: var(--space-6);
     width: 100%;
     max-width: none;
     padding: 0;
   }
 
   .wt-end-score__headline {
-    gap: var(--space-8);
+    gap: var(--space-2);
+    font-size: clamp(72px, 24vw, 96px);
   }
 
   .wt-end-score__eyebrow {
-    font-size: var(--fs-md);
+    font-size: var(--fs-xs);
   }
 
   .wt-end-score__value {
-    font-size: clamp(40px, 11vw, 56px);
+    font-size: 1em;
   }
 
   .wt-end-summary {
