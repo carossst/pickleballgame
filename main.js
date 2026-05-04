@@ -148,6 +148,66 @@
       return;
     }
 
+    function getUpdateToastStorageKey() {
+      try {
+        const storageKey = String(cfg?.storage?.storageKey || "").trim();
+        if (!storageKey) return "";
+        return `wt-sw-update-toast-seen:${storageKey}`;
+      } catch (_) {
+        return "";
+      }
+    }
+
+    function getWaitingWorkerKey(worker) {
+      const w = worker || window.__WT_SW_WAITING__ || null;
+      return String(
+        w?.scriptURL ||
+        w?.state ||
+        "waiting"
+      ).trim();
+    }
+
+    function hasSeenUpdateToast(waitingKey) {
+      const key = String(waitingKey || "").trim();
+      if (!key) return false;
+
+      if (window.__WT_SW_LAST_TOAST_KEY__ === key) return true;
+
+      const storageKey = getUpdateToastStorageKey();
+      if (!storageKey) return false;
+
+      try {
+        return window.localStorage.getItem(storageKey) === key;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function markUpdateToastSeen(waitingKey) {
+      const key = String(waitingKey || "").trim();
+      if (!key) return;
+
+      window.__WT_SW_LAST_TOAST_KEY__ = key;
+
+      const storageKey = getUpdateToastStorageKey();
+      if (!storageKey) return;
+
+      try {
+        window.localStorage.setItem(storageKey, key);
+      } catch (_) { }
+    }
+
+    function clearUpdateToastSeen() {
+      window.__WT_SW_LAST_TOAST_KEY__ = "";
+
+      const storageKey = getUpdateToastStorageKey();
+      if (!storageKey) return;
+
+      try {
+        window.localStorage.removeItem(storageKey);
+      } catch (_) { }
+    }
+
     function showUpdateToast(message) {
       const msg = String(message || "").trim();
       if (!msg) return;
@@ -156,20 +216,17 @@
       const node = document.getElementById("update-toast");
       if (!node) return;
 
-      const waiting = window.__WT_SW_WAITING__ || null;
-      const waitingKey = String(
-        waiting?.scriptURL ||
-        waiting?.state ||
-        "waiting"
-      ).trim();
+      const waitingKey = getWaitingWorkerKey(window.__WT_SW_WAITING__ || null);
+      if (!waitingKey) return;
 
-      if (window.__WT_SW_LAST_TOAST_KEY__ === waitingKey) {
+      if (hasSeenUpdateToast(waitingKey)) {
+        window.__WT_SW_UPDATE_READY__ = true;
         return;
       }
 
       // Mark update ready so UI can decide when to apply it (user-controlled)
       window.__WT_SW_UPDATE_READY__ = true;
-      window.__WT_SW_LAST_TOAST_KEY__ = waitingKey;
+      markUpdateToastSeen(waitingKey);
 
       const text = node.querySelector("[data-wt-update-text]");
       if (text) text.textContent = msg;
@@ -217,6 +274,8 @@
 
     window.__WT_APPLY_SW_UPDATE__ = async function () {
       if (window.__WT_SW_UPDATE_IN_FLIGHT__ === true) return;
+
+      clearUpdateToastSeen();
 
       let fallbackTimer = null;
       function armFallbackReload() {
