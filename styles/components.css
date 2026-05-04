@@ -1416,6 +1416,20 @@ button.wt-level-chip {
   }
 }
 
+/* Rapid Fire overlays: same overlay component, gameplay-specific placement.
+   Keep the card readable by moving in-game overlays above the falling question path. */
+.wt-chance-overlay[data-wt-overlay-mode="BONUS"] {
+  align-items: flex-start;
+  padding-top: calc(env(safe-area-inset-top) + min(20vh, 160px));
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--pad));
+}
+
+@media (max-height: 640px) {
+  .wt-chance-overlay[data-wt-overlay-mode="BONUS"] {
+    padding-top: calc(env(safe-area-inset-top) + min(14vh, 96px));
+  }
+}
+
 /* Danger shake */
 .wt-chance-overlay--danger .wt-chance-overlay__content {
   animation:

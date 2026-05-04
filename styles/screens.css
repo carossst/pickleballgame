@@ -786,11 +786,6 @@ body.wt-state--end .wt-footer {
   justify-content: flex-start;
 }
 
-.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-pill--score,
-.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-pill--chances {
-  min-width: 0;
-}
-
 /* Desktop polish only: keep mobile-first full-bleed */
 @media (min-width: 900px) {
   .wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-card {

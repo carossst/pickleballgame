@@ -918,6 +918,7 @@ void function () {
     const durationMs = o ? Number(o.durationMs) : NaN;
     const variant = o ? String(o.variant || "").trim() : "";
     const cfg = (o && o.cfg && typeof o.cfg === "object") ? o.cfg : null;
+    const mode = o ? String(o.mode || "").trim() : "";
 
     if (!Number.isFinite(delayMs) || delayMs < 0 || delayMs > UI_TIMING_LIMITS.delayMsMax) return;
     if (!Number.isFinite(durationMs) || durationMs < UI_TIMING_LIMITS.durationMsMin || durationMs > UI_TIMING_LIMITS.durationMsMax) return;
@@ -928,7 +929,8 @@ void function () {
       showGameplayOverlay(text, {
         durationMs: Math.floor(durationMs),
         variant,
-        cfg
+        cfg,
+        mode
       });
       return;
     }
@@ -937,7 +939,8 @@ void function () {
       showGameplayOverlay(text, {
         durationMs: Math.floor(durationMs),
         variant,
-        cfg
+        cfg,
+        mode
       });
     }, Math.floor(delayMs), "overlay");
   }
@@ -958,6 +961,7 @@ void function () {
     const overlay = document.getElementById("wt-chance-lost-overlay");
     if (overlay) {
       overlay.classList.remove("wt-chance-overlay--visible");
+      overlay.removeAttribute("data-wt-overlay-mode");
       overlay.setAttribute("aria-hidden", "true");
     }
 
@@ -1013,6 +1017,7 @@ void function () {
     const durationMs = o ? Number(o.durationMs) : NaN;
     const variant = o ? String(o.variant || "").trim() : "";
     const cfg = (o && o.cfg && typeof o.cfg === "object") ? o.cfg : null;
+    const mode = o ? String(o.mode || "").trim() : "";
 
     // Validation bounds: same contract as WT_CONFIG.ui.toast.*.durationMs
     if (!Number.isFinite(durationMs) || durationMs < UI_TIMING_LIMITS.durationMsMin || durationMs > UI_TIMING_LIMITS.durationMsMax) return;
@@ -1046,6 +1051,8 @@ void function () {
       "wt-chance-overlay--dismissible",
       "wt-chance-overlay--blocking"
     );
+    if (mode) overlay.setAttribute("data-wt-overlay-mode", mode);
+    else overlay.removeAttribute("data-wt-overlay-mode");
     if (variant === "info") overlay.classList.add("wt-chance-overlay--info");
     else if (variant === "danger") overlay.classList.add("wt-chance-overlay--danger");
     else if (variant === "success") overlay.classList.add("wt-chance-overlay--success");
@@ -1101,13 +1108,14 @@ void function () {
         "wt-chance-overlay--dismissible",
         "wt-chance-overlay--blocking"
       );
+      overlay.removeAttribute("data-wt-overlay-mode");
       overlay.setAttribute("aria-hidden", "true");
     }
 
   }
 
 
-  function showChanceLostOverlay(cfg, wording, chancesLeft) {
+  function showChanceLostOverlay(cfg, wording, chancesLeft, mode) {
     // Config gate (no fallback): WT_CONFIG.ui.chanceLostOverlayMs must be valid.
     const baseDurationMs = Number(cfg?.ui?.chanceLostOverlayMs);
     if (!Number.isFinite(baseDurationMs) || baseDurationMs < UI_TIMING_LIMITS.durationMsMin || baseDurationMs > UI_TIMING_LIMITS.durationMsMax) return;
@@ -1148,6 +1156,9 @@ void function () {
       document.body.appendChild(overlay);
     }
     overlay.setAttribute("aria-live", "assertive");
+    const overlayMode = String(mode || "").trim();
+    if (overlayMode) overlay.setAttribute("data-wt-overlay-mode", overlayMode);
+    else overlay.removeAttribute("data-wt-overlay-mode");
 
     overlay.classList.remove("wt-chance-overlay--info");
     overlay.classList.add("wt-chance-overlay--danger");
@@ -2333,7 +2344,7 @@ void function () {
     const timing = getToastTiming(this.config, "");
     if (!timing) return;
 
-    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info" });
+    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info", mode });
   };
 
 
@@ -2364,7 +2375,7 @@ void function () {
     if (!timing) return;
 
     this._runtime.poolReshuffleToastShown = true;
-    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info" });
+    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info", mode: "RUN" });
   };
 
 
@@ -3378,7 +3389,8 @@ void function () {
         delayMs: timing.delayMs,
         durationMs: timing.durationMs,
         variant: String(variant || "info"),
-        cfg
+        cfg,
+        mode: runMode
       });
       mp.lastToastAtCount = answeredCount;
       return true;
@@ -4186,7 +4198,8 @@ void function () {
             scheduleGameplayOverlay(toastLine, {
               delayMs: 0,
               durationMs: Math.floor(toastMs),
-              variant: "success"
+              variant: "success",
+              mode: modeNow
             });
           }
         }
@@ -4253,7 +4266,7 @@ void function () {
       Number(nowChancesLeft) <= 1 &&
       (runModeNow === MODES.BONUS || !isGameOverNow)
     ) {
-      showChanceLostOverlay(this.config, this.wording, nowChancesLeft);
+      showChanceLostOverlay(this.config, this.wording, nowChancesLeft, runModeNow);
     }
 
     // Bonus: still sync the HUD on the final mistake (avoid stale "2/3" display on the last error).
@@ -4479,7 +4492,8 @@ void function () {
               showGameplayOverlay(msg, {
                 durationMs: Math.floor(toastMs),
                 variant: "success",
-                cfg: this.config
+                cfg: this.config,
+                mode: MODES.BONUS
               });
 
               setRuntimeTimer(this, "bonusEndTimerId", () => {
@@ -4621,7 +4635,7 @@ void function () {
         if (this.state !== STATES.PLAYING) return;
         if (this._runtime.feedbackPending !== true) return;
 
-        showChanceLostOverlay(this.config, this.wording, nowChancesLeft);
+        showChanceLostOverlay(this.config, this.wording, nowChancesLeft, runModeNow);
         this._runtime.autoGameOverAfterFeedback = false;
         this._enterGameOverDelay();
       }, postFeedbackMs);
@@ -4679,7 +4693,7 @@ void function () {
         this._runtime.gameOverAfterFeedbackTimerId = null;
       }
 
-      showChanceLostOverlay(this.config, this.wording, 0);
+      showChanceLostOverlay(this.config, this.wording, 0, String(this._runtime?.runMode || "").trim());
       this._runtime.autoGameOverAfterFeedback = false;
       this._enterGameOverDelay();
       return;
@@ -6074,7 +6088,7 @@ void function () {
     }
 
     if (chanceLost && Number.isFinite(nowChancesLeft)) {
-      showChanceLostOverlay(this.config, this.wording, nowChancesLeft);
+      showChanceLostOverlay(this.config, this.wording, nowChancesLeft, String(this._runtime?.runMode || "").trim());
     }
 
     // Block renders before recordAnswer if game over (same contract as answer()).
@@ -6153,7 +6167,8 @@ void function () {
         showGameplayOverlay(msg, {
           durationMs: Math.floor(durationMs),
           variant: "success",
-          cfg: this.config
+          cfg: this.config,
+          mode: MODES.BONUS
         });
 
         if (this._runtime.bonusEndTimerId) {
