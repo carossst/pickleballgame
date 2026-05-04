@@ -1582,6 +1582,12 @@ void function () {
           choice.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
           choice.style.animationDuration = "";
         });
+
+        const chips = root ? root.querySelectorAll("[data-wt-bonus-chip]") : [];
+        chips.forEach((chip) => {
+          chip.classList.remove("wt-bonus-chip--answer-ok", "wt-bonus-chip--answer-bad");
+          chip.style.animationDuration = "";
+        });
       } catch (_) { /* silent */ }
     }
 
@@ -1615,6 +1621,11 @@ void function () {
         ? '[data-action="answer-true"]'
         : '[data-action="answer-false"]';
       const correctBtn = root && root.querySelector ? root.querySelector(correctSelector) : null;
+      const runMode = String(self._runtime.runMode || "").trim();
+      const isBonus = (runMode === MODES.BONUS);
+      const bonusChip = isBonus && root && root.querySelector
+        ? root.querySelector("[data-wt-bonus-chip]")
+        : null;
 
       clearRuntimeTimer(self, "choiceSelectFeedbackTimerId");
       clearChoiceSelectFeedback();
@@ -1627,6 +1638,12 @@ void function () {
       if (!isCorrect && correctBtn && correctBtn !== target) {
         correctBtn.style.animationDuration = `${feedbackMs}ms`;
         correctBtn.classList.add("wt-choice--flash", "wt-choice--flash-ok");
+      }
+
+      if (bonusChip) {
+        bonusChip.style.animationDuration = `${feedbackMs}ms`;
+        bonusChip.classList.remove("wt-bonus-chip--warning", "wt-bonus-chip--warning-once");
+        bonusChip.classList.add(isCorrect ? "wt-bonus-chip--answer-ok" : "wt-bonus-chip--answer-bad");
       }
 
       // BONUS: freeze the falling card during selected-answer feedback.
@@ -6350,7 +6367,9 @@ void function () {
           sbf.chipEl.classList.remove(
             "wt-bonus-chip--warning",
             "wt-bonus-chip--warning-once",
-            "wt-bonus-chip--spawn"
+            "wt-bonus-chip--spawn",
+            "wt-bonus-chip--answer-ok",
+            "wt-bonus-chip--answer-bad"
           );
           sbf.chipEl.style.animationDuration = "";
         }

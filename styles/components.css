@@ -488,6 +488,57 @@ button.wt-level-chip {
   }
 }
 
+/* Rapid Fire: selected-answer feedback on the falling card.
+   Do not animate transform here: ui.js owns chip position with translate3d(). */
+.wt-bonus-chip.wt-bonus-chip--answer-ok {
+  border-color: rgb(var(--success-dark) / var(--wt-a-90));
+  background: rgb(var(--success) / var(--wt-a-12));
+  box-shadow:
+    0 0 0 2px rgb(var(--success) / var(--wt-a-24)),
+    var(--shadow-2);
+  animation: wtBonusChipAnswerFeedback var(--wt-anim-answer-feedback) ease-out 1;
+  transition:
+    border-color var(--fast),
+    background-color var(--fast),
+    box-shadow var(--fast),
+    opacity var(--fast);
+}
+
+.wt-bonus-chip.wt-bonus-chip--answer-bad {
+  border-color: rgb(var(--danger-dark) / var(--wt-a-90));
+  background: rgb(var(--danger) / var(--wt-a-12));
+  box-shadow:
+    0 0 0 2px rgb(var(--danger) / var(--wt-a-24)),
+    var(--shadow-2);
+  animation: wtBonusChipAnswerFeedback var(--wt-anim-answer-feedback) ease-out 1;
+  transition:
+    border-color var(--fast),
+    background-color var(--fast),
+    box-shadow var(--fast),
+    opacity var(--fast);
+}
+
+@keyframes wtBonusChipAnswerFeedback {
+  0% {
+    opacity: 1;
+  }
+
+  45% {
+    opacity: var(--wt-a-95);
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-bonus-chip--answer-ok,
+  .wt-bonus-chip--answer-bad {
+    animation: none !important;
+  }
+}
+
 /* PLAYING: question prompt (assertion / progress) */
 .wt-question-prompt {
   margin: 0 0 12px;
