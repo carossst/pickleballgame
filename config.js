@@ -1,4 +1,4 @@
-// config.js v2.0 - Pickleball Rules Quiz
+// config.js - Pickleball Rules Quiz
 // Configuration + UI copy (single file, no split)
 
 (() => {
@@ -669,7 +669,7 @@
       statsMasterySummaryTemplate: "{mastered}/{poolSize} questions answered correctly",
 
       postPaywallTitle: "Free games completed.",
-      postPaywallBody: "Unlock all 200 pickleball rules questions, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
+      postPaywallBody: "Unlock the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
       practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
       postPaywallCta: "Unlock full access",
 
@@ -1120,7 +1120,7 @@
       poolCompleteCtaPractice: "Fix your mistakes",
 
       freeLimitReachedTitle: "Nice game.",
-      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks all 200 pickleball rules questions, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
+      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -1214,14 +1214,14 @@
       trustTitle: "Simple unlock",
       compactTitle: "What unlocks",
       compactBullets: [
-        "**All 200 pickleball rules questions**",
+        "**The full pickleball rules question set**",
         "**Explanations after every answer**",
         "**Mistakes Mode** and **Rapid Fire**",
         "**Works offline** after first load"
       ],
 
       valueBullets: [
-        "**All 200 pickleball rules questions**",
+        "**The full pickleball rules question set**",
         "**A mix of easy, intermediate, and hard questions**",
         "**Explanations after every answer**",
         "**Mistakes Mode** to fix what you missed",
@@ -1230,7 +1230,7 @@
 
       // Shared bridge copy (LANDING post-paywall + END runs exhausted)
       bridgeTitle: "Know the pickleball rules better.",
-      bridgeBody: "Unlock all 200 questions, fix what you missed, and keep playing with every mode open.",
+      bridgeBody: "Unlock the full question set, fix what you missed, and keep playing with every mode open.",
 
       trustLine: "**One-time unlock**",
       trustBullets: [

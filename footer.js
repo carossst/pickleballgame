@@ -34,6 +34,7 @@
             <a id="wt-contact-link" class="wt-footer-link" href="#" data-wt-wording="footer.contact"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-tyf-link" class="wt-footer-link" href="#" target="_blank" rel="noopener"></a>
+            <!-- wt-footer-sep--tyf is a marker class for JS targeting only. Styling comes from wt-footer-sep. -->
             <span class="wt-footer-sep wt-footer-sep--tyf" aria-hidden="true">·</span>
             <a id="wt-privacy-link" class="wt-footer-link" href="./privacy.html" target="_blank" rel="noopener"
               data-wt-wording="footer.privacy"></a>

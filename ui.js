@@ -1,4 +1,4 @@
-// ui.js v2.0 - Quiz UI
+// ui.js - Quiz UI
 // UI-only: rendering, accessibility, interactions (V2 RUN)
 
 void function () {
@@ -2304,6 +2304,12 @@ void function () {
     const list = Array.isArray(items) ? items : [];
     this._runtime.contentItems = list;
     this._runtime.contentById = Object.create(null);
+
+    // Content is the source of truth for the visible pool size once content has loaded.
+    if (this.config && this.config.game && list.length > 0) {
+      this.config.game.poolSize = list.length;
+    }
+
     for (const it of list) {
       const id = String(it && it.id != null ? it.id : "").trim();
       if (!id) continue;

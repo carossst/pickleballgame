@@ -1,6 +1,6 @@
 # Pickleball Rules Quiz
 
-`Pickleball Rules Quiz` is a fast true-or-false pickleball rules game with 200 questions about serving, faults, scoring, line calls, and rule changes.
+`Pickleball Rules Quiz` is a fast true-or-false pickleball rules game covering serving, faults, scoring, line calls, and rule changes.
 
 Built with plain HTML, CSS, and JavaScript, this mobile-first pickleball rules quiz works without a build step, stores progress locally, supports offline play after first load, and includes full access unlocks, `Mistakes Mode`, and `Rapid Fire Mode`.
 
@@ -113,7 +113,7 @@ Important values:
 - `WT_CONFIG.version`: cache/version identifier used by the service worker
 - `WT_CONFIG.storageSchemaVersion`: local storage schema version
 - `WT_CONFIG.limits.freeRuns`: number of free main games
-- `WT_CONFIG.game.poolSize`: total question pool size
+- `WT_CONFIG.game.poolSize`: runtime question pool size; it is synced to the loaded content length to avoid manual count drift
 
 ## Level System
 

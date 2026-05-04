@@ -51,6 +51,8 @@
       const nodes = root.querySelectorAll('[data-wt-brand="creatorLine"]');
       if (!nodes.length) return;
 
+      // Controlled editorial HTML only.
+      // Contract: creatorLineHtml is defined in config.js, never sourced from user input.
       const html = String(wording.brand?.creatorLineHtml || "").trim();
       const text = String(wording.brand?.creatorLine || "").trim();
       nodes.forEach((el) => {

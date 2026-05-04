@@ -606,10 +606,7 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-success-hero-copy,
-.wt-success-status,
-.wt-success-cheatsheet-body,
-.wt-success-cheatsheet-link-wrap,
-.wt-success-note--spaced {
+.wt-success-status {
   margin-top: var(--space-10);
 }
 
@@ -625,14 +622,7 @@ body.wt-state--end .wt-card--end {
   margin-top: var(--space-6);
 }
 
-.wt-success-cheatsheet-mount {
-  margin-top: var(--gap-2);
-}
 
-.wt-success-legal {
-  margin-top: var(--space-10);
-  font-size: var(--fs-xs);
-}
 
 .wt-success-center-note {
   text-align: center;
@@ -759,9 +749,6 @@ body.wt-state--end .wt-footer {
   padding-bottom: 0;
 }
 
-.wt-bonus-badge {
-  margin: 0;
-}
 
 @media (max-width: 360px) {
   .wt-bonus-branding__top {
@@ -1417,9 +1404,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
   font-variant-numeric: tabular-nums;
 }
 
-.wt-end-lens {
-  margin-top: 4px;
-}
 
 .wt-end-summary {
   width: min(100%, 390px);
@@ -1489,7 +1473,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
   padding: var(--space-10) var(--space-10) var(--space-12);
 }
 
-.wt-panel--accent-left,
 .wt-level-unlock__card,
 .wt-landing-stats {
   border-top: 1px solid rgb(var(--border) / var(--wt-a-70));
@@ -1544,13 +1527,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
   margin-top: var(--space-18);
 }
 
-.wt-end-practice-stats p {
-  margin: 0;
-}
-
-.wt-end-practice-stats p + p {
-  margin-top: 2px;
-}
 
 @media (min-width: 481px) {
   .wt-end-table {
@@ -1579,9 +1555,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
     row-gap: var(--space-4);
   }
 
-  .wt-end-lens {
-    margin-top: 2px;
-  }
 
   .wt-end-score {
     margin-top: var(--space-8);
@@ -1798,39 +1771,5 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
   .wt-chance-overlay__content {
     transition: none !important;
-  }
-}
-
-
-/* ============================================
-   DARK MODE
-   ============================================ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg: 2 6 23;
-    --surface: 15 23 42;
-    --surface-muted: 30 41 59;
-    --border: 51 65 85;
-    --text-strong: 241 245 249;
-    --text: 226 232 240;
-    --text-muted: 184 195 210;
-    --shadow-color: 2 6 23;
-
-    /* Dark mode accessibility: links + focus rings must pass WCAG AA on --bg */
-    --primary: 56 189 248;
-    --primary-dark: 64 176 224;
-    --primary-depth: 56 189 248;
-
-    /* Success tokens: lighten for dark surfaces (WCAG AA on --surface) */
-    --success: 34 197 94;
-    --success-dark: 74 222 128;
-    --danger: 248 113 113;
-    --danger-dark: 252 165 165;
-    --rating-star: 245 158 11;
-  }
-
-  body {
-    background: rgb(var(--bg));
   }
 }

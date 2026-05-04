@@ -1,4 +1,4 @@
-// icons.js v1.0 - inline SVG icon helpers
+// icons.js - inline SVG icon helpers
 
 (() => {
   "use strict";

@@ -104,7 +104,7 @@
   --wt-a-92: 0.92;
   --wt-a-95: 0.95;
 
-  /* Glass (derived from --surface; auto-adapts in dark mode) */
+  /* Glass (derived from --surface) */
   --glass-65: rgb(var(--surface) / var(--wt-a-65));
   --glass-72: rgb(var(--surface) / var(--wt-a-72));
   --glass-92: rgb(var(--surface) / var(--wt-a-92));

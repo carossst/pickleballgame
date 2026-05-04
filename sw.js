@@ -1,5 +1,5 @@
 /* global self, caches */
-/* sw.js - Service Worker v2.1 */
+/* sw.js - Service Worker */
 /* Spec section 8: PWA / Offline / Service Worker */
 /**
  * Single source of truth for version:
@@ -240,11 +240,9 @@ self.addEventListener("fetch", (event) => {
         return res;
       } catch (_) {
         if (req.mode === "navigate") {
-          const fallbackUrl = getOfflineDocumentFallback(url.pathname);
-          if (fallbackUrl) {
-            const doc = await caches.match(fallbackUrl);
-            if (doc) return doc;
-          }
+          const fallbackUrl = getOfflineDocumentFallback(url.pathname) || "./404.html";
+          const doc = await caches.match(fallbackUrl);
+          if (doc) return doc;
 
           const shell = await caches.match("./index.html");
           if (shell && (url.pathname === "/" || url.pathname === "/index.html")) return shell;

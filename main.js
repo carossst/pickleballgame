@@ -1,4 +1,4 @@
-// main.js v2.0 - App bootstrap
+// main.js - App bootstrap
 
 (() => {
   "use strict";
@@ -36,7 +36,7 @@
 
 
   // ============================================
-  // Logger (like TYF)
+  // Logger
   // ============================================
   const Logger = {
     debug: (...args) =>

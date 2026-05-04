@@ -249,7 +249,7 @@
         threeQuartersMilestoneShown: false,
         threeQuartersMilestoneShownAt: 0,
 
-        // One-shot: celebrate "seen all 200" once, then never again (even if user reaches 400+).
+        // One-shot: celebrate "seen all questions" once, then never again (even if user reaches 400+).
         poolCompleteCelebrated: false,
         poolCompleteCelebratedAt: 0,
 
@@ -1122,7 +1122,7 @@
     this._save();
   };
 
-  // One-shot: did we already celebrate "seen all 200"?
+  // One-shot: did we already celebrate "seen all questions"?
   StorageManager.prototype.hasPoolCompleteCelebrated = function () {
     return !!(this.data?.postCompletion?.poolCompleteCelebrated);
   };

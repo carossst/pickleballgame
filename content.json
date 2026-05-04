@@ -5,25 +5,25 @@
     "trueItems": 104,
     "falseItems": 96,
     "byCategory": {
-      "2026_changes": 20,
+      "2026_changes": 21,
       "Court & Equipment": 34,
-      "Faults & Dead Ball": 19,
+      "Faults & Dead Ball": 18,
       "Line Calls": 18,
       "Non-Volley Zone": 8,
-      "Player Conduct & Apparel": 11,
+      "Player Conduct & Apparel": 10,
       "Rally Situations": 17,
       "Score & Readiness": 31,
       "Serving Rules": 35,
       "The Net": 9
     },
     "byDifficulty": {
-      "Easy": 69,
-      "Hard": 63,
+      "Easy": 68,
+      "Hard": 62,
       "Intermediate": 70
     },
     "byFormat": {
       "Both": 178,
-      "Singles only": 8,
+      "Singles only": 7,
       "Doubles only": 15
     }
   },
@@ -32,7 +32,7 @@
       "id": 1,
       "question": "If the ball lands in the opponent's court and then hits the net post, the rally is replayed.",
       "correctAnswer": false,
-      "explanationShort": "Before 2026, the rule was different.\nIf the ball lands in and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\n2026 USA Pickleball Rulebook Change Document, page 5.",
+      "explanationShort": "Now: if the ball lands in the opponent's court and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\nBefore 2026, this situation was handled differently.\n2026 USA Pickleball Rulebook Change Document, page 5.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -56,7 +56,7 @@
       "id": 3,
       "question": "Spin may be applied to the ball at paddle contact.",
       "correctAnswer": true,
-      "explanationShort": "In 2026, spin at paddle contact is allowed.\nWhat is still banned is adding spin with the hand or fingers during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
+      "explanationShort": "The 2026 rulebook clarifies that spin may be created at paddle contact.\nWhat is still banned is adding spin with the hand or fingers during the release.\n2026 USA Pickleball Rulebook Change Document, page 11.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -316,6 +316,7 @@
       "explanationShort": "Before 2026, the rule focused on the arm moving in an upward arc.\nNow the paddle itself must move in an upward arc at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1.",
       "tags": [
         "Serving Rules",
+        "2026_changes",
         "Intermediate",
         "Singles",
         "Doubles"

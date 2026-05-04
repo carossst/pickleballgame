@@ -1,4 +1,4 @@
-// game.js v2.0 - Quiz engine
+// game.js - Quiz engine
 // RUN engine + selection 
 // Zéro accès DOM, zéro localStorage
 
@@ -81,11 +81,15 @@
     if (!Array.isArray(poolAll) || poolAll.length === 0) return [];
     if (poolSize == null || poolAll.length <= poolSize) return poolAll;
 
-    // Deterministic slice: keep lowest ids
-    return poolAll
-      .slice()
-      .sort((a, b) => (safeIdNum(a && a.id) || 0) - (safeIdNum(b && b.id) || 0))
-      .slice(0, poolSize);
+    // Content is the source of truth. A stale config value must never silently exclude cards.
+    try {
+      console.warn("[WT Game] config.game.poolSize is lower than content length; using full content pool.", {
+        poolSize,
+        contentLength: poolAll.length
+      });
+    } catch (_) { /* silent */ }
+
+    return poolAll;
   }
 
   // ============================================
