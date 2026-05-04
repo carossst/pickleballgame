@@ -458,7 +458,7 @@ body.wt-state--end .wt-card--end {
   font-size: clamp(var(--fs-md), 2.8vw, var(--fs-lg));
   line-height: 1.3;
   font-weight: 700;
-  color: rgb(var(--text-strong));
+  color: rgb(var(--primary-dark));
 }
 
 .wt-landing-stat__sub {
@@ -469,7 +469,7 @@ body.wt-state--end .wt-card--end {
   font-size: var(--fs-md);
   font-weight: 500;
   line-height: 1.35;
-  color: rgb(var(--text));
+  color: rgb(var(--primary-dark));
   text-align: left;
 
   white-space: normal;
