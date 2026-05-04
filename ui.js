@@ -776,10 +776,6 @@ void function () {
         clearRuntimeTimer(ui, "hudPulseCleanupTimerId");
       }
 
-      if (ui._runtime.choiceSelectFeedbackTimerId) {
-        clearRuntimeTimer(ui, "choiceSelectFeedbackTimerId");
-      }
-
       if (ui._runtime.endRecordMomentTimer) {
         clearRuntimeTimer(ui, "endRecordMomentTimer");
       }
@@ -801,7 +797,6 @@ void function () {
       }
 
       ui._runtime.answerLocked = false;
-      ui._runtime.choiceSelectPending = false;
       ui._runtime.feedbackPending = false;
       ui._runtime.finishAfterFeedback = false;
       ui._runtime.autoGameOverAfterFeedback = false;
@@ -1436,8 +1431,6 @@ void function () {
 
       // HUD delta cleanup (UI-only): forces a render after gameplayPulseMs
       hudPulseCleanupTimerId: null,
-      choiceSelectFeedbackTimerId: null,
-      choiceSelectPending: false,
 
       // timers / transition guards
       bonusAnswerFeedbackTimerId: null,
@@ -1574,165 +1567,6 @@ void function () {
     const pointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
 
 
-    function clearChoiceSelectFeedback() {
-      try {
-        const root = self.appEl || document.getElementById("app");
-        const choices = root ? root.querySelectorAll(".wt-choice") : [];
-        choices.forEach((choice) => {
-          choice.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-          choice.style.animationDuration = "";
-        });
-
-        const boxes = root ? root.querySelectorAll(".wt-terms-box") : [];
-        boxes.forEach((box) => {
-          box.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
-          box.style.animationDuration = "";
-        });
-
-        const chips = root ? root.querySelectorAll("[data-wt-bonus-chip]") : [];
-        chips.forEach((chip) => {
-          chip.classList.remove("wt-bonus-chip--answer-ok", "wt-bonus-chip--answer-bad");
-          chip.style.animationDuration = "";
-        });
-      } catch (_) { /* silent */ }
-    }
-
-    function syncMistakesHudPreview(chancesLeft) {
-      try {
-        const root = self.appEl || document.getElementById("app");
-        const pill = root ? root.querySelector(".wt-pill--chances") : null;
-        if (!pill) return;
-
-        const leftRaw = Number(chancesLeft);
-        if (!Number.isFinite(leftRaw)) return;
-
-        const gs = (self.game && typeof self.game.getState === "function") ? (self.game.getState() || {}) : {};
-        const mcRaw = Number(gs.maxChances || self.config?.game?.maxChances);
-        const mc = (Number.isFinite(mcRaw) && mcRaw > 0) ? Math.floor(mcRaw) : 0;
-        if (mc <= 0) return;
-
-        const left = Math.max(0, Math.min(mc, Math.floor(leftRaw)));
-        const mistakes = Math.max(0, Math.min(mc, mc - left));
-        const uiW = (self.wording && self.wording.ui) ? self.wording.ui : {};
-        const label = String(uiW.mistakesLabel || "").trim();
-
-        const visual = Array(mc)
-          .fill(null)
-          .map((_, i) => {
-            const isOn = i < mistakes;
-            const isLast = isOn && mistakes > 0 && i === (mistakes - 1);
-            return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
-          })
-          .join("");
-
-        pill.classList.remove("wt-pill--danger-pulse");
-        pill.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
-        pill.innerHTML = `
-          ${label ? `<small>${escapeHtml(label)}</small>` : ``}
-          ${mistakes}/${mc}
-          ${visual}
-        `;
-      } catch (_) { /* silent */ }
-    }
-
-    function applyChoiceSelectFeedback(choiceBool, event) {
-      if (!self._runtime) return false;
-      if (self.state !== STATES.PLAYING) return false;
-      if (self._runtime.answerLocked === true) return true;
-      if (self._runtime.feedbackPending === true) return true;
-      if (self._runtime.choiceSelectPending === true) return true;
-
-      const feedbackMsRaw = Number(self?.config?.ui?.choiceSelectFeedbackMs);
-      const feedbackMs = (
-        Number.isFinite(feedbackMsRaw) &&
-        feedbackMsRaw >= UI_TIMING_LIMITS.durationMsMin &&
-        feedbackMsRaw <= UI_TIMING_LIMITS.pulseMsMax
-      ) ? Math.floor(feedbackMsRaw) : 0;
-
-      if (feedbackMs <= 0) return false;
-
-      const cur = (self.game && typeof self.game.getCurrent === "function") ? self.game.getCurrent() : null;
-      if (!cur || (cur.correctAnswer !== true && cur.correctAnswer !== false)) return false;
-
-      const target = event && event.target && event.target.closest ? event.target.closest(".wt-choice") : null;
-      if (!target) return false;
-
-      const picked = (choiceBool === true);
-      const isCorrect = (cur.correctAnswer === picked);
-
-      const root = self.appEl || document.getElementById("app");
-      const correctSelector = cur.correctAnswer === true
-        ? '[data-action="answer-true"]'
-        : '[data-action="answer-false"]';
-      const correctBtn = root && root.querySelector ? root.querySelector(correctSelector) : null;
-      const runMode = String(self._runtime.runMode || "").trim();
-      const isBonus = (runMode === MODES.BONUS);
-      const questionBox = !isBonus && root && root.querySelector
-        ? root.querySelector(".wt-terms-box")
-        : null;
-      const bonusChip = isBonus && root && root.querySelector
-        ? root.querySelector("[data-wt-bonus-chip]")
-        : null;
-
-      clearRuntimeTimer(self, "choiceSelectFeedbackTimerId");
-      clearChoiceSelectFeedback();
-
-      self._runtime.choiceSelectPending = true;
-
-      target.style.animationDuration = `${feedbackMs}ms`;
-      target.classList.add("wt-choice--flash", isCorrect ? "wt-choice--flash-ok" : "wt-choice--flash-bad");
-
-      if (!isCorrect && correctBtn && correctBtn !== target) {
-        correctBtn.style.animationDuration = `${feedbackMs}ms`;
-        correctBtn.classList.add("wt-choice--flash", "wt-choice--flash-ok");
-      }
-
-      if (questionBox) {
-        questionBox.style.animationDuration = `${feedbackMs}ms`;
-        questionBox.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
-        void questionBox.offsetWidth;
-        questionBox.classList.add(isCorrect ? "wt-terms-box--successflash" : "wt-terms-box--mistakeflash");
-      }
-
-      if (bonusChip) {
-        bonusChip.style.animationDuration = `${feedbackMs}ms`;
-        bonusChip.classList.remove("wt-bonus-chip--warning", "wt-bonus-chip--warning-once");
-        bonusChip.classList.add(isCorrect ? "wt-bonus-chip--answer-ok" : "wt-bonus-chip--answer-bad");
-      }
-
-      if (!isCorrect && (runMode === MODES.RUN || runMode === MODES.BONUS)) {
-        try {
-          const gs = (self.game && typeof self.game.getState === "function") ? (self.game.getState() || {}) : {};
-          const leftNow = Number(gs.chancesLeft);
-          if (Number.isFinite(leftNow)) syncMistakesHudPreview(leftNow - 1);
-        } catch (_) { /* silent */ }
-      }
-
-      // BONUS: freeze the falling card during selected-answer feedback.
-      try {
-        if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop();
-      } catch (_) { /* silent */ }
-
-      const timerId = setRuntimeTimer(self, "choiceSelectFeedbackTimerId", () => {
-        clearChoiceSelectFeedback();
-        if (self._runtime) {
-          self._runtime.choiceSelectFeedbackTimerId = null;
-          self._runtime.choiceSelectPending = false;
-        }
-
-        if (self.state !== STATES.PLAYING) return;
-        window.requestAnimationFrame(() => self.answer(picked));
-      }, feedbackMs, "playing");
-
-      if (!timerId) {
-        clearChoiceSelectFeedback();
-        self._runtime.choiceSelectPending = false;
-        return false;
-      }
-
-      return true;
-    }
-
     function dispatchAction(action, event) {
       switch (action) {
         case "continue":
@@ -1811,8 +1645,6 @@ void function () {
 
 
         case "answer-true": {
-          if (applyChoiceSelectFeedback(true, event)) break;
-
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
           try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
 
@@ -1821,8 +1653,6 @@ void function () {
         }
 
         case "answer-false": {
-          if (applyChoiceSelectFeedback(false, event)) break;
-
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
           try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
 
@@ -6429,9 +6259,7 @@ void function () {
           sbf.chipEl.classList.remove(
             "wt-bonus-chip--warning",
             "wt-bonus-chip--warning-once",
-            "wt-bonus-chip--spawn",
-            "wt-bonus-chip--answer-ok",
-            "wt-bonus-chip--answer-bad"
+            "wt-bonus-chip--spawn"
           );
           sbf.chipEl.style.animationDuration = "";
         }
