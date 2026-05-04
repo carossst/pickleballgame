@@ -454,8 +454,8 @@ button.wt-level-chip {
 .wt-choice--flash {
   border-color: rgb(var(--primary) / var(--wt-a-75));
   box-shadow: var(--shadow-2);
-  animation: wtChoiceFlash var(--wt-anim-answer-feedback) ease-out 1;
-  will-change: transform, border-color, background-color, box-shadow;
+  animation: none;
+  will-change: border-color, background-color, box-shadow;
 }
 
 .wt-choice--flash-ok {
@@ -475,23 +475,16 @@ button.wt-level-chip {
 }
 
 @keyframes wtChoiceFlash {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-
-  45% {
-    transform: translateY(-1px) scale(1.025);
-  }
-
+  0%,
   100% {
-    transform: translateY(0) scale(1);
+    opacity: 1;
   }
 }
 
 /* Rapid Fire: selected-answer feedback on the falling card.
-   Do not animate transform here: ui.js owns chip position with translate3d(). */
-.wt-bonus-chip.wt-bonus-chip--answer-ok {
-  border-color: rgb(var(--success-dark) / var(--wt-a-90));
+   No transform or bounce here: ui.js owns chip position with translate3d(). */
+.wt-bonus-chip--answer-ok {
+  border: 1px solid rgb(var(--success-dark) / var(--wt-a-90));
   background: rgb(var(--success) / var(--wt-a-12));
   box-shadow:
     0 0 0 2px rgb(var(--success) / var(--wt-a-24)),
@@ -504,8 +497,8 @@ button.wt-level-chip {
     opacity var(--fast);
 }
 
-.wt-bonus-chip.wt-bonus-chip--answer-bad {
-  border-color: rgb(var(--danger-dark) / var(--wt-a-90));
+.wt-bonus-chip--answer-bad {
+  border: 1px solid rgb(var(--danger-dark) / var(--wt-a-90));
   background: rgb(var(--danger) / var(--wt-a-12));
   box-shadow:
     0 0 0 2px rgb(var(--danger) / var(--wt-a-24)),
@@ -538,6 +531,7 @@ button.wt-level-chip {
     animation: none !important;
   }
 }
+
 
 /* PLAYING: question prompt (assertion / progress) */
 .wt-question-prompt {
@@ -575,18 +569,20 @@ button.wt-level-chip {
 
 .wt-terms-box--mistakeflash {
   border-color: rgb(var(--danger) / var(--wt-a-90));
+  background: rgb(var(--danger) / var(--wt-a-10));
   box-shadow:
     0 0 0 2px rgb(var(--danger) / var(--wt-a-35)),
     0 0 24px rgb(var(--danger) / var(--wt-a-20));
-  animation: wtMistakeFlash 520ms ease;
+  animation: none;
 }
 
 .wt-terms-box--successflash {
   border-color: rgb(var(--success) / var(--wt-a-85));
+  background: rgb(var(--success) / var(--wt-a-10));
   box-shadow:
     0 0 0 2px rgb(var(--success) / var(--wt-a-25)),
     0 0 16px rgb(var(--success) / var(--wt-a-12));
-  animation: wtSuccessFlash 420ms ease;
+  animation: none;
 }
 
 .wt-term-row {

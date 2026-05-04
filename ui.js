@@ -1583,11 +1583,55 @@ void function () {
           choice.style.animationDuration = "";
         });
 
+        const boxes = root ? root.querySelectorAll(".wt-terms-box") : [];
+        boxes.forEach((box) => {
+          box.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+          box.style.animationDuration = "";
+        });
+
         const chips = root ? root.querySelectorAll("[data-wt-bonus-chip]") : [];
         chips.forEach((chip) => {
           chip.classList.remove("wt-bonus-chip--answer-ok", "wt-bonus-chip--answer-bad");
           chip.style.animationDuration = "";
         });
+      } catch (_) { /* silent */ }
+    }
+
+    function syncMistakesHudPreview(chancesLeft) {
+      try {
+        const root = self.appEl || document.getElementById("app");
+        const pill = root ? root.querySelector(".wt-pill--chances") : null;
+        if (!pill) return;
+
+        const leftRaw = Number(chancesLeft);
+        if (!Number.isFinite(leftRaw)) return;
+
+        const gs = (self.game && typeof self.game.getState === "function") ? (self.game.getState() || {}) : {};
+        const mcRaw = Number(gs.maxChances || self.config?.game?.maxChances);
+        const mc = (Number.isFinite(mcRaw) && mcRaw > 0) ? Math.floor(mcRaw) : 0;
+        if (mc <= 0) return;
+
+        const left = Math.max(0, Math.min(mc, Math.floor(leftRaw)));
+        const mistakes = Math.max(0, Math.min(mc, mc - left));
+        const uiW = (self.wording && self.wording.ui) ? self.wording.ui : {};
+        const label = String(uiW.mistakesLabel || "").trim();
+
+        const visual = Array(mc)
+          .fill(null)
+          .map((_, i) => {
+            const isOn = i < mistakes;
+            const isLast = isOn && mistakes > 0 && i === (mistakes - 1);
+            return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
+          })
+          .join("");
+
+        pill.classList.remove("wt-pill--danger-pulse");
+        pill.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
+        pill.innerHTML = `
+          ${label ? `<small>${escapeHtml(label)}</small>` : ``}
+          ${mistakes}/${mc}
+          ${visual}
+        `;
       } catch (_) { /* silent */ }
     }
 
@@ -1623,6 +1667,9 @@ void function () {
       const correctBtn = root && root.querySelector ? root.querySelector(correctSelector) : null;
       const runMode = String(self._runtime.runMode || "").trim();
       const isBonus = (runMode === MODES.BONUS);
+      const questionBox = !isBonus && root && root.querySelector
+        ? root.querySelector(".wt-terms-box")
+        : null;
       const bonusChip = isBonus && root && root.querySelector
         ? root.querySelector("[data-wt-bonus-chip]")
         : null;
@@ -1640,10 +1687,25 @@ void function () {
         correctBtn.classList.add("wt-choice--flash", "wt-choice--flash-ok");
       }
 
+      if (questionBox) {
+        questionBox.style.animationDuration = `${feedbackMs}ms`;
+        questionBox.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+        void questionBox.offsetWidth;
+        questionBox.classList.add(isCorrect ? "wt-terms-box--successflash" : "wt-terms-box--mistakeflash");
+      }
+
       if (bonusChip) {
         bonusChip.style.animationDuration = `${feedbackMs}ms`;
         bonusChip.classList.remove("wt-bonus-chip--warning", "wt-bonus-chip--warning-once");
         bonusChip.classList.add(isCorrect ? "wt-bonus-chip--answer-ok" : "wt-bonus-chip--answer-bad");
+      }
+
+      if (!isCorrect && (runMode === MODES.RUN || runMode === MODES.BONUS)) {
+        try {
+          const gs = (self.game && typeof self.game.getState === "function") ? (self.game.getState() || {}) : {};
+          const leftNow = Number(gs.chancesLeft);
+          if (Number.isFinite(leftNow)) syncMistakesHudPreview(leftNow - 1);
+        } catch (_) { /* silent */ }
       }
 
       // BONUS: freeze the falling card during selected-answer feedback.
