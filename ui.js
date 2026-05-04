@@ -457,8 +457,7 @@ void function () {
 
     if (
       p === "feedbackRevealTimerId" ||
-      p === "bonusAnswerFeedbackTimerId" ||
-      p === "choiceFlashCleanupTimerId"
+      p === "bonusAnswerFeedbackTimerId"
     ) {
       return "feedback";
     }
@@ -777,8 +776,8 @@ void function () {
         clearRuntimeTimer(ui, "hudPulseCleanupTimerId");
       }
 
-      if (ui._runtime.choiceFlashCleanupTimerId) {
-        clearRuntimeTimer(ui, "choiceFlashCleanupTimerId");
+      if (ui._runtime.choiceSelectFeedbackTimerId) {
+        clearRuntimeTimer(ui, "choiceSelectFeedbackTimerId");
       }
 
       if (ui._runtime.endRecordMomentTimer) {
@@ -802,6 +801,7 @@ void function () {
       }
 
       ui._runtime.answerLocked = false;
+      ui._runtime.choiceSelectPending = false;
       ui._runtime.feedbackPending = false;
       ui._runtime.finishAfterFeedback = false;
       ui._runtime.autoGameOverAfterFeedback = false;
@@ -1436,7 +1436,8 @@ void function () {
 
       // HUD delta cleanup (UI-only): forces a render after gameplayPulseMs
       hudPulseCleanupTimerId: null,
-      choiceFlashCleanupTimerId: null,
+      choiceSelectFeedbackTimerId: null,
+      choiceSelectPending: false,
 
       // timers / transition guards
       bonusAnswerFeedbackTimerId: null,
@@ -1573,6 +1574,86 @@ void function () {
     const pointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
 
 
+    function clearChoiceSelectFeedback() {
+      try {
+        const root = self.appEl || document.getElementById("app");
+        const choices = root ? root.querySelectorAll(".wt-choice") : [];
+        choices.forEach((choice) => {
+          choice.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
+          choice.style.animationDuration = "";
+        });
+      } catch (_) { /* silent */ }
+    }
+
+    function applyChoiceSelectFeedback(choiceBool, event) {
+      if (!self._runtime) return false;
+      if (self.state !== STATES.PLAYING) return false;
+      if (self._runtime.answerLocked === true) return true;
+      if (self._runtime.feedbackPending === true) return true;
+      if (self._runtime.choiceSelectPending === true) return true;
+
+      const feedbackMsRaw = Number(self?.config?.ui?.choiceSelectFeedbackMs);
+      const feedbackMs = (
+        Number.isFinite(feedbackMsRaw) &&
+        feedbackMsRaw >= UI_TIMING_LIMITS.durationMsMin &&
+        feedbackMsRaw <= UI_TIMING_LIMITS.pulseMsMax
+      ) ? Math.floor(feedbackMsRaw) : 0;
+
+      if (feedbackMs <= 0) return false;
+
+      const cur = (self.game && typeof self.game.getCurrent === "function") ? self.game.getCurrent() : null;
+      if (!cur || (cur.correctAnswer !== true && cur.correctAnswer !== false)) return false;
+
+      const target = event && event.target && event.target.closest ? event.target.closest(".wt-choice") : null;
+      if (!target) return false;
+
+      const picked = (choiceBool === true);
+      const isCorrect = (cur.correctAnswer === picked);
+
+      const root = self.appEl || document.getElementById("app");
+      const correctSelector = cur.correctAnswer === true
+        ? '[data-action="answer-true"]'
+        : '[data-action="answer-false"]';
+      const correctBtn = root && root.querySelector ? root.querySelector(correctSelector) : null;
+
+      clearRuntimeTimer(self, "choiceSelectFeedbackTimerId");
+      clearChoiceSelectFeedback();
+
+      self._runtime.choiceSelectPending = true;
+
+      target.style.animationDuration = `${feedbackMs}ms`;
+      target.classList.add("wt-choice--flash", isCorrect ? "wt-choice--flash-ok" : "wt-choice--flash-bad");
+
+      if (!isCorrect && correctBtn && correctBtn !== target) {
+        correctBtn.style.animationDuration = `${feedbackMs}ms`;
+        correctBtn.classList.add("wt-choice--flash", "wt-choice--flash-ok");
+      }
+
+      // BONUS: freeze the falling card during selected-answer feedback.
+      try {
+        if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop();
+      } catch (_) { /* silent */ }
+
+      const timerId = setRuntimeTimer(self, "choiceSelectFeedbackTimerId", () => {
+        clearChoiceSelectFeedback();
+        if (self._runtime) {
+          self._runtime.choiceSelectFeedbackTimerId = null;
+          self._runtime.choiceSelectPending = false;
+        }
+
+        if (self.state !== STATES.PLAYING) return;
+        window.requestAnimationFrame(() => self.answer(picked));
+      }, feedbackMs, "playing");
+
+      if (!timerId) {
+        clearChoiceSelectFeedback();
+        self._runtime.choiceSelectPending = false;
+        return false;
+      }
+
+      return true;
+    }
+
     function dispatchAction(action, event) {
       switch (action) {
         case "continue":
@@ -1651,114 +1732,21 @@ void function () {
 
 
         case "answer-true": {
-          // Choice-button micro-feedback for RUN/PRACTICE only.
-          // In BONUS, feedback must live on the card, not on the choice buttons.
-          try {
-            const pulseMs = Number(self?.config?.ui?.gameplayPulseMs);
-            const btn = event && event.target && event.target.closest ? event.target.closest(".wt-choice") : null;
-            const runMode = String(self?._runtime?.runMode || "").trim();
-            if (!runMode) return;
-            const isBonus = (runMode === MODES.BONUS);
-
-            const cur = (self.game && typeof self.game.getCurrent === "function") ? self.game.getCurrent() : null;
-            const correct = (cur && (cur.correctAnswer === true || cur.correctAnswer === false)) ? (cur.correctAnswer === true) : null;
-
-            if (!isBonus && btn && Number.isFinite(pulseMs) && pulseMs > 0 && pulseMs <= UI_TIMING_LIMITS.pulseMsMax && correct != null) {
-              btn.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-              btn.style.animationDuration = `${Math.floor(pulseMs)}ms`;
-              btn.classList.add("wt-choice--flash", correct ? "wt-choice--flash-ok" : "wt-choice--flash-bad");
-
-              let correctBtn = null;
-
-              /* If incorrect, highlight the correct choice as well */
-              if (!correct) {
-                correctBtn = document.querySelector(
-                  cur.correctAnswer === true
-                    ? '[data-action="answer-true"]'
-                    : '[data-action="answer-false"]'
-                );
-
-                if (correctBtn) {
-                  correctBtn.classList.remove("wt-choice--flash", "wt-choice--flash-bad");
-                  correctBtn.style.animationDuration = `${Math.floor(pulseMs)}ms`;
-                  correctBtn.classList.add("wt-choice--flash", "wt-choice--flash-ok");
-                }
-              }
-
-              clearRuntimeTimer(self, "choiceFlashCleanupTimerId")
-              setRuntimeTimer(self, "choiceFlashCleanupTimerId", () => {
-                btn.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-                btn.style.animationDuration = "";
-
-                if (correctBtn) {
-                  correctBtn.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-                  correctBtn.style.animationDuration = "";
-                }
-                if (self._runtime) self._runtime.choiceFlashCleanupTimerId = null;
-              }, Math.floor(pulseMs));
-            }
-          } catch (_) { }
+          if (applyChoiceSelectFeedback(true, event)) break;
 
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
           try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
 
-          // Let the browser paint the flash before we swap to the feedback screen.
           window.requestAnimationFrame(() => self.answer(true));
           break;
         }
 
         case "answer-false": {
-          // Choice-button micro-feedback for RUN/PRACTICE only.
-          // In BONUS, feedback must live on the card, not on the choice buttons.
-          try {
-            const pulseMs = Number(self?.config?.ui?.gameplayPulseMs);
-            const btn = event && event.target && event.target.closest ? event.target.closest(".wt-choice") : null;
-            const runMode = String(self?._runtime?.runMode || "").trim();
-            if (!runMode) return;
-            const isBonus = (runMode === MODES.BONUS);
-
-            const cur = (self.game && typeof self.game.getCurrent === "function") ? self.game.getCurrent() : null;
-            const correct = (cur && (cur.correctAnswer === true || cur.correctAnswer === false)) ? (cur.correctAnswer === false) : null;
-
-            if (!isBonus && btn && Number.isFinite(pulseMs) && pulseMs > 0 && pulseMs <= UI_TIMING_LIMITS.pulseMsMax && correct != null) {
-              btn.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-              btn.style.animationDuration = `${Math.floor(pulseMs)}ms`;
-              btn.classList.add("wt-choice--flash", correct ? "wt-choice--flash-ok" : "wt-choice--flash-bad");
-
-              let correctBtn = null;
-
-              /* If incorrect, highlight the correct choice as well */
-              if (!correct) {
-                correctBtn = document.querySelector(
-                  cur.correctAnswer === true
-                    ? '[data-action="answer-true"]'
-                    : '[data-action="answer-false"]'
-                );
-
-                if (correctBtn) {
-                  correctBtn.classList.remove("wt-choice--flash", "wt-choice--flash-bad");
-                  correctBtn.style.animationDuration = `${Math.floor(pulseMs)}ms`;
-                  correctBtn.classList.add("wt-choice--flash", "wt-choice--flash-ok");
-                }
-              }
-              clearRuntimeTimer(self, "choiceFlashCleanupTimerId")
-              setRuntimeTimer(self, "choiceFlashCleanupTimerId", () => {
-                btn.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-                btn.style.animationDuration = "";
-
-                if (correctBtn) {
-                  correctBtn.classList.remove("wt-choice--flash", "wt-choice--flash-ok", "wt-choice--flash-bad");
-                  correctBtn.style.animationDuration = "";
-                }
-                if (self._runtime) self._runtime.choiceFlashCleanupTimerId = null;
-              }, Math.floor(pulseMs));
-            }
-          } catch (_) { }
+          if (applyChoiceSelectFeedback(false, event)) break;
 
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
           try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
 
-          // Let the browser paint the flash before we swap to the feedback screen.
           window.requestAnimationFrame(() => self.answer(false));
           break;
         }

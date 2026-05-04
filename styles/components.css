@@ -449,23 +449,29 @@ button.wt-level-chip {
 }
 
 /* ============================================
-   CHOICE FLASH (unified ok + bad)
+   CHOICE SELECT FEEDBACK (question screen)
    ============================================ */
 .wt-choice--flash {
   border-color: rgb(var(--primary) / var(--wt-a-75));
   box-shadow: var(--shadow-2);
   animation: wtChoiceFlash var(--wt-anim-answer-feedback) ease-out 1;
-  will-change: transform;
+  will-change: transform, border-color, background-color, box-shadow;
 }
 
 .wt-choice--flash-ok {
-  border-color: rgb(var(--success) / var(--wt-a-85));
-  background: rgb(var(--success) / var(--wt-a-10));
+  border-color: rgb(var(--success-dark) / var(--wt-a-90));
+  background: rgb(var(--success) / var(--wt-a-14));
+  box-shadow:
+    0 0 0 2px rgb(var(--success) / var(--wt-a-25)),
+    var(--shadow-2);
 }
 
 .wt-choice--flash-bad {
-  border-color: rgb(var(--danger) / var(--wt-a-85));
-  background: rgb(var(--danger) / var(--wt-a-12));
+  border-color: rgb(var(--danger-dark) / var(--wt-a-90));
+  background: rgb(var(--danger) / var(--wt-a-14));
+  box-shadow:
+    0 0 0 2px rgb(var(--danger) / var(--wt-a-25)),
+    var(--shadow-2);
 }
 
 @keyframes wtChoiceFlash {
@@ -474,7 +480,7 @@ button.wt-level-chip {
   }
 
   45% {
-    transform: translateY(-1px) scale(1.02);
+    transform: translateY(-1px) scale(1.025);
   }
 
   100% {

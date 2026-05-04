@@ -298,6 +298,10 @@
         }
       },
 
+      // Choice buttons: short selected-answer feedback before moving on.
+      // Applies to RUN, PRACTICE, and BONUS. UI-only, no storage writes.
+      choiceSelectFeedbackMs: 260,
+
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.
       endRecordMomentMs: 1600,
