@@ -804,35 +804,37 @@
       openDetailsAria: "Open level details",
       unlockKicker: "New level",
       reachedTemplate: "You reached {label}.",
-      currentLabel: "Current",
-      unlockedByLabel: "",
-      nextLabel: "Next",
-      reachItLabel: "",
-      progressionLabel: "Path",
+      currentLabel: "Current level",
+      unlockedByLabel: "What it means",
+      nextLabel: "Next level",
+      reachItLabel: "How to unlock",
+      progressionLabel: "Full path",
       noLevelTitle: "Locked",
       noLevelBody: "Finish your first full pass.",
       maxLevelBody: "You reached the top level.",
-      currentPill: "Current",
+      currentPill: "You are here",
       unlockedPill: "Unlocked",
       lockedPill: "Locked",
       byLevel: {
         1: {
           label: "COURT-READY",
           unlock: "Finish your first full pass.",
-          sheetBody: "You’ve got the rules in your hands. Now make them stick."
+          sheetBody: "You finished your first full pass. Now make the rules stick."
         },
         2: {
           label: "CLUB-LEVEL",
           unlock: "Clear all active mistakes.",
-          sheetBody: "Clean up your mistakes and make your rule knowledge reliable."
+          sheetBody: "You cleared your active mistakes. Your rule knowledge is becoming reliable."
         },
         3: {
           label: "TOURNAMENT-LEVEL",
-          unlock: "Build a Rapid Fire pool of 16+ and post a 70%+ run."
+          unlock: "Build a Rapid Fire pool of 16+ and post a 70%+ run.",
+          sheetBody: "You proved your rules under Rapid Fire pressure."
         },
         4: {
           label: "PRO-LEVEL",
-          unlock: "Build a Rapid Fire pool of 50+ and post an 85%+ run."
+          unlock: "Build a Rapid Fire pool of 50+ and post an 85%+ run.",
+          sheetBody: "You reached the top level. Keep the rules sharp."
         }
       }
     },

@@ -3059,7 +3059,7 @@ void function () {
             <span>${escapeHtml(next.label)}</span>
           </div>
           ${reachItLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(reachItLabel)}</p>` : ``}
-          <p class="wt-level-sheet__body">${escapeHtml(next.sheetBody || next.unlock || "")}</p>
+          ${next.unlock ? `<p class="wt-level-sheet__body">${escapeHtml(next.unlock)}</p>` : ``}
         </div>
       `;
     })();
