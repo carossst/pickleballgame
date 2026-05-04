@@ -431,13 +431,16 @@ body.wt-state--end .wt-card--end {
   grid-template-columns: 1fr;
   row-gap: var(--space-8);
   align-items: start;
+  justify-items: start;
   padding: 0;
   border-radius: 0;
   background: transparent;
   border: 0;
+  text-align: left;
 }
 
 .wt-landing-stat__kicker {
+  grid-column: 1 / -1;
   font-size: var(--fs-xs);
   font-weight: 700;
   line-height: 1.1;
@@ -447,24 +450,27 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-landing-stat__title {
+  grid-column: 1 / -1;
   display: block;
-  font-size: clamp(var(--fs-2xl), 7vw, var(--fs-3xl));
-  line-height: 1.05;
+  justify-self: start;
+  max-width: 100%;
+  text-align: left;
+  font-size: clamp(var(--fs-lg), 4vw, var(--fs-xl));
+  line-height: 1.2;
   font-weight: 700;
   color: rgb(var(--text-strong));
 }
 
 .wt-landing-stat__sub {
-  /* Mobile-first: KPI under the title, no overlap. */
   grid-column: 1 / -1;
-  grid-row: 2;
   justify-self: start;
-  margin: 0 0 var(--space-12);
+  margin: 0 0 var(--space-4);
 
   font-size: var(--fs-md);
   font-weight: 500;
   line-height: 1.35;
   color: rgb(var(--text));
+  text-align: left;
 
   white-space: normal;
   overflow-wrap: anywhere;
@@ -474,7 +480,6 @@ body.wt-state--end .wt-card--end {
 @media (min-width: 481px) {
   .wt-landing-stat__sub {
     grid-column: 1 / -1;
-    grid-row: 2;
     justify-self: start;
     white-space: normal;
   }
@@ -486,7 +491,6 @@ body.wt-state--end .wt-card--end {
 
 .wt-progress {
   grid-column: 1 / -1;
-  grid-row: 3;
   margin-top: 0;
 
   width: 100%;
@@ -499,7 +503,7 @@ body.wt-state--end .wt-card--end {
 
 @media (min-width: 481px) {
   .wt-landing-stat {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
   }
 }
 
