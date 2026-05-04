@@ -455,8 +455,8 @@ body.wt-state--end .wt-card--end {
   justify-self: start;
   max-width: 100%;
   text-align: left;
-  font-size: clamp(var(--fs-lg), 4vw, var(--fs-xl));
-  line-height: 1.2;
+  font-size: clamp(var(--fs-md), 2.8vw, var(--fs-lg));
+  line-height: 1.3;
   font-weight: 700;
   color: rgb(var(--text-strong));
 }
@@ -771,20 +771,6 @@ body.wt-state--end .wt-footer {
   min-width: 0;
 }
 
-.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-hud {
-  justify-content: center;
-  gap: var(--space-8);
-}
-
-.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-hud__left,
-.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-hud__right {
-  flex: 0 1 auto;
-  margin-left: 0;
-}
-
-.wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-hud__right {
-  justify-content: flex-start;
-}
 
 /* Desktop polish only: keep mobile-first full-bleed */
 @media (min-width: 900px) {
@@ -1305,6 +1291,11 @@ arcade" feel; deviation from --fs-* scale is expected. */
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  font: inherit;
+}
+
+.wt-end-score > * {
+  margin: 0;
 }
 
 .wt-end-score__headline {

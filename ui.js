@@ -8516,13 +8516,13 @@ ${(() => {
   ${endTitle ? `<p class="wt-h1">${escapeHtml(endTitle)}</p>` : ``}
 
   ${displayScoreLine ? `
-    <p class="wt-h2 wt-end-score${newBest ? " wt-end-score--newbest" : ""}">
-      <span class="wt-end-score__headline">
+    <div class="wt-end-score${newBest ? " wt-end-score--newbest" : ""}" role="group" aria-label="${escapeHtml(displayScoreLine)}">
+      <div class="wt-end-score__headline">
         ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
         <span class="wt-end-score__value">
           ${escapeHtml(displayScoreValue || displayScoreLine)}
         </span>
-      </span>
+      </div>
 
       ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
 
@@ -8534,7 +8534,7 @@ ${(() => {
           <path d="M30 1 L31.4 4.6 L35 5.8 L31.4 7 L30 10.6 L28.6 7 L25 5.8 L28.6 4.6 Z" fill="currentColor" opacity="0.75"></path>
         </svg>
       ` : ``}
-    </p>
+    </div>
   ` : ``}
 
   ${levelUnlockHtml}
@@ -8786,21 +8786,21 @@ ${(() => {
 	   <div class="wt-hud">
           <div class="wt-hud__left">
             ${hasChances ? `
-              <div class="wt-pill wt-pill--chances${pulseOn ? " wt-pill--danger-pulse" : ""}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
+              <div class="wt-pill wt-hud-metric wt-hud-metric--mistakes wt-pill--chances${pulseOn ? " wt-pill--danger-pulse" : ""}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
                 ${mistakesLabel ? `<small>${escapeHtml(mistakesLabel)}</small>` : ``}
                 ${mistakesCount}/${mcInt}${mistakeDeltaHtml}
                 ${livesVisual}
               </div>
             ` : ``}
             ${(modeNow === "PRACTICE" && practiceBadge) ? `
-              <div class="wt-pill" aria-label="${escapeHtml(practiceBadge)}">
+              <div class="wt-pill wt-hud-metric wt-hud-metric--mode" aria-label="${escapeHtml(practiceBadge)}">
                 <span>${escapeHtml(practiceBadge)}</span>
               </div>
             ` : ``}
           </div>
           <div class="wt-hud__right">
           ${(modeNow !== "PRACTICE") ? `
-            <div class="wt-pill wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
+            <div class="wt-pill wt-hud-metric wt-hud-metric--score wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
               role="status"
               aria-live="polite"
               aria-atomic="true"

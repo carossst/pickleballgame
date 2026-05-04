@@ -518,7 +518,8 @@ button.wt-level-chip {
 }
 
 
-/* PLAYING: HUD bar (mistakes + score) */
+/* PLAYING: HUD bar
+   Shared metric architecture: score, mistakes and Rapid Fire score use the same base. */
 .wt-hud {
   display: flex;
   align-items: center;
@@ -528,21 +529,19 @@ button.wt-level-chip {
   margin-bottom: var(--space-10);
 }
 
-.wt-hud__left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-  min-width: 0;
-}
-
+.wt-hud__left,
 .wt-hud__right {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-6);
   min-width: 0;
 }
 
+.wt-hud__left {
+  flex-direction: column;
+  gap: var(--space-4);
+}
 
 /* ============================================
    PILLS
@@ -579,23 +578,30 @@ button.wt-level-chip {
   color: rgb(var(--text-muted));
 }
 
-/* HUD emphasis: score + mistakes share the same pill language. */
-.wt-pill--score,
-.wt-pill--chances {
-  font-size: var(--fs-md);
-  transform: scale(1);
-  filter: none;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  padding: var(--space-6) var(--space-10);
-  box-shadow: none;
+/* HUD metrics: one visual system for RUN, Mistakes Mode and Rapid Fire. */
+.wt-hud-metric {
   position: relative;
-  padding-right: 36px;
+  justify-content: center;
+  min-height: 34px;
+  min-width: 138px;
+  padding: var(--space-6) 36px var(--space-6) var(--space-10);
   overflow: visible;
   white-space: nowrap;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1;
+  transform: none;
+  filter: none;
+  box-shadow: none;
 }
 
-/* New best (RUN + premium): celebration pulse when you EXCEED personal best during PLAYING. */
+.wt-hud-metric--mode {
+  min-width: 0;
+  padding-right: var(--space-10);
+}
+
+/* New best (RUN + premium): celebration state, same metric shell. */
 .wt-pill--new-best {
   background: rgb(var(--primary) / var(--wt-a-08));
   border-color: rgb(var(--primary-dark) / var(--wt-a-40));
@@ -608,13 +614,13 @@ button.wt-level-chip {
   color: rgb(var(--primary-depth));
 }
 
-/* Near-best tension (RUN + premium): short pulse when within 2 FP of personal best. */
+/* Near-best tension (RUN + premium): metric state only, no container movement. */
 .wt-pill--near-best {
   background: rgb(var(--success) / var(--wt-a-08));
   border-color: rgb(var(--success) / var(--wt-a-45));
 }
 
-/* BONUS badge: same visual weight as HUD pills */
+/* BONUS badge: same typography family, not a score metric. */
 .wt-pill--bonus {
   font-size: var(--fs-md);
   font-weight: 700;
@@ -700,7 +706,7 @@ button.wt-level-chip {
   box-shadow: 0 0 0 1px rgb(var(--danger) / var(--wt-a-18));
 }
 
-.wt-pill--chances .wt-hud-lives__dot--off {
+.wt-hud-metric--mistakes .wt-hud-lives__dot--off {
   background: rgb(var(--border));
   box-shadow: inset 0 0 0 1px rgb(var(--border));
 }
@@ -809,21 +815,21 @@ button.wt-level-chip {
     margin-bottom: var(--space-8);
   }
 
-  .wt-hud__left {
-    gap: 4px;
-  }
-
+  .wt-hud__left,
   .wt-hud__right {
     gap: 4px;
   }
 
-  .wt-pill--score,
-  .wt-pill--chances {
-    font-size: var(--fs-sm);
-    padding: 5px var(--space-8);
-    padding-right: 32px;
+  .wt-hud-metric {
+    min-height: 32px;
     min-width: 132px;
-    justify-content: center;
+    padding: 5px 32px 5px var(--space-8);
+    font-size: var(--fs-sm);
+  }
+
+  .wt-hud-metric--mode {
+    min-width: 0;
+    padding-right: var(--space-8);
   }
 
   .wt-pill__delta {
@@ -834,13 +840,12 @@ button.wt-level-chip {
 
 @media (max-width: 360px) {
 
-  .wt-pill--score,
-  .wt-pill--chances {
+  .wt-hud-metric {
     font-size: var(--fs-xs);
-    padding: 5px var(--space-6);
-    padding-right: 32px;
+    padding: 5px 32px 5px var(--space-6);
   }
 
+  .wt-hud-metric--mode,
   .wt-pill--bonus {
     font-size: var(--fs-xs);
     padding: 5px var(--space-6);
@@ -849,32 +854,8 @@ button.wt-level-chip {
 
 .wt-pill--score-flash {
   transform-origin: center;
-  will-change: transform, border-color, background-color;
-  animation: wtScorePulse var(--wt-anim-score-flash) cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes wtScorePulse {
-  0% {
-    transform: scale(1);
-    border-color: rgb(var(--border));
-    background: rgb(var(--surface));
-  }
-
-  24% {
-    transform: scale(1.04);
-    border-color: rgb(var(--success) / var(--wt-a-55));
-    background: rgb(var(--success) / var(--wt-a-10));
-  }
-
-  52% {
-    transform: scale(1.02);
-  }
-
-  100% {
-    transform: scale(1);
-    border-color: rgb(var(--border));
-    background: rgb(var(--surface));
-  }
+  will-change: auto;
+  animation: none;
 }
 
 /* Fatal error fallback card (used by main.js when boot/content loading fails) */
