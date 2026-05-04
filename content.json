@@ -2,15 +2,15 @@
   "version": "2.0",
   "totalItems": 200,
   "breakdown": {
-    "trueItems": 104,
-    "falseItems": 96,
+    "trueItems": 102,
+    "falseItems": 98,
     "byCategory": {
-      "2026_changes": 21,
+      "2026_changes": 17,
       "Court & Equipment": 34,
       "Faults & Dead Ball": 18,
       "Line Calls": 18,
       "Non-Volley Zone": 8,
-      "Player Conduct & Apparel": 10,
+      "Player Conduct & Apparel": 14,
       "Rally Situations": 17,
       "Score & Readiness": 31,
       "Serving Rules": 35,
@@ -91,26 +91,28 @@
     },
     {
       "id": 6,
-      "question": "For positioning, a wheelchair's large rear wheels are treated like a standing player's legs.",
-      "correctAnswer": true,
-      "explanationShort": "This wheelchair rule is new for 2026.\nFor positioning, the large rear wheels are what count.\n2026 USA Pickleball Rulebook Change Document, page 18.",
+      "question": "Aggressive arguing is allowed if a player believes a call was wrong.",
+      "correctAnswer": false,
+      "explanationShort": "A player can ask for a rule decision, but not argue aggressively.\nAggressive arguing that disrupts play can lead to a warning.\n2026 USA Pickleball Official Rulebook, Rule 22.B.3.",
       "tags": [
-        "2026_changes",
+        "Player Conduct & Apparel",
         "Hard",
         "Singles",
-        "Doubles"
+        "Doubles",
+        "Tournament"
       ]
     },
     {
       "id": 7,
-      "question": "A wheelchair player must keep at least one buttock on the seat when striking the ball.",
-      "correctAnswer": true,
-      "explanationShort": "This wheelchair rule is new for 2026.\nIf the player lifts fully off the seat when hitting, it is a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
+      "question": "A player may aggressively hit a dead ball if no one is endangered.",
+      "correctAnswer": false,
+      "explanationShort": "Aggressively hitting a dead ball is ball abuse.\nIt can lead to a verbal warning or technical warning.\n2026 USA Pickleball Official Rulebook, Rule 22.B.4.",
       "tags": [
-        "2026_changes",
+        "Player Conduct & Apparel",
         "Hard",
         "Singles",
-        "Doubles"
+        "Doubles",
+        "Tournament"
       ]
     },
     {
@@ -190,14 +192,15 @@
     },
     {
       "id": 14,
-      "question": "On a wheelchair serve, the front small wheels may extend into the court at contact.",
+      "question": "Repeated line call appeals can lead to a warning if they disrupt play.",
       "correctAnswer": true,
-      "explanationShort": "This wheelchair serving rule is new for 2026.\nOnly the large rear wheels have to stay behind the baseline.\n2026 USA Pickleball Rulebook Change Document, page 18.",
+      "explanationShort": "Players may appeal line calls when the rules allow it.\nRepeated appeals that disrupt play can lead to a warning.\n2026 USA Pickleball Official Rulebook, Rule 22.B.6.",
       "tags": [
-        "2026_changes",
+        "Player Conduct & Apparel",
         "Hard",
         "Singles",
-        "Doubles"
+        "Doubles",
+        "Tournament"
       ]
     },
     {
@@ -238,9 +241,9 @@
     },
     {
       "id": 18,
-      "question": "An adaptive standing player must declare the two-bounce allowance before the match starts.",
+      "question": "An eligible adaptive standing player may let the ball bounce twice before returning it.",
       "correctAnswer": true,
-      "explanationShort": "This adaptive standing rule is new for 2026.\nIt must be declared before the match and then used for the rest of that match.\n2026 USA Pickleball Rulebook Change Document, page 21.",
+      "explanationShort": "Eligible adaptive standing players may use the two-bounce allowance.\nThe second bounce can be anywhere, but the ball must be returned before a third bounce.\n2026 USA Pickleball Official Rulebook, Rule 25.B.3.",
       "tags": [
         "2026_changes",
         "Hard",
@@ -250,14 +253,15 @@
     },
     {
       "id": 19,
-      "question": "Except for the single-foot propulsion exception, a wheelchair player's feet or legs must not touch the ground during a live ball, even by accident.",
+      "question": "Misconduct after a match can affect a player's next tournament match.",
       "correctAnswer": true,
-      "explanationShort": "This wheelchair fault rule is new for 2026.\nExcept for the single-foot propulsion rule, even accidental ground contact is still a fault.\n2026 USA Pickleball Rulebook Change Document, page 17.",
+      "explanationShort": "Post-match misconduct can still be reported.\nA warning or foul may apply to the player's next match.\n2026 USA Pickleball Official Rulebook, Rule 22.A.2.",
       "tags": [
-        "2026_changes",
+        "Player Conduct & Apparel",
         "Hard",
         "Singles",
-        "Doubles"
+        "Doubles",
+        "Tournament"
       ]
     },
     {
@@ -752,9 +756,9 @@
     },
     {
       "id": 61,
-      "question": "In doubles, the first score call of the game is 'zero \u2013 zero \u2013 one.'",
+      "question": "In doubles, the first score call of the game is 'zero – zero – one.'",
       "correctAnswer": false,
-      "explanationShort": "The first doubles score call is 'zero\u2013zero\u2013two.'\nThe opening team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
+      "explanationShort": "The first doubles score call is 'zero–zero–two.'\nThe opening team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2.",
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -799,9 +803,9 @@
     },
     {
       "id": 65,
-      "question": "In singles, a game always starts with the score call 'zero \u2013 zero.'",
+      "question": "In singles, a game always starts with the score call 'zero – zero.'",
       "correctAnswer": true,
-      "explanationShort": "Every singles game starts with 'zero\u2013zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
+      "explanationShort": "Every singles game starts with 'zero–zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1.",
       "tags": [
         "Score & Readiness",
         "Easy",
@@ -1040,7 +1044,7 @@
       "id": 85,
       "question": "The minimum playing surface area is 30 feet (9.14 m) wide and 60 feet (18.29 m) long.",
       "correctAnswer": true,
-      "explanationShort": "The minimum playing surface is 30 \u00d7 60 feet.\nThe court itself is only 20 \u00d7 44 feet.\n2026 USA Pickleball Official Rulebook, Rule 3.A.3.",
+      "explanationShort": "The minimum playing surface is 30 × 60 feet.\nThe court itself is only 20 × 44 feet.\n2026 USA Pickleball Official Rulebook, Rule 3.A.3.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1052,7 +1056,7 @@
       "id": 86,
       "question": "Net posts should be 22 feet (6.71 m) apart, measured from inside edge to inside edge.",
       "correctAnswer": true,
-      "explanationShort": "A tolerance of \u00b11.0 inch is allowed.\nEach post must not exceed 3 inches in diameter.\n2026 USA Pickleball Official Rulebook, Rule 3.B.2.",
+      "explanationShort": "A tolerance of ±1.0 inch is allowed.\nEach post must not exceed 3 inches in diameter.\n2026 USA Pickleball Official Rulebook, Rule 3.B.2.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -1112,7 +1116,7 @@
       "id": 91,
       "question": "A pickleball ball must bounce between 30 and 34 inches (76.2 and 86.4 cm) when dropped from 78 inches (198.1 cm).",
       "correctAnswer": true,
-      "explanationShort": "The bounce test uses a granite surface plate.\nTest temperature must be 70\u00b0F (\u00b15\u00b0F).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.5.",
+      "explanationShort": "The bounce test uses a granite surface plate.\nTest temperature must be 70°F (±5°F).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.5.",
       "tags": [
         "Court & Equipment",
         "Hard",
@@ -2363,7 +2367,7 @@
       "id": 195,
       "question": "In standard doubles, the score is called as three numbers.",
       "correctAnswer": true,
-      "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four\u2013two\u2013one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
+      "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four–two–one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C.",
       "tags": [
         "Score & Readiness",
         "Easy",
