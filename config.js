@@ -143,7 +143,7 @@
     //   L2: all active mistakes cleared
     //   L3: L2 + Rapid Fire pool >= level3MinSeen + Rapid Fire run >= level3MinAccuracy
     //   L4: L3 + Rapid Fire pool >= level4MinSeen + Rapid Fire run >= level4MinAccuracy
-    // - Preview is UI-only and fail-closed:
+    // - Level preview is UI-only and fail-closed:
     //   ?levelPreview=none|level1|level2|level3|level4|unlock1|unlock2|unlock3|unlock4
     levels: {
       enabled: true,
@@ -336,7 +336,18 @@
     landingStats: {
       enabled: true,
       minCompletedRuns: 1,
-      showBeforeFirstRun: false
+      showBeforeFirstRun: false,
+      // UI-only preview for QA. Never writes to storage.
+      // ?phasePreview=firstpass|fixing|pressure
+      preview: {
+        enabled: true,
+        queryParam: "phasePreview",
+        states: {
+          firstpass: { seen: 4, mistakes: 3 },
+          fixing: { seen: "poolSize", mistakes: 12 },
+          pressure: { seen: "poolSize", mistakes: 0 }
+        }
+      }
     },
 
     // Secret bonus mode
@@ -659,8 +670,8 @@
       // Before completion (goal gradient) 
       statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} questions",
       statsPhaseBadgeDiscovery: "Phase 1/3: First pass",
-      statsPhaseBadgeCorrection: "Phase 2/3: Fixing mistakes",
-      statsPhaseBadgeConsolidation: "Phase 3/3: Locked in",
+      statsPhaseBadgeCorrection: "Phase 2/3: Fix mistakes",
+      statsPhaseBadgeConsolidation: "Phase 3/3: Pressure test",
 
       // After completion (fail-closed: required for the post-200 line)
       statsSeenCompleteLabel: "Quiz progress",
@@ -756,10 +767,10 @@
         }
       },
       correction: {
-        badge: "Phase 2/3: Fixing mistakes",
+        badge: "Phase 2/3: Fix mistakes",
         landingSummaryTemplate: "Mistakes left: {mistakes}",
-        landingDetail: "You've seen the full set. Now clear up the rules that still catch you.",
-        endLens: "You've seen the full set. Now clear up the rules that still catch you.",
+        landingDetail: "You've seen the full set. Now clear the rules that still catch you.",
+        endLens: "You've seen the full set. Now clear the rules that still catch you.",
         micropics: {
           streakStart: "3 in a row. Better.",
           streakBuilding: "6 in a row. Clearing up.",
@@ -771,10 +782,10 @@
         }
       },
       consolidation: {
-        badge: "Phase 3/3: Locked in",
-        landingSummaryTemplate: "{mastered}/{poolSize} questions answered correctly.",
-        landingDetail: "You've cleared the mistakes. Now keep the rules clear.",
-        endLens: "You've cleared the mistakes. Now keep the rules clear.",
+        badge: "Phase 3/3: Pressure test",
+        landingSummaryTemplate: "No active mistakes",
+        landingDetail: "Your mistakes are clear. Build your Rapid Fire score.",
+        endLens: "Your mistakes are clear. Build your Rapid Fire score.",
         micropics: {
           streakStart: "3 in a row. Still clear.",
           streakBuilding: "6 in a row. Still clear.",

@@ -429,7 +429,7 @@ body.wt-state--end .wt-card--end {
 .wt-landing-stat {
   display: grid;
   grid-template-columns: 1fr;
-  row-gap: var(--space-8);
+  row-gap: var(--space-6);
   align-items: start;
   padding: 0;
   border-radius: 0;
@@ -440,7 +440,7 @@ body.wt-state--end .wt-card--end {
 .wt-landing-stat__kicker {
   font-size: var(--fs-xs);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: var(--ls-ui-wide);
   text-transform: uppercase;
   color: rgb(var(--primary-dark));
@@ -448,37 +448,34 @@ body.wt-state--end .wt-card--end {
 
 .wt-landing-stat__title {
   display: block;
-  font-size: clamp(var(--fs-2xl), 7vw, var(--fs-3xl));
-  line-height: 1.05;
+  max-width: 100%;
+  font-size: clamp(var(--fs-xl), 5.8vw, var(--fs-2xl));
+  line-height: 1.12;
   font-weight: 700;
   color: rgb(var(--text-strong));
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 .wt-landing-stat__sub {
-  /* Mobile-first: KPI under the title, no overlap. */
   grid-column: 1 / -1;
-  grid-row: 2;
+  grid-row: auto;
   justify-self: start;
-  margin: 0 0 var(--space-12);
+  margin: 0 0 var(--space-10);
 
   font-size: var(--fs-md);
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.4;
   color: rgb(var(--text));
 
   white-space: normal;
   overflow-wrap: anywhere;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
 
 @media (min-width: 481px) {
-  .wt-landing-stat__sub {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: start;
-    white-space: normal;
-  }
-
   .wt-landing-stat__badge {
     margin-bottom: var(--space-8);
   }
@@ -486,7 +483,7 @@ body.wt-state--end .wt-card--end {
 
 .wt-progress {
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: auto;
   margin-top: 0;
 
   width: 100%;
@@ -495,12 +492,6 @@ body.wt-state--end .wt-card--end {
   background: rgb(var(--primary) / var(--wt-a-12));
   box-shadow: inset 0 0 0 1px rgb(var(--primary) / var(--wt-a-14));
   overflow: hidden;
-}
-
-@media (min-width: 481px) {
-  .wt-landing-stat {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
 }
 
 .wt-progress__fill {

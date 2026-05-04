@@ -7043,15 +7043,25 @@ void function () {
 
 
     // Returning-user LANDING stats (no greeting; purely contextual)
-    // No fallback: requires WT_CONFIG.landingStats + WT_WORDING.landing.* strings.
+    // No fallback: requires WT_CONFIG.landingStats + WT_WORDING.phaseJourney.* strings.
+    // Preview is UI-only: it simulates visible stats without writing to storage.
     try {
       const statsCfg = cfg?.landingStats || {};
       const enabled = (statsCfg?.enabled === true);
+      const poolSizeSafe = clampInt(cfg?.game?.poolSize, 1, 9999);
+      const phasePreview = getLandingStatsPreviewState(cfg, poolSizeSafe);
 
       const minRunsRaw = Number(statsCfg?.minCompletedRuns);
       const minRunsToShow = (Number.isFinite(minRunsRaw) && minRunsRaw >= 1 && minRunsRaw <= 999) ? Math.floor(minRunsRaw) : null;
-      if (enabled && minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= minRunsToShow) {
-        const poolSizeSafe = clampInt(cfg?.game?.poolSize, 1, 9999);
+      const shouldShowStats = !!(
+        enabled &&
+        (
+          phasePreview ||
+          (minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= minRunsToShow)
+        )
+      );
+
+      if (shouldShowStats) {
 
         // Unique seen count
         let seen = 0;
@@ -7095,29 +7105,41 @@ void function () {
           mistakes = 0;
         }
 
-        const isComplete = (seen >= poolSizeSafe);
-        // Progress:
-        // - before completion: seen progress
-        // - after completion: mastery progress (mastered = poolSize - mistakes)
-        const mastered = clampInt(poolSizeSafe - mistakes, 0, poolSizeSafe);
-        const pct = poolSizeSafe > 0
-          ? Math.max(0, Math.min(100, Math.round(((isComplete ? mastered : seen) / poolSizeSafe) * 100)))
-          : 0;
-        const progressClass = isComplete ? " wt-progress--mastery" : "";
-
-        const title = `${pct}%`;
-        const label = isComplete ? "Mastery" : "Coverage";
-        let sub = "";
-
-        if (!isComplete) {
-          sub = `${seen} of ${poolSizeSafe} questions played`;
-          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass });
-
-        } else {
-          sub = `${mastered} of ${poolSizeSafe} questions answered correctly`;
-          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass });
+        if (phasePreview) {
+          seen = clampInt(phasePreview.seen, 0, poolSizeSafe);
+          mistakes = clampInt(phasePreview.mistakes, 0, poolSizeSafe);
         }
 
+        const phase = getRuleKnowledgePhaseContext({
+          cfg,
+          w,
+          storage: this.storage,
+          poolSize: poolSizeSafe,
+          seen,
+          mistakes
+        });
+
+        const remaining = clampInt(poolSizeSafe - phase.seen, 0, poolSizeSafe);
+        const vars = {
+          seen: phase.seen,
+          poolSize: poolSizeSafe,
+          remaining,
+          mistakes: phase.mistakes,
+          mastered: phase.mastered
+        };
+
+        const progressValue = phase.isComplete ? phase.mastered : phase.seen;
+        const pct = poolSizeSafe > 0
+          ? Math.max(0, Math.min(100, Math.round((progressValue / poolSizeSafe) * 100)))
+          : 0;
+        const progressClass = phase.isComplete ? " wt-progress--mastery" : "";
+
+        const label = phase.badge;
+        const title = fillTemplate(phase.landingSummaryTemplate, vars);
+        const subTemplate = phase.landingDetailTemplate || phase.landingDetail;
+        const sub = fillTemplate(subTemplate, vars);
+
+        welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass });
       }
     } catch (_) { /* silent */ }
 
@@ -7871,6 +7893,41 @@ ${(() => {
       landingDetailTemplate: String(phaseW.landingDetailTemplate || "").trim(),
       endLens: String(phaseW.endLens || "").trim(),
       micropics: (phaseW.micropics && typeof phaseW.micropics === "object") ? phaseW.micropics : {}
+    };
+  }
+
+  function getLandingStatsPreviewState(cfg, poolSize) {
+    const statsCfg = (cfg?.landingStats && typeof cfg.landingStats === "object") ? cfg.landingStats : null;
+    const previewCfg = (statsCfg?.preview && typeof statsCfg.preview === "object") ? statsCfg.preview : null;
+
+    if (!previewCfg || previewCfg.enabled !== true) return null;
+
+    const paramName = String(previewCfg.queryParam || "").trim();
+    if (!paramName || typeof window === "undefined" || !window.location) return null;
+
+    let raw = "";
+    try {
+      raw = String(new URLSearchParams(window.location.search).get(paramName) || "").trim().toLowerCase();
+    } catch (_) {
+      raw = "";
+    }
+    if (!raw) return null;
+
+    const states = (previewCfg.states && typeof previewCfg.states === "object") ? previewCfg.states : null;
+    const state = states ? states[raw] : null;
+    if (!state || typeof state !== "object") return null;
+
+    const safePoolSize = clampInt(poolSize, 1, 99999);
+
+    function resolvePreviewInt(value) {
+      const rawValue = String(value || "").trim();
+      if (rawValue === "poolSize") return safePoolSize;
+      return clampInt(value, 0, safePoolSize);
+    }
+
+    return {
+      seen: resolvePreviewInt(state.seen),
+      mistakes: resolvePreviewInt(state.mistakes)
     };
   }
 
