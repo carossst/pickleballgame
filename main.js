@@ -1,4 +1,4 @@
-// main.js - App bootstrap
+// main.js v2.0 - App bootstrap
 
 (() => {
   "use strict";
@@ -36,7 +36,7 @@
 
 
   // ============================================
-  // Logger
+  // Logger (like TYF)
   // ============================================
   const Logger = {
     debug: (...args) =>
@@ -197,15 +197,9 @@
       } catch (_) { }
     }
 
-    function clearUpdateToastSeen() {
-      window.__WT_SW_LAST_TOAST_KEY__ = "";
-
-      const storageKey = getUpdateToastStorageKey();
-      if (!storageKey) return;
-
-      try {
-        window.localStorage.removeItem(storageKey);
-      } catch (_) { }
+    function hideUpdateToast() {
+      const node = document.getElementById("update-toast");
+      if (node && node.classList) node.classList.remove("wt-toast--visible");
     }
 
     function showUpdateToast(message) {
@@ -221,10 +215,13 @@
 
       if (hasSeenUpdateToast(waitingKey)) {
         window.__WT_SW_UPDATE_READY__ = true;
+        hideUpdateToast();
         return;
       }
 
-      // Mark update ready so UI can decide when to apply it (user-controlled)
+      // Mark update ready so UI can decide when to apply it (user-controlled).
+      // Persist the seen key immediately. If iOS/PWA keeps the same waiting worker
+      // across reloads, the user is not asked again and again.
       window.__WT_SW_UPDATE_READY__ = true;
       markUpdateToastSeen(waitingKey);
 
@@ -275,7 +272,7 @@
     window.__WT_APPLY_SW_UPDATE__ = async function () {
       if (window.__WT_SW_UPDATE_IN_FLIGHT__ === true) return;
 
-      clearUpdateToastSeen();
+      hideUpdateToast();
 
       let fallbackTimer = null;
       function armFallbackReload() {
