@@ -9029,17 +9029,31 @@ ${questionPrompt ? `
         ${questionHtml}
       `}
 
-      <div class="wt-choices">
-  <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
-    <span class="wt-choice-icon">\u2714
-    </span>
-    ${escapeHtml(trueLabel)}
-  </button>
-  <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml(falseLabel)}">
-    <span class="wt-choice-icon">\u2716</span>
-    ${escapeHtml(falseLabel)}
-  </button>
-</div>
+      ${fallEnabled ? `
+        <div class="wt-choices">
+          <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
+            <span class="wt-choice-icon">\u2714</span>
+            ${escapeHtml(trueLabel)}
+          </button>
+          <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml(falseLabel)}">
+            <span class="wt-choice-icon">\u2716</span>
+            ${escapeHtml(falseLabel)}
+          </button>
+        </div>
+      ` : `
+        <div class="wt-answer-zone">
+          <div class="wt-choices">
+            <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
+              <span class="wt-choice-icon">\u2714</span>
+              ${escapeHtml(trueLabel)}
+            </button>
+            <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml(falseLabel)}">
+              <span class="wt-choice-icon">\u2716</span>
+              ${escapeHtml(falseLabel)}
+            </button>
+          </div>
+        </div>
+      `}
 
 
 

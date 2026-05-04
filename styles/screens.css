@@ -1780,3 +1780,67 @@ arcade" feel; deviation from --fs-* scale is expected. */
     transition: none !important;
   }
 }
+
+/* PLAYING: keep answer controls and feedback in the same visual slot.
+   This avoids the old "blocks dropping under the question" effect. */
+.wt-container[data-wt-state="playing"] .wt-answer-zone {
+  margin-top: var(--space-14);
+}
+
+.wt-container[data-wt-state="playing"] .wt-answer-zone .wt-choices {
+  margin-top: 0;
+}
+
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback {
+  margin-top: var(--space-10);
+}
+
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-feedback,
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-explanation,
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-actions,
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-tap-hint {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+@media (max-height: 740px) {
+  .wt-container[data-wt-state="playing"] .wt-answer-zone {
+    margin-top: var(--space-10);
+  }
+
+  .wt-container[data-wt-state="playing"] .wt-answer-zone--feedback {
+    margin-top: var(--space-8);
+  }
+}
+
+/* PLAYING: keep answer controls and feedback in the same visual slot.
+   This avoids the old "blocks dropping under the question" effect. */
+.wt-container[data-wt-state="playing"] .wt-answer-zone {
+  margin-top: var(--space-14);
+}
+
+.wt-container[data-wt-state="playing"] .wt-answer-zone .wt-choices {
+  margin-top: 0;
+}
+
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback {
+  margin-top: var(--space-10);
+}
+
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-feedback,
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-explanation,
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-actions,
+.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-tap-hint {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+@media (max-height: 740px) {
+  .wt-container[data-wt-state="playing"] .wt-answer-zone {
+    margin-top: var(--space-10);
+  }
+
+  .wt-container[data-wt-state="playing"] .wt-answer-zone--feedback {
+    margin-top: var(--space-8);
+  }
+}

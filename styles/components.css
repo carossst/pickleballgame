@@ -1643,3 +1643,53 @@ body.wt-state--end .wt-footer {
   max-width: 400px;
   padding: var(--gap-4);
 }
+
+/* ============================================
+   ANSWER ZONE - stable question feedback layout
+   ============================================ */
+.wt-answer-zone {
+  margin-top: var(--space-14);
+}
+
+.wt-answer-zone--feedback {
+  display: grid;
+  gap: var(--space-10);
+  align-items: start;
+}
+
+.wt-answer-zone--feedback .wt-feedback,
+.wt-answer-zone--feedback .wt-explanation,
+.wt-answer-zone--feedback .wt-actions,
+.wt-answer-zone--feedback .wt-tap-hint {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.wt-card--question-feedback .wt-feedback:active {
+  transform: none;
+}
+
+/* ============================================
+   ANSWER ZONE - stable question feedback layout
+   ============================================ */
+.wt-answer-zone {
+  margin-top: var(--space-14);
+}
+
+.wt-answer-zone--feedback {
+  display: grid;
+  gap: var(--space-10);
+  align-items: start;
+}
+
+.wt-answer-zone--feedback .wt-feedback,
+.wt-answer-zone--feedback .wt-explanation,
+.wt-answer-zone--feedback .wt-actions,
+.wt-answer-zone--feedback .wt-tap-hint {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.wt-card--question-feedback .wt-feedback:active {
+  transform: none;
+}
