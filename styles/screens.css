@@ -888,7 +888,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 .wt-container[data-wt-mode="bonus"][data-wt-bonus-layout="fall"] .wt-term-word {
-  font-size: clamp(var(--fs-lg), 2.3vw, var(--fs-2xl));
+  font-size: clamp(var(--fs-xl), 5.4vw, var(--fs-2xl));
 }
 
 .wt-bonus-chip--warning:not(.wt-bonus-chip--answer-ok):not(.wt-bonus-chip--answer-bad) {

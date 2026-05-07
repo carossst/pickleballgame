@@ -658,7 +658,7 @@
     landing: {
       title: "Pickleball Rules Quiz",
       tagline: "**Think you know pickleball? Prove it.**",
-      subtitle: "A fast true-or-false pickleball rules game.\n{poolSize} questions about serving, faults, scoring, line calls, and rule changes.",
+      subtitle: "A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.",
       microFun: "Quick games · No signup · Free to try",
       microTrust: "Two quick games will tell you what you actually know.",
 
@@ -672,7 +672,7 @@
       statsSeenLabel: "Questions seen",
 
       // Before completion (goal gradient) 
-      statsSeenSummaryTemplate: "Seen: {seen}/{poolSize} questions",
+      statsSeenSummaryTemplate: "Seen: {seen} questions",
       statsPhaseBadgeDiscovery: "Phase 1/3: First pass",
       statsPhaseBadgeCorrection: "Phase 2/3: Fix mistakes",
       statsPhaseBadgeConsolidation: "Phase 3/3: Pressure test",
@@ -681,7 +681,7 @@
       statsSeenCompleteLabel: "Quiz progress",
       statsMistakesLabel: "Mistakes",
       statsMistakesSummaryTemplate: "{mistakes}",
-      statsMasterySummaryTemplate: "{mastered}/{poolSize} questions answered correctly",
+      statsMasterySummaryTemplate: "{mastered} questions answered correctly",
 
       postPaywallTitle: "Free games completed.",
       postPaywallBody: "Unlock the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
@@ -757,7 +757,7 @@
     phaseJourney: {
       discovery: {
         badge: "Phase 1/3: First pass",
-        landingSummaryTemplate: "{seen}/{poolSize} questions played.",
+        landingSummaryTemplate: "{seen} questions played.",
         landingDetailTemplate: "{remaining} still to go in your first pass.",
         endLens: "You're still on your first pass. Right now the goal is to cover more of the set.",
         micropics: {
