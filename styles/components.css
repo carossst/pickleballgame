@@ -932,7 +932,7 @@ button.wt-level-chip {
   border-radius: var(--r-md);
   border-left: 3px solid rgb(var(--primary) / var(--wt-a-35));
   background: rgb(var(--primary) / var(--wt-a-08));
-  font-size: var(--fs-body);
+  font-size: var(--fs-xl);
   line-height: var(--lh-relaxed);
   color: rgb(var(--text));
 }
@@ -949,7 +949,7 @@ button.wt-level-chip {
 @media (min-height: 741px) {
   .wt-explanation {
     padding: var(--gap-2) var(--space-14);
-    font-size: var(--fs-body);
+    font-size: var(--fs-xl);
   }
 }
 
