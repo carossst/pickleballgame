@@ -565,7 +565,7 @@
   window.WT_WORDING = {
     brand: {
       creatorLine: "An indie game by Carole",
-      creatorLineHtml: "An indie game by <a href=\"https://www.linkedin.com/in/carolestromboni/\" target=\"_blank\" rel=\"noopener\">Carole</a><br><a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
+      creatorLineHtml: "An indie game by <a href=\"./press.html\">Carole</a><br><a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
     },
 
     system: {
