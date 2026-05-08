@@ -466,7 +466,7 @@ button.wt-level-chip {
 
   .wt-choice {
     padding: clamp(12px, 2vh, 14px) var(--gap-2);
-    font-size: clamp(15px, 3.2vw, 16px);
+    font-size: clamp(16px, 3.4vw, 17px);
   }
 }
 
