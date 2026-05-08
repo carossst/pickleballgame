@@ -739,6 +739,7 @@ void function () {
   function cleanupPlayingExit(ui, opts) {
     const o = (opts && typeof opts === "object") ? opts : null;
     const keepChanceOverlayVisible = !!(o && o.keepChanceOverlayVisible === true);
+    const preserveEndSignals = !!(ui && ui._runtime && ui._runtime.finishingRun === true);
 
     cancelScheduledToast({ keepChanceOverlayVisible });
 
@@ -804,8 +805,10 @@ void function () {
       ui._runtime.poolExhaustedToastKey = null;
       ui._runtime.gameOverPending = false;
       ui._runtime.secretBonusPending = false;
-      ui._runtime.poolCompleteCelebrationPending = false;
-      ui._runtime.endRecordMomentUntil = 0;
+      if (!preserveEndSignals) {
+        ui._runtime.poolCompleteCelebrationPending = false;
+        ui._runtime.endRecordMomentUntil = 0;
+      }
     }
 
     try {
@@ -4619,6 +4622,8 @@ void function () {
       (Number.isFinite(postFeedbackMsRaw) && postFeedbackMsRaw >= 600 && postFeedbackMsRaw <= 2000)
         ? Math.floor(postFeedbackMsRaw)
         : 900;
+    const allowManualFatalContinue = (isGameOverNow && runMode === MODES.RUN);
+    const fatalAutoDelayMs = allowManualFatalContinue ? Math.max(postFeedbackMs, 1600) : postFeedbackMs;
 
     const scheduleFatalGameOver = () => {
       if (!isGameOverNow) return;
@@ -4638,7 +4643,7 @@ void function () {
         showChanceLostOverlay(this.config, this.wording, nowChancesLeft, runModeNow);
         this._runtime.autoGameOverAfterFeedback = false;
         this._enterGameOverDelay();
-      }, postFeedbackMs);
+      }, fatalAutoDelayMs);
     };
 
     // UX: only apply the "solo moment" if timing is explicitly valid in WT_CONFIG.ui.toast
