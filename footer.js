@@ -29,6 +29,10 @@
             <span class="wt-footer-creator" data-wt-brand="creatorLine"></span>
           </div>
 
+          <div class="wt-footer-row">
+            <em class="wt-muted" data-wt-wording="footer.rulebookNote"></em>
+          </div>
+
           <!-- Ligne 2 : Liens utilitaires -->
           <div class="wt-footer-row wt-footer-row--links">
             <a id="wt-contact-link" class="wt-footer-link" href="#" data-wt-wording="footer.contact"></a>

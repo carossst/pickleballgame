@@ -609,6 +609,7 @@
     },
 
     footer: {
+      rulebookNote: "based on the official USA Pickleball rulebook.",
       contact: "Contact",
       privacy: "Privacy",
       terms: "Terms",
