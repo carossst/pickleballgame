@@ -1423,9 +1423,10 @@ Thanks!`
 Try this one:
 {funFact}
 
-I got {score} right in Pickleball Rules Quiz.
-Can you beat me?
+{scoreChallenge}
 {url}`,
+      scoreChallengeWithBest: "My best score so far is {bestScore}. What's yours?",
+      scoreChallengeWithoutBest: "What's your best score so far?",
 
       teaserTrap: "Looks obvious... until it isn't.",
       teaserTrue: "Sometimes the obvious answer is right.",
