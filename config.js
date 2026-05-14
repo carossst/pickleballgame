@@ -97,6 +97,18 @@
       freeRuns: 2
     },
 
+    // Curated free RUN openings
+    // Product goal: make the free trial reveal real rule traps early,
+    // without changing storage, UI, backend, or the full question pool.
+    curatedFreeRuns: {
+      enabled: true,
+      runCount: 2,
+      cardIdsByRun: {
+        1: [33, 44, 49, 107, 140, 155, 157, 182, 196, 28],
+        2: [22, 29, 46, 60, 61, 64, 125, 133, 158, 160, 161, 165]
+      }
+    },
+
     // Practice mode (Mistakes only)
     // PRODUCT DECISION (kept):
     // - Returns ALL wrong items (variable length) in mistakesOnly mode
@@ -609,7 +621,7 @@
     },
 
     footer: {
-      rulebookNote: "Official USA Pickleball rulebook only",
+      rulebookNote: "USA Pickleball rulebook",
       contact: "Contact",
       privacy: "Privacy",
       terms: "Terms",
@@ -685,7 +697,7 @@
       statsMasterySummaryTemplate: "{mastered} questions answered correctly",
 
       postPaywallTitle: "Free games completed.",
-      postPaywallBody: "Unlock the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
+      postPaywallBody: "Unlock the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode.",
       practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
       postPaywallCta: "Unlock full access",
 
@@ -1138,7 +1150,7 @@
       poolCompleteCtaPractice: "Fix your mistakes",
 
       freeLimitReachedTitle: "Nice game.",
-      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode on this device.",
+      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode.",
       freeLimitReachedCta: "Keep playing",
       freeLimitReachedClose: "Not now",
 
@@ -1215,7 +1227,7 @@
 
     paywall: {
       // Default headline
-      headline: "Unlock the full pickleball rules quiz.",
+      headline: "Walk onto the court knowing every call.",
 
       // LAST FREE RUN - stronger but factual
       headlineLastFree: "You've got the feel for it. Now finish the set.",
@@ -1253,8 +1265,8 @@
       trustLine: "**One-time unlock**",
       trustBullets: [
         "**Pay once**, no subscription",
-        "**No account** or signup needed",
-        "**Full access** stays on this device",
+        "**No account** or email needed",
+        "**Keep your code** as a backup if you switch device or clear browser data",
         "**Works offline** after first load",
         "**Secure payment** through Stripe"
       ],
@@ -1283,7 +1295,7 @@
       cta: "Get full access",
 
       alreadyHaveCode: "Already have a device unlock code? Use it here.",
-      deviceNote: "One-time unlock for this device. No account needed.",
+      deviceNote: "Instant unlock. No account needed. Keep your code as a backup.",
 
       // PW2: EARLY visual badge (copy visible)
       earlyBadgeLabel: "Early bird",
@@ -1295,7 +1307,7 @@
       timerLabel: "Price increases in:",
 
       postEarlyLine1: "The early price has ended.",
-      postEarlyLine2: "{standardPrice}. One-time unlock for this device."
+      postEarlyLine2: "{standardPrice}. Pay once. Keep your code as a backup."
     },
 
 
@@ -1591,6 +1603,38 @@ Thanks!`
     const freeRunsNum = (cfg.limits && Number.isFinite(Number(cfg.limits.freeRuns))) ? Number(cfg.limits.freeRuns) : null;
     if (freeRunsNum == null || Math.floor(freeRunsNum) !== freeRunsNum || freeRunsNum < 0 || freeRunsNum > 99) {
       warn("limits.freeRuns must be an integer in [0..99]");
+    }
+
+    // Curated free RUN openings
+    const cfr = (cfg.curatedFreeRuns && typeof cfg.curatedFreeRuns === "object") ? cfg.curatedFreeRuns : null;
+    if (cfr && cfr.enabled === true) {
+      const runCountNum = Number(cfr.runCount);
+      if (!Number.isFinite(runCountNum) || Math.floor(runCountNum) !== runCountNum || runCountNum < 1 || runCountNum > 99) {
+        warn("curatedFreeRuns.runCount must be an integer in [1..99]");
+      }
+
+      const byRun = (cfr.cardIdsByRun && typeof cfr.cardIdsByRun === "object") ? cfr.cardIdsByRun : null;
+      if (!byRun) {
+        warn("curatedFreeRuns.cardIdsByRun is required when curatedFreeRuns.enabled is true");
+      } else {
+        Object.keys(byRun).forEach((key) => {
+          const ids = byRun[key];
+          const runNum = Number(key);
+          if (!Number.isFinite(runNum) || Math.floor(runNum) !== runNum || runNum < 1) {
+            warn("curatedFreeRuns.cardIdsByRun keys must be positive integer run numbers", key);
+          }
+          if (!Array.isArray(ids) || !ids.length) {
+            warn("curatedFreeRuns.cardIdsByRun entries must be non-empty arrays", key);
+            return;
+          }
+          ids.forEach((id) => {
+            const n = Number(id);
+            if (!Number.isFinite(n) || Math.floor(n) !== n || n < 0) {
+              warn("curatedFreeRuns card IDs must be non-negative integers", key, id);
+            }
+          });
+        });
+      }
     }
 
 

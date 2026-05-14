@@ -3643,6 +3643,8 @@ void function () {
       }
     }
 
+    let runStartNumber = null;
+
     // RUN economy gate (free runs) is enforced at run start.
     if (mistakesOnly !== true && !premium) {
       if (!this.storage || typeof this.storage.consumeRunOrBlock !== "function") {
@@ -3657,6 +3659,11 @@ void function () {
         if (this._nav) this._nav.paywallFromState = this.state;
         this.setState(STATES.PAYWALL);
         return;
+      }
+
+      if (this.storage && typeof this.storage.getRunsUsed === "function") {
+        const used = Number(this.storage.getRunsUsed());
+        runStartNumber = (Number.isFinite(used) && Math.floor(used) === used && used >= 1) ? used : null;
       }
     }
 
@@ -3685,7 +3692,11 @@ void function () {
       config: cfg,
 
       // game.js contract: "RUN" | "PRACTICE" | "BONUS"
-      mode: (mistakesOnly === true) ? MODES.PRACTICE : MODES.RUN
+      mode: (mistakesOnly === true) ? MODES.PRACTICE : MODES.RUN,
+
+      // Free RUN only: lets game.js prepend curated opening cards for the first free runs.
+      // Null for premium and PRACTICE, so the engine keeps the normal deck.
+      runStartNumber
     });
 
 
