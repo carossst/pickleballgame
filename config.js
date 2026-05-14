@@ -958,6 +958,7 @@
           "You need both recall and control here."
         ]
       },
+      endLineZero: "The pace got ahead of you this time.",
 
       // END BONUS — personalized recommendation (accuracy × deck size)
       // Keys: "{accuracyTier}_{deckTier}" — must cover all combinations
@@ -1047,6 +1048,7 @@
         direct: "STAY WITH IT"
       },
       endLineAllFixed: "You closed it out.",
+      endLineZero: "Those questions still need another pass.",
       endStatsLineAllFixed: "You fixed {fixed}.",
       // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
       endLineByTier: {
@@ -1171,6 +1173,7 @@
         elite: "You know these rules well.",
         legendary: "You really know these rules."
       },
+      identityZero: "Those rules still need another pass.",
 
       ctaByVerdict: {
         none: "Play again",

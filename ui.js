@@ -7372,6 +7372,10 @@ ${(() => {
         (lines && lines.length === 2)
           ? `${String(lines[0] || "").trim()} ${String(lines[1] || "").trim()}`.trim()
           : "";
+      if (total > 0 && scoreFP === 0) {
+        const zeroLine = String(bonusW?.endLineZero || "").trim();
+        if (zeroLine) endLineTpl = zeroLine;
+      }
 
       if (bonusLevel && bonusDeckTier) {
         const recoKey = `${bonusLevel}_${bonusDeckTier}`;
@@ -7439,6 +7443,10 @@ ${(() => {
         const tierLine = String(practiceW?.endLineByTier?.[practiceRepeatTierKey] || "").trim();
         if (tierLine) practiceEndLineTpl = tierLine;
       }
+      if (total > 0 && scoreFP === 0 && remainingBacklog !== 0) {
+        const zeroLine = String(practiceW?.endLineZero || "").trim();
+        if (zeroLine) practiceEndLineTpl = zeroLine;
+      }
 
       endLineTpl = practiceEndLineTpl;
       practiceStatsLineTpl =
@@ -7456,6 +7464,10 @@ ${(() => {
 
       runVerdictKey = getRunVerdictKeyFromScore(cfg, scoreFP);
       runIdentityTpl = String(end?.identityByVerdict?.[runVerdictKey] || "").trim();
+      if (totalPresented > 0 && scoreFP === 0) {
+        const zeroLine = String(end?.identityZero || "").trim();
+        if (zeroLine) runIdentityTpl = zeroLine;
+      }
     }
 
     return {
