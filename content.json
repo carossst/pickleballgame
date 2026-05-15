@@ -291,7 +291,7 @@
     },
     {
       "id": 22,
-      "question": "The rally may still stand if the wrong player returns the serve.",
+      "question": "If the wrong player returns the serve, the rally still counts.",
       "correctAnswer": false,
       "explanationShort": "This wrong-receiver rule was clarified in 2025.\nFor example, the wrong doubles partner cannot take the return.\n2026 USA Pickleball Official Rulebook, Rule 5.C.1.c.",
       "tags": [
@@ -580,7 +580,7 @@
     },
     {
       "id": 46,
-      "question": "Stopping a rally to challenge the score is always allowed.",
+      "question": "You may stop the rally to challenge the score at any time without penalty.",
       "correctAnswer": false,
       "explanationShort": "If you stop a rally to challenge a correct score, it's a fault.\nOnly a wrong-score challenge before the return of serve is safe.\n2026 USA Pickleball Official Rulebook, Rule 6.F.2.",
       "tags": [
@@ -1880,7 +1880,7 @@
     },
     {
       "id": 155,
-      "question": "Playing a bounced ball is the only reason a player may enter the non-volley zone (NVZ).",
+      "question": "A player may enter the non-volley zone (NVZ) at any time.",
       "correctAnswer": false,
       "explanationShort": "Entering the NVZ (kitchen) is allowed at any time.\nThe only restriction is volleying while in it.\n2026 USA Pickleball Official Rulebook, Rule 11.A.",
       "tags": [
@@ -1916,7 +1916,7 @@
     },
     {
       "id": 158,
-      "question": "After entering the non-volley zone (NVZ), a player may volley the ball as soon as one foot is outside the NVZ.",
+      "question": "One foot outside the non-volley zone (NVZ) is enough to volley legally.",
       "correctAnswer": false,
       "explanationShort": "Both feet must be completely outside the NVZ (kitchen) before volleying.\nOne foot outside is not sufficient to volley legally.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3.",
       "tags": [
