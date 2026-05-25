@@ -114,6 +114,8 @@
 
     const tagline = String(landing.tagline || "").trim();
     const microTrust = String(landing.microTrust || "").trim();
+    const progressSectionTitle = String(landing.progressSectionTitle || "").trim();
+    const progressSectionBody = String(landing.progressSectionBody || "").trim();
     const installCtaLabel = String(ui.wording?.installPrompt?.ctaPrimary || "").trim();
     const postTitle = String(landing.postPaywallTitle || "").trim();
     const postBody = String(landing.postPaywallBody || "").trim();
@@ -639,6 +641,17 @@
   </div>
 `;
 
+    const leaderboardLandingHtml = renderLeaderboardLandingCard(ui);
+    const primaryInsightHtml = dailyChallengeIncomplete ? dailyChallengeCardHtml : personalBestCardHtml;
+    const secondaryInsightHtml = dailyChallengeIncomplete ? personalBestCardHtml : dailyChallengeCardHtml;
+    const hasDashboard = Boolean(
+      welcomeBackHtml ||
+      primaryInsightHtml ||
+      secondaryInsightHtml ||
+      leaderboardLandingHtml ||
+      levelProgressQuickHtml
+    );
+
     return `
   <div class="wt-card wt-card--landing">
 
@@ -733,17 +746,27 @@ ${(() => {
       ` : ``}
     ` : ``}
 
-    ${welcomeBackHtml ? `` : levelProgressQuickHtml}
-
-    ${[welcomeBackHtml, personalBestCardHtml, dailyChallengeCardHtml].filter(Boolean).length ? `
-      <div class="wt-stack wt-stack--sm wt-landing-insights">
-        ${welcomeBackHtml}
-        ${dailyChallengeIncomplete ? dailyChallengeCardHtml : personalBestCardHtml}
-        ${dailyChallengeIncomplete ? personalBestCardHtml : dailyChallengeCardHtml}
-      </div>
+    ${hasDashboard ? `
+      <section class="wt-landing-dashboard">
+        ${(progressSectionTitle || progressSectionBody) ? `
+          <div class="wt-landing-dashboard__intro">
+            ${progressSectionTitle ? `<p class="wt-meta wt-landing-dashboard__eyebrow">${escapeHtml(progressSectionTitle)}</p>` : ``}
+            ${progressSectionBody ? `<p class="wt-sub wt-muted wt-landing-dashboard__body">${escapeHtml(progressSectionBody)}</p>` : ``}
+          </div>
+        ` : ``}
+        ${welcomeBackHtml ? `
+          <div class="wt-landing-dashboard__summary">
+            ${welcomeBackHtml}
+          </div>
+        ` : ``}
+        ${(!welcomeBackHtml && levelProgressQuickHtml) ? levelProgressQuickHtml : ``}
+        <div class="wt-landing-dashboard__grid">
+          ${primaryInsightHtml ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
+          ${secondaryInsightHtml ? `<div class="wt-landing-dashboard__secondary">${secondaryInsightHtml}</div>` : ``}
+          ${leaderboardLandingHtml ? `<div class="wt-landing-dashboard__leaderboard">${leaderboardLandingHtml}</div>` : ``}
+        </div>
+      </section>
     ` : ``}
-
-    ${renderLeaderboardLandingCard(ui)}
 
 </div>
 `;

@@ -218,7 +218,7 @@
       statsMistakesLabel: 'Mistakes',
       statsMistakesSummaryTemplate: '{mistakes}',
       statsMasterySummaryTemplate: '{mastered} questions answered correctly',
-      personalBestBadge: 'PERSONAL BEST',
+      personalBestBadge: 'BEST SCORE',
       personalBestTitleTemplate: 'Current score tier: {tier}',
       personalBestSubTemplate:
         'Best score: {best}. Next tier at {nextTarget}+.',
@@ -226,6 +226,8 @@
       personalBestFirstTitle: 'Set your first score',
       personalBestFirstSubTemplate:
         'Score {nextTarget}+ to unlock your first tier.',
+      progressSectionTitle: 'YOUR PROGRESS',
+      progressSectionBody: 'Pick one next step and keep moving.',
       dailyChallengeBadge: "TODAY'S CHALLENGE",
       dailyChallengeTitleTemplate: 'Goal: {targetScore}+ score',
       dailyChallengeProgressTemplate:
@@ -239,7 +241,7 @@
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
         'You already cleared it once. Clear it again today on your last free run to earn 1 Rapid Fire ticket.',
-      dailyChallengeCta: "Try today's challenge",
+      dailyChallengeCta: 'Start challenge',
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:

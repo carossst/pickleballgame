@@ -229,6 +229,8 @@
       personalBestFirstTitle: 'Enregistrez votre score',
       personalBestFirstSubTemplate:
         'Marquez {nextTarget}+ pour débloquer votre premier palier.',
+      progressSectionTitle: 'VOTRE PROGRESSION',
+      progressSectionBody: 'Choisissez une prochaine étape utile et continuez.',
       dailyChallengeBadge: 'DÉFI DU JOUR',
       dailyChallengeTitleTemplate: 'Objectif : {targetScore}+ au score',
       dailyChallengeProgressTemplate:
@@ -243,7 +245,7 @@
         'Les tickets sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
         "Vous l'avez déjà réussi une fois. Réussissez-le à nouveau aujourd'hui sur votre dernière run gratuite pour gagner 1 ticket Mode Rapide.",
-      dailyChallengeCta: 'Essayer le défi du jour',
+      dailyChallengeCta: 'Commencer',
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
