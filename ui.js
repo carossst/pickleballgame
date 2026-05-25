@@ -3043,19 +3043,7 @@ void (function () {
       if (pointerEvt !== 'click') {
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - (self._lastActionDispatchTs || 0) < 400) {
-            try {
-              if (e && typeof e.preventDefault === 'function') e.preventDefault();
-              if (e && typeof e.stopImmediatePropagation === 'function') {
-                e.stopImmediatePropagation();
-              } else if (e && typeof e.stopPropagation === 'function') {
-                e.stopPropagation();
-              }
-            } catch (_) {
-              /* silent */
-            }
-            return;
-          }
+          if (now - (self._lastActionDispatchTs || 0) < 400) return;
           modalActionHandler(e);
         };
 
@@ -3149,19 +3137,7 @@ void (function () {
         const origHandler = appActionHandler;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - (self._lastActionDispatchTs || 0) < 400) {
-            try {
-              if (e && typeof e.preventDefault === 'function') e.preventDefault();
-              if (e && typeof e.stopImmediatePropagation === 'function') {
-                e.stopImmediatePropagation();
-              } else if (e && typeof e.stopPropagation === 'function') {
-                e.stopPropagation();
-              }
-            } catch (_) {
-              /* silent */
-            }
-            return true;
-          }
+          if (now - (self._lastActionDispatchTs || 0) < 400) return;
           origHandler(e);
         };
         this.appEl.removeEventListener(pointerEvt, appActionHandler);
@@ -9985,7 +9961,7 @@ ${audioSettingsHtml}
     const momentumHtml = momentumState
       ? `
         <div class="wt-momentum-wrap">
-          <div class="wt-momentum" aria-label="${escapeHtml(fillTemplate(String(wording?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
+          <div class="wt-momentum" aria-label="${escapeHtml(fillTemplate(String(wAll?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
             ${Array(momentumState.segments)
               .fill(null)
               .map(
