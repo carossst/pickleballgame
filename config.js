@@ -162,7 +162,7 @@
     // - No default badge before phase 1 is completed
     // - Levels are permanent once unlocked
     // - Unlocks are phase-gated:
-    //   L1: full first pass complete
+    //   L1: first completed RUN
     //   L2: all active mistakes cleared
     //   L3: L2 + Rapid Fire pool >= level3MinSeen + Rapid Fire run >= level3MinAccuracy
     //   L4: L3 + Rapid Fire pool >= level4MinSeen + Rapid Fire run >= level4MinAccuracy
@@ -170,6 +170,7 @@
     //   ?levelPreview=none|level1|level2|level3|level4|unlock1|unlock2|unlock3|unlock4
     levels: {
       enabled: true,
+      level1MinRunCompletes: 1,
       level3MinSeen: 16,
       level3MinAccuracy: 0.70,
       level4MinSeen: 50,

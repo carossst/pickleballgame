@@ -2086,6 +2086,7 @@
       this.config?.levels && typeof this.config.levels === 'object'
         ? this.config.levels
         : {};
+    const level1MinRunCompletes = Math.max(1, clampNonNegativeInt(levelsCfg.level1MinRunCompletes));
     const level3MinSeen = clampNonNegativeInt(levelsCfg.level3MinSeen);
     const level4MinSeen = clampNonNegativeInt(levelsCfg.level4MinSeen);
     const level3MinAccuracy = Number(levelsCfg.level3MinAccuracy);
@@ -2093,9 +2094,9 @@
 
     const seenPool = this.getUniqueSeenCount();
     const mastered = this.isMastered();
-    const exhausted = this.isPoolExhausted();
+    const runCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
 
-    if (prevLevel === 0 && exhausted) {
+    if (prevLevel === 0 && runCompletes >= level1MinRunCompletes) {
       nextLevel = 1;
     } else if (prevLevel === 1 && mastered) {
       nextLevel = 2;

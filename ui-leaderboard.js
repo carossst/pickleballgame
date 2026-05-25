@@ -209,6 +209,41 @@
     }
   }
 
+
+  function getDisplayLocale() {
+    try {
+      const loc = window.WT_I18N && typeof window.WT_I18N.getLocale === 'function'
+        ? String(window.WT_I18N.getLocale() || '').trim().toLowerCase()
+        : '';
+      if (loc === 'fr') return 'fr-FR';
+    } catch (_) {
+      /* silent */
+    }
+    return 'en-US';
+  }
+
+  function formatLocalTime(ts) {
+    const safeTs = clampInt(ts, 0, Number.MAX_SAFE_INTEGER);
+    if (safeTs <= 0) return '';
+    try {
+      return new Intl.DateTimeFormat(getDisplayLocale(), {
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(new Date(safeTs));
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function fillTemplate(template, vars) {
+    let out = String(template || '');
+    const map = vars && typeof vars === 'object' ? vars : {};
+    for (const [key, value] of Object.entries(map)) {
+      out = out.replaceAll(`{${key}}`, String(value == null ? '' : value));
+    }
+    return out;
+  }
+
   function getLandingModel(ui) {
     const cfg = getCfg(ui);
     if (cfg.enabled !== true) return null;
@@ -230,6 +265,10 @@
         ? ui.storage.getLeaderboardProfile()
         : { nickname: '', optIn: false };
 
+    const ttlMs = clampInt(cfg?.cacheTtlMs, 1000, 10 * 60 * 1000);
+    const lastFetchedAt = clampInt(bucket?.lastFetchedAt, 0, Number.MAX_SAFE_INTEGER);
+    const nextRefreshAt = lastFetchedAt > 0 ? lastFetchedAt + ttlMs : 0;
+
     return {
       loading:
         bucket?.loading === true &&
@@ -242,7 +281,9 @@
       hasRows: Array.isArray(bucket?.weekly) && bucket.weekly.length > 0,
       hasProfile:
         profile?.optIn === true && !!String(profile?.nickname || '').trim(),
-      nickname: String(profile?.nickname || '').trim()
+      nickname: String(profile?.nickname || '').trim(),
+      lastFetchedAt,
+      nextRefreshAt
     };
   }
 
@@ -263,6 +304,26 @@
     ).trim();
     const loadingLabel = String(w.loading || '').trim();
     const emptyLabel = String(w.empty || '').trim();
+    const statusBadge = String(w.statusBadge || '').trim();
+    const lastUpdatedTemplate = String(w.lastUpdatedTemplate || '').trim();
+    const nextRefreshTemplate = String(w.nextRefreshTemplate || '').trim();
+    const weeklyResetLine = String(w.weeklyResetLine || '').trim();
+    const lastUpdatedTime = formatLocalTime(model.lastFetchedAt);
+    const nextRefreshTime = formatLocalTime(model.nextRefreshAt);
+
+    const freshnessHtml = [
+      lastUpdatedTemplate && lastUpdatedTime
+        ? fillTemplate(lastUpdatedTemplate, { time: lastUpdatedTime })
+        : '',
+      nextRefreshTemplate && nextRefreshTime
+        ? fillTemplate(nextRefreshTemplate, { time: nextRefreshTime })
+        : '',
+      weeklyResetLine
+    ]
+      .map((line) => String(line || '').trim())
+      .filter(Boolean)
+      .map((line) => `<span>${escapeHtml(line)}</span>`)
+      .join('');
 
     const rowsHtml = model.loading
       ? `<p class="wt-muted">${escapeHtml(loadingLabel)}</p>`
@@ -288,9 +349,10 @@
       <section class="wt-box wt-box--tinted wt-leaderboard-card" aria-label="${escapeHtml(title || 'Leaderboard')}">
         <div class="wt-leaderboard-card__header">
           ${title ? `<span class="wt-landing-stat__label">${escapeHtml(title)}</span>` : ``}
-          ${model.source === 'remote' ? `<span class="wt-leaderboard-card__live">${escapeHtml(String(w.liveBadge || '').trim())}</span>` : ``}
+          ${model.source === 'remote' && statusBadge ? `<span class="wt-leaderboard-card__live">${escapeHtml(statusBadge)}</span>` : ``}
         </div>
         ${sub ? `<p class="wt-leaderboard-card__sub">${escapeHtml(sub)}</p>` : ``}
+        ${freshnessHtml ? `<p class="wt-leaderboard-card__freshness">${freshnessHtml}</p>` : ``}
         ${rowsHtml}
         ${
           ctaLabel

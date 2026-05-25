@@ -269,7 +269,10 @@
         'Classement public des RUNs. Votre meilleure RUN peut apparaître ici.',
       cardCtaJoin: 'Choisir un pseudo public',
       cardCtaView: 'Voir le classement',
-      liveBadge: 'LIVE',
+      statusBadge: 'MIS À JOUR',
+      lastUpdatedTemplate: 'Dernière mise à jour : {time}',
+      nextRefreshTemplate: 'Prochaine actualisation : {time}',
+      weeklyResetLine: 'Cette semaine est remise à zéro lundi à 00:00 UTC.',
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
@@ -426,7 +429,7 @@
       reachItLabel: 'Comment débloquer',
       progressionLabel: 'Parcours complet',
       noLevelTitle: 'Verrouillé',
-      noLevelBody: 'Terminez votre premier passage complet.',
+      noLevelBody: 'Terminez une partie pour débloquer votre premier niveau.',
       maxLevelBody: 'Vous avez atteint le niveau le plus haut.',
       currentPill: 'Vous êtes ici',
       unlockedPill: 'Débloqué',
@@ -434,13 +437,13 @@
       byLevel: {
         1: {
           label: 'PRÊT À JOUER',
-          unlock: 'Terminez votre premier passage complet.',
+          unlock: 'Terminez une RUN.',
           sheetBody:
-            'Vous avez terminé votre premier passage complet. Maintenant, consolidez les règles.'
+            'Vous avez terminé votre première RUN. Votre progression commence vraiment.'
         },
         2: {
           label: 'NIVEAU CLUB',
-          unlock: 'Corrigez toutes les erreurs actives.',
+          unlock: 'Voyez toutes les questions une fois et corrigez toutes les erreurs actives.',
           sheetBody:
             'Vous avez corrigé vos erreurs actives. Votre connaissance des règles devient fiable.'
         },

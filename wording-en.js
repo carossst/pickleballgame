@@ -265,7 +265,10 @@
       cardSubJoined: 'Public RUN leaderboard. Your best RUN can appear here.',
       cardCtaJoin: 'Choose public nickname',
       cardCtaView: 'View leaderboard',
-      liveBadge: 'LIVE',
+      statusBadge: 'UPDATED',
+      lastUpdatedTemplate: 'Last updated: {time}',
+      nextRefreshTemplate: 'Next refresh: {time}',
+      weeklyResetLine: 'This week resets Monday 00:00 UTC.',
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
@@ -419,7 +422,7 @@
       reachItLabel: 'How to unlock',
       progressionLabel: 'Full path',
       noLevelTitle: 'Locked',
-      noLevelBody: 'Finish your first full pass.',
+      noLevelBody: 'Finish one game to unlock your first level.',
       maxLevelBody: 'You reached the top level.',
       currentPill: 'You are here',
       unlockedPill: 'Unlocked',
@@ -427,13 +430,13 @@
       byLevel: {
         1: {
           label: 'COURT-READY',
-          unlock: 'Finish your first full pass.',
+          unlock: 'Finish one RUN.',
           sheetBody:
-            'You finished your first full pass. Now make the rules stick.'
+            'You finished your first RUN. You are officially on the board.'
         },
         2: {
           label: 'CLUB-LEVEL',
-          unlock: 'Clear all active mistakes.',
+          unlock: 'See all questions once and clear all active mistakes.',
           sheetBody:
             'You cleared your active mistakes. Your rule knowledge is becoming reliable.'
         },

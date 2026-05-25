@@ -9,6 +9,7 @@
     "format:write": "prettier --write package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\""
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "prettier": "^3.8.3",
     "vitest": "^4.1.7"
   }
