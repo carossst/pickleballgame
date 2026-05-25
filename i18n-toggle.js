@@ -91,7 +91,12 @@
 
   function isLocalizedEntryPath(pathname) {
     const path = normalizePathname(pathname);
-    return path === "/" || path === "/index.html" || path === "/fr.html";
+    return (
+      path === "/" ||
+      path.endsWith("/") ||
+      path.endsWith("/index.html") ||
+      path.endsWith("/fr.html")
+    );
   }
 
   function getEntryHrefForLocale(loc) {
@@ -261,12 +266,22 @@
 
       if (!root) return;
 
-      observer = new MutationObserver(() => {
-        if (remountRaf) return;
+      observer = new MutationObserver((mutations) => {
+        const shouldRemount = mutations.some((mutation) => {
+          if (!mutation) return false;
+          if (host && mutation.target && host.contains(mutation.target)) return false;
+          return mutation.type === "childList";
+        });
+
+        if (!shouldRemount || remountRaf) return;
+
         remountRaf = window.requestAnimationFrame(() => {
           remountRaf = 0;
           const currentHost = ensureHost();
-          rerender(currentHost);
+          if (!currentHost) return;
+
+          const currentButton = currentHost.querySelector("[data-wt-locale-swap-to], [data-wt-locale-select]");
+          if (!currentButton) rerender(currentHost);
         });
       });
       observer.observe(root, { childList: true, subtree: true });

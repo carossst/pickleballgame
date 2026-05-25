@@ -237,12 +237,13 @@
       dailyChallengeBadge: 'OBJECTIF DU JOUR',
       dailyChallengeTitleTemplate: "Atteignez {targetScore}+ aujourd'hui",
       dailyChallengeProgressTemplate:
-        "Aujourd'hui : {score}/{targetScore}. Record : {best}. Réinitialisation dans {time}.",
+        "Aujourd'hui : {score}/{targetScore}. Record : {best}. Nouvel objectif à {resetTime}, votre heure locale.",
       dailyChallengeResetTemplate:
-        'Record : {best}. Réinitialisation dans {time}.',
+        'Record : {best}. Nouvel objectif à {resetTime}, votre heure locale.',
       dailyChallengeCompletedTemplate:
-        "Terminé aujourd'hui. Record : {best}. Réinitialisation dans {time}. Revenez demain pour le prochain objectif.",
-      dailyChallengeRewardTemplate: 'Récompense : 1 ticket Mode Rapide.',
+        "Terminé aujourd'hui. Record : {best}. Revenez à {resetTime}, votre heure locale, pour le prochain objectif.",
+      dailyChallengeRewardTemplate:
+        'Récompense : 1 ticket Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
         'Tickets au maximum. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -271,7 +272,8 @@
       statusBadge: 'MIS À JOUR',
       lastUpdatedTemplate: 'Dernière mise à jour : {time}',
       nextRefreshTemplate: 'Prochaine actualisation : {time}',
-      weeklyResetLine: 'Cette semaine est remise à zéro lundi à 00:00 UTC.',
+      weeklyResetLine:
+        'Remise à zéro hebdomadaire : {localTime}, votre heure locale (lundi 00:00 UTC).',
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',

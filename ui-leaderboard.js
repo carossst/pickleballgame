@@ -212,9 +212,10 @@
 
   function getDisplayLocale() {
     try {
-      const loc = window.WT_I18N && typeof window.WT_I18N.getLocale === 'function'
-        ? String(window.WT_I18N.getLocale() || '').trim().toLowerCase()
-        : '';
+      const loc =
+        window.WT_I18N && typeof window.WT_I18N.getLocale === 'function'
+          ? String(window.WT_I18N.getLocale() || '').trim().toLowerCase()
+          : '';
       if (loc === 'fr') return 'fr-FR';
     } catch (_) {
       /* silent */
@@ -227,6 +228,38 @@
     if (safeTs <= 0) return '';
     try {
       return new Intl.DateTimeFormat(getDisplayLocale(), {
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(new Date(safeTs));
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function getNextWeeklyResetUtcMs(baseTs) {
+    const n = Number(baseTs);
+    const nowTs = Number.isFinite(n) && n > 0 ? n : Date.now();
+    const d = new Date(nowTs);
+    if (!Number.isFinite(d.getTime())) return 0;
+
+    const todayUtcMidnight = Date.UTC(
+      d.getUTCFullYear(),
+      d.getUTCMonth(),
+      d.getUTCDate()
+    );
+    const utcDay = new Date(todayUtcMidnight).getUTCDay() || 7;
+    let daysUntilNextMonday = (8 - utcDay) % 7;
+    if (daysUntilNextMonday === 0) daysUntilNextMonday = 7;
+
+    return todayUtcMidnight + daysUntilNextMonday * 24 * 60 * 60 * 1000;
+  }
+
+  function formatLocalWeekdayTime(ts) {
+    const safeTs = clampInt(ts, 0, Number.MAX_SAFE_INTEGER);
+    if (safeTs <= 0) return '';
+    try {
+      return new Intl.DateTimeFormat(getDisplayLocale(), {
+        weekday: 'long',
         hour: '2-digit',
         minute: '2-digit'
       }).format(new Date(safeTs));
@@ -265,10 +298,6 @@
         ? ui.storage.getLeaderboardProfile()
         : { nickname: '', optIn: false };
 
-    const ttlMs = clampInt(cfg?.cacheTtlMs, 1000, 10 * 60 * 1000);
-    const lastFetchedAt = clampInt(bucket?.lastFetchedAt, 0, Number.MAX_SAFE_INTEGER);
-    const nextRefreshAt = lastFetchedAt > 0 ? lastFetchedAt + ttlMs : 0;
-
     return {
       loading:
         bucket?.loading === true &&
@@ -282,8 +311,12 @@
       hasProfile:
         profile?.optIn === true && !!String(profile?.nickname || '').trim(),
       nickname: String(profile?.nickname || '').trim(),
-      lastFetchedAt,
-      nextRefreshAt
+      lastFetchedAt: clampInt(bucket?.lastFetchedAt, 0, Number.MAX_SAFE_INTEGER),
+      nextRefreshAt:
+        clampInt(bucket?.lastFetchedAt, 0, Number.MAX_SAFE_INTEGER) > 0
+          ? clampInt(bucket?.lastFetchedAt, 0, Number.MAX_SAFE_INTEGER) +
+            clampInt(cfg?.cacheTtlMs, 1000, 10 * 60 * 1000)
+          : 0
     };
   }
 
@@ -304,12 +337,19 @@
     ).trim();
     const loadingLabel = String(w.loading || '').trim();
     const emptyLabel = String(w.empty || '').trim();
-    const statusBadge = String(w.statusBadge || '').trim();
+    const statusBadge = String(w.statusBadge || w.liveBadge || '').trim();
     const lastUpdatedTemplate = String(w.lastUpdatedTemplate || '').trim();
     const nextRefreshTemplate = String(w.nextRefreshTemplate || '').trim();
-    const weeklyResetLine = String(w.weeklyResetLine || '').trim();
+    const weeklyResetTemplate = String(w.weeklyResetLine || '').trim();
     const lastUpdatedTime = formatLocalTime(model.lastFetchedAt);
     const nextRefreshTime = formatLocalTime(model.nextRefreshAt);
+    const weeklyResetTime = formatLocalWeekdayTime(
+      getNextWeeklyResetUtcMs(Date.now())
+    );
+    const weeklyResetLine =
+      weeklyResetTemplate && weeklyResetTime
+        ? fillTemplate(weeklyResetTemplate, { localTime: weeklyResetTime })
+        : weeklyResetTemplate;
 
     const freshnessHtml = [
       lastUpdatedTemplate && lastUpdatedTime
@@ -459,6 +499,14 @@
 
     const weeklyRows = Array.isArray(bucket?.weekly) ? bucket.weekly : [];
     const allRows = Array.isArray(bucket?.all) ? bucket.all : [];
+    const weeklyResetTemplate = String(w.weeklyResetLine || '').trim();
+    const weeklyResetTime = formatLocalWeekdayTime(
+      getNextWeeklyResetUtcMs(Date.now())
+    );
+    const weeklyResetLine =
+      weeklyResetTemplate && weeklyResetTime
+        ? fillTemplate(weeklyResetTemplate, { localTime: weeklyResetTime })
+        : weeklyResetTemplate;
 
     const html = `
       <div class="wt-actions wt-actions--compact wt-leaderboard-modal__tabs" role="tablist" aria-label="${escapeHtml(title || 'Leaderboard')}">
@@ -467,6 +515,7 @@
       </div>
       <section data-wt-leaderboard-panel="ranking"${initialTab === 'ranking' ? '' : ' hidden'}>
         ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+        ${weeklyResetLine ? `<p class="wt-muted wt-leaderboard-modal__reset">${escapeHtml(weeklyResetLine)}</p>` : ``}
         ${weeklyTitle ? `<p class="wt-question-title">${escapeHtml(weeklyTitle)}</p>` : ``}
         ${renderRowsHtml(weeklyRows, escapeHtml)}
         <div class="wt-divider"></div>

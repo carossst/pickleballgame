@@ -476,26 +476,34 @@
         if (dailyModel.rewardPendingReplay && dailyRewardPendingTpl) {
           dailySub = fillTemplate(dailyRewardPendingTpl, {
             targetScore: String(dailyModel.targetScore),
+            score: String(dailyModel.todayBestScore || 0),
             best: String(dailyBestScoreFP || 0),
-            time: String(dailyModel.resetCountdown || "")
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || "")
           });
         } else if (dailyModel.completedToday && dailyCompletedTpl) {
           dailySub = fillTemplate(dailyCompletedTpl, {
+            score: String(dailyModel.todayBestScore || 0),
+            targetScore: String(dailyModel.targetScore),
             best: String(dailyBestScoreFP || 0),
-            time: String(dailyModel.resetCountdown || "")
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || "")
           });
         } else if (!dailyModel.completedToday && dailyModel.progressPct > 0 && dailyProgressTpl) {
           dailySub = fillTemplate(dailyProgressTpl, {
             score: String(dailyModel.todayBestScore || 0),
             targetScore: String(dailyModel.targetScore),
             best: String(dailyBestScoreFP || 0),
-            time: String(dailyModel.resetCountdown || "")
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || "")
           });
         } else if (!dailyModel.completedToday && dailyResetTpl) {
           dailySub = fillTemplate(dailyResetTpl, {
+            score: String(dailyModel.todayBestScore || 0),
             targetScore: String(dailyModel.targetScore),
             best: String(dailyBestScoreFP || 0),
-            time: String(dailyModel.resetCountdown || "")
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || "")
           });
         }
 
@@ -669,8 +677,6 @@
 `;
 
     const leaderboardLandingHtml = renderLeaderboardLandingCard(ui);
-    // Landing KISS: Daily Challenge owns the score target once available.
-    // Personal best remains a fallback only, so users do not see two competing score goals.
     const primaryInsightHtml = dailyChallengeCardHtml || personalBestCardHtml;
     const secondaryInsightHtml = "";
     const hasDashboard = Boolean(

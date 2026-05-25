@@ -231,15 +231,16 @@
         'Unlock full access to record your score and keep building your best.',
       progressSectionTitle: 'NEXT UP',
       progressSectionBody: '',
-      dailyChallengeBadge: "TODAY'S TARGET",
+      dailyChallengeBadge: "TODAY\'S TARGET",
       dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
       dailyChallengeProgressTemplate:
-        'Today: {score}/{targetScore}. Best: {best}. Resets in {time}.',
+        'Today: {score}/{targetScore}. Best: {best}. New target at {resetTime}, your time.',
       dailyChallengeResetTemplate:
-        'Best: {best}. Resets in {time}.',
+        'Best: {best}. New target at {resetTime}, your time.',
       dailyChallengeCompletedTemplate:
-        'Completed today. Best: {best}. Resets in {time}. Come back tomorrow for the next target.',
-      dailyChallengeRewardTemplate: 'Reward: 1 Rapid Fire ticket.',
+        'Completed today. Best: {best}. Come back at {resetTime}, your time, for the next target.',
+      dailyChallengeRewardTemplate:
+        'Reward: 1 Rapid Fire ticket.',
       dailyChallengeRewardCappedTemplate:
         'Tickets full. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
@@ -267,7 +268,8 @@
       statusBadge: 'UPDATED',
       lastUpdatedTemplate: 'Last updated: {time}',
       nextRefreshTemplate: 'Next refresh: {time}',
-      weeklyResetLine: 'This week resets Monday 00:00 UTC.',
+      weeklyResetLine:
+        'Weekly reset: {localTime}, your time (Monday 00:00 UTC).',
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
@@ -431,7 +433,7 @@
           label: 'COURT-READY',
           unlock: 'Finish one RUN.',
           sheetBody:
-            'You finished your first RUN. You are officially on the board.'
+            'You finished your first full pass. Now make the rules stick.'
         },
         2: {
           label: 'CLUB-LEVEL',
