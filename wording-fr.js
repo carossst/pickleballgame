@@ -226,7 +226,7 @@
         'Meilleur score : {best}. Prochain palier à {nextTarget}+.',
       personalBestTopTierTemplate:
         'Meilleur score : {best}. Vous avez atteint le plus haut palier.',
-      personalBestFirstTitle: 'Fixez votre premier repère',
+      personalBestFirstTitle: 'Enregistrez votre score',
       personalBestFirstSubTemplate:
         'Marquez {nextTarget}+ pour débloquer votre premier palier.',
       dailyChallengeBadge: 'DÉFI DU JOUR',

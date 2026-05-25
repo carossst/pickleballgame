@@ -161,62 +161,20 @@ test('landing locale toggle renders a real FR link and prefetches sibling page',
   const ctx = loadToggle({ pathname: '/' });
 
   expect(ctx.host.innerHTML).toContain('href="./fr.html"');
-  expect(ctx.host.innerHTML).toContain('data-wt-locale-swap-to="fr"');
+  expect(ctx.host.innerHTML).not.toContain('data-wt-locale-swap-to=');
   expect(ctx.headChildren).toHaveLength(1);
   expect(ctx.headChildren[0].getAttribute('href')).toBe('./fr.html');
 });
 
-test('landing locale toggle click persists target locale choice', () => {
+test('landing locale toggle uses native link navigation on entry pages', () => {
   const ctx = loadToggle({ pathname: '/' });
-  const event = {
-    preventDefault: vi.fn(),
-    target: {
-      closest() {
-        return {
-          getAttribute(name) {
-            if (name === 'data-wt-locale-swap-to') return 'fr';
-            return null;
-          }
-        };
-      }
-    }
-  };
-
-  ctx.host.dispatch('click', event);
-
-  expect(
-    ctx.windowLike.localStorage.getItem('pickleball-rules-quiz:locale')
-  ).toBe('fr');
-  expect(event.preventDefault).toHaveBeenCalledTimes(1);
-  expect(ctx.windowLike.location.assign).toHaveBeenCalledWith('./fr.html');
+  expect(ctx.host.innerHTML).toContain('href="./fr.html"');
   expect(ctx.state.setLocaleCalls).toEqual([]);
 });
 
 test('French entry toggle navigates back to EN root immediately', () => {
   const ctx = loadToggle({ pathname: '/fr.html', locale: 'fr' });
-  const event = {
-    preventDefault: vi.fn(),
-    target: {
-      closest() {
-        return {
-          getAttribute(name) {
-            if (name === 'data-wt-locale-swap-to') return 'en';
-            return null;
-          }
-        };
-      }
-    }
-  };
-
   expect(ctx.host.innerHTML).toContain('href="./index.html"');
-
-  ctx.host.dispatch('click', event);
-
-  expect(
-    ctx.windowLike.localStorage.getItem('pickleball-rules-quiz:locale')
-  ).toBe('en');
-  expect(event.preventDefault).toHaveBeenCalledTimes(1);
-  expect(ctx.windowLike.location.assign).toHaveBeenCalledWith('./index.html');
   expect(ctx.state.setLocaleCalls).toEqual([]);
 });
 

@@ -140,7 +140,6 @@
     if (href) {
       return `<a
       class="wt-locale-swap"
-      data-wt-locale-swap-to="${other}"
       href="${href}"
       aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
     }
@@ -192,13 +191,6 @@
     if (!target) return;
     const loc = target.getAttribute("data-wt-locale-swap-to");
     if (!loc) return;
-    const href = getNavigationHref(loc);
-    if (href) {
-      e.preventDefault();
-      persistLocaleChoice(loc);
-      window.location.assign(href);
-      return;
-    }
     e.preventDefault();
     I18N.setLocale(loc);
   }

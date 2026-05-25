@@ -223,7 +223,7 @@
       personalBestSubTemplate:
         'Best score: {best}. Next tier at {nextTarget}+.',
       personalBestTopTierTemplate: 'Best score: {best}. Top tier reached.',
-      personalBestFirstTitle: 'Set your first benchmark',
+      personalBestFirstTitle: 'Set your first score',
       personalBestFirstSubTemplate:
         'Score {nextTarget}+ to unlock your first tier.',
       dailyChallengeBadge: "TODAY'S CHALLENGE",
