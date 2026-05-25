@@ -382,6 +382,13 @@ void (function () {
     return null;
   }
 
+  function supportsQuestionSpeechForLocale(locale) {
+    if (!supportsQuestionSpeech()) return false;
+    const loc = String(locale || '').trim().toLowerCase();
+    if (loc.split(/[-_]/)[0] !== 'fr') return true;
+    return !!getQuestionSpeechVoice(locale);
+  }
+
   function warmQuestionSpeechVoices(ui) {
     if (!supportsQuestionSpeech()) return;
     if (ui && ui._speechVoicesWarmed === true) return;
@@ -467,7 +474,7 @@ void (function () {
 
   function startQuestionSpeech(ui, model, opts) {
     const options = opts || {};
-    if (!ui || !ui._runtime || !model || !supportsQuestionSpeech())
+    if (!ui || !ui._runtime || !model || !supportsQuestionSpeechForLocale(model.locale))
       return false;
 
     cancelQuestionSpeech(ui);
@@ -865,6 +872,33 @@ void (function () {
     return `${minutes}m`;
   }
 
+
+  function formatDailyResetTime(ts) {
+    const safeTs = Number(ts);
+    if (!Number.isFinite(safeTs) || safeTs <= 0) return '';
+
+    let locale = 'en-US';
+    try {
+      if (window.WT_I18N && typeof window.WT_I18N.getLocale === 'function') {
+        const currentLocale = String(window.WT_I18N.getLocale() || 'en')
+          .trim()
+          .toLowerCase();
+        if (currentLocale === 'fr') locale = 'fr-FR';
+      }
+    } catch (_) {
+      locale = 'en-US';
+    }
+
+    try {
+      return new Intl.DateTimeFormat(locale, {
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(new Date(safeTs));
+    } catch (_) {
+      return '';
+    }
+  }
+
   function getDailyChallengeModel(cfg, wording, bestScoreFP, storage) {
     const safeBest = clampInt(bestScoreFP, 0, 99999);
     const tier = getRunTierInfo(cfg, wording, safeBest);
@@ -983,7 +1017,8 @@ void (function () {
       ticketAtCap,
       resetAt: dayEndMs,
       resetInMs,
-      resetCountdown: formatDailyResetCountdown(resetInMs)
+      resetCountdown: formatDailyResetCountdown(resetInMs),
+      resetTime: formatDailyResetTime(dayEndMs)
     };
   }
 
@@ -1147,7 +1182,7 @@ void (function () {
       if (!src) return '';
 
       // Keep citations and rule references exact.
-      if (/(Rulebook|Rule\s+\d|page\s+\d|Section\s+\d)/i.test(src)) return src;
+      if (/(Rulebook|Règlement officiel|Rule\s+\d|règle\s+\d|page\s+\d|Section\s+\d)/i.test(src)) return src;
 
       return src
         .replace(/^This is /, "That's ")
@@ -1211,7 +1246,7 @@ void (function () {
       let html = escapeHtml(trimmed);
       const isLast = index === lines.length - 1;
       const isCitation =
-        /(Rulebook|Equipment Standards Manual|Rule\s+\d|page\s+\d|Section\s+\d)/i.test(
+        /(Rulebook|Règlement officiel|Equipment Standards Manual|Rule\s+\d|règle\s+\d|page\s+\d|Section\s+\d)/i.test(
           trimmed
         );
       if (isLast && isCitation)
@@ -4332,7 +4367,9 @@ void (function () {
         : {};
     const scoreFP = Number(gs.scoreFP);
     const chancesLeft = Number(gs.chancesLeft);
-    const speechSupported = supportsQuestionSpeech();
+    const speechSupported = supportsQuestionSpeechForLocale(
+      getQuestionSpeechLocale()
+    );
     const autoReadEnabled = isAutoReadQuestionsEnabled(this.storage);
 
     // No hardcoded fallback: if runtime values are missing, keep placeholders empty.
@@ -4429,7 +4466,7 @@ ${audioSettingsHtml}
     const cfg = this.config || {};
     const levelsW = w.levels && typeof w.levels === 'object' ? w.levels : {};
     const model = getAppLevelModel(this.storage, cfg, w);
-    const currentLevel = clampInt(model.state?.currentLevel, 0, 4);
+    const currentLevel = clampInt(model.state?.currentLevel, 0, model.maxLevel || 0);
     const current = model.current;
     const next = model.next;
 
@@ -4468,7 +4505,7 @@ ${audioSettingsHtml}
     })();
 
     const nextBlockHtml = (() => {
-      if (currentLevel >= 4) {
+      if (currentLevel >= (model.maxLevel || 0)) {
         return `
           <div class="wt-level-sheet__section wt-level-sheet__section--soft">
             ${maxLevelBody ? `<p class="wt-level-sheet__body">${escapeHtml(maxLevelBody)}</p>` : ``}
@@ -9450,6 +9487,14 @@ ${audioSettingsHtml}
     };
   }
 
+  function getConfiguredMaxLevel(cfg) {
+    const raw = Number(cfg?.levels?.maxLevel);
+    if (!Number.isFinite(raw)) return 0;
+    const n = Math.floor(raw);
+    if (n < 1 || n > 20) return 0;
+    return n;
+  }
+
   function getLevelPreviewState(cfg) {
     const previewCfg =
       cfg?.levels?.preview && typeof cfg.levels.preview === 'object'
@@ -9476,18 +9521,22 @@ ${audioSettingsHtml}
     if (!raw)
       return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
 
+    const maxLevel = getConfiguredMaxLevel(cfg);
+    if (!maxLevel)
+      return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+
     if (raw === 'none')
       return { currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
 
-    const unlockMatch = raw.match(/^unlock([1-4])$/);
+    const unlockMatch = raw.match(/^unlock(\d+)$/);
     if (unlockMatch) {
-      const lvl = clampInt(unlockMatch[1], 0, 4);
+      const lvl = clampInt(unlockMatch[1], 0, maxLevel);
       return { currentLevel: lvl, unlockedLevel: lvl, justUnlocked: true };
     }
 
-    const levelMatch = raw.match(/^level([1-4])$/);
+    const levelMatch = raw.match(/^level(\d+)$/);
     if (levelMatch) {
-      const lvl = clampInt(levelMatch[1], 0, 4);
+      const lvl = clampInt(levelMatch[1], 0, maxLevel);
       return { currentLevel: lvl, unlockedLevel: 0, justUnlocked: false };
     }
 
@@ -9497,36 +9546,43 @@ ${audioSettingsHtml}
   function getAppLevelModel(storage, cfg, w) {
     const levelsW =
       w && w.levels && typeof w.levels === 'object' ? w.levels : {};
+    const maxLevel = getConfiguredMaxLevel(cfg);
+    const emptyUnlocked = {};
+    for (let level = 1; level <= maxLevel; level += 1) emptyUnlocked[level] = 0;
+
     const baseState =
       storage && typeof storage.getLevelState === 'function'
         ? storage.getLevelState()
-        : { currentLevel: 0, unlockedAtByLevel: { 1: 0, 2: 0, 3: 0, 4: 0 } };
+        : { currentLevel: 0, unlockedAtByLevel: emptyUnlocked };
     const preview = getLevelPreviewState(cfg);
     const effectiveLevel =
       preview.currentLevel == null
-        ? clampInt(baseState.currentLevel, 0, 4)
-        : clampInt(preview.currentLevel, 0, 4);
+        ? clampInt(baseState.currentLevel, 0, maxLevel)
+        : clampInt(preview.currentLevel, 0, maxLevel);
 
-    const defs = [1, 2, 3, 4].map((level) => {
-      const raw =
-        levelsW.byLevel && typeof levelsW.byLevel === 'object'
-          ? levelsW.byLevel[level] || {}
-          : {};
-      return {
-        level,
-        label: String(raw.label || '').trim(),
-        unlock: String(raw.unlock || '').trim(),
-        sheetBody: String(raw.sheetBody || '').trim(),
-        unlocked: effectiveLevel >= level,
-        current: effectiveLevel === level
-      };
-    });
+    const defs = Array.from({ length: maxLevel }, (_, index) => index + 1).map(
+      (level) => {
+        const raw =
+          levelsW.byLevel && typeof levelsW.byLevel === 'object'
+            ? levelsW.byLevel[level] || {}
+            : {};
+        return {
+          level,
+          label: String(raw.label || '').trim(),
+          unlock: String(raw.unlock || '').trim(),
+          sheetBody: String(raw.sheetBody || '').trim(),
+          unlocked: effectiveLevel >= level,
+          current: effectiveLevel === level
+        };
+      }
+    );
 
     return {
       state: {
         currentLevel: effectiveLevel,
         unlockedAtByLevel: baseState.unlockedAtByLevel || {}
       },
+      maxLevel,
       defs,
       current: defs.find((item) => item.level === effectiveLevel) || null,
       next: defs.find((item) => item.level === effectiveLevel + 1) || null,
@@ -10121,7 +10177,7 @@ ${audioSettingsHtml}
     }
 
     const questionText = String(item.question || '').trim();
-    const speechSupported = supportsQuestionSpeech();
+    const speechSupported = supportsQuestionSpeechForLocale(speechLocale);
     const speechLocale = getQuestionSpeechLocale();
     const speechKey = `${speechLocale}:${Number(item?.id || 0)}:${questionText}`;
     const isQuestionSpeaking =

@@ -162,18 +162,25 @@
     // - No default badge before the first level is unlocked
     // - Levels are permanent once unlocked
     // - L1: one completed RUN
-    // - L2: all questions seen once + active mistakes cleared
-    // - L3: L2 + Rapid Fire pool >= level3MinSeen + Rapid Fire run >= level3MinAccuracy
-    // - L4: L3 + Rapid Fire pool >= level4MinSeen + Rapid Fire run >= level4MinAccuracy
+    // - L2: unique questions seen >= level2MinSeen
+    // - L3: unique questions seen >= level3MinSeen OR RUN best score >= level3MinBestScore
+    // - L4: unique questions seen >= level4MinSeen
+    // - L5: mastered pool + Rapid Fire pool >= level5RapidFireMinSeen + Rapid Fire accuracy >= level5RapidFireMinAccuracy
+    // - L6: mastered pool + Rapid Fire pool >= level6RapidFireMinSeen + Rapid Fire accuracy >= level6RapidFireMinAccuracy
     // - Level preview is UI-only and fail-closed:
-    //   ?levelPreview=none|level1|level2|level3|level4|unlock1|unlock2|unlock3|unlock4
+    //   ?levelPreview=none|level1..level6|unlock1..unlock6
     levels: {
       enabled: true,
+      maxLevel: 6,
       level1MinRunCompletes: 1,
-      level3MinSeen: 16,
-      level3MinAccuracy: 0.70,
-      level4MinSeen: 50,
-      level4MinAccuracy: 0.85,
+      level2MinSeen: 25,
+      level3MinSeen: 75,
+      level3MinBestScore: 20,
+      level4MinSeen: 200,
+      level5RapidFireMinSeen: 16,
+      level5RapidFireMinAccuracy: 0.70,
+      level6RapidFireMinSeen: 50,
+      level6RapidFireMinAccuracy: 0.85,
       preview: {
         enabled: true,
         queryParam: "levelPreview"

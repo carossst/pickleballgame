@@ -143,6 +143,130 @@ test('leaderboard modal opens on profile tab for users who have not joined yet',
   expect(opened.html).toContain('Public nickname');
 });
 
+test('leaderboard modal shows top rows then detached local rank when outside top 10', () => {
+  const leaderboard = loadLeaderboardModule();
+  let opened = null;
+  const weeklyRows = Array.from({ length: 10 }, (_v, i) => ({
+    rank: i + 1,
+    nickname: `Player${i + 1}`,
+    scoreFP: 30 - i,
+    isLocalPlayer: false
+  }));
+  const ui = {
+    _runtime: {
+      leaderboard: {
+        loading: false,
+        lastFetchedAt: Date.now(),
+        error: '',
+        source: 'remote',
+        weekly: weeklyRows,
+        all: weeklyRows,
+        lastKnownWeeklyRank: 15,
+        lastKnownAllTimeRank: 18
+      }
+    },
+    config: {
+      leaderboard: {
+        enabled: true,
+        cacheTtlMs: 60000,
+        topN: 10
+      }
+    },
+    wording: {
+      leaderboard: {
+        modalTitle: 'Leaderboard',
+        modalBodyJoined: 'Your public nickname is saved.',
+        weeklyTitle: 'This week',
+        allTitle: 'All-time',
+        nicknameLabel: 'Public nickname',
+        nicknamePlaceholder: 'Pick one',
+        updateCta: 'Update',
+        editProfileCta: 'Edit my nickname',
+        leaveCta: 'Leave',
+        rankingTab: 'Ranking',
+        profileTab: 'My nickname'
+      }
+    },
+    storage: {
+      getLeaderboardProfile() {
+        return { nickname: 'Carole', optIn: true };
+      },
+      getPersonalBest() {
+        return { bestScoreFP: 12 };
+      }
+    },
+    openModal(html, title) {
+      opened = { html, title };
+    }
+  };
+
+  leaderboard.openModal(ui, {
+    escapeHtml: (s) => String(s)
+  });
+
+  expect(opened.title).toBe('Leaderboard');
+  expect(opened.html).toContain('#10');
+  expect(opened.html).toContain('...');
+  expect(opened.html).toContain('#15');
+  expect(opened.html).toContain('Carole');
+  expect(opened.html).toContain('#18');
+  expect(opened.html).toContain('Edit my nickname');
+  expect(opened.html).toContain('data-wt-leaderboard-tab="profile"');
+});
+
+test('leaderboard landing card shows local best score when available', () => {
+  const leaderboard = loadLeaderboardModule();
+  const ui = {
+    _runtime: {
+      leaderboard: {
+        loading: false,
+        lastFetchedAt: Date.now(),
+        error: '',
+        source: 'empty',
+        weekly: [],
+        all: []
+      }
+    },
+    config: {
+      leaderboard: {
+        enabled: true,
+        cacheTtlMs: 60000,
+        topN: 10,
+        showAfterRunCompletes: 1
+      }
+    },
+    wording: {
+      leaderboard: {
+        cardTitle: 'THIS WEEK',
+        cardSubDefault: 'Top scores this week.',
+        cardBestScoreLine: 'Your best: {score}',
+        cardCtaJoin: 'Choose public nickname',
+        cardWeeklyResetLine: 'Weekly reset: {localTime}, your time.',
+        loading: 'Loading',
+        empty: 'Be the first'
+      }
+    },
+    storage: {
+      getCounters() {
+        return { runCompletes: 1 };
+      },
+      getLeaderboardProfile() {
+        return { nickname: '', optIn: false };
+      },
+      getPersonalBest() {
+        return { bestScoreFP: 7 };
+      }
+    }
+  };
+
+  const html = leaderboard.renderLandingCard(ui, {
+    escapeHtml: (s) => String(s)
+  });
+
+  expect(html).toContain('Your best: 7');
+  expect(html).toContain('THIS WEEK');
+});
+
 test('leaderboard tab switching toggles button state and panel visibility', () => {
   const leaderboard = loadLeaderboardModule();
   const rankingBtn = createFakeNode('ranking');

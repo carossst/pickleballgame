@@ -229,16 +229,19 @@
       personalBestLockedTitle: 'Record your score',
       personalBestLockedSub:
         'Unlock full access to record your score and keep building your best.',
-      progressSectionTitle: 'NEXT UP',
+      progressSectionTitle: '',
       progressSectionBody: '',
-      dailyChallengeBadge: "TODAY'S TARGET",
+      levelProgressSeenTemplate: '{seen}/{target} questions seen',
+      levelProgressSeenOrScoreTemplate: '{seen}/{seenTarget} questions seen · Best score {best}/{scoreTarget}',
+      levelNextTemplate: 'Next: {label}',
+      dailyChallengeBadge: "DAILY CHALLENGE",
       dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
       dailyChallengeProgressTemplate:
-        'Today: {score}/{targetScore}. Best: {best}. New target at {resetTime}, your time.',
+        'Today: {score}/{targetScore}. Come back at {resetTime} if you miss it.',
       dailyChallengeResetTemplate:
-        'Best: {best}. New target at {resetTime}, your time.',
+        'Come back at {resetTime} for today\'s target.',
       dailyChallengeCompletedTemplate:
-        'Completed today. Best: {best}. Come back at {resetTime}, your time, for the next target.',
+        'Daily challenge cleared. Next challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
         "Beat today's target to earn 1 Rapid Fire ticket. Rapid Fire costs 1 ticket.",
       dailyChallengeRewardCappedTemplate:
@@ -249,7 +252,7 @@
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
-        'Unlock unlimited RUNs, record your score, all 200 questions in the game, explanations after every answer, and unlimited Mistakes Mode.',
+        'Unlock unlimited games, record your score, all 200 questions in the game, explanations after every answer, and unlimited Mistakes Mode.',
       practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
@@ -261,8 +264,10 @@
     leaderboard: {
       cardTitle: 'THIS WEEK',
       cardSubDefault:
-        'Public RUN leaderboard. Add your public nickname after your first completed run.',
-      cardSubJoined: 'Public RUN leaderboard. Your best RUN can appear here.',
+        'Top scores this week. Add your public nickname after your first completed game.',
+      cardSubJoined:
+        'Your public nickname is saved. View the leaderboard or edit My nickname.',
+      cardBestScoreLine: 'Your best: {score}',
       cardCtaJoin: 'Choose public nickname',
       cardCtaView: 'View leaderboard',
       statusBadge: '',
@@ -276,9 +281,9 @@
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
       modalBodyDefault:
-        'Choose a public nickname. Your best RUN score can appear in the weekly and all-time leaderboard.',
+        'Choose a public nickname. Your best game can appear in the weekly and all-time leaderboard.',
       modalBodyJoined:
-        'Your best RUN score can appear in the weekly and all-time leaderboard.',
+        'Your public nickname is saved. Your best game can appear in the weekly and all-time leaderboard.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
@@ -287,18 +292,20 @@
       nicknamePlaceholder: 'Choose a nickname',
       joinCta: 'Join leaderboard',
       updateCta: 'Update nickname',
+      editProfileCta: 'Edit my nickname',
       leaveCta: 'Leave leaderboard',
       nicknameRequiredToast: 'Add a nickname first.',
       nicknameTooShortToast: 'Nickname must be at least 3 characters.',
       nicknameInvalidCharsToast:
         'Use letters, numbers, spaces, hyphens, or underscores only.',
-      saveOkToast: 'Leaderboard nickname saved.',
+      saveOkToast:
+        'Public nickname saved. You can edit it in My nickname.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
         'Nickname saved on this device. Remote sync can be connected later.',
       rankToastWeekly: 'Public weekly rank: #{rank}.',
       scoreRejectedToast:
-        'This RUN was not added to the public leaderboard this time.'
+        'This game was not added to the public leaderboard this time.'
     },
 
     firstRun: {
@@ -338,7 +345,7 @@
         bodyLines: [
           "You've seen the first quarter of the question set.",
           'Keep going. You are building your rule base.',
-          "Keep going. You are building your rule base."
+          'Keep going. You are building your rule base.'
         ],
         cta: 'Next'
       },
@@ -346,8 +353,8 @@
         title: 'Halfway there.',
         bodyLines: [
           "You've seen half of the question set.",
-          "Keep going. You are building your rule base.",
-          "See the full set first. Then fix what still catches you."
+          "You're still in the discovery phase.",
+          "Finish the full set first. Then you'll fix what still catches you."
         ],
         cta: 'Next'
       },
@@ -355,7 +362,7 @@
         title: 'Three quarters complete.',
         bodyLines: [
           "You've seen three quarters of the question set.",
-          "You are close to seeing the full question set.",
+          'You are close to seeing the full question set.',
           "One more push, then you'll know exactly what still needs work."
         ],
         cta: 'Next'
@@ -423,7 +430,7 @@
       unlockedByLabel: 'What it means',
       nextLabel: 'Next level',
       reachItLabel: 'How to unlock',
-      progressionLabel: 'Full path',
+      progressionLabel: 'Level path',
       noLevelTitle: 'Locked',
       noLevelBody: 'Finish one game to unlock your first level.',
       maxLevelBody: 'You reached the top level.',
@@ -433,24 +440,32 @@
       byLevel: {
         1: {
           label: 'COURT-READY',
-          unlock: 'Finish one RUN.',
-          sheetBody:
-            'You finished your first RUN. You are officially on the board.'
+          unlock: 'Finish one game.',
+          sheetBody: 'You finished your first game.'
         },
         2: {
-          label: 'CLUB-LEVEL',
-          unlock: 'See all questions once and clear all active mistakes.',
-          sheetBody:
-            'You cleared your active mistakes. Your rule knowledge is becoming reliable.'
+          label: 'RULE-READY',
+          unlock: 'See 25 questions.',
+          sheetBody: 'You have started building a real rules base.'
         },
         3: {
-          label: 'TOURNAMENT-LEVEL',
-          unlock: 'Build a Rapid Fire pool of 16+ and post a 70%+ run.',
-          sheetBody: 'You proved your rules under Rapid Fire pressure.'
+          label: 'RALLY-READY',
+          unlock: 'See 75 questions or score 20+ in a game.',
+          sheetBody: 'You have enough exposure or performance to handle more real-play situations.'
         },
         4: {
+          label: 'CLUB-LEVEL',
+          unlock: 'See all 200 questions once.',
+          sheetBody: 'You have seen the full rule set in the game.'
+        },
+        5: {
+          label: 'TOURNAMENT-LEVEL',
+          unlock: 'Clear active mistakes, build a Rapid Fire pool of 16+ questions, and score 70%+.',
+          sheetBody: 'You proved your rules under Rapid Fire pressure.'
+        },
+        6: {
           label: 'PRO-LEVEL',
-          unlock: 'Build a Rapid Fire pool of 50+ and post an 85%+ run.',
+          unlock: 'Build a Rapid Fire pool of 50+ questions and score 85%+.',
           sheetBody: 'You reached the top level. Keep the rules sharp.'
         }
       }
@@ -703,7 +718,7 @@
         'You made it through the full set. Now replay, fix mistakes, and know the rules better.',
       poolCompleteLine2: 'Come back later and see what you still remember.',
       directToConsolidationLine:
-        'You finished the full set with no active mistakes, so you move straight to phase 3.',
+        'You finished the full set with no active mistakes, so you are ready for the pressure test.',
       poolCompleteScoreLine: 'This game: {score} {fpShort}',
       poolCompleteCtaPrimary: 'Replay in a new order',
       poolCompleteCtaPractice: 'Fix your mistakes',

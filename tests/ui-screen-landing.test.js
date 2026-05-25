@@ -27,7 +27,7 @@ function loadLandingModules() {
   };
 }
 
-function buildHelpers(renderLeaderboardLandingCard) {
+function buildHelpers(renderLeaderboardLandingCard, overrides = {}) {
   return {
     escapeHtml(s) {
       return String(s);
@@ -66,17 +66,31 @@ function buildHelpers(renderLeaderboardLandingCard) {
         ticketCost: 1,
         ticketCap: 3,
         resetInMs: 3600000,
-        rewardAvailableToday: true
+        resetTime: '2h 58m',
+        progressPct: 0,
+        todayBestScore: 0,
+        rewardAvailableToday: true,
+        ...(overrides.dailyModel || {})
       };
     },
     getAppLevelModel() {
       return {
-        state: { currentLevel: 0 },
-        current: null,
+        state: { currentLevel: 1 },
+        current: {
+          label: 'COURT-READY',
+          sheetBody: 'You finished your first game.'
+        },
+        next: {
+          label: 'RULE-READY',
+          unlock: 'See 25 questions.'
+        },
+        maxLevel: 6,
         levelsW: {
           openDetailsAria: 'Open level details',
+          currentLabel: 'Current level',
           modalTitle: 'Levels'
-        }
+        },
+        ...(overrides.levelModel || {})
       };
     },
     getLandingStatsPreviewState() {
@@ -129,6 +143,13 @@ function createUi(runCompletes, options = {}) {
     config: {
       game: { poolSize: 200, maxChances: 3 },
       landingStats: { enabled: false, minCompletedRuns: 1 },
+      levels: {
+        maxLevel: 6,
+        level2MinSeen: 25,
+        level3MinSeen: 75,
+        level3MinBestScore: 20,
+        level4MinSeen: 200
+      },
       leaderboard: {
         enabled: true,
         showAfterRunCompletes: 1,
@@ -145,6 +166,10 @@ function createUi(runCompletes, options = {}) {
       landing: {
         subtitle: 'Learn the rules. Avoid the traps.',
         personalBestBadge: 'PERSONAL BEST',
+        levelProgressSeenTemplate: '{seen}/{target} questions seen',
+        levelProgressSeenOrScoreTemplate:
+          '{seen}/{seenTarget} questions seen · Best score {best}/{scoreTarget}',
+        levelNextTemplate: 'Next: {label}',
         personalBestTitleTemplate: 'Current score tier: {tier}',
         personalBestSubTemplate:
           'Best score: {best}. Next tier at {nextTarget}+.',
@@ -155,18 +180,21 @@ function createUi(runCompletes, options = {}) {
         personalBestLockedTitle: 'Record your score',
         personalBestLockedSub:
           'Unlock full access to record your score and keep building your best.',
-        dailyChallengeBadge: 'DAILY CHALLENGE',
-        dailyChallengeTitleTemplate: 'Goal: {targetScore}+ score',
-        dailyChallengeProgressTemplate: 'Best today: {bestToday}',
-        dailyChallengeResetTemplate: 'Resets in {resetIn}',
+        dailyChallengeBadge: "TODAY'S TARGET",
+        dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
+        dailyChallengeProgressTemplate:
+          'Today: {score}/{targetScore}. Best: {best}.',
+        dailyChallengeResetTemplate: 'Next target at {resetTime}. Best: {best}.',
+        dailyChallengeCompletedTemplate:
+          'Completed today. Next target at {resetTime}. Best: {best}.',
         dailyChallengeRewardTemplate: 'Win 1 Rapid Fire ticket',
         dailyChallengeCta: "Try today's challenge"
       },
       installPrompt: {},
       leaderboard: {
         cardTitle: 'THIS WEEK',
-        cardSubDefault: 'Public RUN leaderboard.',
-        cardCtaJoin: 'Open leaderboard',
+        cardSubDefault: 'Top scores this week.',
+        cardCtaJoin: 'Choose public nickname',
         loading: 'Loading',
         empty: 'Be the first',
         liveBadge: 'LIVE'
@@ -214,30 +242,30 @@ test('landing first visit hides personal best, daily, and leaderboard blocks', (
   expect(html).not.toContain('THIS WEEK');
 });
 
-test('landing after first completed run shows personal best, daily, and leaderboard blocks', () => {
+test('landing after first completed run shows level, daily, and leaderboard blocks', () => {
   const modules = loadLandingModules();
   const html = modules.renderLanding(
     createUi(1, { seenCount: 8 }),
     buildHelpers(modules.renderLeaderboardLandingCard)
   );
 
-  expect(html).toContain('PERSONAL BEST');
-  expect(html).toContain('Set your first score');
-  expect(html).toContain('DAILY CHALLENGE');
+  expect(html).toContain('Current level: COURT-READY');
+  expect(html).toContain('Next: RULE-READY');
+  expect(html).toContain("TODAY'S TARGET");
   expect(html).toContain('THIS WEEK');
-  expect(html).toContain('Levels');
+  expect(html).toContain('8/25 questions seen');
+  expect(html).not.toContain('PERSONAL BEST');
 });
 
-test('landing personal best first-state card starts a run directly', () => {
+test('landing daily card is clickable when the challenge can be played', () => {
   const modules = loadLandingModules();
   const html = modules.renderLanding(
     createUi(1, { bestScoreFP: 0, seenCount: 8 }),
     buildHelpers(modules.renderLeaderboardLandingCard)
   );
 
-  expect(html).toContain('PERSONAL BEST');
-  expect(html).toContain('Score 3+ to unlock your first tier.');
-  expect(html).toContain('data-action="start-run"');
+  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('data-action="start-daily-challenge"');
   expect(html).toContain('wt-landing-stat--clickable');
 });
 
@@ -249,20 +277,33 @@ test('landing hides phase progress card when no seen questions exist yet', () =>
   );
 
   expect(html).not.toContain("You've seen 0 questions so far.");
-  expect(html).toContain('Levels');
-  expect(html).toContain('PERSONAL BEST');
+  expect(html).toContain('Current level: COURT-READY');
+  expect(html).toContain("TODAY'S TARGET");
+  expect(html).not.toContain('PERSONAL BEST');
 });
 
-test('landing first-score card routes to paywall when free runs are exhausted', () => {
+test('landing does not bring back personal best when free runs are exhausted', () => {
   const modules = loadLandingModules();
   const html = modules.renderLanding(
     createUi(1, { seenCount: 8, bestScoreFP: 0, runsBalance: 0 }),
     buildHelpers(modules.renderLeaderboardLandingCard)
   );
 
-  expect(html).toContain('Record your score');
-  expect(html).toContain(
-    'Unlock full access to record your score and keep building your best.'
+  expect(html).not.toContain('PERSONAL BEST');
+  expect(html).not.toContain('Record your score');
+  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('data-action="start-daily-challenge"');
+});
+
+test('landing still shows daily card when challenge is not immediately playable', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, { seenCount: 8, bestScoreFP: 0, runsBalance: 0 }),
+    buildHelpers(modules.renderLeaderboardLandingCard, {
+      dailyModel: { challengePlayable: false, completedToday: false }
+    })
   );
-  expect(html).toContain('data-action="open-paywall"');
+
+  expect(html).toContain("TODAY'S TARGET");
+  expect(html).not.toContain('data-action="start-daily-challenge"');
 });

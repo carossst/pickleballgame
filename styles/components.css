@@ -1230,12 +1230,14 @@ button.wt-level-chip {
   gap: var(--gap-3);
   padding: var(--space-8) var(--space-10);
   border-radius: var(--r-card);
-  background: rgb(var(--surface-muted));
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
 }
 
 .wt-level-strip__item--current {
-  border: 1px solid rgb(var(--primary-depth) / var(--wt-a-28));
-  background: rgb(var(--primary) / var(--wt-a-08));
+  border: 1px solid rgb(var(--primary-depth) / var(--wt-a-34));
+  background: rgb(var(--primary) / var(--wt-a-14));
+  box-shadow: inset 0 0 0 1px rgb(var(--primary) / var(--wt-a-10));
 }
 
 .wt-level-strip__item--done {
@@ -1292,6 +1294,11 @@ button.wt-level-chip {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.wt-level-strip__item--current .wt-level-strip__pill {
+  background: rgb(var(--primary-depth));
+  color: rgb(var(--bg));
 }
 
 @supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {

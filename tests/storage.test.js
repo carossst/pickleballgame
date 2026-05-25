@@ -19,6 +19,9 @@ const baseConfig = {
   },
   game: {
     poolSize: 200
+  },
+  levels: {
+    maxLevel: 6
   }
 };
 

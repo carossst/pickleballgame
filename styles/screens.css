@@ -289,14 +289,6 @@ body.wt-state--end .wt-card--end {
   line-height: 1.22;
 }
 
-
-@media (min-width: 900px) {
-  .wt-container[data-wt-state='playing'] .wt-term-word {
-    font-size: clamp(var(--fs-lg), 2.8vw, 22px);
-    line-height: 1.28;
-  }
-}
-
 .wt-container[data-wt-state='playing'] .wt-choices {
   gap: var(--space-10);
   margin-top: var(--space-14);
@@ -543,6 +535,14 @@ body.wt-state--end .wt-card--end {
   color: rgb(var(--text));
 }
 
+.wt-leaderboard-card__best {
+  margin: var(--space-6) 0 0;
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+  font-weight: 700;
+  color: rgb(var(--text));
+}
+
 .wt-leaderboard-list,
 .wt-leaderboard-modal__list {
   list-style: none;
@@ -563,6 +563,15 @@ body.wt-state--end .wt-card--end {
 .wt-leaderboard-list__item:first-child,
 .wt-leaderboard-modal__item:first-child {
   border-top: 0;
+}
+
+.wt-leaderboard-modal__ellipsis {
+  list-style: none;
+  padding: 6px 0;
+  text-align: center;
+  color: rgb(var(--text-muted));
+  font-weight: 700;
+  letter-spacing: var(--ls-ui-wide);
 }
 
 .wt-leaderboard-list__item--player,
@@ -706,6 +715,7 @@ body.wt-state--end .wt-card--end {
 
 .wt-landing-dashboard__secondary .wt-landing-stat,
 .wt-landing-dashboard__tertiary .wt-landing-stat,
+.wt-landing-dashboard__level .wt-landing-stat,
 .wt-landing-leaderboard-section .wt-leaderboard-card,
 .wt-landing-level-quick {
   padding: var(--space-14);
@@ -723,8 +733,21 @@ body.wt-state--end .wt-card--end {
   margin-top: var(--space-18);
 }
 
+
+.wt-landing-dashboard__level {
+  margin-bottom: var(--space-12);
+}
+
+.wt-landing-dashboard__leaderboard {
+  grid-column: 1 / -1;
+}
+
 .wt-landing-leaderboard-section .wt-leaderboard-card {
   margin: 0;
+}
+
+.wt-landing-dashboard__grid .wt-landing-leaderboard-section {
+  margin-top: 0;
 }
 
 .wt-landing-stat--level {
@@ -746,6 +769,11 @@ body.wt-state--end .wt-card--end {
   }
 
   .wt-landing-dashboard__tertiary {
+    grid-column: 1 / -1;
+  }
+
+
+  .wt-landing-dashboard__leaderboard {
     grid-column: 1 / -1;
   }
 
@@ -877,6 +905,11 @@ body.wt-state--end .wt-card--end {
 
 .wt-card--landing > .wt-tagline {
   margin-top: 0;
+}
+
+.wt-card--landing > .wt-box + .wt-tagline,
+.wt-card--landing > .wt-box + .wt-landing-subtitle {
+  margin-top: var(--space-14);
 }
 
 /* ============================================

@@ -227,9 +227,10 @@
     const levelModel = getAppLevelModel(ui.storage, cfg, w);
     const levelProgress = (lastRun && typeof lastRun.levelProgress === "object") ? lastRun.levelProgress : null;
     const levelPreview = levelModel.preview || { unlockedLevel: 0, justUnlocked: false };
+    const maxLevel = clampInt(levelModel.maxLevel || 0, 0, 20);
     const unlockedLevel = levelPreview.justUnlocked
-      ? clampInt(levelPreview.unlockedLevel, 0, 4)
-      : clampInt(levelProgress?.unlockedLevel, 0, 4);
+      ? clampInt(levelPreview.unlockedLevel, 0, maxLevel)
+      : clampInt(levelProgress?.unlockedLevel, 0, maxLevel);
     const unlockDef = levelModel.defs.find((item) => item.level === unlockedLevel) || null;
     const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
     const levelUnlockHtml = ((levelPreview.justUnlocked || levelProgress?.justUnlocked) && unlockDef)

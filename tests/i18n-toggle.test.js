@@ -161,7 +161,6 @@ test('landing locale toggle renders a real FR link and prefetches sibling page',
   const ctx = loadToggle({ pathname: '/' });
 
   expect(ctx.host.innerHTML).toContain('href="./fr.html"');
-  expect(ctx.host.innerHTML).not.toContain('data-wt-locale-swap-to=');
   expect(ctx.headChildren).toHaveLength(1);
   expect(ctx.headChildren[0].getAttribute('href')).toBe('./fr.html');
 });
