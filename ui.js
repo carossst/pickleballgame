@@ -3067,6 +3067,7 @@ void (function () {
         if (ignoreUntil > 0 && Date.now() <= ignoreUntil) {
           try {
             if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
             if (e && typeof e.stopImmediatePropagation === 'function') {
               e.stopImmediatePropagation();
             } else if (e && typeof e.stopPropagation === 'function') {
@@ -3075,7 +3076,8 @@ void (function () {
           } catch (_) {
             /* silent */
           }
-          return false;
+
+          return true;
         }
 
         // KISS: if user toggles the Share <details> near the bottom of the viewport,

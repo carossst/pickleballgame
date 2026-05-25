@@ -49,36 +49,6 @@
     `;
   }
 
-  function renderLevelProgressCard(levelModel, escapeHtml) {
-    const levelsW = levelModel?.levelsW || {};
-    const currentLevel = Number(levelModel?.state?.currentLevel || 0);
-    const current = levelModel?.current || null;
-    const next = levelModel?.next || null;
-    const label = String(levelsW.modalTitle || "").trim();
-    const title = currentLevel > 0
-      ? String(current?.label || "").trim()
-      : String(levelsW.noLevelTitle || "").trim();
-    const sub = currentLevel > 0
-      ? (
-        next
-          ? `${String(levelsW.nextLabel || "Next level").trim()}: ${String(next.label || "").trim()}. ${String(next.unlock || "").trim()}`
-          : String(levelsW.maxLevelBody || "").trim()
-      )
-      : String(levelsW.noLevelBody || "").trim();
-
-    if (!label && !title && !sub) return "";
-
-    return `
-      <section class="wt-box wt-box--tinted wt-landing-stat wt-landing-stat--level" aria-label="${escapeHtml(label || title || sub)}" data-action="open-level-progress" role="button" tabindex="0">
-        <div class="wt-landing-stat__header">
-          ${label ? `<span class="wt-landing-stat__label">${escapeHtml(label)}</span>` : ``}
-        </div>
-        ${title ? `<p class="wt-landing-stat__title">${escapeHtml(title)}</p>` : ``}
-        ${sub ? `<p class="wt-landing-stat__sub">${escapeHtml(sub)}</p>` : ``}
-      </section>
-    `;
-  }
-
   function render(ui, helpers) {
     const {
       escapeHtml,
@@ -194,14 +164,6 @@
           (b == null) ? a :
             Math.max(a, b);
     const runPlays = Math.max(runCompletes, (c == null ? 0 : c));
-    let runsBalance = null;
-    if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
-      try {
-        const v = Number(ui.storage.getRunsBalance());
-        runsBalance = Number.isFinite(v) ? v : null;
-      } catch (_) { runsBalance = null; }
-    }
-    const runsExhausted = (!premium && Number.isFinite(runsBalance) && runsBalance <= 0);
 
     let showLandingInstallPrompt = false;
     try {
@@ -287,10 +249,16 @@
 
     const levelModel = getAppLevelModel(ui.storage, cfg, w);
     const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
-    const levelBadgeLabel = String(
+    const levelCurrentLabel = String(levelModel.levelsW?.currentLabel || "").trim();
+    const levelCurrentValue = String(
       (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
         ? levelModel.current.label
-        : (levelModel.levelsW?.modalTitle || "")
+        : (levelModel.levelsW?.noLevelTitle || "")
+    ).trim();
+    const levelBadgeLabel = String(
+      (levelCurrentLabel && levelCurrentValue)
+        ? `${levelCurrentLabel}: ${levelCurrentValue}`
+        : levelCurrentValue
     ).trim();
     const landingLevelBadgeHtml = levelBadgeLabel
       ? `
@@ -301,8 +269,8 @@
           </div>
         `
       : "";
-    const levelProgressQuickHtml = (Number.isFinite(runCompletes) && runCompletes >= 1)
-      ? renderLevelProgressCard(levelModel, escapeHtml)
+    const levelProgressQuickHtml = (landingLevelBadgeHtml && Number.isFinite(runCompletes) && runCompletes >= 1)
+      ? `<div class="wt-landing-level-quick">${landingLevelBadgeHtml}</div>`
       : "";
 
     let welcomeBackHtml = "";
@@ -422,21 +390,13 @@
       const bestTopTpl = String(landing.personalBestTopTierTemplate || "").trim();
       const bestFirstTitle = String(landing.personalBestFirstTitle || "").trim();
       const bestFirstSubTpl = String(landing.personalBestFirstSubTemplate || "").trim();
-      const bestLockedTitle = String(landing.personalBestLockedTitle || "").trim();
-      const bestLockedSub = String(landing.personalBestLockedSub || "").trim();
       const bestCardActionAria = String(landing.ctaPlayAfterFirstRun || landing.ctaPlay || "").trim();
-      const bestLockedActionAria = String(landing.postPaywallCta || "").trim();
-      const isLockedFirstScore = !premium && bestScoreFP <= 0 && runsExhausted;
 
-      const bestTitle = isLockedFirstScore
-        ? bestLockedTitle
-        : (bestScoreFP > 0 && bestTitleTpl)
+      const bestTitle = (bestScoreFP > 0 && bestTitleTpl)
         ? fillTemplate(bestTitleTpl, { tier: tierInfo.currentLabel || "", best: String(bestScoreFP) })
         : bestFirstTitle;
 
-      const bestSub = isLockedFirstScore
-        ? bestLockedSub
-        : (bestScoreFP > 0)
+      const bestSub = (bestScoreFP > 0)
         ? (
           tierInfo.nextTarget != null
             ? fillTemplate(bestSubTpl, {
@@ -451,14 +411,29 @@
       const shouldShowPersonalBest = Number.isFinite(runCompletes) && runCompletes >= 1;
 
       if (shouldShowPersonalBest && (bestBadge || bestTitle || bestSub)) {
+        let bestCardAction = "";
+        let bestCardAria = "";
+
+        if (bestScoreFP <= 0) {
+          let runsBalance = NaN;
+          if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
+            try { runsBalance = Number(ui.storage.getRunsBalance()); } catch (_) { runsBalance = NaN; }
+          }
+          const runsExhausted = !premium && Number.isFinite(runsBalance) && runsBalance <= 0;
+          bestCardAction = runsExhausted ? "open-paywall" : "start-run";
+          bestCardAria = runsExhausted
+            ? String(landing.postPaywallCta || bestCardActionAria || "").trim()
+            : bestCardActionAria;
+        }
+
         personalBestCardHtml = renderLandingStatsCard({
           label: bestBadge,
           title: bestTitle,
           sub: bestSub,
           pct: (bestScoreFP > 0) ? tierInfo.progressPct : 0,
           progressClass: "",
-          cardAction: (bestScoreFP <= 0) ? (isLockedFirstScore ? "open-paywall" : "start-run") : "",
-          cardActionAria: (bestScoreFP <= 0) ? (isLockedFirstScore ? bestLockedActionAria : bestCardActionAria) : ""
+          cardAction: bestCardAction,
+          cardActionAria: bestCardAria
         }, escapeHtml);
       }
     } catch (_) { /* silent */ }
@@ -690,14 +665,11 @@
     const leaderboardLandingHtml = renderLeaderboardLandingCard(ui);
     const primaryInsightHtml = dailyChallengeIncomplete ? dailyChallengeCardHtml : personalBestCardHtml;
     const secondaryInsightHtml = dailyChallengeIncomplete ? personalBestCardHtml : dailyChallengeCardHtml;
-    const tertiaryInsightHtml = (!welcomeBackHtml && levelProgressQuickHtml)
-      ? secondaryInsightHtml
-      : "";
     const hasDashboard = Boolean(
       welcomeBackHtml ||
       primaryInsightHtml ||
       secondaryInsightHtml ||
-      tertiaryInsightHtml ||
+      leaderboardLandingHtml ||
       levelProgressQuickHtml
     );
 
@@ -808,23 +780,12 @@ ${(() => {
             ${welcomeBackHtml}
           </div>
         ` : ``}
-        ${(!welcomeBackHtml && (primaryInsightHtml || levelProgressQuickHtml || secondaryInsightHtml)) ? `
-          <div class="wt-landing-dashboard__grid">
-            ${primaryInsightHtml ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
-            ${levelProgressQuickHtml ? `<div class="wt-landing-dashboard__secondary">${levelProgressQuickHtml}</div>` : ``}
-          </div>
-        ` : ``}
+        ${(!welcomeBackHtml && levelProgressQuickHtml) ? levelProgressQuickHtml : ``}
         <div class="wt-landing-dashboard__grid">
-          ${(welcomeBackHtml && primaryInsightHtml) ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
-          ${(welcomeBackHtml && secondaryInsightHtml) ? `<div class="wt-landing-dashboard__secondary">${secondaryInsightHtml}</div>` : ``}
-          ${tertiaryInsightHtml ? `<div class="wt-landing-dashboard__tertiary">${tertiaryInsightHtml}</div>` : ``}
+          ${primaryInsightHtml ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
+          ${secondaryInsightHtml ? `<div class="wt-landing-dashboard__secondary">${secondaryInsightHtml}</div>` : ``}
+          ${leaderboardLandingHtml ? `<div class="wt-landing-dashboard__leaderboard wt-landing-leaderboard-section">${leaderboardLandingHtml}</div>` : ``}
         </div>
-      </section>
-    ` : ``}
-
-    ${leaderboardLandingHtml ? `
-      <section class="wt-landing-leaderboard-section">
-        ${leaderboardLandingHtml}
       </section>
     ` : ``}
 

@@ -60,6 +60,8 @@ const ASSETS_TO_CACHE = [
   "./i18n-toggle.js",
   "./content-adapter.js",
   "./icons.js",
+  "./logic/rapidfire-logic.js",
+  "./logic/leaderboard-logic.js",
   "./success.js",
   "./storage.js",
   "./game.js",
@@ -114,6 +116,8 @@ const CRITICAL_ASSETS = [
   "./i18n.js",
   "./content-adapter.js",
   "./icons.js",
+  "./logic/rapidfire-logic.js",
+  "./logic/leaderboard-logic.js",
   "./storage.js",
   "./game.js",
   "./ui.js",
@@ -250,6 +254,8 @@ function isNetworkFirstAppShellRequest(req, url) {
     path === "/i18n-toggle.js" ||
     path === "/content-adapter.js" ||
     path === "/icons.js" ||
+    path === "/logic/rapidfire-logic.js" ||
+    path === "/logic/leaderboard-logic.js" ||
     path === "/success.js" ||
     path === "/storage.js" ||
     path === "/game.js" ||
