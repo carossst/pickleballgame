@@ -379,7 +379,9 @@
         )
         : fillTemplate(bestFirstSubTpl, { nextTarget: String(tierInfo.nextTarget || 3) });
 
-      if (bestBadge || bestTitle || bestSub) {
+      const shouldShowPersonalBest = Number.isFinite(runCompletes) && runCompletes >= 1;
+
+      if (shouldShowPersonalBest && (bestBadge || bestTitle || bestSub)) {
         personalBestCardHtml = renderLandingStatsCard({
           label: bestBadge,
           title: bestTitle,
