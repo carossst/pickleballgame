@@ -212,9 +212,9 @@
       statsSeenLabel: 'Questions vues',
 
       statsSeenSummaryTemplate: 'Questions vues : {seen}',
-      statsPhaseBadgeDiscovery: 'Phase 1/3 : Premier passage',
-      statsPhaseBadgeCorrection: 'Phase 2/3 : Corriger les erreurs',
-      statsPhaseBadgeConsolidation: 'Phase 3/3 : Test sous pression',
+      statsPhaseBadgeDiscovery: 'Continuez',
+      statsPhaseBadgeCorrection: 'Corriger les erreurs',
+      statsPhaseBadgeConsolidation: 'Test sous pression',
 
       statsSeenCompleteLabel: 'Progression du quiz',
       statsMistakesLabel: 'Erreurs',
@@ -269,9 +269,11 @@
         'Classement public des RUNs. Votre meilleure RUN peut apparaître ici.',
       cardCtaJoin: 'Choisir un pseudo public',
       cardCtaView: 'Voir le classement',
-      statusBadge: 'MIS À JOUR',
-      lastUpdatedTemplate: 'Dernière mise à jour : {time}',
-      nextRefreshTemplate: 'Prochaine mise à jour : {time}',
+      statusBadge: '',
+      lastUpdatedTemplate: '',
+      nextRefreshTemplate: '',
+      cardWeeklyResetLine:
+        'Remise à zéro hebdomadaire : {localTime}, votre heure locale.',
       weeklyResetLine:
         'Remise à zéro hebdomadaire : {localTime}, votre heure locale (lundi 00:00 UTC).',
       loading: 'Chargement du classement...',
@@ -339,8 +341,8 @@
         title: 'Premier quart terminé.',
         bodyLines: [
           'Vous avez vu le premier quart des questions.',
-          'Toujours phase 1 : la découverte.',
-          'Continuez. Vous parcourez les règles une première fois.'
+          'Continuez. Vous construisez votre base de règles.',
+          'Continuez. Vous construisez votre base de règles.'
         ],
         cta: 'Suivant'
       },
@@ -348,8 +350,8 @@
         title: 'Moitié atteinte.',
         bodyLines: [
           'Vous avez vu la moitié des questions.',
-          'Vous êtes toujours en phase de découverte.',
-          "Finissez d'abord le tour complet. Vous corrigerez ensuite ce qui vous piège encore."
+          'Continuez. Vous construisez votre base de règles.',
+          "Voyez d'abord toutes les questions. Corrigez ensuite ce qui vous piège encore."
         ],
         cta: 'Suivant'
       },
@@ -357,7 +359,7 @@
         title: 'Trois quarts terminés.',
         bodyLines: [
           'Vous avez vu trois quarts des questions.',
-          'Vous approchez de la fin de la phase 1.',
+          'Vous approchez du tour complet des questions.',
           'Encore un effort, puis vous saurez exactement quoi retravailler.'
         ],
         cta: 'Suivant'
@@ -366,12 +368,12 @@
 
     phaseJourney: {
       discovery: {
-        badge: 'Phase 1/3 : Premier passage',
+        badge: 'Continuez',
         landingSummaryTemplate: 'Vous avez déjà vu {seen} questions.',
         landingDetailTemplate:
-          'Il vous en reste {remaining} pour terminer ce premier passage.',
+          'Il vous reste {remaining} questions pour terminer le tour complet.',
         endLens:
-          "Vous faites votre premier passage. L'objectif est maintenant de voir plus de questions.",
+          'Continuez. L’objectif est maintenant de voir plus de questions.',
         micropics: {
           streakStart: "3 d'affilée. Bonne lecture.",
           streakBuilding: "6 d'affilée. Bonne lecture.",
@@ -383,7 +385,7 @@
         }
       },
       correction: {
-        badge: 'Phase 2/3 : Corriger les erreurs',
+        badge: 'Corriger les erreurs',
         landingSummaryTemplate: 'Erreurs restantes : {mistakes}',
         landingDetail:
           'Vous avez vu toutes les questions. Corrigez maintenant les règles qui vous piègent encore.',
@@ -400,7 +402,7 @@
         }
       },
       consolidation: {
-        badge: 'Phase 3/3 : Test sous pression',
+        badge: 'Test sous pression',
         landingSummaryTemplate: 'Aucune erreur active',
         landingDetail:
           'Vos erreurs sont corrigées. Testez votre score en Mode Rapide.',

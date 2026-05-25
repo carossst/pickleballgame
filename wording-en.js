@@ -210,9 +210,9 @@
       statsSeenLabel: 'Questions seen',
 
       statsSeenSummaryTemplate: 'Seen: {seen} questions',
-      statsPhaseBadgeDiscovery: 'Phase 1/3: First pass',
-      statsPhaseBadgeCorrection: 'Phase 2/3: Fix mistakes',
-      statsPhaseBadgeConsolidation: 'Phase 3/3: Pressure test',
+      statsPhaseBadgeDiscovery: 'Keep going',
+      statsPhaseBadgeCorrection: 'Fix mistakes',
+      statsPhaseBadgeConsolidation: 'Pressure test',
 
       statsSeenCompleteLabel: 'Quiz progress',
       statsMistakesLabel: 'Mistakes',
@@ -265,9 +265,11 @@
       cardSubJoined: 'Public RUN leaderboard. Your best RUN can appear here.',
       cardCtaJoin: 'Choose public nickname',
       cardCtaView: 'View leaderboard',
-      statusBadge: 'UPDATED',
-      lastUpdatedTemplate: 'Last updated: {time}',
-      nextRefreshTemplate: 'Next update: {time}',
+      statusBadge: '',
+      lastUpdatedTemplate: '',
+      nextRefreshTemplate: '',
+      cardWeeklyResetLine:
+        'Weekly reset: {localTime}, your time.',
       weeklyResetLine:
         'Weekly reset: {localTime}, your time (Monday 00:00 UTC).',
       loading: 'Loading leaderboard...',
@@ -335,8 +337,8 @@
         title: 'First quarter complete.',
         bodyLines: [
           "You've seen the first quarter of the question set.",
-          'This is still phase 1: discovery.',
-          "Keep going. You're building your first pass through the rules."
+          'Keep going. You are building your rule base.',
+          "Keep going. You are building your rule base."
         ],
         cta: 'Next'
       },
@@ -344,8 +346,8 @@
         title: 'Halfway there.',
         bodyLines: [
           "You've seen half of the question set.",
-          "You're still in the discovery phase.",
-          "Finish the full set first. Then you'll fix what still catches you."
+          "Keep going. You are building your rule base.",
+          "See the full set first. Then fix what still catches you."
         ],
         cta: 'Next'
       },
@@ -353,7 +355,7 @@
         title: 'Three quarters complete.',
         bodyLines: [
           "You've seen three quarters of the question set.",
-          "You're close to finishing phase 1.",
+          "You are close to seeing the full question set.",
           "One more push, then you'll know exactly what still needs work."
         ],
         cta: 'Next'
@@ -362,11 +364,11 @@
 
     phaseJourney: {
       discovery: {
-        badge: 'Phase 1/3: First pass',
+        badge: 'Keep going',
         landingSummaryTemplate: "You've seen {seen} questions so far.",
-        landingDetailTemplate: '{remaining} left in your first pass.',
+        landingDetailTemplate: '{remaining} questions left in the full set.',
         endLens:
-          "You're still on your first pass. Right now the goal is to cover more of the set.",
+          'Keep going. Right now the goal is to cover more of the set.',
         micropics: {
           streakStart: '3 in a row. Good read.',
           streakBuilding: '6 in a row. Good read.',
@@ -378,7 +380,7 @@
         }
       },
       correction: {
-        badge: 'Phase 2/3: Fix mistakes',
+        badge: 'Fix mistakes',
         landingSummaryTemplate: 'Mistakes left: {mistakes}',
         landingDetail:
           "You've seen the full set. Now clear the rules that still catch you.",
@@ -395,7 +397,7 @@
         }
       },
       consolidation: {
-        badge: 'Phase 3/3: Pressure test',
+        badge: 'Pressure test',
         landingSummaryTemplate: 'No active mistakes',
         landingDetail: 'Your mistakes are clear. Build your Rapid Fire score.',
         endLens: 'Your mistakes are clear. Build your Rapid Fire score.',

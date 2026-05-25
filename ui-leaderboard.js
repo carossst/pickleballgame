@@ -305,23 +305,20 @@
     const loadingLabel = String(w.loading || '').trim();
     const emptyLabel = String(w.empty || '').trim();
     const statusBadge = String(w.statusBadge || '').trim();
-    const lastUpdatedTemplate = String(w.lastUpdatedTemplate || '').trim();
-    const nextRefreshTemplate = String(w.nextRefreshTemplate || '').trim();
-    const lastUpdatedTime = formatLocalTime(model.lastFetchedAt);
-    const nextRefreshTime = formatLocalTime(model.nextRefreshAt);
+    const landingWeeklyResetTemplate = String(
+      w.cardWeeklyResetLine || ''
+    ).trim();
+    const weeklyResetTime = formatLocalWeekdayTime(
+      getNextWeeklyResetUtcMs(Date.now())
+    );
+    const weeklyResetLine =
+      landingWeeklyResetTemplate && weeklyResetTime
+        ? fillTemplate(landingWeeklyResetTemplate, { localTime: weeklyResetTime })
+        : landingWeeklyResetTemplate;
 
-    const freshnessHtml = [
-      lastUpdatedTemplate && lastUpdatedTime
-        ? fillTemplate(lastUpdatedTemplate, { time: lastUpdatedTime })
-        : '',
-      nextRefreshTemplate && nextRefreshTime
-        ? fillTemplate(nextRefreshTemplate, { time: nextRefreshTime })
-        : ''
-    ]
-      .map((line) => String(line || '').trim())
-      .filter(Boolean)
-      .map((line) => `<span>${escapeHtml(line)}</span>`)
-      .join('');
+    const freshnessHtml = weeklyResetLine
+      ? `<span>${escapeHtml(weeklyResetLine)}</span>`
+      : '';
 
     const rowsHtml = model.loading
       ? `<p class="wt-muted">${escapeHtml(loadingLabel)}</p>`
