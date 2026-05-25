@@ -237,11 +237,11 @@
       dailyChallengeBadge: "DAILY CHALLENGE",
       dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
       dailyChallengeProgressTemplate:
-        'Today: {score}/{targetScore}. Come back at {resetTime} if you miss it.',
+        'Today: {score}/{targetScore}.',
       dailyChallengeResetTemplate:
-        'Come back at {resetTime} for today\'s target.',
+        'Today: 0/{targetScore}.',
       dailyChallengeCompletedTemplate:
-        'Daily challenge cleared. Next challenge at {resetTime}.',
+        'Daily challenge cleared.\nNew target tomorrow.',
       dailyChallengeRewardTemplate:
         "Beat today's target to earn 1 Rapid Fire ticket.",
       dailyChallengeRewardCappedTemplate:

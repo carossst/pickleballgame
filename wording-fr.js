@@ -240,11 +240,11 @@
       dailyChallengeBadge: 'DÉFI DU JOUR',
       dailyChallengeTitleTemplate: 'Atteignez {targetScore}+ aujourd\'hui',
       dailyChallengeProgressTemplate:
-        "Aujourd'hui : {score}/{targetScore}. Revenez à {resetTime} si vous le manquez.",
+        "Aujourd'hui : {score}/{targetScore}.",
       dailyChallengeResetTemplate:
-        "Revenez à {resetTime} pour l'objectif du jour.",
+        "Aujourd'hui : 0/{targetScore}.",
       dailyChallengeCompletedTemplate:
-        'Défi du jour réussi. Prochain défi à {resetTime}.',
+        'Défi du jour réussi.\nNouvel objectif demain.',
       dailyChallengeRewardTemplate:
         'Réussissez le défi du jour pour gagner 1 jeton Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
