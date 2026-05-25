@@ -476,19 +476,25 @@
         if (dailyModel.rewardPendingReplay && dailyRewardPendingTpl) {
           dailySub = fillTemplate(dailyRewardPendingTpl, {
             targetScore: String(dailyModel.targetScore),
+            best: String(dailyBestScoreFP || 0),
             time: String(dailyModel.resetCountdown || "")
           });
         } else if (dailyModel.completedToday && dailyCompletedTpl) {
-          dailySub = fillTemplate(dailyCompletedTpl, { time: String(dailyModel.resetCountdown || "") });
+          dailySub = fillTemplate(dailyCompletedTpl, {
+            best: String(dailyBestScoreFP || 0),
+            time: String(dailyModel.resetCountdown || "")
+          });
         } else if (!dailyModel.completedToday && dailyModel.progressPct > 0 && dailyProgressTpl) {
           dailySub = fillTemplate(dailyProgressTpl, {
             score: String(dailyModel.todayBestScore || 0),
             targetScore: String(dailyModel.targetScore),
+            best: String(dailyBestScoreFP || 0),
             time: String(dailyModel.resetCountdown || "")
           });
         } else if (!dailyModel.completedToday && dailyResetTpl) {
           dailySub = fillTemplate(dailyResetTpl, {
             targetScore: String(dailyModel.targetScore),
+            best: String(dailyBestScoreFP || 0),
             time: String(dailyModel.resetCountdown || "")
           });
         }
@@ -663,8 +669,10 @@
 `;
 
     const leaderboardLandingHtml = renderLeaderboardLandingCard(ui);
-    const primaryInsightHtml = dailyChallengeIncomplete ? dailyChallengeCardHtml : personalBestCardHtml;
-    const secondaryInsightHtml = dailyChallengeIncomplete ? personalBestCardHtml : dailyChallengeCardHtml;
+    // Landing KISS: Daily Challenge owns the score target once available.
+    // Personal best remains a fallback only, so users do not see two competing score goals.
+    const primaryInsightHtml = dailyChallengeCardHtml || personalBestCardHtml;
+    const secondaryInsightHtml = "";
     const hasDashboard = Boolean(
       welcomeBackHtml ||
       primaryInsightHtml ||

@@ -2086,7 +2086,10 @@
       this.config?.levels && typeof this.config.levels === 'object'
         ? this.config.levels
         : {};
-    const level1MinRunCompletes = Math.max(1, clampNonNegativeInt(levelsCfg.level1MinRunCompletes));
+    const level1MinRunCompletes = Math.max(
+      1,
+      clampNonNegativeInt(levelsCfg.level1MinRunCompletes)
+    );
     const level3MinSeen = clampNonNegativeInt(levelsCfg.level3MinSeen);
     const level4MinSeen = clampNonNegativeInt(levelsCfg.level4MinSeen);
     const level3MinAccuracy = Number(levelsCfg.level3MinAccuracy);

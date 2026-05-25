@@ -210,9 +210,9 @@
       statsSeenLabel: 'Questions seen',
 
       statsSeenSummaryTemplate: 'Seen: {seen} questions',
-      statsPhaseBadgeDiscovery: 'Phase 1/3: First pass',
-      statsPhaseBadgeCorrection: 'Phase 2/3: Fix mistakes',
-      statsPhaseBadgeConsolidation: 'Phase 3/3: Pressure test',
+      statsPhaseBadgeDiscovery: 'Keep going',
+      statsPhaseBadgeCorrection: 'Fix mistakes',
+      statsPhaseBadgeConsolidation: 'Pressure test',
 
       statsSeenCompleteLabel: 'Quiz progress',
       statsMistakesLabel: 'Mistakes',
@@ -229,22 +229,21 @@
       personalBestLockedTitle: 'Record your score',
       personalBestLockedSub:
         'Unlock full access to record your score and keep building your best.',
-      progressSectionTitle: 'YOUR PROGRESS',
-      progressSectionBody: 'Pick one next step and keep moving.',
-      dailyChallengeBadge: "TODAY'S CHALLENGE",
-      dailyChallengeTitleTemplate: 'Goal: {targetScore}+ score',
+      progressSectionTitle: 'NEXT UP',
+      progressSectionBody: '',
+      dailyChallengeBadge: "TODAY'S TARGET",
+      dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
       dailyChallengeProgressTemplate:
-        'Today: {score}/{targetScore} score. Resets in {time}.',
+        'Today: {score}/{targetScore}. Best: {best}. Resets in {time}.',
       dailyChallengeResetTemplate:
-        'Reach {targetScore}+ score. Resets in {time}.',
+        'Best: {best}. Resets in {time}.',
       dailyChallengeCompletedTemplate:
-        'Completed today. Resets in {time}. Come back tomorrow for a new challenge.',
-      dailyChallengeRewardTemplate:
-        "Clear today's challenge to earn 1 Rapid Fire ticket.",
+        'Completed today. Best: {best}. Resets in {time}. Come back tomorrow for the next target.',
+      dailyChallengeRewardTemplate: 'Reward: 1 Rapid Fire ticket.',
       dailyChallengeRewardCappedTemplate:
-        'Tickets are capped at {cap}. Spend one to earn another.',
+        'Tickets full. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
-        'You already cleared it once. Clear it again today on your last free run to earn 1 Rapid Fire ticket.',
+        'Already cleared once. Clear it again on your last free run to earn 1 Rapid Fire ticket.',
       dailyChallengeCta: 'Start challenge',
 
       postPaywallTitle: 'Your free preview is complete.',
@@ -334,8 +333,8 @@
         title: 'First quarter complete.',
         bodyLines: [
           "You've seen the first quarter of the question set.",
-          'This is still phase 1: discovery.',
-          "Keep going. You're building your first pass through the rules."
+          'Keep going. You are building your rule base.',
+          "Keep going. You are building your rule base."
         ],
         cta: 'Next'
       },
@@ -343,8 +342,8 @@
         title: 'Halfway there.',
         bodyLines: [
           "You've seen half of the question set.",
-          "You're still in the discovery phase.",
-          "Finish the full set first. Then you'll fix what still catches you."
+          "Keep going. You are building your rule base.",
+          "See the full set first. Then fix what still catches you."
         ],
         cta: 'Next'
       },
@@ -352,7 +351,7 @@
         title: 'Three quarters complete.',
         bodyLines: [
           "You've seen three quarters of the question set.",
-          "You're close to finishing phase 1.",
+          "You are close to seeing the full question set.",
           "One more push, then you'll know exactly what still needs work."
         ],
         cta: 'Next'
@@ -361,11 +360,11 @@
 
     phaseJourney: {
       discovery: {
-        badge: 'Phase 1/3: First pass',
+        badge: 'Keep going',
         landingSummaryTemplate: "You've seen {seen} questions so far.",
-        landingDetailTemplate: '{remaining} left in your first pass.',
+        landingDetailTemplate: '{remaining} questions left in the full set.',
         endLens:
-          "You're still on your first pass. Right now the goal is to cover more of the set.",
+          'Keep going. Right now the goal is to cover more of the set.',
         micropics: {
           streakStart: '3 in a row. Good read.',
           streakBuilding: '6 in a row. Good read.',
@@ -377,7 +376,7 @@
         }
       },
       correction: {
-        badge: 'Phase 2/3: Fix mistakes',
+        badge: 'Fix mistakes',
         landingSummaryTemplate: 'Mistakes left: {mistakes}',
         landingDetail:
           "You've seen the full set. Now clear the rules that still catch you.",
@@ -394,7 +393,7 @@
         }
       },
       consolidation: {
-        badge: 'Phase 3/3: Pressure test',
+        badge: 'Pressure test',
         landingSummaryTemplate: 'No active mistakes',
         landingDetail: 'Your mistakes are clear. Build your Rapid Fire score.',
         endLens: 'Your mistakes are clear. Build your Rapid Fire score.',
@@ -700,7 +699,7 @@
         'You made it through the full set. Now replay, fix mistakes, and know the rules better.',
       poolCompleteLine2: 'Come back later and see what you still remember.',
       directToConsolidationLine:
-        'You finished the full set with no active mistakes, so you move straight to phase 3.',
+        'You finished the full set with no active mistakes, so you are ready for the pressure test.',
       poolCompleteScoreLine: 'This game: {score} {fpShort}',
       poolCompleteCtaPrimary: 'Replay in a new order',
       poolCompleteCtaPractice: 'Fix your mistakes',

@@ -159,13 +159,12 @@
     },
 
     // Persistent level system
-    // - No default badge before phase 1 is completed
+    // - No default badge before the first level is unlocked
     // - Levels are permanent once unlocked
-    // - Unlocks are phase-gated:
-    //   L1: first completed RUN
-    //   L2: all active mistakes cleared
-    //   L3: L2 + Rapid Fire pool >= level3MinSeen + Rapid Fire run >= level3MinAccuracy
-    //   L4: L3 + Rapid Fire pool >= level4MinSeen + Rapid Fire run >= level4MinAccuracy
+    // - L1: one completed RUN
+    // - L2: all questions seen once + active mistakes cleared
+    // - L3: L2 + Rapid Fire pool >= level3MinSeen + Rapid Fire run >= level3MinAccuracy
+    // - L4: L3 + Rapid Fire pool >= level4MinSeen + Rapid Fire run >= level4MinAccuracy
     // - Level preview is UI-only and fail-closed:
     //   ?levelPreview=none|level1|level2|level3|level4|unlock1|unlock2|unlock3|unlock4
     levels: {

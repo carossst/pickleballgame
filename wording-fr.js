@@ -212,9 +212,9 @@
       statsSeenLabel: 'Questions vues',
 
       statsSeenSummaryTemplate: 'Questions vues : {seen}',
-      statsPhaseBadgeDiscovery: 'Phase 1/3 : Premier passage',
-      statsPhaseBadgeCorrection: 'Phase 2/3 : Corriger les erreurs',
-      statsPhaseBadgeConsolidation: 'Phase 3/3 : Test sous pression',
+      statsPhaseBadgeDiscovery: 'Continuez',
+      statsPhaseBadgeCorrection: 'Corriger les erreurs',
+      statsPhaseBadgeConsolidation: 'Test sous pression',
 
       statsSeenCompleteLabel: 'Progression du quiz',
       statsMistakesLabel: 'Erreurs',
@@ -232,22 +232,21 @@
       personalBestLockedTitle: 'Enregistrez votre score',
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
-      progressSectionTitle: 'VOTRE PROGRESSION',
-      progressSectionBody: 'Choisissez une prochaine étape utile et continuez.',
-      dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Objectif : {targetScore}+ au score',
+      progressSectionTitle: 'À FAIRE',
+      progressSectionBody: '',
+      dailyChallengeBadge: 'OBJECTIF DU JOUR',
+      dailyChallengeTitleTemplate: "Atteignez {targetScore}+ aujourd'hui",
       dailyChallengeProgressTemplate:
-        "Aujourd'hui : {score}/{targetScore} au score. Réinitialisation dans {time}.",
+        "Aujourd'hui : {score}/{targetScore}. Record : {best}. Réinitialisation dans {time}.",
       dailyChallengeResetTemplate:
-        'Atteignez {targetScore}+ au score. Réinitialisation dans {time}.',
+        'Record : {best}. Réinitialisation dans {time}.',
       dailyChallengeCompletedTemplate:
-        "Terminé aujourd'hui. Réinitialisation dans {time}. Revenez demain pour un nouveau défi.",
-      dailyChallengeRewardTemplate:
-        'Réussissez le défi du jour pour gagner 1 ticket Mode Rapide.',
+        "Terminé aujourd'hui. Record : {best}. Réinitialisation dans {time}. Revenez demain pour le prochain objectif.",
+      dailyChallengeRewardTemplate: 'Récompense : 1 ticket Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
-        'Les tickets sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
+        'Tickets au maximum. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
-        "Vous l'avez déjà réussi une fois. Réussissez-le à nouveau aujourd'hui sur votre dernière run gratuite pour gagner 1 ticket Mode Rapide.",
+        "Déjà réussi une fois. Réussissez-le à nouveau sur votre dernière run gratuite pour gagner 1 ticket Mode Rapide.",
       dailyChallengeCta: 'Commencer',
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
@@ -338,8 +337,8 @@
         title: 'Premier quart terminé.',
         bodyLines: [
           'Vous avez vu le premier quart des questions.',
-          'Toujours phase 1 : la découverte.',
-          'Continuez. Vous parcourez les règles une première fois.'
+          'Continuez. Vous construisez votre base de règles.',
+          'Continuez. Vous construisez votre base de règles.'
         ],
         cta: 'Suivant'
       },
@@ -347,8 +346,8 @@
         title: 'Moitié atteinte.',
         bodyLines: [
           'Vous avez vu la moitié des questions.',
-          'Vous êtes toujours en phase de découverte.',
-          "Finissez d'abord le tour complet. Vous corrigerez ensuite ce qui vous piège encore."
+          'Continuez. Vous construisez votre base de règles.',
+          "Voyez d'abord toutes les questions. Vous corrigerez ensuite ce qui vous piège encore."
         ],
         cta: 'Suivant'
       },
@@ -356,7 +355,7 @@
         title: 'Trois quarts terminés.',
         bodyLines: [
           'Vous avez vu trois quarts des questions.',
-          'Vous approchez de la fin de la phase 1.',
+          "Vous approchez du tour complet des questions.",
           'Encore un effort, puis vous saurez exactement quoi retravailler.'
         ],
         cta: 'Suivant'
@@ -365,12 +364,12 @@
 
     phaseJourney: {
       discovery: {
-        badge: 'Phase 1/3 : Premier passage',
+        badge: 'Continuez',
         landingSummaryTemplate: 'Vous avez déjà vu {seen} questions.',
         landingDetailTemplate:
-          'Il vous en reste {remaining} pour terminer ce premier passage.',
+          'Il reste {remaining} questions dans le tour complet.',
         endLens:
-          "Vous faites votre premier passage. L'objectif est maintenant de voir plus de questions.",
+          "Continuez. L'objectif est maintenant de voir plus de questions.",
         micropics: {
           streakStart: "3 d'affilée. Bonne lecture.",
           streakBuilding: "6 d'affilée. Bonne lecture.",
@@ -382,7 +381,7 @@
         }
       },
       correction: {
-        badge: 'Phase 2/3 : Corriger les erreurs',
+        badge: 'Corriger les erreurs',
         landingSummaryTemplate: 'Erreurs restantes : {mistakes}',
         landingDetail:
           'Vous avez vu toutes les questions. Corrigez maintenant les règles qui vous piègent encore.',
@@ -399,7 +398,7 @@
         }
       },
       consolidation: {
-        badge: 'Phase 3/3 : Test sous pression',
+        badge: 'Test sous pression',
         landingSummaryTemplate: 'Aucune erreur active',
         landingDetail:
           'Vos erreurs sont corrigées. Testez votre score en Mode Rapide.',
@@ -719,7 +718,7 @@
       poolCompleteLine2:
         'Revenez plus tard pour voir ce qui reste vraiment acquis.',
       directToConsolidationLine:
-        "Vous avez terminé tout l'ensemble sans erreur active : vous passez directement en phase 3.",
+        "Vous avez terminé tout l'ensemble sans erreur active : vous êtes prêt pour le test sous pression.",
       poolCompleteScoreLine: 'Cette partie : {score} {fpShort}',
       poolCompleteCtaPrimary: 'Rejouer dans un nouvel ordre',
       poolCompleteCtaPractice: 'Corriger vos erreurs',
