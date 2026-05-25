@@ -871,7 +871,7 @@
         '**Paiement sécurisé** via Stripe'
       ],
 
-      socialProofTitle: "Ce qu'en pensent les personnes qui jouent",
+      socialProofTitle: 'Leurs retours après quelques parties',
       socialProofQuotes: [
         {
           quote:
