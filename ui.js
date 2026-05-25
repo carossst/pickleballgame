@@ -2612,6 +2612,13 @@ void (function () {
       ignorePopstateUntil: 0
     };
 
+    // Cross-surface action dedup:
+    // a pointerup inside the modal can close it and reveal a new screen,
+    // then the browser emits a synthetic click at the same coordinates.
+    // We keep one shared timestamp across modal/app surfaces so that
+    // phantom click is dropped even when it lands on a different surface.
+    this._lastActionDispatchTs = 0;
+
     this._bindEvents();
   }
 
@@ -2623,6 +2630,15 @@ void (function () {
     const pointerEvt = 'PointerEvent' in window ? 'pointerup' : 'click';
 
     function dispatchAction(action, event) {
+      try {
+        self._lastActionDispatchTs =
+          event && typeof event.timeStamp === 'number'
+            ? event.timeStamp
+            : Date.now();
+      } catch (_) {
+        self._lastActionDispatchTs = Date.now();
+      }
+
       switch (action) {
         case 'continue':
           self.continueAfterFeedback();
@@ -3017,23 +3033,13 @@ void (function () {
       };
 
       if (pointerEvt !== 'click') {
-        let lastHandledTs = 0;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - lastHandledTs < 400) return;
+          if (now - (self._lastActionDispatchTs || 0) < 400) return;
           modalActionHandler(e);
         };
 
-        this.modalEl.addEventListener(pointerEvt, (e) => {
-          const before = e.timeStamp || Date.now();
-          modalActionHandler(e);
-          const t = e && e.target ? e.target : null;
-          const btn =
-            t && t.closest
-              ? t.closest('button[data-action], a[data-action]')
-              : null;
-          if (t === self.modalEl || btn) lastHandledTs = before;
-        });
+        this.modalEl.addEventListener(pointerEvt, modalActionHandler);
         this.modalEl.addEventListener('click', dedupHandler);
       } else {
         this.modalEl.addEventListener('click', modalActionHandler);
@@ -3101,21 +3107,16 @@ void (function () {
 
       // Mobile safety: also listen on "click" when primary is a pointer event.
       // Some mobile Safari/PWA combos behave unreliably on button release events.
-      // The dedup guard (same timestamp check) prevents double-fire.
+      // The shared timestamp guard prevents modal->app phantom clicks too.
       if (pointerEvt !== 'click') {
-        let lastHandledTs = 0;
         const origHandler = appActionHandler;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - lastHandledTs < 400) return; // already handled by pointer event
+          if (now - (self._lastActionDispatchTs || 0) < 400) return;
           origHandler(e);
         };
-        // Patch original to track timestamp
         this.appEl.removeEventListener(pointerEvt, appActionHandler);
-        this.appEl.addEventListener(pointerEvt, (e) => {
-          const handled = appActionHandler(e);
-          if (handled) lastHandledTs = e.timeStamp || Date.now();
-        });
+        this.appEl.addEventListener(pointerEvt, appActionHandler);
         this.appEl.addEventListener('click', dedupHandler);
       }
     }

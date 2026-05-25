@@ -633,6 +633,22 @@ body.wt-state--end .wt-card--end {
   text-align: left;
 }
 
+.wt-landing-stat--clickable {
+  cursor: pointer;
+}
+
+.wt-landing-insights {
+  margin-top: var(--space-6);
+}
+
+.wt-landing-insights .wt-landing-stat {
+  row-gap: var(--space-6);
+}
+
+.wt-landing-level-quick {
+  margin-top: var(--space-10);
+}
+
 .wt-landing-stat__kicker {
   grid-column: 1 / -1;
   font-size: var(--fs-xs);

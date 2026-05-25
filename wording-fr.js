@@ -358,9 +358,9 @@
     phaseJourney: {
       discovery: {
         badge: 'Phase 1/3 : Premier passage',
-        landingSummaryTemplate: '{seen} questions jouées.',
+        landingSummaryTemplate: 'Vous avez déjà vu {seen} questions.',
         landingDetailTemplate:
-          'Il en reste {remaining} pour votre premier passage.',
+          'Il vous en reste {remaining} pour terminer ce premier passage.',
         endLens:
           "Vous faites votre premier passage. L'objectif est maintenant de voir plus de questions.",
         micropics: {

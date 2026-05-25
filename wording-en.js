@@ -195,7 +195,7 @@
 
     landing: {
       title: 'Pickleball Rules Quiz',
-      tagline: '**Think you know pickleball? Prove it.**',
+      tagline: '**MAINTENANCE IN PROGRESS PLEASE COME BACK LATER**',
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: 'Quick games · No signup · Free to try',
@@ -353,8 +353,8 @@
     phaseJourney: {
       discovery: {
         badge: 'Phase 1/3: First pass',
-        landingSummaryTemplate: '{seen} questions played.',
-        landingDetailTemplate: '{remaining} still to go in your first pass.',
+        landingSummaryTemplate: "You've seen {seen} questions so far.",
+        landingDetailTemplate: '{remaining} left in your first pass.',
         endLens:
           "You're still on your first pass. Right now the goal is to cover more of the set.",
         micropics: {

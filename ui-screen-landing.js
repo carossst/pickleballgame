@@ -15,12 +15,18 @@
     const showProgress = (opts?.showProgress === true) || (opts?.showProgress !== false && pct > 0);
     const ctaAction = String(opts?.ctaAction || "").trim();
     const ctaLabel = String(opts?.ctaLabel || "").trim();
+    const cardAction = String(opts?.cardAction || "").trim();
+    const cardActionAria = String(opts?.cardActionAria || "").trim();
     const cardAttrs = String(opts?.cardAttrs || "").trim();
+    const interactiveClass = cardAction ? " wt-landing-stat--clickable" : "";
+    const interactiveAttrs = cardAction
+      ? ` data-action="${escapeHtml(cardAction)}" role="button" tabindex="0"${cardActionAria ? ` aria-label="${escapeHtml(cardActionAria)}"` : ""}`
+      : "";
 
     if (!label && !title && !sub) return "";
 
     return `
-      <section class="wt-box wt-box--tinted wt-landing-stat${cardClass ? ` ${cardClass}` : ``}" aria-label="${escapeHtml(label || title || sub)}"${cardAttrs ? ` ${cardAttrs}` : ``}>
+      <section class="wt-box wt-box--tinted wt-landing-stat${interactiveClass}${cardClass ? ` ${cardClass}` : ``}" aria-label="${escapeHtml(label || title || sub)}"${interactiveAttrs}${cardAttrs ? ` ${cardAttrs}` : ``}>
         <div class="wt-landing-stat__header">
           ${badgeHtml || ``}
           ${label ? `<span class="wt-landing-stat__label">${escapeHtml(label)}</span>` : ``}
@@ -241,14 +247,22 @@
 
     const levelModel = getAppLevelModel(ui.storage, cfg, w);
     const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
-    const landingLevelBadgeHtml = (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
+    const levelBadgeLabel = String(
+      (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
+        ? levelModel.current.label
+        : (levelModel.levelsW?.modalTitle || "")
+    ).trim();
+    const landingLevelBadgeHtml = levelBadgeLabel
       ? `
           <div class="wt-landing-stat__badge">
             <button type="button" class="wt-badge" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
-              ${escapeHtml(levelModel.current.label)}
+              ${escapeHtml(levelBadgeLabel)}
             </button>
           </div>
         `
+      : "";
+    const levelProgressQuickHtml = (landingLevelBadgeHtml && Number.isFinite(runCompletes) && runCompletes >= 1)
+      ? `<div class="wt-landing-level-quick">${landingLevelBadgeHtml}</div>`
       : "";
 
     let welcomeBackHtml = "";
@@ -316,35 +330,41 @@
           mistakes = clampInt(phasePreview.mistakes, 0, poolSizeSafe);
         }
 
-        const phase = getRuleKnowledgePhaseContext({
-          cfg,
-          w,
-          storage: ui.storage,
-          poolSize: poolSizeSafe,
-          seen,
-          mistakes
-        });
+        if (!phasePreview && seen <= 0) {
+          seen = 0;
+          mistakes = 0;
+        } else {
 
-        const remaining = clampInt(poolSizeSafe - phase.seen, 0, poolSizeSafe);
-        const vars = {
-          seen: phase.seen,
-          poolSize: poolSizeSafe,
-          remaining,
-          mistakes: phase.mistakes,
-          mastered: phase.mastered
-        };
+          const phase = getRuleKnowledgePhaseContext({
+            cfg,
+            w,
+            storage: ui.storage,
+            poolSize: poolSizeSafe,
+            seen,
+            mistakes
+          });
 
-        const progressValue = phase.isComplete ? phase.mastered : phase.seen;
-        const pct = poolSizeSafe > 0
-          ? Math.max(0, Math.min(100, Math.round((progressValue / poolSizeSafe) * 100)))
-          : 0;
-        const progressClass = phase.isComplete ? " wt-progress--mastery" : "";
-        const label = phase.badge;
-        const title = fillTemplate(phase.landingSummaryTemplate, vars);
-        const subTemplate = phase.landingDetailTemplate || phase.landingDetail;
-        const sub = fillTemplate(subTemplate, vars);
+          const remaining = clampInt(poolSizeSafe - phase.seen, 0, poolSizeSafe);
+          const vars = {
+            seen: phase.seen,
+            poolSize: poolSizeSafe,
+            remaining,
+            mistakes: phase.mistakes,
+            mastered: phase.mastered
+          };
 
-        welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass }, escapeHtml);
+          const progressValue = phase.isComplete ? phase.mastered : phase.seen;
+          const pct = poolSizeSafe > 0
+            ? Math.max(0, Math.min(100, Math.round((progressValue / poolSizeSafe) * 100)))
+            : 0;
+          const progressClass = phase.isComplete ? " wt-progress--mastery" : "";
+          const label = phase.badge;
+          const title = fillTemplate(phase.landingSummaryTemplate, vars);
+          const subTemplate = phase.landingDetailTemplate || phase.landingDetail;
+          const sub = fillTemplate(subTemplate, vars);
+
+          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass }, escapeHtml);
+        }
       }
     } catch (_) { /* silent */ }
 
@@ -362,6 +382,7 @@
       const bestTopTpl = String(landing.personalBestTopTierTemplate || "").trim();
       const bestFirstTitle = String(landing.personalBestFirstTitle || "").trim();
       const bestFirstSubTpl = String(landing.personalBestFirstSubTemplate || "").trim();
+      const bestCardActionAria = String(landing.ctaPlayAfterFirstRun || landing.ctaPlay || "").trim();
 
       const bestTitle = (bestScoreFP > 0 && bestTitleTpl)
         ? fillTemplate(bestTitleTpl, { tier: tierInfo.currentLabel || "", best: String(bestScoreFP) })
@@ -387,7 +408,9 @@
           title: bestTitle,
           sub: bestSub,
           pct: (bestScoreFP > 0) ? tierInfo.progressPct : 0,
-          progressClass: ""
+          progressClass: "",
+          cardAction: (bestScoreFP <= 0) ? "start-run" : "",
+          cardActionAria: (bestScoreFP <= 0) ? bestCardActionAria : ""
         }, escapeHtml);
       }
     } catch (_) { /* silent */ }
@@ -710,8 +733,10 @@ ${(() => {
       ` : ``}
     ` : ``}
 
+    ${welcomeBackHtml ? `` : levelProgressQuickHtml}
+
     ${[welcomeBackHtml, personalBestCardHtml, dailyChallengeCardHtml].filter(Boolean).length ? `
-      <div class="wt-stack wt-stack--md">
+      <div class="wt-stack wt-stack--sm wt-landing-insights">
         ${welcomeBackHtml}
         ${dailyChallengeIncomplete ? dailyChallengeCardHtml : personalBestCardHtml}
         ${dailyChallengeIncomplete ? personalBestCardHtml : dailyChallengeCardHtml}

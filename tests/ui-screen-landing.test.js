@@ -73,7 +73,10 @@ function buildHelpers(renderLeaderboardLandingCard) {
       return {
         state: { currentLevel: 0 },
         current: null,
-        levelsW: { openDetailsAria: 'Open level details' }
+        levelsW: {
+          openDetailsAria: 'Open level details',
+          modalTitle: 'Levels'
+        }
       };
     },
     getLandingStatsPreviewState() {
@@ -115,7 +118,9 @@ function buildHelpers(renderLeaderboardLandingCard) {
   };
 }
 
-function createUi(runCompletes) {
+function createUi(runCompletes, options = {}) {
+  const bestScoreFP = Number(options.bestScoreFP || 0);
+  const seenCount = Number(options.seenCount || 0);
   return {
     state: 'LANDING',
     _runtime: {},
@@ -143,7 +148,7 @@ function createUi(runCompletes) {
         personalBestSubTemplate:
           'Best score: {best}. Next tier at {nextTarget}+.',
         personalBestTopTierTemplate: 'Top tier reached.',
-        personalBestFirstTitle: 'Set your first benchmark',
+        personalBestFirstTitle: 'Set your first score',
         personalBestFirstSubTemplate:
           'Score {nextTarget}+ to unlock your first tier.',
         dailyChallengeBadge: 'DAILY CHALLENGE',
@@ -174,7 +179,13 @@ function createUi(runCompletes) {
         return { runCompletes, runStarts: runCompletes };
       },
       getPersonalBest() {
-        return { bestScoreFP: 0 };
+        return { bestScoreFP };
+      },
+      getSeenItemIds() {
+        return Array.from({ length: Math.max(0, seenCount) }, (_v, i) => i + 1);
+      },
+      getActiveMistakesCount() {
+        return 0;
       },
       getLeaderboardProfile() {
         return { nickname: '', optIn: false };
@@ -191,7 +202,7 @@ test('landing first visit hides personal best, daily, and leaderboard blocks', (
   );
 
   expect(html).not.toContain('PERSONAL BEST');
-  expect(html).not.toContain('Set your first benchmark');
+  expect(html).not.toContain('Set your first score');
   expect(html).not.toContain('DAILY CHALLENGE');
   expect(html).not.toContain('THIS WEEK');
 });
@@ -199,12 +210,38 @@ test('landing first visit hides personal best, daily, and leaderboard blocks', (
 test('landing after first completed run shows personal best, daily, and leaderboard blocks', () => {
   const modules = loadLandingModules();
   const html = modules.renderLanding(
-    createUi(1),
+    createUi(1, { seenCount: 8 }),
     buildHelpers(modules.renderLeaderboardLandingCard)
   );
 
   expect(html).toContain('PERSONAL BEST');
-  expect(html).toContain('Set your first benchmark');
+  expect(html).toContain('Set your first score');
   expect(html).toContain('DAILY CHALLENGE');
   expect(html).toContain('THIS WEEK');
+  expect(html).toContain('Levels');
+});
+
+test('landing personal best first-state card starts a run directly', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, { bestScoreFP: 0, seenCount: 8 }),
+    buildHelpers(modules.renderLeaderboardLandingCard)
+  );
+
+  expect(html).toContain('PERSONAL BEST');
+  expect(html).toContain('Score 3+ to unlock your first tier.');
+  expect(html).toContain('data-action="start-run"');
+  expect(html).toContain('wt-landing-stat--clickable');
+});
+
+test('landing hides phase progress card when no seen questions exist yet', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, { seenCount: 0 }),
+    buildHelpers(modules.renderLeaderboardLandingCard)
+  );
+
+  expect(html).not.toContain("You've seen 0 questions so far.");
+  expect(html).toContain('Levels');
+  expect(html).toContain('PERSONAL BEST');
 });
