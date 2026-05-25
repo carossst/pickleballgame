@@ -141,6 +141,7 @@
       return `<a
       class="wt-locale-swap"
       href="${href}"
+      data-wt-locale-swap-to="${other}"
       aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
     }
     return `<button type="button"
@@ -189,9 +190,23 @@
   function handleClick(e) {
     const target = e.target.closest && e.target.closest("[data-wt-locale-swap-to]");
     if (!target) return;
+
     const loc = target.getAttribute("data-wt-locale-swap-to");
     if (!loc) return;
+
     e.preventDefault();
+
+    try {
+      if (typeof e.stopPropagation === "function") e.stopPropagation();
+    } catch (_) { /* silent */ }
+
+    const href = getNavigationHref(loc);
+    if (href) {
+      persistLocaleChoice(loc);
+      window.location.assign(href);
+      return;
+    }
+
     I18N.setLocale(loc);
   }
 
