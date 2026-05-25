@@ -194,7 +194,9 @@
     if (!loc) return;
     const href = getNavigationHref(loc);
     if (href) {
+      e.preventDefault();
       persistLocaleChoice(loc);
+      window.location.assign(href);
       return;
     }
     e.preventDefault();

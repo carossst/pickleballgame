@@ -1,27 +1,26 @@
 // ui.js - Quiz UI
 // UI-only: rendering, accessibility, interactions (V2 RUN)
 
-void function () {
-  "use strict";
-
+void (function () {
+  'use strict';
 
   const ENUMS = window.WT_ENUMS;
   if (!ENUMS || !ENUMS.UI_STATES || !ENUMS.GAME_MODES) {
-    throw new Error("WT_ENUMS missing or invalid (UI_STATES / GAME_MODES)");
+    throw new Error('WT_ENUMS missing or invalid (UI_STATES / GAME_MODES)');
   }
 
   const STATES = ENUMS.UI_STATES;
   const MODES = ENUMS.GAME_MODES;
 
   if (!window.WT_CONFIG || !window.WT_WORDING) {
-    throw new Error("WT_CONFIG or WT_WORDING missing");
+    throw new Error('WT_CONFIG or WT_WORDING missing');
   }
 
   // ============================================
   // Helpers
   // ============================================
   function isPremiumNow(storage) {
-    if (!storage || typeof storage.isPremium !== "function") return false;
+    if (!storage || typeof storage.isPremium !== 'function') return false;
     try {
       return storage.isPremium() === true;
     } catch (_) {
@@ -32,15 +31,17 @@ void function () {
   function el(id) {
     const node = document.getElementById(id);
     if (!node) {
-      throw new Error("UI element missing: #" + id);
+      throw new Error('UI element missing: #' + id);
     }
     return node;
   }
 
   function renderIcon(name, options) {
     const icons = window.WT_ICONS;
-    if (!icons || typeof icons.renderIcon !== "function") {
-      throw new Error("WT_ICONS.renderIcon missing. icons.js must load before ui.js.");
+    if (!icons || typeof icons.renderIcon !== 'function') {
+      throw new Error(
+        'WT_ICONS.renderIcon missing. icons.js must load before ui.js.'
+      );
     }
     return icons.renderIcon(name, options || {});
   }
@@ -51,157 +52,277 @@ void function () {
 
   // Decode HTML entities (for obfuscated emails like "bonjour&#64;...")
   function decodeHtmlEntities(str) {
-    const s = String(str || "").trim();
-    if (!s) return "";
+    const s = String(str || '').trim();
+    if (!s) return '';
     try {
-      const el = document.createElement("textarea");
+      const el = document.createElement('textarea');
       el.innerHTML = s;
-      return String(el.value || "").trim();
+      return String(el.value || '').trim();
     } catch (_) {
-      throw new Error("decodeHtmlEntities failed");
+      throw new Error('decodeHtmlEntities failed');
     }
   }
 
-
   function hasSolvedSecretChestHint(storage) {
-    if (!storage || typeof storage.hasSolvedSecretChestHint !== "function") return false;
-    try { return storage.hasSolvedSecretChestHint() === true; } catch (_) { return false; }
+    if (!storage || typeof storage.hasSolvedSecretChestHint !== 'function')
+      return false;
+    try {
+      return storage.hasSolvedSecretChestHint() === true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function markSolvedSecretChestHint(storage) {
-    if (!storage || typeof storage.markSolvedSecretChestHint !== "function") return;
-    try { storage.markSolvedSecretChestHint(); } catch (_) { }
+    if (!storage || typeof storage.markSolvedSecretChestHint !== 'function')
+      return;
+    try {
+      storage.markSolvedSecretChestHint();
+    } catch (_) {}
   }
 
   function hasShownSecretChestWelcome(storage) {
-    if (!storage || typeof storage.hasShownSecretChestWelcome !== "function") return false;
-    try { return storage.hasShownSecretChestWelcome() === true; } catch (_) { return false; }
+    if (!storage || typeof storage.hasShownSecretChestWelcome !== 'function')
+      return false;
+    try {
+      return storage.hasShownSecretChestWelcome() === true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function markShownSecretChestWelcome(storage) {
-    if (!storage || typeof storage.markShownSecretChestWelcome !== "function") return;
-    try { storage.markShownSecretChestWelcome(); } catch (_) { }
+    if (!storage || typeof storage.markShownSecretChestWelcome !== 'function')
+      return;
+    try {
+      storage.markShownSecretChestWelcome();
+    } catch (_) {}
   }
 
   function hasSeenFirstRunFraming(storage) {
-    if (!storage || typeof storage.hasSeenFirstRunFraming !== "function") return false;
-    try { return storage.hasSeenFirstRunFraming() === true; } catch (_) { return false; }
+    if (!storage || typeof storage.hasSeenFirstRunFraming !== 'function')
+      return false;
+    try {
+      return storage.hasSeenFirstRunFraming() === true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function markSeenFirstRunFraming(storage) {
-    if (!storage || typeof storage.markSeenFirstRunFraming !== "function") return;
-    try { storage.markSeenFirstRunFraming(); } catch (_) { }
+    if (!storage || typeof storage.markSeenFirstRunFraming !== 'function')
+      return;
+    try {
+      storage.markSeenFirstRunFraming();
+    } catch (_) {}
   }
 
   function getDailyChallengeToastDayKey(storage) {
-    if (!storage || typeof storage.getDailyChallengeToastDayKey !== "function") return "";
-    try { return String(storage.getDailyChallengeToastDayKey() || "").trim(); } catch (_) { return ""; }
+    if (!storage || typeof storage.getDailyChallengeToastDayKey !== 'function')
+      return '';
+    try {
+      return String(storage.getDailyChallengeToastDayKey() || '').trim();
+    } catch (_) {
+      return '';
+    }
   }
 
   function markDailyChallengeToastShown(storage, dayKey) {
-    if (!storage || typeof storage.markDailyChallengeToastShown !== "function") return;
-    try { storage.markDailyChallengeToastShown(dayKey); } catch (_) { }
+    if (!storage || typeof storage.markDailyChallengeToastShown !== 'function')
+      return;
+    try {
+      storage.markDailyChallengeToastShown(dayKey);
+    } catch (_) {}
   }
 
   function getRapidFireTicketBalance(storage) {
-    if (!storage || typeof storage.getRapidFireTicketBalance !== "function") return 0;
-    try { return clampInt(storage.getRapidFireTicketBalance(), 0, 999); } catch (_) { return 0; }
+    if (!storage || typeof storage.getRapidFireTicketBalance !== 'function')
+      return 0;
+    try {
+      return clampInt(storage.getRapidFireTicketBalance(), 0, 999);
+    } catch (_) {
+      return 0;
+    }
   }
 
   function getRapidFireTicketCost(storage) {
-    if (!storage || typeof storage.getRapidFireTicketCost !== "function") return 1;
-    try { return Math.max(1, clampInt(storage.getRapidFireTicketCost(), 1, 999)); } catch (_) { return 1; }
+    if (!storage || typeof storage.getRapidFireTicketCost !== 'function')
+      return 1;
+    try {
+      return Math.max(1, clampInt(storage.getRapidFireTicketCost(), 1, 999));
+    } catch (_) {
+      return 1;
+    }
   }
 
   function getDailyTicketEarnedDayKey(storage) {
-    if (!storage || typeof storage.getDailyTicketEarnedDayKey !== "function") return "";
-    try { return String(storage.getDailyTicketEarnedDayKey() || "").trim(); } catch (_) { return ""; }
+    if (!storage || typeof storage.getDailyTicketEarnedDayKey !== 'function')
+      return '';
+    try {
+      return String(storage.getDailyTicketEarnedDayKey() || '').trim();
+    } catch (_) {
+      return '';
+    }
   }
 
   function generateRunUuid() {
     try {
-      if (typeof crypto !== "undefined" && crypto && typeof crypto.randomUUID === "function") {
+      if (
+        typeof crypto !== 'undefined' &&
+        crypto &&
+        typeof crypto.randomUUID === 'function'
+      ) {
         return String(crypto.randomUUID());
       }
-    } catch (_) { /* fall through */ }
+    } catch (_) {
+      /* fall through */
+    }
     const rand = Math.random().toString(36).slice(2, 10);
     return `run-${Date.now().toString(36)}-${rand}`;
   }
 
   function getLeaderboardContentVersion(cfg) {
-    const contentVersion = String(cfg?.leaderboard?.contentVersion || "").trim();
+    const contentVersion = String(
+      cfg?.leaderboard?.contentVersion || ''
+    ).trim();
     if (contentVersion) return contentVersion;
-    const version = String(cfg?.version || "").trim();
-    return version || "unknown";
+    const version = String(cfg?.version || '').trim();
+    return version || 'unknown';
   }
 
   function grantStarterRapidFireTicketIfNeeded(storage) {
-    if (!storage || typeof storage.grantStarterRapidFireTicketIfNeeded !== "function") {
+    if (
+      !storage ||
+      typeof storage.grantStarterRapidFireTicketIfNeeded !== 'function'
+    ) {
       return { ok: false, granted: false, balance: 0, cap: 0 };
     }
-    try { return storage.grantStarterRapidFireTicketIfNeeded() || { ok: false, granted: false, balance: 0, cap: 0 }; } catch (_) { return { ok: false, granted: false, balance: 0, cap: 0 }; }
+    try {
+      return (
+        storage.grantStarterRapidFireTicketIfNeeded() || {
+          ok: false,
+          granted: false,
+          balance: 0,
+          cap: 0
+        }
+      );
+    } catch (_) {
+      return { ok: false, granted: false, balance: 0, cap: 0 };
+    }
   }
 
   function grantDailyRapidFireTicket(storage, dayKey) {
-    if (!storage || typeof storage.grantDailyRapidFireTicket !== "function") {
+    if (!storage || typeof storage.grantDailyRapidFireTicket !== 'function') {
       return { ok: false, granted: false, balance: 0, cap: 0, atCap: false };
     }
-    try { return storage.grantDailyRapidFireTicket(dayKey) || { ok: false, granted: false, balance: 0, cap: 0, atCap: false }; } catch (_) { return { ok: false, granted: false, balance: 0, cap: 0, atCap: false }; }
+    try {
+      return (
+        storage.grantDailyRapidFireTicket(dayKey) || {
+          ok: false,
+          granted: false,
+          balance: 0,
+          cap: 0,
+          atCap: false
+        }
+      );
+    } catch (_) {
+      return { ok: false, granted: false, balance: 0, cap: 0, atCap: false };
+    }
   }
 
   function consumeRapidFireTicketOrBlock(storage) {
-    if (!storage || typeof storage.consumeRapidFireTicketOrBlock !== "function") {
-      return { ok: false, reason: "NO_DATA", balance: 0, cost: 1 };
+    if (
+      !storage ||
+      typeof storage.consumeRapidFireTicketOrBlock !== 'function'
+    ) {
+      return { ok: false, reason: 'NO_DATA', balance: 0, cost: 1 };
     }
-    try { return storage.consumeRapidFireTicketOrBlock() || { ok: false, reason: "NO_DATA", balance: 0, cost: 1 }; } catch (_) { return { ok: false, reason: "NO_DATA", balance: 0, cost: 1 }; }
+    try {
+      return (
+        storage.consumeRapidFireTicketOrBlock() || {
+          ok: false,
+          reason: 'NO_DATA',
+          balance: 0,
+          cost: 1
+        }
+      );
+    } catch (_) {
+      return { ok: false, reason: 'NO_DATA', balance: 0, cost: 1 };
+    }
   }
 
   function refundRapidFireTicket(storage, amount) {
-    if (!storage || typeof storage.refundRapidFireTicket !== "function") {
+    if (!storage || typeof storage.refundRapidFireTicket !== 'function') {
       return { ok: false, balance: 0, cap: 0 };
     }
-    try { return storage.refundRapidFireTicket(amount) || { ok: false, balance: 0, cap: 0 }; } catch (_) { return { ok: false, balance: 0, cap: 0 }; }
+    try {
+      return (
+        storage.refundRapidFireTicket(amount) || {
+          ok: false,
+          balance: 0,
+          cap: 0
+        }
+      );
+    } catch (_) {
+      return { ok: false, balance: 0, cap: 0 };
+    }
   }
 
   // Stats sharing prompt stage:
   // UI must NOT write localStorage directly (StorageManager owns persistence).
   function getStatsSharingPromptStage(storage) {
-    if (!storage || typeof storage.getStatsSharingPromptStage !== "function") {
-      throw new Error("StorageManager.getStatsSharingPromptStage missing");
+    if (!storage || typeof storage.getStatsSharingPromptStage !== 'function') {
+      throw new Error('StorageManager.getStatsSharingPromptStage missing');
     }
-    try { return storage.getStatsSharingPromptStage(); } catch (_) { return -1; }
+    try {
+      return storage.getStatsSharingPromptStage();
+    } catch (_) {
+      return -1;
+    }
   }
 
   function setStatsSharingPromptStage(storage, stageIndex) {
-    if (!storage || typeof storage.setStatsSharingPromptStage !== "function") return;
-    try { storage.setStatsSharingPromptStage(stageIndex); } catch (_) { }
+    if (!storage || typeof storage.setStatsSharingPromptStage !== 'function')
+      return;
+    try {
+      storage.setStatsSharingPromptStage(stageIndex);
+    } catch (_) {}
   }
 
   function getStatsSharingPromptFlags(storage) {
-    if (!storage || typeof storage.getStatsSharingPromptFlags !== "function") {
-      throw new Error("StorageManager.getStatsSharingPromptFlags missing");
+    if (!storage || typeof storage.getStatsSharingPromptFlags !== 'function') {
+      throw new Error('StorageManager.getStatsSharingPromptFlags missing');
     }
-    try { return storage.getStatsSharingPromptFlags(); } catch (_) { return 0; }
+    try {
+      return storage.getStatsSharingPromptFlags();
+    } catch (_) {
+      return 0;
+    }
   }
 
   function setStatsSharingPromptFlags(storage, flags) {
-    if (!storage || typeof storage.setStatsSharingPromptFlags !== "function") return;
-    try { storage.setStatsSharingPromptFlags(flags); } catch (_) { }
+    if (!storage || typeof storage.setStatsSharingPromptFlags !== 'function')
+      return;
+    try {
+      storage.setStatsSharingPromptFlags(flags);
+    } catch (_) {}
   }
 
   function pickOne(arr, fallback) {
-    const list = Array.isArray(arr) ? arr.map((x) => String(x || "").trim()).filter(Boolean) : [];
-    if (!list.length) return String(fallback || "").trim();
+    const list = Array.isArray(arr)
+      ? arr.map((x) => String(x || '').trim()).filter(Boolean)
+      : [];
+    if (!list.length) return String(fallback || '').trim();
     const index = Math.floor(Math.random() * list.length);
-    return list[index] || String(fallback || "").trim();
+    return list[index] || String(fallback || '').trim();
   }
 
   function supportsQuestionSpeech() {
     try {
       return (
-        typeof window !== "undefined" &&
-        typeof window.speechSynthesis !== "undefined" &&
-        typeof window.SpeechSynthesisUtterance === "function"
+        typeof window !== 'undefined' &&
+        typeof window.speechSynthesis !== 'undefined' &&
+        typeof window.SpeechSynthesisUtterance === 'function'
       );
     } catch (_) {
       return false;
@@ -209,17 +330,27 @@ void function () {
   }
 
   function getQuestionSpeechLocale() {
-    let loc = "";
+    let loc = '';
     try {
-      if (window.WT_I18N && typeof window.WT_I18N.getLocale === "function") {
-        loc = String(window.WT_I18N.getLocale() || "").trim().toLowerCase();
+      if (window.WT_I18N && typeof window.WT_I18N.getLocale === 'function') {
+        loc = String(window.WT_I18N.getLocale() || '')
+          .trim()
+          .toLowerCase();
       }
-    } catch (_) { loc = ""; }
-    if (!loc) {
-      try { loc = String(document.documentElement.getAttribute("lang") || "").trim().toLowerCase(); } catch (_) { loc = ""; }
+    } catch (_) {
+      loc = '';
     }
-    if (loc === "fr") return "fr-FR";
-    return "en-US";
+    if (!loc) {
+      try {
+        loc = String(document.documentElement.getAttribute('lang') || '')
+          .trim()
+          .toLowerCase();
+      } catch (_) {
+        loc = '';
+      }
+    }
+    if (loc === 'fr') return 'fr-FR';
+    return 'en-US';
   }
 
   function getQuestionSpeechVoice(locale) {
@@ -229,17 +360,25 @@ void function () {
         ? window.speechSynthesis.getVoices()
         : [];
       if (!voices.length) return null;
-      const target = String(locale || "").trim().toLowerCase();
+      const target = String(locale || '')
+        .trim()
+        .toLowerCase();
       const primary = target.split(/[-_]/)[0];
       for (const voice of voices) {
-        const lang = String(voice?.lang || "").trim().toLowerCase();
+        const lang = String(voice?.lang || '')
+          .trim()
+          .toLowerCase();
         if (lang === target) return voice;
       }
       for (const voice of voices) {
-        const lang = String(voice?.lang || "").trim().toLowerCase();
+        const lang = String(voice?.lang || '')
+          .trim()
+          .toLowerCase();
         if (lang.split(/[-_]/)[0] === primary) return voice;
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
     return null;
   }
 
@@ -249,30 +388,45 @@ void function () {
     try {
       window.speechSynthesis.getVoices();
       if (ui) ui._speechVoicesWarmed = true;
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     try {
       const synth = window.speechSynthesis;
-      if (!synth || typeof synth.addEventListener !== "function" || !ui || ui._speechVoicesListenerBound === true) {
+      if (
+        !synth ||
+        typeof synth.addEventListener !== 'function' ||
+        !ui ||
+        ui._speechVoicesListenerBound === true
+      ) {
         return;
       }
       const onVoicesChanged = () => {
-        try { synth.getVoices(); } catch (_) { /* silent */ }
+        try {
+          synth.getVoices();
+        } catch (_) {
+          /* silent */
+        }
         ui._speechVoicesWarmed = true;
       };
-      synth.addEventListener("voiceschanged", onVoicesChanged, { once: true });
+      synth.addEventListener('voiceschanged', onVoicesChanged, { once: true });
       ui._speechVoicesListenerBound = true;
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
   }
 
   function cancelQuestionSpeech(ui) {
     if (!ui || !ui._runtime) return;
     ui._runtime.questionSpeechActive = false;
-    ui._runtime.questionSpeechKey = "";
-    ui._runtime.questionSpeechText = "";
+    ui._runtime.questionSpeechKey = '';
+    ui._runtime.questionSpeechText = '';
     try {
       if (supportsQuestionSpeech()) window.speechSynthesis.cancel();
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
   }
 
   function getCurrentQuestionSpeechModel(ui) {
@@ -280,10 +434,15 @@ void function () {
 
     let item = null;
     try {
-      item = ui.game && typeof ui.game.getCurrent === "function" ? ui.game.getCurrent() : null;
-    } catch (_) { item = null; }
+      item =
+        ui.game && typeof ui.game.getCurrent === 'function'
+          ? ui.game.getCurrent()
+          : null;
+    } catch (_) {
+      item = null;
+    }
 
-    const questionText = String(item?.question || "").trim();
+    const questionText = String(item?.question || '').trim();
     const itemId = Number(item?.id || 0);
     if (!questionText) return null;
 
@@ -297,13 +456,19 @@ void function () {
   }
 
   function isAutoReadQuestionsEnabled(storage) {
-    if (!storage || typeof storage.getAutoReadQuestions !== "function") return false;
-    try { return storage.getAutoReadQuestions() === true; } catch (_) { return false; }
+    if (!storage || typeof storage.getAutoReadQuestions !== 'function')
+      return false;
+    try {
+      return storage.getAutoReadQuestions() === true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function startQuestionSpeech(ui, model, opts) {
     const options = opts || {};
-    if (!ui || !ui._runtime || !model || !supportsQuestionSpeech()) return false;
+    if (!ui || !ui._runtime || !model || !supportsQuestionSpeech())
+      return false;
 
     cancelQuestionSpeech(ui);
 
@@ -318,18 +483,20 @@ void function () {
       ui._runtime.questionSpeechText = model.questionText;
 
       utterance.onend = () => {
-        if (!ui._runtime || ui._runtime.questionSpeechKey !== model.speechKey) return;
+        if (!ui._runtime || ui._runtime.questionSpeechKey !== model.speechKey)
+          return;
         ui._runtime.questionSpeechActive = false;
-        ui._runtime.questionSpeechKey = "";
-        ui._runtime.questionSpeechText = "";
+        ui._runtime.questionSpeechKey = '';
+        ui._runtime.questionSpeechText = '';
         if (ui.state === STATES.PLAYING) ui.render();
       };
 
       utterance.onerror = () => {
-        if (!ui._runtime || ui._runtime.questionSpeechKey !== model.speechKey) return;
+        if (!ui._runtime || ui._runtime.questionSpeechKey !== model.speechKey)
+          return;
         ui._runtime.questionSpeechActive = false;
-        ui._runtime.questionSpeechKey = "";
-        ui._runtime.questionSpeechText = "";
+        ui._runtime.questionSpeechKey = '';
+        ui._runtime.questionSpeechText = '';
         if (ui.state === STATES.PLAYING) ui.render();
       };
 
@@ -360,23 +527,39 @@ void function () {
   }
 
   function markStatsSharingPromptFlag(storage, flagBit) {
-    if (!storage || typeof storage.markStatsSharingPromptFlag !== "function") return;
-    try { storage.markStatsSharingPromptFlag(flagBit); } catch (_) { }
+    if (!storage || typeof storage.markStatsSharingPromptFlag !== 'function')
+      return;
+    try {
+      storage.markStatsSharingPromptFlag(flagBit);
+    } catch (_) {}
   }
 
   function getStatsSharingSnoozeUntilRunCompletes(storage) {
-    if (!storage || typeof storage.getStatsSharingSnoozeUntilRunCompletes !== "function") {
-      throw new Error("StorageManager.getStatsSharingSnoozeUntilRunCompletes missing");
+    if (
+      !storage ||
+      typeof storage.getStatsSharingSnoozeUntilRunCompletes !== 'function'
+    ) {
+      throw new Error(
+        'StorageManager.getStatsSharingSnoozeUntilRunCompletes missing'
+      );
     }
-    try { return storage.getStatsSharingSnoozeUntilRunCompletes(); } catch (_) { return 0; }
+    try {
+      return storage.getStatsSharingSnoozeUntilRunCompletes();
+    } catch (_) {
+      return 0;
+    }
   }
 
   function snoozeStatsSharingPromptNextEnd(storage) {
-    if (!storage || typeof storage.snoozeStatsSharingPromptNextEnd !== "function") return;
-    try { storage.snoozeStatsSharingPromptNextEnd(); } catch (_) { }
+    if (
+      !storage ||
+      typeof storage.snoozeStatsSharingPromptNextEnd !== 'function'
+    )
+      return;
+    try {
+      storage.snoozeStatsSharingPromptNextEnd();
+    } catch (_) {}
   }
-
-
 
   const escapeHtml = window.WT_UTILS.escapeHtml;
 
@@ -395,9 +578,9 @@ void function () {
 
   function formatCents(cents, currency) {
     const n = Number(cents);
-    if (!Number.isFinite(n)) return "";
+    if (!Number.isFinite(n)) return '';
     const dollars = (n / 100).toFixed(2);
-    if (currency === "USD") return `$${dollars}`;
+    if (currency === 'USD') return `$${dollars}`;
     return `${dollars} ${currency}`;
   }
 
@@ -405,15 +588,15 @@ void function () {
     const t = Math.max(0, Math.floor(Number(ms || 0) / 1000));
     const m = Math.floor(t / 60);
     const s = t % 60;
-    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
   function isOnline() {
     return navigator.onLine !== false;
   }
   function fillTemplate(str, vars) {
-    let out = String(str || "");
-    const v = (vars && typeof vars === "object") ? vars : {};
+    let out = String(str || '');
+    const v = vars && typeof vars === 'object' ? vars : {};
     for (const k in v) {
       out = out.replaceAll(`{${k}}`, String(v[k]));
     }
@@ -429,17 +612,20 @@ void function () {
   }
 
   function getMomentumMeterState(cfg, streak, modeNow, currentLevel) {
-    const mm = (cfg?.ui?.momentumMeter && typeof cfg.ui.momentumMeter === "object")
-      ? cfg.ui.momentumMeter
-      : null;
+    const mm =
+      cfg?.ui?.momentumMeter && typeof cfg.ui.momentumMeter === 'object'
+        ? cfg.ui.momentumMeter
+        : null;
 
     if (!mm || mm.enabled !== true) return null;
-    if (String(mm.mode || "").trim() !== String(modeNow || "").trim()) return null;
+    if (String(mm.mode || '').trim() !== String(modeNow || '').trim())
+      return null;
 
     const segments = getMomentumSegments(cfg);
     if (!segments) return null;
 
-    const th = (mm.thresholds && typeof mm.thresholds === "object") ? mm.thresholds : null;
+    const th =
+      mm.thresholds && typeof mm.thresholds === 'object' ? mm.thresholds : null;
     if (!th) return null;
 
     const thresholds = [];
@@ -494,7 +680,8 @@ void function () {
   }
 
   function createMicroPicsState(startChances) {
-    const hasStartChances = (startChances != null && Number.isFinite(Number(startChances)));
+    const hasStartChances =
+      startChances != null && Number.isFinite(Number(startChances));
     return {
       correctStreak: 0,
       maxCorrectStreak: 0,
@@ -526,45 +713,58 @@ void function () {
       },
 
       // END-only highlight (no gameplay interruptions)
-      endHighlight: "",
-      endHighlightVariant: "",
+      endHighlight: '',
+      endHighlightVariant: '',
       endHighlightPriority: -1
     };
   }
 
   function getEndHighlightPriority(cfg, key) {
-    const priorities = (cfg?.microPics?.endHighlightPriorities && typeof cfg.microPics.endHighlightPriorities === "object")
-      ? cfg.microPics.endHighlightPriorities
-      : null;
-    const safeKey = String(key || "").trim();
+    const priorities =
+      cfg?.microPics?.endHighlightPriorities &&
+      typeof cfg.microPics.endHighlightPriorities === 'object'
+        ? cfg.microPics.endHighlightPriorities
+        : null;
+    const safeKey = String(key || '').trim();
     const configured = Number(priorities?.[safeKey]);
     if (Number.isFinite(configured)) return Math.floor(configured);
 
     switch (safeKey) {
-      case "survival": return 40;
-      case "repeatMistake": return 50;
-      case "nearMiss": return 55;
-      case "runEndedAllChancesUsed": return 60;
-      case "streakStart": return 65;
-      case "recovery": return 70;
-      case "streakBuilding": return 70;
-      case "streakStrong": return 80;
-      case "streakElite": return 90;
-      case "streakLegendary": return 100;
-      default: return 0;
+      case 'survival':
+        return 40;
+      case 'repeatMistake':
+        return 50;
+      case 'nearMiss':
+        return 55;
+      case 'runEndedAllChancesUsed':
+        return 60;
+      case 'streakStart':
+        return 65;
+      case 'recovery':
+        return 70;
+      case 'streakBuilding':
+        return 70;
+      case 'streakStrong':
+        return 80;
+      case 'streakElite':
+        return 90;
+      case 'streakLegendary':
+        return 100;
+      default:
+        return 0;
     }
   }
 
-
   function getRunVerdictKeyFromScore(cfg, scoreFP) {
     const n = Number(scoreFP);
-    if (!Number.isFinite(n)) return "none";
+    if (!Number.isFinite(n)) return 'none';
 
-    const th = (cfg && cfg.routing && typeof cfg.routing.runScoreThresholds === "object")
-      ? cfg.routing.runScoreThresholds
-      : null;
+    const th =
+      cfg && cfg.routing && typeof cfg.routing.runScoreThresholds === 'object'
+        ? cfg.routing.runScoreThresholds
+        : null;
 
-    if (!th) return "none";
+    if (!th) return 'none';
 
     const start = Number(th.start);
     const building = Number(th.building);
@@ -572,38 +772,40 @@ void function () {
     const elite = Number(th.elite);
     const legendary = Number(th.legendary);
 
-    if (Number.isFinite(legendary) && n >= legendary) return "legendary";
-    if (Number.isFinite(elite) && n >= elite) return "elite";
-    if (Number.isFinite(strong) && n >= strong) return "strong";
-    if (Number.isFinite(building) && n >= building) return "building";
-    if (Number.isFinite(start) && n >= start) return "start";
+    if (Number.isFinite(legendary) && n >= legendary) return 'legendary';
+    if (Number.isFinite(elite) && n >= elite) return 'elite';
+    if (Number.isFinite(strong) && n >= strong) return 'strong';
+    if (Number.isFinite(building) && n >= building) return 'building';
+    if (Number.isFinite(start) && n >= start) return 'start';
 
-    return "none";
+    return 'none';
   }
 
   function getRunTierInfo(cfg, wording, scoreFP) {
     const safeScore = clampInt(scoreFP, 0, 99999);
-    const th = (cfg && cfg.routing && typeof cfg.routing.runScoreThresholds === "object")
-      ? cfg.routing.runScoreThresholds
-      : null;
-    const labels = (wording && wording.end && typeof wording.end.labelByVerdict === "object")
-      ? wording.end.labelByVerdict
-      : null;
+    const th =
+      cfg && cfg.routing && typeof cfg.routing.runScoreThresholds === 'object'
+        ? cfg.routing.runScoreThresholds
+        : null;
+    const labels =
+      wording && wording.end && typeof wording.end.labelByVerdict === 'object'
+        ? wording.end.labelByVerdict
+        : null;
 
     const ordered = [
-      { key: "start", target: Number(th?.start) },
-      { key: "building", target: Number(th?.building) },
-      { key: "strong", target: Number(th?.strong) },
-      { key: "elite", target: Number(th?.elite) },
-      { key: "legendary", target: Number(th?.legendary) }
+      { key: 'start', target: Number(th?.start) },
+      { key: 'building', target: Number(th?.building) },
+      { key: 'strong', target: Number(th?.strong) },
+      { key: 'elite', target: Number(th?.elite) },
+      { key: 'legendary', target: Number(th?.legendary) }
     ].filter((item) => Number.isFinite(item.target) && item.target >= 1);
 
     const currentKey = getRunVerdictKeyFromScore(cfg, safeScore);
-    const currentLabel = String(labels?.[currentKey] || "").trim();
+    const currentLabel = String(labels?.[currentKey] || '').trim();
 
     let currentFloor = 0;
-    let nextKey = "";
-    let nextLabel = "";
+    let nextKey = '';
+    let nextLabel = '';
     let nextTarget = null;
 
     for (let i = 0; i < ordered.length; i += 1) {
@@ -614,7 +816,7 @@ void function () {
       }
       nextKey = item.key;
       nextTarget = item.target;
-      nextLabel = String(labels?.[item.key] || "").trim();
+      nextLabel = String(labels?.[item.key] || '').trim();
       break;
     }
 
@@ -642,15 +844,20 @@ void function () {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
 
-    let locale = "en";
+    let locale = 'en';
     try {
-      if (window.WT_I18N && typeof window.WT_I18N.getLocale === "function") {
-        locale = String(window.WT_I18N.getLocale() || "en").trim().toLowerCase();
+      if (window.WT_I18N && typeof window.WT_I18N.getLocale === 'function') {
+        locale = String(window.WT_I18N.getLocale() || 'en')
+          .trim()
+          .toLowerCase();
       }
-    } catch (_) { locale = "en"; }
+    } catch (_) {
+      locale = 'en';
+    }
 
-    if (locale === "fr") {
-      if (hours > 0) return minutes > 0 ? `${hours} h ${minutes} min` : `${hours} h`;
+    if (locale === 'fr') {
+      if (hours > 0)
+        return minutes > 0 ? `${hours} h ${minutes} min` : `${hours} h`;
       return `${minutes} min`;
     }
 
@@ -665,9 +872,9 @@ void function () {
     const nowDate = new Date();
     const localDayKey = [
       nowDate.getFullYear(),
-      String(nowDate.getMonth() + 1).padStart(2, "0"),
-      String(nowDate.getDate()).padStart(2, "0")
-    ].join("-");
+      String(nowDate.getMonth() + 1).padStart(2, '0'),
+      String(nowDate.getDate()).padStart(2, '0')
+    ].join('-');
 
     const dayStartMs = new Date(
       nowDate.getFullYear(),
@@ -681,13 +888,17 @@ void function () {
     ).getTime();
     const fallbackScore = 3;
     const candidateTargetScore =
-      (tier.nextTarget != null)
+      tier.nextTarget != null
         ? clampInt(tier.nextTarget, 1, 99999)
         : Math.max(fallbackScore, safeBest + 1);
     let targetScore = candidateTargetScore;
     try {
-      if (storage && typeof storage.ensureDailyChallengeTarget === "function") {
-        targetScore = clampInt(storage.ensureDailyChallengeTarget(localDayKey, candidateTargetScore), 1, 99999);
+      if (storage && typeof storage.ensureDailyChallengeTarget === 'function') {
+        targetScore = clampInt(
+          storage.ensureDailyChallengeTarget(localDayKey, candidateTargetScore),
+          1,
+          99999
+        );
       }
     } catch (_) {
       targetScore = candidateTargetScore;
@@ -696,20 +907,30 @@ void function () {
     let todayBestScore = 0;
     let todayRunCount = 0;
     try {
-      if (storage && typeof storage.getLastRuns === "function") {
+      if (storage && typeof storage.getLastRuns === 'function') {
         const lastRuns = storage.getLastRuns(20);
         const list = Array.isArray(lastRuns) ? lastRuns : [];
         for (const raw of list) {
-          const run = (raw && typeof raw === "object") ? raw : {};
+          const run = raw && typeof raw === 'object' ? raw : {};
           const endedAt = Number(run.endedAt || 0);
-          if (!Number.isFinite(endedAt) || endedAt < dayStartMs || endedAt >= dayEndMs) continue;
+          if (
+            !Number.isFinite(endedAt) ||
+            endedAt < dayStartMs ||
+            endedAt >= dayEndMs
+          )
+            continue;
 
-          const meta = (run.meta && typeof run.meta === "object") ? run.meta : {};
-          const mode = String(meta.mode || "").trim().toUpperCase();
-          if (mode !== "RUN") continue;
+          const meta = run.meta && typeof run.meta === 'object' ? run.meta : {};
+          const mode = String(meta.mode || '')
+            .trim()
+            .toUpperCase();
+          if (mode !== 'RUN') continue;
 
           todayRunCount += 1;
-          todayBestScore = Math.max(todayBestScore, clampInt(run.scoreFP, 0, 99999));
+          todayBestScore = Math.max(
+            todayBestScore,
+            clampInt(run.scoreFP, 0, 99999)
+          );
         }
       }
     } catch (_) {
@@ -717,27 +938,32 @@ void function () {
       todayRunCount = 0;
     }
 
-    const scoreProgressPct = clampInt(Math.round((Math.min(todayBestScore, targetScore) / Math.max(1, targetScore)) * 100), 0, 100);
-    const completedToday = (todayBestScore >= targetScore);
+    const scoreProgressPct = clampInt(
+      Math.round(
+        (Math.min(todayBestScore, targetScore) / Math.max(1, targetScore)) * 100
+      ),
+      0,
+      100
+    );
+    const completedToday = todayBestScore >= targetScore;
     const progressPct = completedToday ? 100 : scoreProgressPct;
     const resetInMs = Math.max(0, dayEndMs - Date.now());
     const premium = isPremiumNow(storage);
-    const runsBalance = (storage && typeof storage.getRunsBalance === "function")
-      ? clampInt(storage.getRunsBalance(), 0, 999)
-      : 0;
+    const runsBalance =
+      storage && typeof storage.getRunsBalance === 'function'
+        ? clampInt(storage.getRunsBalance(), 0, 999)
+        : 0;
     const challengePlayable = premium || runsBalance > 0;
-    const rewardAvailableToday = getDailyTicketEarnedDayKey(storage) !== localDayKey;
-    const rewardPendingReplay = (
-      !premium &&
-      runsBalance > 0 &&
-      completedToday &&
-      rewardAvailableToday
-    );
+    const rewardAvailableToday =
+      getDailyTicketEarnedDayKey(storage) !== localDayKey;
+    const rewardPendingReplay =
+      !premium && runsBalance > 0 && completedToday && rewardAvailableToday;
     const ticketCost = getRapidFireTicketCost(storage);
     const ticketBalance = getRapidFireTicketBalance(storage);
-    const ticketCap = (storage && typeof storage.getRapidFireTicketCap === "function")
-      ? clampInt(storage.getRapidFireTicketCap(), 0, 999)
-      : 0;
+    const ticketCap =
+      storage && typeof storage.getRapidFireTicketCap === 'function'
+        ? clampInt(storage.getRapidFireTicketCap(), 0, 999)
+        : 0;
     const ticketAtCap = ticketCap > 0 && ticketBalance >= ticketCap;
 
     return {
@@ -763,30 +989,41 @@ void function () {
 
   function getNextDailyCountdownTickDelayMs() {
     const msIntoMinute = Date.now() % 60000;
-    const wait = (msIntoMinute === 0) ? 60000 : (60000 - msIntoMinute + 50);
+    const wait = msIntoMinute === 0 ? 60000 : 60000 - msIntoMinute + 50;
     return clampInt(wait, 1000, 61000);
   }
 
   function syncScopedRenderTicker(ui, opts) {
-    const o = (opts && typeof opts === "object") ? opts : {};
-    const key = String(o.key || "").trim();
-    const scope = String(o.scope || "").trim();
-    const shouldRun = (typeof o.shouldRun === "function") ? o.shouldRun : null;
-    const shouldContinueAfterRender = (typeof o.shouldContinueAfterRender === "function")
-      ? o.shouldContinueAfterRender
-      : shouldRun;
-    const getDelayMs = (typeof o.getDelayMs === "function") ? o.getDelayMs : null;
-    const onStop = (typeof o.onStop === "function") ? o.onStop : null;
+    const o = opts && typeof opts === 'object' ? opts : {};
+    const key = String(o.key || '').trim();
+    const scope = String(o.scope || '').trim();
+    const shouldRun = typeof o.shouldRun === 'function' ? o.shouldRun : null;
+    const shouldContinueAfterRender =
+      typeof o.shouldContinueAfterRender === 'function'
+        ? o.shouldContinueAfterRender
+        : shouldRun;
+    const getDelayMs = typeof o.getDelayMs === 'function' ? o.getDelayMs : null;
+    const onStop = typeof o.onStop === 'function' ? o.onStop : null;
 
     function stop() {
       if (key) clearUiTimer(key);
       if (onStop) {
-        try { onStop(ui); } catch (_) { /* silent */ }
+        try {
+          onStop(ui);
+        } catch (_) {
+          /* silent */
+        }
       }
       return 0;
     }
 
-    if (!ui || typeof ui.render !== "function" || !key || !shouldRun || !getDelayMs) {
+    if (
+      !ui ||
+      typeof ui.render !== 'function' ||
+      !key ||
+      !shouldRun ||
+      !getDelayMs
+    ) {
       return stop();
     }
 
@@ -799,34 +1036,44 @@ void function () {
       return stop();
     }
 
-    return setUiTimer(key, () => {
-      if (shouldRun(ui) !== true) {
-        stop();
-        return;
-      }
+    return setUiTimer(
+      key,
+      () => {
+        if (shouldRun(ui) !== true) {
+          stop();
+          return;
+        }
 
-      try {
-        ui.render();
-      } catch (_) { /* silent */ }
+        try {
+          ui.render();
+        } catch (_) {
+          /* silent */
+        }
 
-      if (shouldContinueAfterRender(ui) !== true) {
-        stop();
-        return;
-      }
+        if (shouldContinueAfterRender(ui) !== true) {
+          stop();
+          return;
+        }
 
-      syncScopedRenderTicker(ui, o);
-    }, Math.floor(delay), scope);
+        syncScopedRenderTicker(ui, o);
+      },
+      Math.floor(delay),
+      scope
+    );
   }
 
   function shouldRefreshDailyCountdown(ui) {
     if (!ui || ui.state !== STATES.LANDING) return false;
-    const counters = (ui.storage && typeof ui.storage.getCounters === "function")
-      ? (ui.storage.getCounters() || {})
-      : null;
+    const counters =
+      ui.storage && typeof ui.storage.getCounters === 'function'
+        ? ui.storage.getCounters() || {}
+        : null;
     const runCompletes = Number(counters?.runCompletes || 0);
     if (!Number.isFinite(runCompletes) || runCompletes < 1) return false;
     try {
-      return !!(ui.appEl && ui.appEl.querySelector("[data-wt-daily-challenge-card]"));
+      return !!(
+        ui.appEl && ui.appEl.querySelector('[data-wt-daily-challenge-card]')
+      );
     } catch (_) {
       return false;
     }
@@ -834,8 +1081,8 @@ void function () {
 
   function syncDailyCountdownTicker(ui) {
     syncScopedRenderTicker(ui, {
-      key: "daily.countdown.refresh",
-      scope: "daily",
+      key: 'daily.countdown.refresh',
+      scope: 'daily',
       shouldRun: shouldRefreshDailyCountdown,
       shouldContinueAfterRender: shouldRefreshDailyCountdown,
       getDelayMs: getNextDailyCountdownTickDelayMs
@@ -844,55 +1091,69 @@ void function () {
 
   function isEarlyPriceWindowActive(storage) {
     let ep = null;
-    if (storage && typeof storage.getEarlyPriceState === "function") {
-      try { ep = storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
+    if (storage && typeof storage.getEarlyPriceState === 'function') {
+      try {
+        ep = storage.getEarlyPriceState() || null;
+      } catch (_) {
+        ep = null;
+      }
     }
 
-    return !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
+    return !!(
+      ep &&
+      String(ep.phase || '').toUpperCase() === 'EARLY' &&
+      Number(ep.remainingMs || 0) > 0
+    );
   }
 
   function shouldRefreshPaywallTimer(ui) {
-    return !!(ui && (ui.state === STATES.PAYWALL || ui.state === STATES.LANDING));
+    return !!(
+      ui &&
+      (ui.state === STATES.PAYWALL || ui.state === STATES.LANDING)
+    );
   }
 
   function extractTermsFromItem(item) {
-    const it = item && typeof item === "object" ? item : {};
+    const it = item && typeof item === 'object' ? item : {};
     return {
-      question: String(it.question || "").trim(),
-      correctAnswer: (it.correctAnswer === true || it.correctAnswer === false) ? it.correctAnswer : null,
-      explanationShort: String(it.explanationShort || it.explanation || "").trim()
+      question: String(it.question || '').trim(),
+      correctAnswer:
+        it.correctAnswer === true || it.correctAnswer === false
+          ? it.correctAnswer
+          : null,
+      explanationShort: String(
+        it.explanationShort || it.explanation || ''
+      ).trim()
     };
   }
 
   function extractTagsFromItem(item) {
-    const it = item && typeof item === "object" ? item : {};
+    const it = item && typeof item === 'object' ? item : {};
 
     if (Array.isArray(it.tags)) {
-      return it.tags
-        .map(x => String(x || "").trim())
-        .filter(Boolean);
+      return it.tags.map((x) => String(x || '').trim()).filter(Boolean);
     }
 
-    const singleTag = String(it.tag || "").trim();
+    const singleTag = String(it.tag || '').trim();
     return singleTag ? [singleTag] : [];
   }
 
   function formatExplanationForDisplay(raw, cfg, questionText) {
-    const s = String(raw || "").trim();
-    if (!s) return "";
+    const s = String(raw || '').trim();
+    if (!s) return '';
 
     function softenExplanationLine(line) {
-      const src = String(line || "").trim();
-      if (!src) return "";
+      const src = String(line || '').trim();
+      if (!src) return '';
 
       // Keep citations and rule references exact.
       if (/(Rulebook|Rule\s+\d|page\s+\d|Section\s+\d)/i.test(src)) return src;
 
       return src
         .replace(/^This is /, "That's ")
-        .replace(/^This was /, "That was ")
-        .replace(/^This includes /, "That includes ")
-        .replace(/^This applies /, "That applies ")
+        .replace(/^This was /, 'That was ')
+        .replace(/^This includes /, 'That includes ')
+        .replace(/^This applies /, 'That applies ')
         .replace(/^There is no /, "There's no ")
         .replace(/\bdo not\b/g, "don't")
         .replace(/\bdoes not\b/g, "doesn't")
@@ -901,33 +1162,39 @@ void function () {
     }
 
     const softened = s
-      .split("\n")
+      .split('\n')
       .map((line) => softenExplanationLine(line))
-      .join("\n");
+      .join('\n');
 
-    const ed = (cfg?.ui?.explanationDisplay && typeof cfg.ui.explanationDisplay === "object")
-      ? cfg.ui.explanationDisplay
-      : null;
+    const ed =
+      cfg?.ui?.explanationDisplay &&
+      typeof cfg.ui.explanationDisplay === 'object'
+        ? cfg.ui.explanationDisplay
+        : null;
 
     if (!ed || ed.enabled !== true) return escapeHtml(softened);
 
     const maxLines = clampInt(Number(ed.maxLines), 1, 4);
-    const src = String(ed.splitRegex || "").trim();
+    const src = String(ed.splitRegex || '').trim();
     if (!src) return escapeHtml(softened);
 
     let r = null;
-    try { r = new RegExp(src); } catch (_) { r = null; }
+    try {
+      r = new RegExp(src);
+    } catch (_) {
+      r = null;
+    }
     if (!r) return escapeHtml(softened);
 
     const lines = [];
     let rest = softened;
 
-    while (lines.length < (maxLines - 1)) {
+    while (lines.length < maxLines - 1) {
       r.lastIndex = 0;
       const m = r.exec(rest);
-      if (!m || typeof m.index !== "number") break;
+      if (!m || typeof m.index !== 'number') break;
 
-      const cutAt = m.index + String(m[0] || "").length;
+      const cutAt = m.index + String(m[0] || '').length;
       const a = rest.slice(0, cutAt).trim();
       const b = rest.slice(cutAt).trim();
 
@@ -940,17 +1207,21 @@ void function () {
     lines.push(rest);
 
     const renderedLines = lines.map((line, index) => {
-      const trimmed = String(line || "").trim();
+      const trimmed = String(line || '').trim();
       let html = escapeHtml(trimmed);
-      const isLast = index === (lines.length - 1);
-      const isCitation = /(Rulebook|Equipment Standards Manual|Rule\s+\d|page\s+\d|Section\s+\d)/i.test(trimmed);
-      if (isLast && isCitation) html = `<em class="wt-explanation__cite">${html}</em>`;
+      const isLast = index === lines.length - 1;
+      const isCitation =
+        /(Rulebook|Equipment Standards Manual|Rule\s+\d|page\s+\d|Section\s+\d)/i.test(
+          trimmed
+        );
+      if (isLast && isCitation)
+        html = `<em class="wt-explanation__cite">${html}</em>`;
       return html;
     });
 
-    let out = renderedLines.join("<br>");
+    let out = renderedLines.join('<br>');
 
-    const question = String(questionText || "").trim();
+    const question = String(questionText || '').trim();
 
     if (question) {
       const questionEsc = escapeHtml(question);
@@ -960,17 +1231,16 @@ void function () {
     return out;
   }
 
-
   function renderBrandingRow(config, showText, forceNoLink) {
-    const logoUrl = String(config?.identity?.uiLogoUrl || "").trim();
-    const appName = String(config?.identity?.appName || "").trim();
+    const logoUrl = String(config?.identity?.uiLogoUrl || '').trim();
+    const appName = String(config?.identity?.appName || '').trim();
 
-    if (!logoUrl) return "";
+    if (!logoUrl) return '';
 
-    const modifier = showText ? "" : " wt-branding--logo-only";
+    const modifier = showText ? '' : ' wt-branding--logo-only';
     const nameHtml = showText
       ? `<span class="wt-branding-name">${escapeHtml(appName)}</span>`
-      : "";
+      : '';
 
     const inner = `
       <img src="${escapeHtml(logoUrl)}" alt="" class="wt-branding-logo" />
@@ -995,8 +1265,8 @@ void function () {
   }
 
   function renderTextWithStrong(value) {
-    const text = String(value || "");
-    if (!text) return "";
+    const text = String(value || '');
+    if (!text) return '';
 
     return text
       .split(/(\*\*[^*]+\*\*)/g)
@@ -1007,16 +1277,15 @@ void function () {
         }
         return escapeHtml(part);
       })
-      .join("");
+      .join('');
   }
-
-
-
 
   // Mobile-first: tap-to-continue only on touch-like devices (coarse pointer)
   function shouldTapToContinue() {
     try {
-      return window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+      return (
+        window.matchMedia && window.matchMedia('(pointer: coarse)').matches
+      );
     } catch (_) {
       return false;
     }
@@ -1031,42 +1300,39 @@ void function () {
   const runtimeTimerOwners = new Map();
 
   function getRuntimeTimerScope(prop, explicitScope) {
-    const explicit = String(explicitScope || "").trim();
+    const explicit = String(explicitScope || '').trim();
     if (explicit) return explicit;
 
-    const p = String(prop || "").trim();
+    const p = String(prop || '').trim();
 
     if (
-      p === "endRecordMomentTimer" ||
-      p === "endAutoModalTimerId" ||
-      p === "finishFadeOutTimerId" ||
-      p === "finishFadeInStartTimerId" ||
-      p === "finishFadeCleanupTimerId"
+      p === 'endRecordMomentTimer' ||
+      p === 'endAutoModalTimerId' ||
+      p === 'finishFadeOutTimerId' ||
+      p === 'finishFadeInStartTimerId' ||
+      p === 'finishFadeCleanupTimerId'
     ) {
-      return "end";
+      return 'end';
+    }
+
+    if (p === 'feedbackRevealTimerId' || p === 'bonusAnswerFeedbackTimerId') {
+      return 'feedback';
     }
 
     if (
-      p === "feedbackRevealTimerId" ||
-      p === "bonusAnswerFeedbackTimerId"
+      p === 'bonusEndTimerId' ||
+      p === 'hudPulseCleanupTimerId' ||
+      p === 'gameOverAfterFeedbackTimerId'
     ) {
-      return "feedback";
+      return 'playing';
     }
 
-    if (
-      p === "bonusEndTimerId" ||
-      p === "hudPulseCleanupTimerId" ||
-      p === "gameOverAfterFeedbackTimerId"
-    ) {
-      return "playing";
-    }
-
-    return "playing";
+    return 'playing';
   }
 
   function setUiTimer(key, fn, ms, scope) {
-    const name = String(key || "").trim();
-    if (!name || typeof fn !== "function") return 0;
+    const name = String(key || '').trim();
+    if (!name || typeof fn !== 'function') return 0;
 
     const delay = Number(ms);
     if (!Number.isFinite(delay) || delay < 0) return 0;
@@ -1080,20 +1346,22 @@ void function () {
 
     uiTimerRegistry.set(name, {
       id,
-      scope: String(scope || "").trim()
+      scope: String(scope || '').trim()
     });
 
     return id;
   }
 
   function clearUiTimer(key) {
-    const name = String(key || "").trim();
+    const name = String(key || '').trim();
     if (!name) return;
 
     const entry = uiTimerRegistry.get(name);
     if (!entry) return;
 
-    try { window.clearTimeout(entry.id); } catch (_) { }
+    try {
+      window.clearTimeout(entry.id);
+    } catch (_) {}
     uiTimerRegistry.delete(name);
 
     const owner = runtimeTimerOwners.get(name);
@@ -1104,7 +1372,7 @@ void function () {
   }
 
   function clearUiTimersByScope(scope) {
-    const target = String(scope || "").trim();
+    const target = String(scope || '').trim();
     if (!target) return;
 
     Array.from(uiTimerRegistry.entries()).forEach(([key, entry]) => {
@@ -1113,7 +1381,7 @@ void function () {
   }
 
   function runtimeTimerKey(prop) {
-    return `runtime.${String(prop || "").trim()}`;
+    return `runtime.${String(prop || '').trim()}`;
   }
 
   function setRuntimeTimer(ui, prop, fn, ms, scope) {
@@ -1122,11 +1390,16 @@ void function () {
     clearRuntimeTimer(ui, prop);
 
     runtimeTimerOwners.set(key, { ui, prop });
-    const id = setUiTimer(key, () => {
-      runtimeTimerOwners.delete(key);
-      if (ui._runtime) ui._runtime[prop] = null;
-      fn();
-    }, ms, getRuntimeTimerScope(prop, scope));
+    const id = setUiTimer(
+      key,
+      () => {
+        runtimeTimerOwners.delete(key);
+        if (ui._runtime) ui._runtime[prop] = null;
+        fn();
+      },
+      ms,
+      getRuntimeTimerScope(prop, scope)
+    );
 
     if (!id) runtimeTimerOwners.delete(key);
     ui._runtime[prop] = id || null;
@@ -1156,41 +1429,56 @@ void function () {
   // Orchestration-only layer: keep visible overlays and copy unchanged,
   // but centralize priorities and same-family replacement.
   function normalizeOverlayId(typeOrId) {
-    const id = String(typeOrId || "").trim();
-    if (!id) return "";
+    const id = String(typeOrId || '').trim();
+    if (!id) return '';
 
-    if (id === "toast") return "toast";
-    if (id === "transient" || id === "gameplay" || id === "wt-gameplay-overlay") return "gameplay";
-    if (id === "blocking") return "blocking";
-    if (id === "chance" || id === "chance-lost" || id === "wt-chance-lost-overlay") return "chance";
-    if (id === "runstart" || id === "run-start" || id === "wt-run-start-overlay") return "runstart";
+    if (id === 'toast') return 'toast';
+    if (id === 'transient' || id === 'gameplay' || id === 'wt-gameplay-overlay')
+      return 'gameplay';
+    if (id === 'blocking') return 'blocking';
+    if (
+      id === 'chance' ||
+      id === 'chance-lost' ||
+      id === 'wt-chance-lost-overlay'
+    )
+      return 'chance';
+    if (
+      id === 'runstart' ||
+      id === 'run-start' ||
+      id === 'wt-run-start-overlay'
+    )
+      return 'runstart';
 
     return id;
   }
 
   function isModalBlockingVisible() {
-    const modal = document.getElementById("modal");
-    return !!(modal && modal.classList && !modal.classList.contains("wt-hidden"));
+    const modal = document.getElementById('modal');
+    return !!(
+      modal &&
+      modal.classList &&
+      !modal.classList.contains('wt-hidden')
+    );
   }
 
   function isBlockingOverlayVisible() {
     return (
-      isOverlayVisible("wt-chance-lost-overlay") ||
-      isOverlayVisible("wt-run-start-overlay")
+      isOverlayVisible('wt-chance-lost-overlay') ||
+      isOverlayVisible('wt-run-start-overlay')
     );
   }
 
   function isTransientOverlayVisible() {
-    return isOverlayVisible("wt-gameplay-overlay");
+    return isOverlayVisible('wt-gameplay-overlay');
   }
 
   function hideToast() {
-    clearUiTimer("toast.show");
-    clearUiTimer("toast.hide");
+    clearUiTimer('toast.show');
+    clearUiTimer('toast.hide');
 
-    const node = document.getElementById("toast");
+    const node = document.getElementById('toast');
     if (node && node.classList) {
-      node.classList.remove("wt-toast--visible");
+      node.classList.remove('wt-toast--visible');
     }
   }
 
@@ -1198,35 +1486,39 @@ void function () {
     const id = normalizeOverlayId(typeOrId);
     if (!id) return;
 
-    if (id === "toast") {
+    if (id === 'toast') {
       hideToast();
       return;
     }
 
-    if (id === "transient" || id === "gameplay") {
+    if (id === 'transient' || id === 'gameplay') {
       hideGameplayOverlay();
       return;
     }
 
-    if (id === "blocking") {
+    if (id === 'blocking') {
       hideChanceLostOverlay();
       hideRunStartOverlay();
       return;
     }
 
-    if (id === "chance") {
+    if (id === 'chance') {
       hideChanceLostOverlay();
       return;
     }
 
-    if (id === "runstart") {
+    if (id === 'runstart') {
       hideRunStartOverlay();
       return;
     }
   }
 
   function canShowToast() {
-    return !(isModalBlockingVisible() || isBlockingOverlayVisible() || isTransientOverlayVisible());
+    return !(
+      isModalBlockingVisible() ||
+      isBlockingOverlayVisible() ||
+      isTransientOverlayVisible()
+    );
   }
 
   function showTransientOverlay(typeOrId, renderFn) {
@@ -1236,14 +1528,14 @@ void function () {
     // Priority: modal / blocking overlay > transient overlay > toast.
     if (isModalBlockingVisible() || isBlockingOverlayVisible()) return false;
 
-    hideOverlay("toast");
+    hideOverlay('toast');
 
     // Same-family replacement: a new transient overlay replaces the old one cleanly.
-    if (id === "gameplay") {
+    if (id === 'gameplay') {
       hideGameplayOverlay();
     }
 
-    if (typeof renderFn === "function") renderFn();
+    if (typeof renderFn === 'function') renderFn();
     return true;
   }
 
@@ -1255,138 +1547,160 @@ void function () {
     if (isModalBlockingVisible()) return false;
 
     // Chance / game-over overlay keeps priority over run-start.
-    if (id === "runstart" && isOverlayVisible("wt-chance-lost-overlay")) return false;
+    if (id === 'runstart' && isOverlayVisible('wt-chance-lost-overlay'))
+      return false;
 
-    hideOverlay("toast");
-    hideOverlay("transient");
+    hideOverlay('toast');
+    hideOverlay('transient');
 
     // Same-family replacement + explicit blocking priority.
-    if (id === "chance") hideRunStartOverlay();
-    if (id === "runstart") hideRunStartOverlay();
+    if (id === 'chance') hideRunStartOverlay();
+    if (id === 'runstart') hideRunStartOverlay();
 
-    if (typeof renderFn === "function") renderFn();
+    if (typeof renderFn === 'function') renderFn();
     return true;
   }
 
   function applyToastVariantClass(node, variant) {
     if (!node) return;
-    node.classList.remove("wt-toast--info", "wt-toast--success", "wt-toast--danger");
+    node.classList.remove(
+      'wt-toast--info',
+      'wt-toast--success',
+      'wt-toast--danger'
+    );
 
-    const v = String(variant || "").trim();
-    if (v === "info") node.classList.add("wt-toast--info");
-    else if (v === "success") node.classList.add("wt-toast--success");
-    else if (v === "danger") node.classList.add("wt-toast--danger");
+    const v = String(variant || '').trim();
+    if (v === 'info') node.classList.add('wt-toast--info');
+    else if (v === 'success') node.classList.add('wt-toast--success');
+    else if (v === 'danger') node.classList.add('wt-toast--danger');
   }
 
   function showToast(message, opts) {
     if (!canShowToast()) return;
 
-    const node = el("toast");
+    const node = el('toast');
     if (!node) return;
 
-    const text = String(message || "").trim();
+    const text = String(message || '').trim();
     if (!text) return;
 
-    const o = (opts && typeof opts === "object") ? opts : null;
+    const o = opts && typeof opts === 'object' ? opts : null;
     const durationMs = o ? Number(o.durationMs) : NaN;
 
     // No silent fallback: if duration isn't valid, we don't show a toast.
-    if (!Number.isFinite(durationMs) || durationMs < UI_TIMING_LIMITS.durationMsMin || durationMs > UI_TIMING_LIMITS.durationMsMax) return;
+    if (
+      !Number.isFinite(durationMs) ||
+      durationMs < UI_TIMING_LIMITS.durationMsMin ||
+      durationMs > UI_TIMING_LIMITS.durationMsMax
+    )
+      return;
 
     // Same-family replacement: a new toast replaces the previous toast cleanly.
-    hideOverlay("toast");
+    hideOverlay('toast');
 
     node.textContent = text;
-    applyToastVariantClass(node, o ? o.variant : "");
+    applyToastVariantClass(node, o ? o.variant : '');
 
     // Contract: CSS owns visibility via .wt-toast--visible
-    node.classList.add("wt-toast--visible");
+    node.classList.add('wt-toast--visible');
 
-    setUiTimer("toast.hide", () => {
-      node.classList.remove("wt-toast--visible");
-    }, Math.floor(durationMs), "overlay");
+    setUiTimer(
+      'toast.hide',
+      () => {
+        node.classList.remove('wt-toast--visible');
+      },
+      Math.floor(durationMs),
+      'overlay'
+    );
   }
 
-
-
-
   function cancelScheduledToast(opts) {
-    const o = (opts && typeof opts === "object") ? opts : null;
-    const keepChanceOverlayVisible = !!(o && o.keepChanceOverlayVisible === true);
+    const o = opts && typeof opts === 'object' ? opts : null;
+    const keepChanceOverlayVisible = !!(
+      o && o.keepChanceOverlayVisible === true
+    );
 
-    hideOverlay("toast");
+    hideOverlay('toast');
 
-    clearUiTimer("overlay.gameplay.show");
+    clearUiTimer('overlay.gameplay.show');
 
     // Prevent transient overlays from surviving a state change.
-    hideOverlay("transient");
-    hideOverlay("runstart");
+    hideOverlay('transient');
+    hideOverlay('runstart');
 
     if (!keepChanceOverlayVisible) {
-      hideOverlay("chance");
+      hideOverlay('chance');
     }
   }
 
   function cleanupPlayingExit(ui, opts) {
-    const o = (opts && typeof opts === "object") ? opts : null;
-    const keepChanceOverlayVisible = !!(o && o.keepChanceOverlayVisible === true);
-    const preserveEndSignals = !!(ui && ui._runtime && ui._runtime.finishingRun === true);
+    const o = opts && typeof opts === 'object' ? opts : null;
+    const keepChanceOverlayVisible = !!(
+      o && o.keepChanceOverlayVisible === true
+    );
+    const preserveEndSignals = !!(
+      ui &&
+      ui._runtime &&
+      ui._runtime.finishingRun === true
+    );
 
     cancelQuestionSpeech(ui);
     cancelScheduledToast({ keepChanceOverlayVisible });
 
     if (keepChanceOverlayVisible) {
-      clearUiTimer("overlay.chance.hide");
+      clearUiTimer('overlay.chance.hide');
     } else {
       hideChanceLostOverlay();
     }
 
     if (ui && ui._beforeUnloadHandler) {
-      window.removeEventListener("beforeunload", ui._beforeUnloadHandler);
+      window.removeEventListener('beforeunload', ui._beforeUnloadHandler);
       ui._beforeUnloadHandler = null;
     }
 
     try {
-      if (ui && typeof ui._secretBonusFallCleanup === "function") {
+      if (ui && typeof ui._secretBonusFallCleanup === 'function') {
         ui._secretBonusFallCleanup();
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     if (ui && ui._runtime) {
       if (ui._runtime.feedbackRevealTimerId) {
-        clearRuntimeTimer(ui, "feedbackRevealTimerId");
+        clearRuntimeTimer(ui, 'feedbackRevealTimerId');
       }
 
       if (ui._runtime.bonusAnswerFeedbackTimerId) {
-        clearRuntimeTimer(ui, "bonusAnswerFeedbackTimerId");
+        clearRuntimeTimer(ui, 'bonusAnswerFeedbackTimerId');
       }
 
       if (ui._runtime.bonusEndTimerId) {
-        clearRuntimeTimer(ui, "bonusEndTimerId");
+        clearRuntimeTimer(ui, 'bonusEndTimerId');
       }
 
       if (ui._runtime.hudPulseCleanupTimerId) {
-        clearRuntimeTimer(ui, "hudPulseCleanupTimerId");
+        clearRuntimeTimer(ui, 'hudPulseCleanupTimerId');
       }
 
       if (ui._runtime.endRecordMomentTimer) {
-        clearRuntimeTimer(ui, "endRecordMomentTimer");
+        clearRuntimeTimer(ui, 'endRecordMomentTimer');
       }
 
       if (ui._runtime.finishFadeOutTimerId) {
-        clearRuntimeTimer(ui, "finishFadeOutTimerId");
+        clearRuntimeTimer(ui, 'finishFadeOutTimerId');
       }
 
       if (ui._runtime.finishFadeInStartTimerId) {
-        clearRuntimeTimer(ui, "finishFadeInStartTimerId");
+        clearRuntimeTimer(ui, 'finishFadeInStartTimerId');
       }
 
       if (ui._runtime.finishFadeCleanupTimerId) {
-        clearRuntimeTimer(ui, "finishFadeCleanupTimerId");
+        clearRuntimeTimer(ui, 'finishFadeCleanupTimerId');
       }
 
       if (ui._runtime.gameOverAfterFeedbackTimerId) {
-        clearRuntimeTimer(ui, "gameOverAfterFeedbackTimerId");
+        clearRuntimeTimer(ui, 'gameOverAfterFeedbackTimerId');
       }
 
       ui._runtime.answerLocked = false;
@@ -1404,38 +1718,56 @@ void function () {
     }
 
     try {
-      const app = document.getElementById("app");
+      const app = document.getElementById('app');
       if (app) {
-        if (app.getAttribute("data-wt-runstart-lock") === "1") {
-          app.style.pointerEvents = app.getAttribute("data-wt-runstart-prev-pe") || "";
-          try { app.inert = (app.getAttribute("data-wt-runstart-prev-inert") === "1"); } catch (_) { }
-          app.removeAttribute("data-wt-runstart-lock");
-          app.removeAttribute("data-wt-runstart-prev-pe");
-          app.removeAttribute("data-wt-runstart-prev-inert");
+        if (app.getAttribute('data-wt-runstart-lock') === '1') {
+          app.style.pointerEvents =
+            app.getAttribute('data-wt-runstart-prev-pe') || '';
+          try {
+            app.inert = app.getAttribute('data-wt-runstart-prev-inert') === '1';
+          } catch (_) {}
+          app.removeAttribute('data-wt-runstart-lock');
+          app.removeAttribute('data-wt-runstart-prev-pe');
+          app.removeAttribute('data-wt-runstart-prev-inert');
         }
-        if (app.inert === true) { try { app.inert = false; } catch (_) { } }
-        if (app.style.pointerEvents === "none") app.style.pointerEvents = "";
+        if (app.inert === true) {
+          try {
+            app.inert = false;
+          } catch (_) {}
+        }
+        if (app.style.pointerEvents === 'none') app.style.pointerEvents = '';
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
   }
 
   function getToastTiming(cfg, timingKey) {
-    const c = (cfg && typeof cfg === "object") ? cfg : {};
+    const c = cfg && typeof cfg === 'object' ? cfg : {};
     // Single source of truth for toast timing: WT_CONFIG.ui.toast (schema plat)
-    const toastRoot = (c.ui && typeof c.ui === "object" && c.ui.toast && typeof c.ui.toast === "object")
-      ? c.ui.toast
-      : null;
+    const toastRoot =
+      c.ui &&
+      typeof c.ui === 'object' &&
+      c.ui.toast &&
+      typeof c.ui.toast === 'object'
+        ? c.ui.toast
+        : null;
 
-    if (!toastRoot || typeof toastRoot !== "object") return null;
+    if (!toastRoot || typeof toastRoot !== 'object') return null;
 
-    const key = String(timingKey || "").trim();
+    const key = String(timingKey || '').trim();
 
     // Default bucket is mandatory
-    const def = (toastRoot.default && typeof toastRoot.default === "object") ? toastRoot.default : null;
+    const def =
+      toastRoot.default && typeof toastRoot.default === 'object'
+        ? toastRoot.default
+        : null;
     if (!def) return null;
 
     const t = key
-      ? ((toastRoot[key] && typeof toastRoot[key] === "object") ? toastRoot[key] : null)
+      ? toastRoot[key] && typeof toastRoot[key] === 'object'
+        ? toastRoot[key]
+        : null
       : def;
 
     // No silent fallback: if a timingKey is requested but missing, do nothing.
@@ -1444,16 +1776,26 @@ void function () {
     const delayMs = Number(t.delayMs);
     const durationMs = Number(t.durationMs);
 
-    if (!Number.isFinite(delayMs) || delayMs < 0 || delayMs > UI_TIMING_LIMITS.delayMsMax) return null;
-    if (!Number.isFinite(durationMs) || durationMs < UI_TIMING_LIMITS.durationMsMin || durationMs > UI_TIMING_LIMITS.durationMsMax) return null;
+    if (
+      !Number.isFinite(delayMs) ||
+      delayMs < 0 ||
+      delayMs > UI_TIMING_LIMITS.delayMsMax
+    )
+      return null;
+    if (
+      !Number.isFinite(durationMs) ||
+      durationMs < UI_TIMING_LIMITS.durationMsMin ||
+      durationMs > UI_TIMING_LIMITS.durationMsMax
+    )
+      return null;
 
     return { delayMs: Math.floor(delayMs), durationMs: Math.floor(durationMs) };
   }
 
   function toastNow(cfg, message, opts) {
-    const o = (opts && typeof opts === "object") ? opts : null;
-    const timingKey = o ? o.timingKey : "";
-    const variant = o ? o.variant : "";
+    const o = opts && typeof opts === 'object' ? opts : null;
+    const timingKey = o ? o.timingKey : '';
+    const variant = o ? o.variant : '';
 
     const timing = getToastTiming(cfg, timingKey);
     if (!timing) return;
@@ -1462,19 +1804,18 @@ void function () {
 
   // Chance-loss toast (RUN / PRACTICE / BONUS)
 
-
   // Start-of-run overlay (education)
   // Copy contract: WT_WORDING.ui.startRunChancesOverlay must be provided.
   // Template recommended: "{maxChances} chances"
   function getRunStartOverlayText(uiWording, maxChances) {
-    const tpl = String(uiWording?.startRunChancesOverlay || "").trim();
-    if (!tpl) return "";
+    const tpl = String(uiWording?.startRunChancesOverlay || '').trim();
+    if (!tpl) return '';
 
     const mc = Number(maxChances);
-    if (!Number.isFinite(mc)) return "";
+    if (!Number.isFinite(mc)) return '';
 
     // Backward compatible: if tpl has no placeholders, use as-is
-    if (!tpl.includes("{maxChances}")) return tpl;
+    if (!tpl.includes('{maxChances}')) return tpl;
 
     return fillTemplate(tpl, { maxChances: clampInt(mc, 1, 99) });
   }
@@ -1482,13 +1823,11 @@ void function () {
   function getChanceStateOverlayText(uiWording, chancesLeft) {
     const left = clampInt(chancesLeft, 0, 99);
 
-    if (left === 0) return String(uiWording?.gameOverOverlay || "").trim();
-    if (left === 1) return String(uiWording?.lastChanceOverlay || "").trim();
+    if (left === 0) return String(uiWording?.gameOverOverlay || '').trim();
+    if (left === 1) return String(uiWording?.lastChanceOverlay || '').trim();
 
-    return "";
+    return '';
   }
-
-
 
   // Chance-lost: ignore taps while visible (recommended)
   let chanceLostOverlayBlocker = null;
@@ -1505,20 +1844,30 @@ void function () {
   let gameplayOverlayTapHandler = null;
 
   function scheduleGameplayOverlay(message, opts) {
-    const text = String(message || "").trim();
+    const text = String(message || '').trim();
     if (!text) return;
 
-    const o = (opts && typeof opts === "object") ? opts : null;
+    const o = opts && typeof opts === 'object' ? opts : null;
     const delayMs = o ? Number(o.delayMs) : NaN;
     const durationMs = o ? Number(o.durationMs) : NaN;
-    const variant = o ? String(o.variant || "").trim() : "";
-    const cfg = (o && o.cfg && typeof o.cfg === "object") ? o.cfg : null;
-    const mode = o ? String(o.mode || "").trim() : "";
+    const variant = o ? String(o.variant || '').trim() : '';
+    const cfg = o && o.cfg && typeof o.cfg === 'object' ? o.cfg : null;
+    const mode = o ? String(o.mode || '').trim() : '';
 
-    if (!Number.isFinite(delayMs) || delayMs < 0 || delayMs > UI_TIMING_LIMITS.delayMsMax) return;
-    if (!Number.isFinite(durationMs) || durationMs < UI_TIMING_LIMITS.durationMsMin || durationMs > UI_TIMING_LIMITS.durationMsMax) return;
+    if (
+      !Number.isFinite(delayMs) ||
+      delayMs < 0 ||
+      delayMs > UI_TIMING_LIMITS.delayMsMax
+    )
+      return;
+    if (
+      !Number.isFinite(durationMs) ||
+      durationMs < UI_TIMING_LIMITS.durationMsMin ||
+      durationMs > UI_TIMING_LIMITS.durationMsMax
+    )
+      return;
 
-    clearUiTimer("overlay.gameplay.show");
+    clearUiTimer('overlay.gameplay.show');
 
     if (Math.floor(delayMs) <= 0) {
       showGameplayOverlay(text, {
@@ -1530,190 +1879,238 @@ void function () {
       return;
     }
 
-    setUiTimer("overlay.gameplay.show", () => {
-      showGameplayOverlay(text, {
-        durationMs: Math.floor(durationMs),
-        variant,
-        cfg,
-        mode
-      });
-    }, Math.floor(delayMs), "overlay");
+    setUiTimer(
+      'overlay.gameplay.show',
+      () => {
+        showGameplayOverlay(text, {
+          durationMs: Math.floor(durationMs),
+          variant,
+          cfg,
+          mode
+        });
+      },
+      Math.floor(delayMs),
+      'overlay'
+    );
   }
 
   function isOverlayVisible(id) {
-    const el = document.getElementById(String(id || ""));
-    return !!(el && el.classList && el.classList.contains("wt-chance-overlay--visible"));
+    const el = document.getElementById(String(id || ''));
+    return !!(
+      el &&
+      el.classList &&
+      el.classList.contains('wt-chance-overlay--visible')
+    );
   }
 
   function hideChanceLostOverlay() {
-    clearUiTimer("overlay.chance.hide");
+    clearUiTimer('overlay.chance.hide');
 
     if (chanceLostOverlayBlocker) {
-      document.removeEventListener("pointerdown", chanceLostOverlayBlocker, true);
+      document.removeEventListener(
+        'pointerdown',
+        chanceLostOverlayBlocker,
+        true
+      );
       chanceLostOverlayBlocker = null;
     }
 
-    const overlay = document.getElementById("wt-chance-lost-overlay");
+    const overlay = document.getElementById('wt-chance-lost-overlay');
     if (overlay) {
-      overlay.classList.remove("wt-chance-overlay--visible");
-      overlay.removeAttribute("data-wt-overlay-mode");
-      overlay.setAttribute("aria-hidden", "true");
+      overlay.classList.remove('wt-chance-overlay--visible');
+      overlay.removeAttribute('data-wt-overlay-mode');
+      overlay.setAttribute('aria-hidden', 'true');
     }
-
   }
 
   function hideRunStartOverlay() {
-    clearUiTimer("overlay.runstart.hide");
+    clearUiTimer('overlay.runstart.hide');
 
     // Remove run-start blockers (anti click-through)
     if (runStartOverlayPointerBlocker) {
-      document.removeEventListener("pointerdown", runStartOverlayPointerBlocker, true);
+      document.removeEventListener(
+        'pointerdown',
+        runStartOverlayPointerBlocker,
+        true
+      );
       runStartOverlayPointerBlocker = null;
     }
     if (runStartOverlayClickBlocker) {
-      document.removeEventListener("click", runStartOverlayClickBlocker, true);
+      document.removeEventListener('click', runStartOverlayClickBlocker, true);
       runStartOverlayClickBlocker = null;
     }
     if (runStartOverlayKeyBlocker) {
-      document.removeEventListener("keydown", runStartOverlayKeyBlocker, true);
+      document.removeEventListener('keydown', runStartOverlayKeyBlocker, true);
       runStartOverlayKeyBlocker = null;
     }
     runStartOverlayConsumeNextClick = false;
 
-    const overlay = document.getElementById("wt-run-start-overlay");
+    const overlay = document.getElementById('wt-run-start-overlay');
     if (overlay) {
-      overlay.classList.remove("wt-chance-overlay--visible");
-      overlay.setAttribute("aria-hidden", "true");
-      overlay.removeAttribute("data-runstart-dismiss");
-      overlay.removeAttribute("data-runstart-mode");
+      overlay.classList.remove('wt-chance-overlay--visible');
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.removeAttribute('data-runstart-dismiss');
+      overlay.removeAttribute('data-runstart-mode');
     }
 
     // Unlock underlying UI if we locked it for run-start overlay
-    const app = document.getElementById("app");
-    if (app && app.getAttribute("data-wt-runstart-lock") === "1") {
-      const prevPe = app.getAttribute("data-wt-runstart-prev-pe");
-      const prevInert = app.getAttribute("data-wt-runstart-prev-inert") === "1";
+    const app = document.getElementById('app');
+    if (app && app.getAttribute('data-wt-runstart-lock') === '1') {
+      const prevPe = app.getAttribute('data-wt-runstart-prev-pe');
+      const prevInert = app.getAttribute('data-wt-runstart-prev-inert') === '1';
 
-      app.style.pointerEvents = (prevPe == null) ? "" : prevPe;
-      try { app.inert = prevInert === true; } catch (_) { /* silent */ }
+      app.style.pointerEvents = prevPe == null ? '' : prevPe;
+      try {
+        app.inert = prevInert === true;
+      } catch (_) {
+        /* silent */
+      }
 
-      app.removeAttribute("data-wt-runstart-lock");
-      app.removeAttribute("data-wt-runstart-prev-pe");
-      app.removeAttribute("data-wt-runstart-prev-inert");
+      app.removeAttribute('data-wt-runstart-lock');
+      app.removeAttribute('data-wt-runstart-prev-pe');
+      app.removeAttribute('data-wt-runstart-prev-inert');
     }
-
   }
 
-
-
-
   function showGameplayOverlay(message, opts) {
-    const o = (opts && typeof opts === "object") ? opts : null;
+    const o = opts && typeof opts === 'object' ? opts : null;
     const durationMs = o ? Number(o.durationMs) : NaN;
-    const variant = o ? String(o.variant || "").trim() : "";
-    const cfg = (o && o.cfg && typeof o.cfg === "object") ? o.cfg : null;
-    const mode = o ? String(o.mode || "").trim() : "";
+    const variant = o ? String(o.variant || '').trim() : '';
+    const cfg = o && o.cfg && typeof o.cfg === 'object' ? o.cfg : null;
+    const mode = o ? String(o.mode || '').trim() : '';
 
     // Validation bounds: same contract as WT_CONFIG.ui.toast.*.durationMs
-    if (!Number.isFinite(durationMs) || durationMs < UI_TIMING_LIMITS.durationMsMin || durationMs > UI_TIMING_LIMITS.durationMsMax) return;
-    const msg = String(message || "").trim();
+    if (
+      !Number.isFinite(durationMs) ||
+      durationMs < UI_TIMING_LIMITS.durationMsMin ||
+      durationMs > UI_TIMING_LIMITS.durationMsMax
+    )
+      return;
+    const msg = String(message || '').trim();
     if (!msg) return;
 
     // Controller priority: modal / blocking overlay > transient overlay > toast.
-    if (!showTransientOverlay("gameplay")) return;
+    if (!showTransientOverlay('gameplay')) return;
 
-    clearUiTimer("overlay.gameplay.hide");
+    clearUiTimer('overlay.gameplay.hide');
 
     if (gameplayOverlayTapHandler) {
-      document.removeEventListener("pointerdown", gameplayOverlayTapHandler, true);
+      document.removeEventListener(
+        'pointerdown',
+        gameplayOverlayTapHandler,
+        true
+      );
       gameplayOverlayTapHandler = null;
     }
 
-    let overlay = document.getElementById("wt-gameplay-overlay");
+    let overlay = document.getElementById('wt-gameplay-overlay');
     if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = "wt-gameplay-overlay";
-      overlay.className = "wt-chance-overlay";
-      overlay.setAttribute("role", "alert");
-      overlay.setAttribute("aria-live", variant === "danger" ? "assertive" : "polite");
+      overlay = document.createElement('div');
+      overlay.id = 'wt-gameplay-overlay';
+      overlay.className = 'wt-chance-overlay';
+      overlay.setAttribute('role', 'alert');
+      overlay.setAttribute(
+        'aria-live',
+        variant === 'danger' ? 'assertive' : 'polite'
+      );
       document.body.appendChild(overlay);
     }
 
     overlay.classList.remove(
-      "wt-chance-overlay--info",
-      "wt-chance-overlay--danger",
-      "wt-chance-overlay--success",
-      "wt-chance-overlay--dismissible",
-      "wt-chance-overlay--blocking"
+      'wt-chance-overlay--info',
+      'wt-chance-overlay--danger',
+      'wt-chance-overlay--success',
+      'wt-chance-overlay--dismissible',
+      'wt-chance-overlay--blocking'
     );
-    if (mode) overlay.setAttribute("data-wt-overlay-mode", mode);
-    else overlay.removeAttribute("data-wt-overlay-mode");
-    if (variant === "info") overlay.classList.add("wt-chance-overlay--info");
-    else if (variant === "danger") overlay.classList.add("wt-chance-overlay--danger");
-    else if (variant === "success") overlay.classList.add("wt-chance-overlay--success");
-    overlay.setAttribute("aria-live", variant === "danger" ? "assertive" : "polite");
+    if (mode) overlay.setAttribute('data-wt-overlay-mode', mode);
+    else overlay.removeAttribute('data-wt-overlay-mode');
+    if (variant === 'info') overlay.classList.add('wt-chance-overlay--info');
+    else if (variant === 'danger')
+      overlay.classList.add('wt-chance-overlay--danger');
+    else if (variant === 'success')
+      overlay.classList.add('wt-chance-overlay--success');
+    overlay.setAttribute(
+      'aria-live',
+      variant === 'danger' ? 'assertive' : 'polite'
+    );
 
     // Gameplay overlays: block taps by default (avoid "looks modal but click-through")
-    overlay.classList.add("wt-chance-overlay--blocking");
+    overlay.classList.add('wt-chance-overlay--blocking');
 
     overlay.innerHTML = `
       <div class="wt-chance-overlay__content">
         <span class="wt-chance-overlay__text">
-          ${msg.split("\n").filter(Boolean).map(l => `<span>${escapeHtml(l)}</span>`).join("<br>")}
+          ${msg
+            .split('\n')
+            .filter(Boolean)
+            .map((l) => `<span>${escapeHtml(l)}</span>`)
+            .join('<br>')}
         </span>
       </div>
     `;
 
     // Tap-to-dismiss (faster): only if enabled in config
-    const dismissEnabled = (cfg?.ui?.toastDismissOnTap === true);
+    const dismissEnabled = cfg?.ui?.toastDismissOnTap === true;
     if (dismissEnabled) {
-      overlay.classList.add("wt-chance-overlay--dismissible");
+      overlay.classList.add('wt-chance-overlay--dismissible');
       gameplayOverlayTapHandler = (e) => {
-        const el = document.getElementById("wt-gameplay-overlay");
+        const el = document.getElementById('wt-gameplay-overlay');
         if (!el) return;
-        if (!el.classList.contains("wt-chance-overlay--visible")) return;
+        if (!el.classList.contains('wt-chance-overlay--visible')) return;
         e.preventDefault();
         e.stopImmediatePropagation();
         hideGameplayOverlay();
       };
-      document.addEventListener("pointerdown", gameplayOverlayTapHandler, true);
+      document.addEventListener('pointerdown', gameplayOverlayTapHandler, true);
     }
 
-    overlay.classList.add("wt-chance-overlay--visible");
-    overlay.setAttribute("aria-hidden", "false");
+    overlay.classList.add('wt-chance-overlay--visible');
+    overlay.setAttribute('aria-hidden', 'false');
 
-    setUiTimer("overlay.gameplay.hide", () => {
-      hideGameplayOverlay();
-    }, Math.floor(durationMs), "overlay");
+    setUiTimer(
+      'overlay.gameplay.hide',
+      () => {
+        hideGameplayOverlay();
+      },
+      Math.floor(durationMs),
+      'overlay'
+    );
   }
 
-
   function hideGameplayOverlay() {
-    clearUiTimer("overlay.gameplay.hide");
+    clearUiTimer('overlay.gameplay.hide');
 
     if (gameplayOverlayTapHandler) {
-      document.removeEventListener("pointerdown", gameplayOverlayTapHandler, true);
+      document.removeEventListener(
+        'pointerdown',
+        gameplayOverlayTapHandler,
+        true
+      );
       gameplayOverlayTapHandler = null;
     }
 
-    const overlay = document.getElementById("wt-gameplay-overlay");
+    const overlay = document.getElementById('wt-gameplay-overlay');
     if (overlay) {
       overlay.classList.remove(
-        "wt-chance-overlay--visible",
-        "wt-chance-overlay--dismissible",
-        "wt-chance-overlay--blocking"
+        'wt-chance-overlay--visible',
+        'wt-chance-overlay--dismissible',
+        'wt-chance-overlay--blocking'
       );
-      overlay.removeAttribute("data-wt-overlay-mode");
-      overlay.setAttribute("aria-hidden", "true");
+      overlay.removeAttribute('data-wt-overlay-mode');
+      overlay.setAttribute('aria-hidden', 'true');
     }
-
   }
-
 
   function showChanceLostOverlay(cfg, wording, chancesLeft, mode) {
     // Config gate (no fallback): WT_CONFIG.ui.chanceLostOverlayMs must be valid.
     const baseDurationMs = Number(cfg?.ui?.chanceLostOverlayMs);
-    if (!Number.isFinite(baseDurationMs) || baseDurationMs < UI_TIMING_LIMITS.durationMsMin || baseDurationMs > UI_TIMING_LIMITS.durationMsMax) return;
+    if (
+      !Number.isFinite(baseDurationMs) ||
+      baseDurationMs < UI_TIMING_LIMITS.durationMsMin ||
+      baseDurationMs > UI_TIMING_LIMITS.durationMsMax
+    )
+      return;
     const left = clampInt(chancesLeft, 0, 99);
 
     // Product rule: no "-1 chance" overlay. Only show state overlays (Last chance / Game over).
@@ -1723,40 +2120,49 @@ void function () {
     if (!msg) return;
 
     // Controller priority: chance/game-over is a blocking overlay.
-    if (!showBlockingOverlay("chance")) return;
+    if (!showBlockingOverlay('chance')) return;
 
     // Duration: allow a little extra on game over using gameplayPulseMs (no fallback).
     let durationMs = baseDurationMs;
     if (left === 0) {
       const extraMs = Number(cfg?.ui?.gameplayPulseMs);
-      if (Number.isFinite(extraMs) && extraMs >= 0 && extraMs <= UI_TIMING_LIMITS.pulseMsMax) {
+      if (
+        Number.isFinite(extraMs) &&
+        extraMs >= 0 &&
+        extraMs <= UI_TIMING_LIMITS.pulseMsMax
+      ) {
         durationMs = baseDurationMs + Math.floor(extraMs);
       }
     }
-    if (durationMs > UI_TIMING_LIMITS.durationMsMax) durationMs = UI_TIMING_LIMITS.durationMsMax;
-    clearUiTimer("overlay.chance.hide");
+    if (durationMs > UI_TIMING_LIMITS.durationMsMax)
+      durationMs = UI_TIMING_LIMITS.durationMsMax;
+    clearUiTimer('overlay.chance.hide');
 
     if (chanceLostOverlayBlocker) {
-      document.removeEventListener("pointerdown", chanceLostOverlayBlocker, true);
+      document.removeEventListener(
+        'pointerdown',
+        chanceLostOverlayBlocker,
+        true
+      );
       chanceLostOverlayBlocker = null;
     }
 
-    let overlay = document.getElementById("wt-chance-lost-overlay");
+    let overlay = document.getElementById('wt-chance-lost-overlay');
     if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = "wt-chance-lost-overlay";
-      overlay.className = "wt-chance-overlay";
-      overlay.setAttribute("role", "alert");
-      overlay.setAttribute("aria-live", "assertive");
+      overlay = document.createElement('div');
+      overlay.id = 'wt-chance-lost-overlay';
+      overlay.className = 'wt-chance-overlay';
+      overlay.setAttribute('role', 'alert');
+      overlay.setAttribute('aria-live', 'assertive');
       document.body.appendChild(overlay);
     }
-    overlay.setAttribute("aria-live", "assertive");
-    const overlayMode = String(mode || "").trim();
-    if (overlayMode) overlay.setAttribute("data-wt-overlay-mode", overlayMode);
-    else overlay.removeAttribute("data-wt-overlay-mode");
+    overlay.setAttribute('aria-live', 'assertive');
+    const overlayMode = String(mode || '').trim();
+    if (overlayMode) overlay.setAttribute('data-wt-overlay-mode', overlayMode);
+    else overlay.removeAttribute('data-wt-overlay-mode');
 
-    overlay.classList.remove("wt-chance-overlay--info");
-    overlay.classList.add("wt-chance-overlay--danger");
+    overlay.classList.remove('wt-chance-overlay--info');
+    overlay.classList.add('wt-chance-overlay--danger');
 
     overlay.innerHTML = `
       <div class="wt-chance-overlay__content">
@@ -1765,30 +2171,34 @@ void function () {
         </span>
       </div>
     `;
-    overlay.classList.add("wt-chance-overlay--visible");
-    overlay.setAttribute("aria-hidden", "false");
+    overlay.classList.add('wt-chance-overlay--visible');
+    overlay.setAttribute('aria-hidden', 'false');
 
     // Block click-through always; dismiss on tap if enabled
-    const dismissEnabled = (cfg?.ui?.toastDismissOnTap === true);
+    const dismissEnabled = cfg?.ui?.toastDismissOnTap === true;
     if (dismissEnabled) {
-      overlay.classList.add("wt-chance-overlay--dismissible");
+      overlay.classList.add('wt-chance-overlay--dismissible');
     } else {
-      overlay.classList.remove("wt-chance-overlay--dismissible");
+      overlay.classList.remove('wt-chance-overlay--dismissible');
     }
 
     chanceLostOverlayBlocker = (e) => {
-      const o = document.getElementById("wt-chance-lost-overlay");
+      const o = document.getElementById('wt-chance-lost-overlay');
       if (!o) return;
-      if (!o.classList.contains("wt-chance-overlay--visible")) return;
+      if (!o.classList.contains('wt-chance-overlay--visible')) return;
 
       e.preventDefault();
       e.stopImmediatePropagation();
 
       // Game over: tap should always skip to END (even if toastDismissOnTap is false),
       // otherwise the overlay can trap the user on a blank background.
-      if (left === 0 && typeof window.__wtGameOverSkipToEnd === "function") {
+      if (left === 0 && typeof window.__wtGameOverSkipToEnd === 'function') {
         hideChanceLostOverlay();
-        try { window.__wtGameOverSkipToEnd(); } catch (_) { /* silent */ }
+        try {
+          window.__wtGameOverSkipToEnd();
+        } catch (_) {
+          /* silent */
+        }
         return;
       }
 
@@ -1796,96 +2206,137 @@ void function () {
       if (dismissEnabled) hideChanceLostOverlay();
     };
 
-    document.addEventListener("pointerdown", chanceLostOverlayBlocker, true);
-    setUiTimer("overlay.chance.hide", () => {
-      hideChanceLostOverlay();
-    }, Math.floor(durationMs), "overlay");
+    document.addEventListener('pointerdown', chanceLostOverlayBlocker, true);
+    setUiTimer(
+      'overlay.chance.hide',
+      () => {
+        hideChanceLostOverlay();
+      },
+      Math.floor(durationMs),
+      'overlay'
+    );
   }
-
-
 
   function getRunStartTypeText(uiWording, runType) {
-    const rt = String(runType || "").trim();
-    if (!rt) return "";
+    const rt = String(runType || '').trim();
+    if (!rt) return '';
 
-    if (rt === "UNLIMITED") return String(uiWording?.startRunTypeUnlimited || "").trim();
-    if (rt === "LAST_FREE") return String(uiWording?.startRunTypeLastFree || "").trim();
-    if (rt === "FREE") return String(uiWording?.startRunTypeFree || "").trim();
-    if (rt === "PRACTICE") return String(uiWording?.startRunTypePractice || "").trim();
-    return "";
+    if (rt === 'UNLIMITED')
+      return String(uiWording?.startRunTypeUnlimited || '').trim();
+    if (rt === 'LAST_FREE')
+      return String(uiWording?.startRunTypeLastFree || '').trim();
+    if (rt === 'FREE') return String(uiWording?.startRunTypeFree || '').trim();
+    if (rt === 'PRACTICE')
+      return String(uiWording?.startRunTypePractice || '').trim();
+    return '';
   }
 
-
-  function showRunStartOverlay(cfg, wording, game, runType, extra, onDismissStart) {
+  function showRunStartOverlay(
+    cfg,
+    wording,
+    game,
+    runType,
+    extra,
+    onDismissStart
+  ) {
     // Product rule: no start-of-run overlay for UNLIMITED runs
-    if (String(runType || "").trim() === "UNLIMITED") return;
+    if (String(runType || '').trim() === 'UNLIMITED') return;
 
     // Config gate (no fallback): feature enabled only if config is valid (even though we don't auto-hide).
     const runStartMs = Number(cfg?.ui?.runStartOverlayMs);
-    if (!Number.isFinite(runStartMs) || runStartMs < UI_TIMING_LIMITS.durationMsMin || runStartMs > UI_TIMING_LIMITS.durationMsMax) return;
+    if (
+      !Number.isFinite(runStartMs) ||
+      runStartMs < UI_TIMING_LIMITS.durationMsMin ||
+      runStartMs > UI_TIMING_LIMITS.durationMsMax
+    )
+      return;
 
-    const gs = (game && typeof game.getState === "function") ? (game.getState() || {}) : {};
+    const gs =
+      game && typeof game.getState === 'function' ? game.getState() || {} : {};
     const maxChances = Number(gs.maxChances);
 
     // PRACTICE has no chances (maxChances === null) → use dedicated wording
-    const isPractice = (String(runType || "").trim() === "PRACTICE");
+    const isPractice = String(runType || '').trim() === 'PRACTICE';
     const msg = isPractice
-      ? String(wording?.practice?.startRunChancesOverlayPractice || "").trim()
-      : (Number.isFinite(maxChances) ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99)) : "");
+      ? String(wording?.practice?.startRunChancesOverlayPractice || '').trim()
+      : Number.isFinite(maxChances)
+        ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
+        : '';
     if (!msg) return;
 
     // Controller priority: run-start is a blocking overlay, below chance/game-over.
-    if (!showBlockingOverlay("runstart")) return;
+    if (!showBlockingOverlay('runstart')) return;
 
     // Defensive cleanup (legacy safety): run-start must never auto-hide.
-    clearUiTimer("overlay.runstart.hide");
+    clearUiTimer('overlay.runstart.hide');
 
     if (runStartOverlayPointerBlocker) {
-      document.removeEventListener("pointerdown", runStartOverlayPointerBlocker, true);
+      document.removeEventListener(
+        'pointerdown',
+        runStartOverlayPointerBlocker,
+        true
+      );
       runStartOverlayPointerBlocker = null;
     }
     if (runStartOverlayClickBlocker) {
-      document.removeEventListener("click", runStartOverlayClickBlocker, true);
+      document.removeEventListener('click', runStartOverlayClickBlocker, true);
       runStartOverlayClickBlocker = null;
     }
     if (runStartOverlayKeyBlocker) {
-      document.removeEventListener("keydown", runStartOverlayKeyBlocker, true);
+      document.removeEventListener('keydown', runStartOverlayKeyBlocker, true);
       runStartOverlayKeyBlocker = null;
     }
     runStartOverlayConsumeNextClick = false;
 
-    let overlay = document.getElementById("wt-run-start-overlay");
+    let overlay = document.getElementById('wt-run-start-overlay');
     if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.id = "wt-run-start-overlay";
-      overlay.className = "wt-chance-overlay";
-      overlay.setAttribute("role", "alert");
-      overlay.setAttribute("aria-live", "polite");
+      overlay = document.createElement('div');
+      overlay.id = 'wt-run-start-overlay';
+      overlay.className = 'wt-chance-overlay';
+      overlay.setAttribute('role', 'alert');
+      overlay.setAttribute('aria-live', 'polite');
       document.body.appendChild(overlay);
     }
 
-    overlay.classList.remove("wt-chance-overlay--danger");
-    overlay.classList.add("wt-chance-overlay--info");
+    overlay.classList.remove('wt-chance-overlay--danger');
+    overlay.classList.add('wt-chance-overlay--info');
 
-    const rt = String(runType || "").trim();
-    overlay.setAttribute("data-runstart-mode", rt);
+    const rt = String(runType || '').trim();
+    overlay.setAttribute('data-runstart-mode', rt);
 
     function dispatchRunStartDismissed() {
-      const mode = String(overlay.getAttribute("data-runstart-mode") || "").trim();
+      const mode = String(
+        overlay.getAttribute('data-runstart-mode') || ''
+      ).trim();
       try {
-        document.dispatchEvent(new CustomEvent("wt-runstart-dismissed", { detail: { mode } }));
-      } catch (_) { /* silent */ }
+        document.dispatchEvent(
+          new CustomEvent('wt-runstart-dismissed', { detail: { mode } })
+        );
+      } catch (_) {
+        /* silent */
+      }
     }
 
-    const isBonus = (rt === "BONUS");
-    const typeLine = isBonus ? "" : getRunStartTypeText(wording?.ui, rt);
+    const isBonus = rt === 'BONUS';
+    const typeLine = isBonus ? '' : getRunStartTypeText(wording?.ui, rt);
 
-    const bonusLine1 = String(wording?.secretBonus?.startOverlayLine1 || "").trim();
-    const bonusLine2 = String(wording?.secretBonus?.startOverlayLine2 || "").trim();
-    const bonusLine3 = String(wording?.secretBonus?.startOverlayLine3 || "").trim();
-    const bonusLimitLine = String(extra?.bonusLimitLine || "").trim();
-    const bonusTapHint = String(wording?.secretBonus?.startOverlayTapAnywhere || "").trim();
-    const messageLines = msg.split("\n").map((line) => String(line || "").trim()).filter(Boolean);
+    const bonusLine1 = String(
+      wording?.secretBonus?.startOverlayLine1 || ''
+    ).trim();
+    const bonusLine2 = String(
+      wording?.secretBonus?.startOverlayLine2 || ''
+    ).trim();
+    const bonusLine3 = String(
+      wording?.secretBonus?.startOverlayLine3 || ''
+    ).trim();
+    const bonusLimitLine = String(extra?.bonusLimitLine || '').trim();
+    const bonusTapHint = String(
+      wording?.secretBonus?.startOverlayTapAnywhere || ''
+    ).trim();
+    const messageLines = msg
+      .split('\n')
+      .map((line) => String(line || '').trim())
+      .filter(Boolean);
     const bonusLines = [
       bonusLine1,
       bonusLine2,
@@ -1894,54 +2345,74 @@ void function () {
       ...messageLines
     ];
 
-    const goalLine1 = String(extra?.goalLine1 || "").trim();
-    const goalLine2 = String(extra?.goalLine2 || "").trim();
-    const defaultTapHint = (!isBonus && !isPractice) ? String(wording?.ui?.startOverlayTapAnywhere || "").trim() : "";
-    const practiceTapHint = isPractice ? String(wording?.practice?.startOverlayTapAnywhere || "").trim() : "";
+    const goalLine1 = String(extra?.goalLine1 || '').trim();
+    const goalLine2 = String(extra?.goalLine2 || '').trim();
+    const defaultTapHint =
+      !isBonus && !isPractice
+        ? String(wording?.ui?.startOverlayTapAnywhere || '').trim()
+        : '';
+    const practiceTapHint = isPractice
+      ? String(wording?.practice?.startOverlayTapAnywhere || '').trim()
+      : '';
 
     overlay.innerHTML = `
       <div class="wt-chance-overlay__content">
         <span class="wt-chance-overlay__text">
-          ${isBonus
-        ? `
-              ${bonusLines.map((l, index) => `<span${index === 0 ? ` class="wt-chance-overlay__title"` : ``}>${escapeHtml(l)}</span>`).join("<br>")}
+          ${
+            isBonus
+              ? `
+              ${bonusLines.map((l, index) => `<span${index === 0 ? ` class="wt-chance-overlay__title"` : ``}>${escapeHtml(l)}</span>`).join('<br>')}
               ${bonusTapHint ? `<br><span class="wt-chance-overlay__hint">${escapeHtml(bonusTapHint)}</span>` : ``}
             `
-        : `
+              : `
                 ${typeLine ? `<span class="wt-chance-overlay__title">${escapeHtml(typeLine)}</span><br>` : ``}
                 ${goalLine1 ? `<span class="wt-muted">${escapeHtml(goalLine1)}</span><br>` : ``}
                 ${goalLine2 ? `<span class="wt-muted">${escapeHtml(goalLine2)}</span><br>` : ``}
-             ${messageLines.map((line, index) => `<span${isPractice && index === 0 ? ` class="wt-chance-overlay__lead"` : ``}>${escapeHtml(line)}</span>`).join("<br>")}
-                ${(practiceTapHint || defaultTapHint) ? `<br><span class="wt-chance-overlay__hint">${escapeHtml(practiceTapHint || defaultTapHint)}</span>` : ``}
+             ${messageLines.map((line, index) => `<span${isPractice && index === 0 ? ` class="wt-chance-overlay__lead"` : ``}>${escapeHtml(line)}</span>`).join('<br>')}
+                ${practiceTapHint || defaultTapHint ? `<br><span class="wt-chance-overlay__hint">${escapeHtml(practiceTapHint || defaultTapHint)}</span>` : ``}
               `
-      }
+          }
         </span>
       </div>
     `;
 
-    overlay.classList.add("wt-chance-overlay--visible");
-    overlay.setAttribute("aria-hidden", "false");
+    overlay.classList.add('wt-chance-overlay--visible');
+    overlay.setAttribute('aria-hidden', 'false');
 
     // Hard lock underlying UI while run-start overlay is visible (prevents click/keyboard activation under it)
-    const app = document.getElementById("app");
-    if (app && app.getAttribute("data-wt-runstart-lock") !== "1") {
-      app.setAttribute("data-wt-runstart-lock", "1");
-      app.setAttribute("data-wt-runstart-prev-pe", String(app.style.pointerEvents || ""));
-      try { app.setAttribute("data-wt-runstart-prev-inert", (app.inert === true) ? "1" : "0"); } catch (_) { app.setAttribute("data-wt-runstart-prev-inert", "0"); }
+    const app = document.getElementById('app');
+    if (app && app.getAttribute('data-wt-runstart-lock') !== '1') {
+      app.setAttribute('data-wt-runstart-lock', '1');
+      app.setAttribute(
+        'data-wt-runstart-prev-pe',
+        String(app.style.pointerEvents || '')
+      );
+      try {
+        app.setAttribute(
+          'data-wt-runstart-prev-inert',
+          app.inert === true ? '1' : '0'
+        );
+      } catch (_) {
+        app.setAttribute('data-wt-runstart-prev-inert', '0');
+      }
 
-      app.style.pointerEvents = "none";
-      try { app.inert = true; } catch (_) { /* silent */ }
+      app.style.pointerEvents = 'none';
+      try {
+        app.inert = true;
+      } catch (_) {
+        /* silent */
+      }
     }
 
     // Run-start dismiss contract
-    overlay.setAttribute("data-runstart-dismiss", "1");
+    overlay.setAttribute('data-runstart-dismiss', '1');
 
     // 1) pointerdown: block immediately and arm "consumeNextClick"
     runStartOverlayPointerBlocker = (e) => {
-      const o = document.getElementById("wt-run-start-overlay");
+      const o = document.getElementById('wt-run-start-overlay');
       if (!o) return;
-      if (!o.classList.contains("wt-chance-overlay--visible")) return;
-      if (o.getAttribute("data-runstart-dismiss") !== "1") return;
+      if (!o.classList.contains('wt-chance-overlay--visible')) return;
+      if (o.getAttribute('data-runstart-dismiss') !== '1') return;
 
       runStartOverlayConsumeNextClick = true;
       e.preventDefault();
@@ -1950,7 +2421,7 @@ void function () {
 
     // 2) click: always consume (even if overlay would be hidden before click fires)
     runStartOverlayClickBlocker = (e) => {
-      const o = document.getElementById("wt-run-start-overlay");
+      const o = document.getElementById('wt-run-start-overlay');
 
       // If pointerdown armed the flag, we must consume this click no matter what.
       if (runStartOverlayConsumeNextClick === true) {
@@ -1958,52 +2429,54 @@ void function () {
         e.preventDefault();
         e.stopImmediatePropagation();
         hideRunStartOverlay();
-        if (typeof onDismissStart === "function") onDismissStart();
+        if (typeof onDismissStart === 'function') onDismissStart();
         dispatchRunStartDismissed();
         return;
       }
 
       if (!o) return;
-      if (!o.classList.contains("wt-chance-overlay--visible")) return;
-      if (o.getAttribute("data-runstart-dismiss") !== "1") return;
+      if (!o.classList.contains('wt-chance-overlay--visible')) return;
+      if (o.getAttribute('data-runstart-dismiss') !== '1') return;
 
       e.preventDefault();
       e.stopImmediatePropagation();
       hideRunStartOverlay();
-      if (typeof onDismissStart === "function") onDismissStart();
+      if (typeof onDismissStart === 'function') onDismissStart();
       dispatchRunStartDismissed();
     };
 
     // 3) keyboard: Enter/Space dismiss, without activating underlying controls
     runStartOverlayKeyBlocker = (e) => {
-      const o = document.getElementById("wt-run-start-overlay");
+      const o = document.getElementById('wt-run-start-overlay');
       if (!o) return;
-      if (!o.classList.contains("wt-chance-overlay--visible")) return;
-      if (o.getAttribute("data-runstart-dismiss") !== "1") return;
+      if (!o.classList.contains('wt-chance-overlay--visible')) return;
+      if (o.getAttribute('data-runstart-dismiss') !== '1') return;
 
-      const k = String(e.key || "").toLowerCase();
-      if (k !== "enter" && k !== " " && k !== "spacebar") return;
+      const k = String(e.key || '').toLowerCase();
+      if (k !== 'enter' && k !== ' ' && k !== 'spacebar') return;
 
       runStartOverlayConsumeNextClick = false;
       e.preventDefault();
       e.stopImmediatePropagation();
       hideRunStartOverlay();
-      if (typeof onDismissStart === "function") onDismissStart();
+      if (typeof onDismissStart === 'function') onDismissStart();
       dispatchRunStartDismissed();
     };
 
-    document.addEventListener("pointerdown", runStartOverlayPointerBlocker, true);
-    document.addEventListener("keydown", runStartOverlayKeyBlocker, true);
+    document.addEventListener(
+      'pointerdown',
+      runStartOverlayPointerBlocker,
+      true
+    );
+    document.addEventListener('keydown', runStartOverlayKeyBlocker, true);
 
     // Defer click listener by one frame: the CTA's pointerup creates the overlay synchronously,
     // but the browser then synthesizes a click event from the same interaction.
     // Without deferral, that click immediately dismisses the overlay.
     requestAnimationFrame(() => {
-      document.addEventListener("click", runStartOverlayClickBlocker, true);
+      document.addEventListener('click', runStartOverlayClickBlocker, true);
     });
   }
-
-
 
   // ============================================
   // UI
@@ -2015,9 +2488,9 @@ void function () {
     this.wording = wording || {};
     this.state = STATES.LANDING;
 
-    this.appEl = el("app");
-    this.modalEl = el("modal");
-    this.modalContentEl = el("modal-content");
+    this.appEl = el('app');
+    this.modalEl = el('modal');
+    this.modalContentEl = el('modal-content');
 
     // Footer preservation (KISS):
     // If the footer lives inside #app in index.html, render() would wipe it via innerHTML.
@@ -2061,17 +2534,17 @@ void function () {
       // current run
       // current run
       currentRunNumber: 0,
-      currentRunId: "",
+      currentRunId: '',
       runStartedAt: 0,
       currentQuestionShownAt: 0,
       runAnswerLog: [],
       questionSpeechActive: false,
-      questionSpeechKey: "",
-      questionSpeechText: "",
-      questionAutoReadDoneKey: "",
+      questionSpeechKey: '',
+      questionSpeechText: '',
+      questionAutoReadDoneKey: '',
       runItemIds: [],
       runMistakeIds: [],
-      runMode: "",
+      runMode: '',
       lastAnswer: null,
       feedbackPending: false,
       feedbackReveal: true,
@@ -2084,7 +2557,6 @@ void function () {
       finishingRun: false,
 
       lastRun: {
-
         scoreFP: 0,
         maxChances: 0,
         chancesLeft: 0,
@@ -2114,7 +2586,6 @@ void function () {
       // - No fallback values: requires cfg.secretBonus.fall to be valid.
       // - Drives requestAnimationFrame loop without re-rendering every frame.
       secretBonusFall: {
-
         rafId: 0,
         laneEl: null,
         chipEl: null,
@@ -2125,15 +2596,13 @@ void function () {
         y01: 0,
         speed01PerSec: 0,
 
-        xSide: "left",     // "left" | "right" (placeholder for later; no gameplay coupling)
-        itemKey: "",       // to detect new item and reset
+        xSide: 'left', // "left" | "right" (placeholder for later; no gameplay coupling)
+        itemKey: '', // to detect new item and reset
         running: false,
 
         // UI-only micro-juice flags
         wasInWarning: false
       }
-
-
     };
 
     // Navigation state (stable, not runtime)
@@ -2142,74 +2611,79 @@ void function () {
       landingVariant: null
     };
 
-
-
     this._bindEvents();
   }
-
-
 
   UI.prototype._bindEvents = function () {
     const self = this;
 
     if (!this.appEl) return;
 
-    const pointerEvt = ("PointerEvent" in window) ? "pointerup" : "click";
-
+    const pointerEvt = 'PointerEvent' in window ? 'pointerup' : 'click';
 
     function dispatchAction(action, event) {
       switch (action) {
-        case "continue":
+        case 'continue':
           self.continueAfterFeedback();
           break;
 
-        case "how-to-play":
-        case "open-howto":
+        case 'how-to-play':
+        case 'open-howto':
           self.openHowToModal();
           break;
 
-        case "open-level-progress":
+        case 'open-level-progress':
           self.openLevelProgressModal();
           break;
 
-        case "open-leaderboard":
+        case 'open-leaderboard':
           self.openLeaderboardModal();
           break;
 
-        case "switch-leaderboard-tab":
-          self.switchLeaderboardModalTab(btn.getAttribute("data-wt-leaderboard-tab"));
+        case 'switch-leaderboard-tab':
+          self.switchLeaderboardModalTab(
+            btn.getAttribute('data-wt-leaderboard-tab')
+          );
           break;
 
-        case "save-leaderboard-profile":
+        case 'save-leaderboard-profile':
           void self.saveLeaderboardProfileFromModal();
           break;
 
-        case "leave-leaderboard":
+        case 'leave-leaderboard':
           void self.leaveLeaderboardFromModal();
           break;
 
-        case "close-modal":
+        case 'close-modal':
           self.closeModal();
           break;
 
-        case "enter-secret-bonus":
-          self.closeModal();
-          if (self._runtime) self._runtime.secretBonusPending = false;
-          if (typeof self.startSecretBonusRun === "function") self.startSecretBonusRun();
-          break;
-
-        case "start-secret-bonus":
+        case 'enter-secret-bonus':
           self.closeModal();
           if (self._runtime) self._runtime.secretBonusPending = false;
-          if (typeof self.startSecretBonusRun === "function") self.startSecretBonusRun();
+          if (typeof self.startSecretBonusRun === 'function')
+            self.startSecretBonusRun();
           break;
 
-        case "start-run":
-        case "start-daily-challenge": {
-          const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
+        case 'start-secret-bonus':
+          self.closeModal();
+          if (self._runtime) self._runtime.secretBonusPending = false;
+          if (typeof self.startSecretBonusRun === 'function')
+            self.startSecretBonusRun();
+          break;
+
+        case 'start-run':
+        case 'start-daily-challenge': {
+          const ready = !!(
+            self._runtime && Number(self._runtime.contentTotal) > 0
+          );
           if (!ready) {
-            const msg = String(self.getContentLoadingCopy() || "").trim();
-            if (msg) toastNow(self.config, msg, { variant: "info", timingKey: "contentLoading" });
+            const msg = String(self.getContentLoadingCopy() || '').trim();
+            if (msg)
+              toastNow(self.config, msg, {
+                variant: 'info',
+                timingKey: 'contentLoading'
+              });
             break;
           }
 
@@ -2217,27 +2691,39 @@ void function () {
           // the Daily Challenge CTA stays a tracked entry point into the regular RUN flow.
           // We separate the CTA analytics now without creating a dedicated gameplay mode yet.
           if (
-            action === "start-daily-challenge" &&
+            action === 'start-daily-challenge' &&
             self.storage &&
-            typeof self.storage.markDailyChallengeClicked === "function"
+            typeof self.storage.markDailyChallengeClicked === 'function'
           ) {
-            try { self.storage.markDailyChallengeClicked(); } catch (_) { /* silent */ }
+            try {
+              self.storage.markDailyChallengeClicked();
+            } catch (_) {
+              /* silent */
+            }
           }
 
-          const startedFromModal =
-            !!(self.modalEl && !self.modalEl.classList.contains("wt-hidden"));
+          const startedFromModal = !!(
+            self.modalEl && !self.modalEl.classList.contains('wt-hidden')
+          );
 
           // First-run framing must open only from the LANDING screen itself.
           // If the click already comes from the first-run modal CTA, we must start the run.
           // The first-run modal is intentionally shown on mobile too: it explains the game before the first answer.
-          if (!startedFromModal && self.state === STATES.LANDING && self._canShowFirstRunFraming()) {
+          if (
+            !startedFromModal &&
+            self.state === STATES.LANDING &&
+            self._canShowFirstRunFraming()
+          ) {
             self._openFirstRunFraming();
             break;
           }
 
           // Funnel counter: only when starting from LANDING
           if (self.state === STATES.LANDING) {
-            if (self.storage && typeof self.storage.markLandingPlayClicked === "function") {
+            if (
+              self.storage &&
+              typeof self.storage.markLandingPlayClicked === 'function'
+            ) {
               self.storage.markLandingPlayClicked();
             }
           }
@@ -2248,11 +2734,12 @@ void function () {
           break;
         }
 
-
-
-        case "start-practice":
+        case 'start-practice':
           if (self.state === STATES.LANDING) {
-            if (self.storage && typeof self.storage.markLandingPracticeClicked === "function") {
+            if (
+              self.storage &&
+              typeof self.storage.markLandingPracticeClicked === 'function'
+            ) {
               self.storage.markLandingPracticeClicked();
             }
           }
@@ -2260,39 +2747,49 @@ void function () {
           self.startRun(true);
           break;
 
-
-
-        case "answer-true": {
+        case 'answer-true': {
           cancelQuestionSpeech(self);
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
-          try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
+          try {
+            if (self._runtime?.secretBonusFall?.running)
+              self._secretBonusFallStop();
+          } catch (_) {}
 
           window.requestAnimationFrame(() => self.answer(true));
           break;
         }
 
-        case "answer-false": {
+        case 'answer-false': {
           cancelQuestionSpeech(self);
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
-          try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
+          try {
+            if (self._runtime?.secretBonusFall?.running)
+              self._secretBonusFallStop();
+          } catch (_) {}
 
           window.requestAnimationFrame(() => self.answer(false));
           break;
         }
 
-        case "toggle-question-audio":
+        case 'toggle-question-audio':
           self.toggleQuestionSpeech();
           break;
 
-        case "toggle-auto-read-questions":
+        case 'toggle-auto-read-questions':
           self.toggleAutoReadQuestions();
           break;
 
-        case "play-again": {
-          const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
+        case 'play-again': {
+          const ready = !!(
+            self._runtime && Number(self._runtime.contentTotal) > 0
+          );
           if (!ready) {
-            const msg = String(self.getContentLoadingCopy() || "").trim();
-            if (msg) toastNow(self.config, msg, { variant: "info", timingKey: "contentLoading" });
+            const msg = String(self.getContentLoadingCopy() || '').trim();
+            if (msg)
+              toastNow(self.config, msg, {
+                variant: 'info',
+                timingKey: 'contentLoading'
+              });
             break;
           }
 
@@ -2300,7 +2797,7 @@ void function () {
           break;
         }
 
-        case "open-paywall":
+        case 'open-paywall':
           // If opened from a modal (e.g., How to play), close it first
           // to prevent backdrop/inert/focus-trap from blocking PAYWALL.
           self.closeModal();
@@ -2308,143 +2805,153 @@ void function () {
           self.setState(STATES.PAYWALL);
           break;
 
-
-        case "checkout-early":
-          self.checkout("EARLY", event);
+        case 'checkout-early':
+          self.checkout('EARLY', event);
           break;
 
-        case "checkout-standard":
-          self.checkout("STANDARD", event);
+        case 'checkout-standard':
+          self.checkout('STANDARD', event);
           break;
 
-        case "redeem-code":
+        case 'redeem-code':
           // If launched from the "How to play" modal, close it first
           // to prevent modal stacking/backdrop issues.
           self.closeModal();
           self.openRedeemModal();
           break;
 
-        case "confirm-redeem":
+        case 'confirm-redeem':
           self._confirmRedeemCode();
           break;
 
-        case "auto-redeem-now":
+        case 'auto-redeem-now':
           self._redeemVanityCodeNow();
           break;
 
-        case "auto-redeem-later":
+        case 'auto-redeem-later':
           self.closeModal();
           break;
 
-        case "copy-share":
+        case 'copy-share':
           self.copyShareText();
           break;
 
-        case "send-share-email":
+        case 'send-share-email':
           self.sendShareViaEmail();
           break;
 
-        case "toggle-mistakes-only":
+        case 'toggle-mistakes-only':
           self.toggleMistakesOnly();
           break;
 
-        case "open-support":
+        case 'open-support':
           self.openSupportModal();
           break;
 
-        case "send-stats-email":
+        case 'send-stats-email':
           self.sendStatsViaEmail();
           break;
 
-        case "snooze-stats":
+        case 'snooze-stats':
           try {
-            const pendingBit = self._runtime ? Number(self._runtime._statsSharingLastPromptFlagBit) : 0;
+            const pendingBit = self._runtime
+              ? Number(self._runtime._statsSharingLastPromptFlagBit)
+              : 0;
             if (Number.isFinite(pendingBit) && pendingBit > 0) {
               const cur = getStatsSharingPromptFlags(self.storage);
-              setStatsSharingPromptFlags(self.storage, (cur & ~Math.floor(pendingBit)));
+              setStatsSharingPromptFlags(
+                self.storage,
+                cur & ~Math.floor(pendingBit)
+              );
             }
-          } catch (_) { /* silent */ }
+          } catch (_) {
+            /* silent */
+          }
 
           snoozeStatsSharingPromptNextEnd(self.storage);
           self.closeModal();
           break;
 
-
-        case "open-waitlist":
+        case 'open-waitlist':
           self.openWaitlistModal();
           break;
 
-        case "send-waitlist-email":
+        case 'send-waitlist-email':
           self.sendWaitlistViaEmail();
           break;
 
-
-        case "copy-stats":
+        case 'copy-stats':
           self.copyStatsToClipboard();
           break;
 
-        case "copy-support-email":
+        case 'copy-support-email':
           self.copySupportEmail();
           break;
 
-        case "open-support-email":
+        case 'open-support-email':
           self.openSupportEmailApp();
           break;
 
-        case "open-support-email-bug":
-          self.openSupportEmailApp("bug");
+        case 'open-support-email-bug':
+          self.openSupportEmailApp('bug');
           break;
 
-        case "open-support-email-question":
-          self.openSupportEmailApp("question");
+        case 'open-support-email-question':
+          self.openSupportEmailApp('question');
           break;
 
-        case "open-support-email-idea":
-          self.openSupportEmailApp("idea");
+        case 'open-support-email-idea':
+          self.openSupportEmailApp('idea');
           break;
 
-        case "install-app":
+        case 'install-app':
           self.promptInstall();
           break;
 
-        case "install-app-now":
+        case 'install-app-now':
           self.closeModal();
           self.promptInstall();
           break;
 
-        case "dismiss-install-prompt":
+        case 'dismiss-install-prompt':
           try {
-            if (self.storage && typeof self.storage.markInstallPromptShown === "function") {
+            if (
+              self.storage &&
+              typeof self.storage.markInstallPromptShown === 'function'
+            ) {
               self.storage.markInstallPromptShown();
             }
-          } catch (_) { /* silent */ }
+          } catch (_) {
+            /* silent */
+          }
           self.closeModal();
           break;
 
-        case "apply-update":
+        case 'apply-update':
           self.applyUpdateToast();
           break;
 
-        case "remind-house-ad":
+        case 'remind-house-ad':
           self.remindHouseAdLater();
           break;
 
-        case "open-house-ad":
+        case 'open-house-ad':
           self.openHouseAd();
           break;
 
-
-        case "back":
-        case "go-home": {
+        case 'back':
+        case 'go-home': {
           if (self.state === STATES.PLAYING) {
-            const msg = String(self.wording?.system?.confirmLeaveRun || "").trim();
+            const msg = String(
+              self.wording?.system?.confirmLeaveRun || ''
+            ).trim();
             if (msg && !confirm(msg)) return;
           }
 
           self.closeModal();
 
           if (self.state === STATES.PAYWALL) {
-            const fromState = String(self._nav?.paywallFromState || "").trim();
+            const fromState = String(self._nav?.paywallFromState || '').trim();
 
             if (fromState === STATES.END) {
               if (self._nav) {
@@ -2456,7 +2963,8 @@ void function () {
             }
 
             if (self._nav) {
-              self._nav.landingVariant = (fromState === STATES.LANDING) ? "POST_PAYWALL" : null;
+              self._nav.landingVariant =
+                fromState === STATES.LANDING ? 'POST_PAYWALL' : null;
               self._nav.paywallFromState = null;
             }
             self.setState(STATES.LANDING);
@@ -2486,17 +2994,17 @@ void function () {
         }
 
         // Only trigger actions from explicit buttons/links inside the modal
-        const btn = t.closest("button[data-action], a[data-action]");
+        const btn = t.closest('button[data-action], a[data-action]');
         if (!btn) return;
 
-        const action = String(btn.getAttribute("data-action") || "").trim();
+        const action = String(btn.getAttribute('data-action') || '').trim();
         if (!action) return;
 
         e.preventDefault();
         dispatchAction(action, e);
       };
 
-      if (pointerEvt !== "click") {
+      if (pointerEvt !== 'click') {
         let lastHandledTs = 0;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
@@ -2508,12 +3016,15 @@ void function () {
           const before = e.timeStamp || Date.now();
           modalActionHandler(e);
           const t = e && e.target ? e.target : null;
-          const btn = (t && t.closest) ? t.closest("button[data-action], a[data-action]") : null;
+          const btn =
+            t && t.closest
+              ? t.closest('button[data-action], a[data-action]')
+              : null;
           if (t === self.modalEl || btn) lastHandledTs = before;
         });
-        this.modalEl.addEventListener("click", dedupHandler);
+        this.modalEl.addEventListener('click', dedupHandler);
       } else {
-        this.modalEl.addEventListener("click", modalActionHandler);
+        this.modalEl.addEventListener('click', modalActionHandler);
       }
     }
 
@@ -2528,28 +3039,46 @@ void function () {
 
         // KISS: if user toggles the Share <details> near the bottom of the viewport,
         // keep the summary visible to avoid the "opens upward" feel caused by layout jump.
-        const shareSummary = (t.closest && t.closest("summary.wt-share-toggle")) ? t.closest("summary.wt-share-toggle") : null;
+        const shareSummary =
+          t.closest && t.closest('summary.wt-share-toggle')
+            ? t.closest('summary.wt-share-toggle')
+            : null;
         if (shareSummary) {
           // Let native <details>/<summary> toggle happen (no preventDefault).
-          setUiTimer("end.share.scrollIntoView", () => {
-            try {
-              shareSummary.scrollIntoView({ block: "nearest", inline: "nearest" });
-            } catch (_) { /* ignore */ }
-          }, 0, "end");
+          setUiTimer(
+            'end.share.scrollIntoView',
+            () => {
+              try {
+                shareSummary.scrollIntoView({
+                  block: 'nearest',
+                  inline: 'nearest'
+                });
+              } catch (_) {
+                /* ignore */
+              }
+            },
+            0,
+            'end'
+          );
           return false;
         }
 
         // If a modal is open and the click is inside it, let modal handler own it
-        if (self.modalEl && !self.modalEl.classList.contains("wt-hidden")) {
+        if (self.modalEl && !self.modalEl.classList.contains('wt-hidden')) {
           try {
             if (self.modalEl.contains(t)) return false;
-          } catch (_) { /* ignore */ }
+          } catch (_) {
+            /* ignore */
+          }
         }
 
-        const btn = (t.closest && t.closest("[data-action]")) ? t.closest("[data-action]") : null;
+        const btn =
+          t.closest && t.closest('[data-action]')
+            ? t.closest('[data-action]')
+            : null;
         if (!btn) return false;
 
-        const action = String(btn.getAttribute("data-action") || "").trim();
+        const action = String(btn.getAttribute('data-action') || '').trim();
         if (!action) return false;
         e.preventDefault();
         dispatchAction(action, e);
@@ -2561,7 +3090,7 @@ void function () {
       // Mobile safety: also listen on "click" when primary is a pointer event.
       // Some mobile Safari/PWA combos behave unreliably on button release events.
       // The dedup guard (same timestamp check) prevents double-fire.
-      if (pointerEvt !== "click") {
+      if (pointerEvt !== 'click') {
         let lastHandledTs = 0;
         const origHandler = appActionHandler;
         const dedupHandler = (e) => {
@@ -2575,39 +3104,44 @@ void function () {
           const handled = appActionHandler(e);
           if (handled) lastHandledTs = e.timeStamp || Date.now();
         });
-        this.appEl.addEventListener("click", dedupHandler);
+        this.appEl.addEventListener('click', dedupHandler);
       }
-
     }
 
     if (!this._wtBoundUpdateToastActions) {
       this._wtBoundUpdateToastActions = true;
 
-      const updateToast = document.getElementById("update-toast");
+      const updateToast = document.getElementById('update-toast');
       if (updateToast) {
         updateToast.addEventListener(pointerEvt, (e) => {
           const t = e && e.target ? e.target : null;
           if (!t) return;
 
-          const btn = (t.closest && t.closest("[data-action]")) ? t.closest("[data-action]") : null;
+          const btn =
+            t.closest && t.closest('[data-action]')
+              ? t.closest('[data-action]')
+              : null;
           if (!btn) return;
 
-          const action = String(btn.getAttribute("data-action") || "").trim();
+          const action = String(btn.getAttribute('data-action') || '').trim();
           if (!action) return;
 
           e.preventDefault();
           dispatchAction(action, e);
         });
 
-        if (pointerEvt !== "click") {
-          updateToast.addEventListener("click", (e) => {
+        if (pointerEvt !== 'click') {
+          updateToast.addEventListener('click', (e) => {
             const t = e && e.target ? e.target : null;
             if (!t) return;
 
-            const btn = (t.closest && t.closest("[data-action]")) ? t.closest("[data-action]") : null;
+            const btn =
+              t.closest && t.closest('[data-action]')
+                ? t.closest('[data-action]')
+                : null;
             if (!btn) return;
 
-            const action = String(btn.getAttribute("data-action") || "").trim();
+            const action = String(btn.getAttribute('data-action') || '').trim();
             if (!action) return;
 
             e.preventDefault();
@@ -2621,46 +3155,48 @@ void function () {
     if (this._wtBoundSecretChestEvents) return;
     this._wtBoundSecretChestEvents = true;
 
-
-
-
     // Secret chest tease styles are defined in style.css (single source of truth for UI look).
-
 
     // Global listeners: bind once (never inside pointer/click handlers)
     if (!this._wtBoundGlobalEvents) {
       this._wtBoundGlobalEvents = true;
 
       // Esc closes modal
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") self.closeModal();
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') self.closeModal();
       });
 
-
       // When run-start overlay is dismissed, BONUS must be allowed to start falling immediately.
-      document.addEventListener("wt-runstart-dismissed", () => {
+      document.addEventListener('wt-runstart-dismissed', () => {
         try {
           // Let DOM update (overlay class removal) settle first
-          setUiTimer("playing.bonusFall.startAfterRunStartDismiss", () => {
-            const modeNow = String(self._runtime?.runMode || "").trim();
-            if (self.state !== STATES.PLAYING) return;
-            if (!modeNow) return;
-            if (modeNow !== MODES.BONUS) return;
+          setUiTimer(
+            'playing.bonusFall.startAfterRunStartDismiss',
+            () => {
+              const modeNow = String(self._runtime?.runMode || '').trim();
+              if (self.state !== STATES.PLAYING) return;
+              if (!modeNow) return;
+              if (modeNow !== MODES.BONUS) return;
 
-            if (isOverlayVisible("wt-run-start-overlay")) return;
-            self._secretBonusFallStartOrSync();
-          }, 0, "playing");
-        } catch (_) { /* silent */ }
+              if (isOverlayVisible('wt-run-start-overlay')) return;
+              self._secretBonusFallStartOrSync();
+            },
+            0,
+            'playing'
+          );
+        } catch (_) {
+          /* silent */
+        }
       });
 
       // Browser Back => prefer returning to Home (LANDING) for in-app history entries.
       // Robustness: some mobile/PWA contexts emit popstate with a null/partial state,
       // so we also fall back to the internal hashes we control (#home / #app).
-      window.addEventListener("popstate", (e) => {
+      window.addEventListener('popstate', (e) => {
         const st = e && e.state ? e.state : null;
-        const hash = String(window.location.hash || "").trim();
+        const hash = String(window.location.hash || '').trim();
         const hasInternalState = !!(st && st.wt === true);
-        const hasInternalHash = (hash === "#home" || hash === "#app");
+        const hasInternalHash = hash === '#home' || hash === '#app';
 
         // If the browser navigated outside our internal history model, let it proceed.
         if (!hasInternalState && !hasInternalHash) return;
@@ -2673,17 +3209,23 @@ void function () {
         }
 
         // Keep URL/state coherent even when popstate arrived with a degraded state payload.
-        if (hash !== "#home") {
+        if (hash !== '#home') {
           try {
             const baseUrl = location.pathname + location.search;
-            history.replaceState({ wt: true, screen: STATES.LANDING }, "", baseUrl + "#home");
-          } catch (_) { /* silent */ }
+            history.replaceState(
+              { wt: true, screen: STATES.LANDING },
+              '',
+              baseUrl + '#home'
+            );
+          } catch (_) {
+            /* silent */
+          }
         }
       });
 
       // Secret Bonus: resize/rotation => recalibrate fall lane (never fail the item)
       function onViewportChange() {
-        const modeNow = String(self._runtime?.runMode || "").trim();
+        const modeNow = String(self._runtime?.runMode || '').trim();
         if (self.state !== STATES.PLAYING) return;
         if (!modeNow) return;
         if (modeNow !== MODES.BONUS) return;
@@ -2694,14 +3236,18 @@ void function () {
           try {
             const laneH = sbf.laneEl.getBoundingClientRect().height || 0;
             const chipH = sbf.chipEl.getBoundingClientRect().height || 0;
-            sbf.trackPxMax = Math.max(0, laneH - (Number.isFinite(chipH) ? chipH : 0));
-          } catch (_) { /* silent */ }
+            sbf.trackPxMax = Math.max(
+              0,
+              laneH - (Number.isFinite(chipH) ? chipH : 0)
+            );
+          } catch (_) {
+            /* silent */
+          }
         }
       }
 
-      window.addEventListener("resize", onViewportChange);
+      window.addEventListener('resize', onViewportChange);
     }
-
 
     // Secret chest tap xN (END + LANDING)
     this.appEl.addEventListener(pointerEvt, (e) => {
@@ -2725,38 +3271,54 @@ void function () {
 
       // Once unlocked (persisted), 1 tap starts BONUS directly (no modal).
       if (hasSolvedSecretChestHint(self.storage)) {
-        try { chest.classList.remove("wt-btn-icon--tease"); } catch (_) { /* ignore */ }
-        if (typeof self.startSecretBonusRun === "function") self.startSecretBonusRun();
+        try {
+          chest.classList.remove('wt-btn-icon--tease');
+        } catch (_) {
+          /* ignore */
+        }
+        if (typeof self.startSecretBonusRun === 'function')
+          self.startSecretBonusRun();
         return;
       }
 
       const sb = self.wording?.secretBonus || {};
-      const title = String(sb.modalTitle || "").trim();
-      const bodyTpl = String(sb.modalBody || "").trim();
-      const cta = String(sb.modalCta || "").trim();
-      const notNow = String(self.wording?.system?.notNow || "").trim() || String(self.wording?.system?.close || "").trim();
+      const title = String(sb.modalTitle || '').trim();
+      const bodyTpl = String(sb.modalBody || '').trim();
+      const cta = String(sb.modalCta || '').trim();
+      const notNow =
+        String(self.wording?.system?.notNow || '').trim() ||
+        String(self.wording?.system?.close || '').trim();
       const body = fillTemplate(bodyTpl, {
         tickets: String(getRapidFireTicketBalance(self.storage)),
         cost: String(getRapidFireTicketCost(self.storage)),
-        pluralS: getRapidFireTicketBalance(self.storage) > 1 ? "s" : "",
-        costPluralS: getRapidFireTicketCost(self.storage) > 1 ? "s" : ""
+        pluralS: getRapidFireTicketBalance(self.storage) > 1 ? 's' : '',
+        costPluralS: getRapidFireTicketCost(self.storage) > 1 ? 's' : ''
       });
 
       function enterSecretBonusFlow() {
         // If the welcome modal was already shown earlier, avoid a second modal here.
         if (hasShownSecretChestWelcome(self.storage)) {
           markSolvedSecretChestHint(self.storage);
-          try { chest.classList.remove("wt-btn-icon--tease"); } catch (_) { /* ignore */ }
-          if (typeof self.startSecretBonusRun === "function") self.startSecretBonusRun();
+          try {
+            chest.classList.remove('wt-btn-icon--tease');
+          } catch (_) {
+            /* ignore */
+          }
+          if (typeof self.startSecretBonusRun === 'function')
+            self.startSecretBonusRun();
           return;
         }
 
         // Mark solved NOW so the confirmation modal is shown only once per device.
         markSolvedSecretChestHint(self.storage);
-        try { chest.classList.remove("wt-btn-icon--tease"); } catch (_) { /* ignore */ }
+        try {
+          chest.classList.remove('wt-btn-icon--tease');
+        } catch (_) {
+          /* ignore */
+        }
 
         // No fallback copy: only show the confirmation modal if wording exists.
-        if (title && body && cta && typeof self.openModal === "function") {
+        if (title && body && cta && typeof self.openModal === 'function') {
           // Mark shown before opening (one-shot per device) and to prevent render loops from re-opening.
           markShownSecretChestWelcome(self.storage);
 
@@ -2773,10 +3335,9 @@ void function () {
           return;
         }
 
-        if (typeof self.startSecretBonusRun === "function") self.startSecretBonusRun();
+        if (typeof self.startSecretBonusRun === 'function')
+          self.startSecretBonusRun();
       }
-
-
 
       // Simple mode: 1 tap triggers immediately.
       if (Math.floor(tapsRequired) === 1) {
@@ -2791,7 +3352,7 @@ void function () {
       const last = Number(sc.lastTapAt || 0);
 
       // Reset window if too late
-      if (!last || (now - last) > windowMs) {
+      if (!last || now - last > windowMs) {
         sc.tapCount = 0;
       }
 
@@ -2804,11 +3365,7 @@ void function () {
         enterSecretBonusFlow();
       }
     });
-
-
   };
-
-
 
   UI.prototype.updateFooter = function () {
     let root = this._footerNode || null;
@@ -2816,15 +3373,15 @@ void function () {
     if (!root) {
       try {
         root =
-          (this.appEl && this.appEl.querySelector && (
-            this.appEl.querySelector("[data-wt-footer]") ||
-            this.appEl.querySelector(".wt-footer") ||
-            this.appEl.querySelector("footer")
-          )) ||
-          document.getElementById("wt-footer-root") ||
+          (this.appEl &&
+            this.appEl.querySelector &&
+            (this.appEl.querySelector('[data-wt-footer]') ||
+              this.appEl.querySelector('.wt-footer') ||
+              this.appEl.querySelector('footer'))) ||
+          document.getElementById('wt-footer-root') ||
           null;
       } catch (_) {
-        root = document.getElementById("wt-footer-root") || null;
+        root = document.getElementById('wt-footer-root') || null;
       }
     }
 
@@ -2834,7 +3391,6 @@ void function () {
     // Footer content + hydration are owned by footer.js / email.js.
     this._footerNode = root;
   };
-
 
   // ============================================
   // Public API (called by main.js)
@@ -2850,7 +3406,7 @@ void function () {
     }
 
     for (const it of list) {
-      const id = String(it && it.id != null ? it.id : "").trim();
+      const id = String(it && it.id != null ? it.id : '').trim();
       if (!id) continue;
       this._runtime.contentById[id] = it;
     }
@@ -2859,14 +3415,14 @@ void function () {
 
   UI.prototype.setContentLoading = function (isLoading) {
     if (!this._runtime) return;
-    this._runtime.contentLoading = (isLoading === true);
+    this._runtime.contentLoading = isLoading === true;
     this._runtime.contentLoadingMessage = this._runtime.contentLoading
-      ? String(this.wording?.ui?.contentLoadingToast || "").trim()
-      : "";
+      ? String(this.wording?.ui?.contentLoadingToast || '').trim()
+      : '';
   };
 
   UI.prototype.getContentLoadingCopy = function () {
-    return String(this._runtime?.contentLoadingMessage || "").trim();
+    return String(this._runtime?.contentLoadingMessage || '').trim();
   };
 
   UI.prototype.init = function () {
@@ -2874,11 +3430,15 @@ void function () {
     // Make LANDING the base history entry so Back from any in-app screen can return here.
     try {
       const baseUrl = location.pathname + location.search;
-      history.replaceState({ wt: true, screen: STATES.LANDING }, "", baseUrl + "#home");
-    } catch (_) { }
+      history.replaceState(
+        { wt: true, screen: STATES.LANDING },
+        '',
+        baseUrl + '#home'
+      );
+    } catch (_) {}
 
     warmQuestionSpeechVoices(this);
-    const starterTicketRes = grantStarterRapidFireTicketIfNeeded(this.storage);
+    grantStarterRapidFireTicketIfNeeded(this.storage);
 
     // Populate footer with config values
     this.updateFooter();
@@ -2886,26 +3446,22 @@ void function () {
     if (this._nav) this._nav.landingVariant = null;
     this.setState(STATES.LANDING);
 
-    try {
-      const toastTpl = String(this.wording?.secretBonus?.starterTicketToast || "").trim();
-      if (starterTicketRes?.granted === true && toastTpl) {
-        const msg = fillTemplate(toastTpl, {
-          tickets: String(clampInt(starterTicketRes?.balance, 0, 999)),
-          cap: String(clampInt(starterTicketRes?.cap, 0, 999))
-        });
-        if (msg) toastNow(this.config, msg, { variant: "success" });
-      }
-    } catch (_) { /* silent */ }
-
     // Boot case: constructor already starts on LANDING, so the "Entering LANDING"
     // hook inside setState does not run on first load.
     let ep = null;
-    if (this.storage && typeof this.storage.getEarlyPriceState === "function") {
-      try { ep = this.storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
+    if (this.storage && typeof this.storage.getEarlyPriceState === 'function') {
+      try {
+        ep = this.storage.getEarlyPriceState() || null;
+      } catch (_) {
+        ep = null;
+      }
     }
 
-    const isEarly =
-      !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
+    const isEarly = !!(
+      ep &&
+      String(ep.phase || '').toUpperCase() === 'EARLY' &&
+      Number(ep.remainingMs || 0) > 0
+    );
 
     if (isEarly) {
       this._stopPaywallTicker();
@@ -2935,16 +3491,17 @@ void function () {
   };
 
   UI.prototype.onStorageSaveFailed = function () {
-    const msg = String(this.wording?.system?.storageSaveFailedToast || "").trim();
+    const msg = String(
+      this.wording?.system?.storageSaveFailedToast || ''
+    ).trim();
     if (!msg) return;
 
     // Non-blocking warning. Timing is config-driven (default bucket).
-    toastNow(this.config, msg, { variant: "danger" });
+    toastNow(this.config, msg, { variant: 'danger' });
   };
 
-
   UI.prototype.getStatsByItem = function () {
-    return (this.storage && typeof this.storage.getStatsByItem === "function")
+    return this.storage && typeof this.storage.getStatsByItem === 'function'
       ? this.storage.getStatsByItem()
       : {};
   };
@@ -2952,14 +3509,15 @@ void function () {
   // Pool exhausted toast (RUN / PRACTICE / BONUS)
   // Contract: WT_WORDING.ui.poolExhausted{Mode} must be provided (no fallback).
   UI.prototype._maybeShowPoolExhaustedToast = function () {
-    const exhausted =
-      !!(this.storage &&
-        typeof this.storage.hasSeenAllWordTraps === "function" &&
-        this.storage.hasSeenAllWordTraps() === true);
+    const exhausted = !!(
+      this.storage &&
+      typeof this.storage.hasSeenAllWordTraps === 'function' &&
+      this.storage.hasSeenAllWordTraps() === true
+    );
 
     if (!exhausted) return;
 
-    const mode = String(this._runtime?.runMode || "").trim();
+    const mode = String(this._runtime?.runMode || '').trim();
     if (!mode) return;
     const key = `PLAYING:${mode}`;
 
@@ -2969,34 +3527,42 @@ void function () {
     const uiWording = this.wording?.ui;
     if (!uiWording) return;
 
-    let msgKey = "";
+    let msgKey = '';
     switch (mode) {
-      case "PRACTICE":
-        msgKey = "poolExhaustedPractice";
+      case 'PRACTICE':
+        msgKey = 'poolExhaustedPractice';
         break;
-      case "BONUS":
-        msgKey = "poolExhaustedBonus";
+      case 'BONUS':
+        msgKey = 'poolExhaustedBonus';
         break;
-      case "RUN":
+      case 'RUN':
       default:
-        msgKey = "poolExhaustedRun";
+        msgKey = 'poolExhaustedRun';
         break;
     }
 
-    const msg = String(uiWording[msgKey] || "").trim();
+    const msg = String(uiWording[msgKey] || '').trim();
     if (!msg) return;
 
-    const timing = getToastTiming(this.config, "");
+    const timing = getToastTiming(this.config, '');
     if (!timing) return;
 
-    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info", mode });
+    scheduleGameplayOverlay(msg, {
+      delayMs: 0,
+      durationMs: timing.durationMs,
+      variant: 'info',
+      mode
+    });
   };
 
   UI.prototype.toggleQuestionSpeech = function () {
     const model = getCurrentQuestionSpeechModel(this);
     if (!model) return;
 
-    if (this._runtime?.questionSpeechActive === true && this._runtime?.questionSpeechKey === model.speechKey) {
+    if (
+      this._runtime?.questionSpeechActive === true &&
+      this._runtime?.questionSpeechKey === model.speechKey
+    ) {
       cancelQuestionSpeech(this);
       this.render();
       return;
@@ -3009,7 +3575,11 @@ void function () {
   };
 
   UI.prototype.toggleAutoReadQuestions = function () {
-    if (!this.storage || typeof this.storage.getAutoReadQuestions !== "function" || typeof this.storage.setAutoReadQuestions !== "function") {
+    if (
+      !this.storage ||
+      typeof this.storage.getAutoReadQuestions !== 'function' ||
+      typeof this.storage.setAutoReadQuestions !== 'function'
+    ) {
       return;
     }
 
@@ -3023,49 +3593,58 @@ void function () {
     if (next !== true) {
       cancelQuestionSpeech(this);
     } else if (this._runtime) {
-      this._runtime.questionAutoReadDoneKey = "";
-      const modalOpen = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
+      this._runtime.questionAutoReadDoneKey = '';
+      const modalOpen = !!(
+        this.modalEl && !this.modalEl.classList.contains('wt-hidden')
+      );
       if (!modalOpen) syncAutoReadCurrentQuestion(this);
     }
 
-    if (this.modalEl && !this.modalEl.classList.contains("wt-hidden")) {
+    if (this.modalEl && !this.modalEl.classList.contains('wt-hidden')) {
       this.openHowToModal();
     } else if (this.state === STATES.PLAYING) {
       this.render();
     }
   };
 
-
   // Pool reshuffled toast (RUN only; one-shot from game.js state.poolReshuffled)
   // UX decision: show a single discreet info toast once per RUN (no spam).
   UI.prototype._maybeShowPoolReshuffledToast = function () {
     if (this.state !== STATES.PLAYING) return;
 
-    const mode = String(this._runtime?.runMode || "").trim();
-    if (mode !== "RUN") return;
+    const mode = String(this._runtime?.runMode || '').trim();
+    if (mode !== 'RUN') return;
 
-    if (!this._runtime || this._runtime.poolReshuffleToastShown === true) return;
+    if (!this._runtime || this._runtime.poolReshuffleToastShown === true)
+      return;
 
     let poolReshuffled = false;
     try {
-      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-      poolReshuffled = (gs.poolReshuffled === true);
+      const gs =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
+      poolReshuffled = gs.poolReshuffled === true;
     } catch (_) {
       poolReshuffled = false;
     }
 
     if (poolReshuffled !== true) return;
 
-    const msg = String(this.wording?.ui?.poolReshuffledToast || "").trim();
+    const msg = String(this.wording?.ui?.poolReshuffledToast || '').trim();
     if (!msg) return;
 
-    const timing = getToastTiming(this.config, "");
+    const timing = getToastTiming(this.config, '');
     if (!timing) return;
 
     this._runtime.poolReshuffleToastShown = true;
-    scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info", mode: "RUN" });
+    scheduleGameplayOverlay(msg, {
+      delayMs: 0,
+      durationMs: timing.durationMs,
+      variant: 'info',
+      mode: 'RUN'
+    });
   };
-
 
   // ============================================
   // State transition cleanup
@@ -3073,26 +3652,28 @@ void function () {
   // Single orchestration point for state-scoped cleanup.
   // Product contract: no intended UX change, only deterministic cleanup.
   function cleanupAppTransitionClasses() {
-    const app = document.getElementById("app");
+    const app = document.getElementById('app');
     if (!app || !app.classList) return;
 
     try {
-      app.classList.remove("wt-fade");
-      app.classList.remove("wt-fade--out");
-      app.classList.remove("wt-fade--in");
-      app.classList.remove("transitioning");
-    } catch (_) { /* silent */ }
+      app.classList.remove('wt-fade');
+      app.classList.remove('wt-fade--out');
+      app.classList.remove('wt-fade--in');
+      app.classList.remove('transitioning');
+    } catch (_) {
+      /* silent */
+    }
   }
 
   function cleanupEndExit(ui) {
-    clearUiTimersByScope("end");
+    clearUiTimersByScope('end');
 
     if (ui && ui._runtime) {
-      clearRuntimeTimer(ui, "endRecordMomentTimer");
-      clearRuntimeTimer(ui, "endAutoModalTimerId");
-      clearRuntimeTimer(ui, "finishFadeOutTimerId");
-      clearRuntimeTimer(ui, "finishFadeInStartTimerId");
-      clearRuntimeTimer(ui, "finishFadeCleanupTimerId");
+      clearRuntimeTimer(ui, 'endRecordMomentTimer');
+      clearRuntimeTimer(ui, 'endAutoModalTimerId');
+      clearRuntimeTimer(ui, 'finishFadeOutTimerId');
+      clearRuntimeTimer(ui, 'finishFadeInStartTimerId');
+      clearRuntimeTimer(ui, 'finishFadeCleanupTimerId');
       ui._runtime.endRecordMomentUntil = 0;
     }
 
@@ -3109,24 +3690,40 @@ void function () {
     if (!ui || !ui._runtime) return;
 
     const enteredAt = Number(ui._runtime.landingEnteredAt || 0);
-    if (enteredAt > 0 && ui.storage && typeof ui.storage.recordLandingTime === "function") {
-      try { ui.storage.recordLandingTime(Date.now() - enteredAt); } catch (_) { /* silent */ }
+    if (
+      enteredAt > 0 &&
+      ui.storage &&
+      typeof ui.storage.recordLandingTime === 'function'
+    ) {
+      try {
+        ui.storage.recordLandingTime(Date.now() - enteredAt);
+      } catch (_) {
+        /* silent */
+      }
     }
 
     ui._runtime.landingEnteredAt = 0;
   }
 
   function cleanupPaywallTickerIfNeeded(ui, prev, next) {
-    if (!ui || typeof ui._stopPaywallTicker !== "function") return;
+    if (!ui || typeof ui._stopPaywallTicker !== 'function') return;
 
     // The early-price ticker is allowed to live across PAYWALL <-> LANDING only.
-    if (prev === STATES.PAYWALL && next !== STATES.PAYWALL && next !== STATES.LANDING) {
-      clearUiTimersByScope("paywall");
+    if (
+      prev === STATES.PAYWALL &&
+      next !== STATES.PAYWALL &&
+      next !== STATES.LANDING
+    ) {
+      clearUiTimersByScope('paywall');
       ui._stopPaywallTicker();
     }
 
-    if (prev === STATES.LANDING && next !== STATES.LANDING && next !== STATES.PAYWALL) {
-      clearUiTimersByScope("paywall");
+    if (
+      prev === STATES.LANDING &&
+      next !== STATES.LANDING &&
+      next !== STATES.PAYWALL
+    ) {
+      clearUiTimersByScope('paywall');
       ui._stopPaywallTicker();
     }
   }
@@ -3136,15 +3733,15 @@ void function () {
 
     // No gameplay transient overlay or run-start blocker outside PLAYING.
     if (next !== STATES.PLAYING) {
-      clearUiTimer("overlay.gameplay.show");
-      hideOverlay("transient");
-      hideOverlay("runstart");
+      clearUiTimer('overlay.gameplay.show');
+      hideOverlay('transient');
+      hideOverlay('runstart');
     }
 
     // Chance/game-over overlay is only tolerated during PLAYING -> END handoff.
     // Any other screen must not inherit it.
     if (next !== STATES.PLAYING && next !== STATES.END) {
-      hideOverlay("chance");
+      hideOverlay('chance');
     }
   }
 
@@ -3152,19 +3749,27 @@ void function () {
     if (!ui || prev === next) return;
 
     if (next !== STATES.LANDING) {
-      clearUiTimersByScope("daily");
+      clearUiTimersByScope('daily');
     }
 
     // PLAYING owns feedback, live gameplay, bonus fall, beforeunload, and answer locks.
     if (prev === STATES.PLAYING && next !== STATES.PLAYING) {
-      clearUiTimersByScope("feedback");
-      clearUiTimersByScope("playing");
+      clearUiTimersByScope('feedback');
+      clearUiTimersByScope('playing');
 
-      const keepChanceOverlayVisible = !!(ui._runtime && ui._runtime.finishingRun === true && next === STATES.END);
+      const keepChanceOverlayVisible = !!(
+        ui._runtime &&
+        ui._runtime.finishingRun === true &&
+        next === STATES.END
+      );
       cleanupPlayingExit(ui, { keepChanceOverlayVisible });
 
       if (ui._runtime) ui._runtime.finishingRun = false;
-      try { window.__wtGameOverSkipToEnd = null; } catch (_) { /* silent */ }
+      try {
+        window.__wtGameOverSkipToEnd = null;
+      } catch (_) {
+        /* silent */
+      }
     }
 
     // END-only timers/visual classes must not leak to other screens.
@@ -3187,10 +3792,8 @@ void function () {
     cleanupOverlaysForStateTransition(prev, next);
   }
 
-
   UI.prototype.setState = function (next) {
     const prev = this.state;
-
 
     // Automatic cleanup by state transition.
     // This is the single gate for timers, overlays, and ephemeral flags tied to the previous screen.
@@ -3207,14 +3810,14 @@ void function () {
     //   so Back always returns to LANDING.
     try {
       const baseUrl = location.pathname + location.search;
-      const hash = (next === STATES.LANDING) ? "#home" : "#app";
+      const hash = next === STATES.LANDING ? '#home' : '#app';
 
       if (next !== STATES.LANDING && prev === STATES.LANDING) {
-        history.pushState({ wt: true, screen: next }, "", baseUrl + hash);
+        history.pushState({ wt: true, screen: next }, '', baseUrl + hash);
       } else {
-        history.replaceState({ wt: true, screen: next }, "", baseUrl + hash);
+        history.replaceState({ wt: true, screen: next }, '', baseUrl + hash);
       }
-    } catch (_) { }
+    } catch (_) {}
 
     this.state = next;
 
@@ -3225,7 +3828,7 @@ void function () {
 
     // Entering PAYWALL: ensure clean single ticker
     if (next === STATES.PAYWALL && prev !== STATES.PAYWALL) {
-      if (this.storage && typeof this.storage.markPaywallShown === "function") {
+      if (this.storage && typeof this.storage.markPaywallShown === 'function') {
         this.storage.markPaywallShown(prev); // Storage owns startedAt persistence
       }
       this._stopPaywallTicker();
@@ -3238,12 +3841,22 @@ void function () {
         this._runtime.landingEnteredAt = Date.now();
       }
       let ep = null;
-      if (this.storage && typeof this.storage.getEarlyPriceState === "function") {
-        try { ep = this.storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
+      if (
+        this.storage &&
+        typeof this.storage.getEarlyPriceState === 'function'
+      ) {
+        try {
+          ep = this.storage.getEarlyPriceState() || null;
+        } catch (_) {
+          ep = null;
+        }
       }
 
-      const isEarly =
-        !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
+      const isEarly = !!(
+        ep &&
+        String(ep.phase || '').toUpperCase() === 'EARLY' &&
+        Number(ep.remainingMs || 0) > 0
+      );
 
       if (isEarly) {
         this._stopPaywallTicker();
@@ -3259,41 +3872,62 @@ void function () {
 
     // END entry hooks(no gameplay interruptions)
     if (next === STATES.END && prev !== STATES.END) {
-
       // Micro-pics highlight (END-only)
       // Keep the computed END highlight so the END screen can actually use it.
       // We only avoid late toasts; we do NOT wipe the message here.
       try {
-        const mp = this._runtime && this._runtime.microPics ? this._runtime.microPics : null;
+        const mp =
+          this._runtime && this._runtime.microPics
+            ? this._runtime.microPics
+            : null;
         if (mp) {
           // Intentionally preserved.
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       // Anonymous stats sharing prompt (END-only, one-shot, post-completion only)
       try {
-        if (typeof this._maybePromptStatsSharingMilestone === "function") {
+        if (typeof this._maybePromptStatsSharingMilestone === 'function') {
           this._maybePromptStatsSharingMilestone();
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       // Daily challenge ticket toast (RUN only, once per local day)
       try {
         const lastRun = this._runtime?.lastRun || {};
-        const mode = String(lastRun.mode || "").trim().toUpperCase();
-        if (mode === "RUN") {
+        const mode = String(lastRun.mode || '')
+          .trim()
+          .toUpperCase();
+        if (mode === 'RUN') {
           const alreadyShown = getDailyChallengeToastDayKey(this.storage);
-          const toastTpl = String(this.wording?.end?.dailyChallengeToast || "").trim();
-          const dayKey = String(lastRun.dailyTicketDayKey || "").trim();
-          if (lastRun.dailyTicketAwarded === true && dayKey && alreadyShown !== dayKey && toastTpl) {
+          const toastTpl = String(
+            this.wording?.end?.dailyChallengeToast || ''
+          ).trim();
+          const dayKey = String(lastRun.dailyTicketDayKey || '').trim();
+          if (
+            lastRun.dailyTicketAwarded === true &&
+            dayKey &&
+            alreadyShown !== dayKey &&
+            toastTpl
+          ) {
             const msg = fillTemplate(toastTpl, {
               tickets: String(clampInt(lastRun.dailyTicketBalance, 0, 999))
             });
-            if (msg) toastNow(this.config, msg, { variant: "success", timingKey: "dailyChallengeComplete" });
+            if (msg)
+              toastNow(this.config, msg, {
+                variant: 'success',
+                timingKey: 'dailyChallengeComplete'
+              });
             markDailyChallengeToastShown(this.storage, dayKey);
           }
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       // END celebration moment: new best, all mistakes cleared, or perfect bonus run.
       try {
@@ -3307,36 +3941,62 @@ void function () {
 
         // One-shot: mastered celebration persistence (no modal required)
         try {
-          const mastered =
-            !!(this.storage && typeof this.storage.isMastered === "function" && this.storage.isMastered() === true);
+          const mastered = !!(
+            this.storage &&
+            typeof this.storage.isMastered === 'function' &&
+            this.storage.isMastered() === true
+          );
 
-          const already =
-            !!(this.storage && typeof this.storage.hasMasteredCelebrated === "function" && this.storage.hasMasteredCelebrated() === true);
+          const already = !!(
+            this.storage &&
+            typeof this.storage.hasMasteredCelebrated === 'function' &&
+            this.storage.hasMasteredCelebrated() === true
+          );
 
-          if (mastered && !already && this.storage && typeof this.storage.markMasteredCelebrated === "function") {
+          if (
+            mastered &&
+            !already &&
+            this.storage &&
+            typeof this.storage.markMasteredCelebrated === 'function'
+          ) {
             this.storage.markMasteredCelebrated();
           }
-        } catch (_) { /* silent */ }
+        } catch (_) {
+          /* silent */
+        }
 
-        const mode = String(lastRun.mode || "").trim();
-        const isRun = (mode === "RUN");
-        const isBonus = (mode === "BONUS");
-        const isPractice = (mode === "PRACTICE");
-        const newBest = (isRun || isBonus) && (lastRun.newBest === true);
+        const mode = String(lastRun.mode || '').trim();
+        const isRun = mode === 'RUN';
+        const isBonus = mode === 'BONUS';
+        const isPractice = mode === 'PRACTICE';
+        const newBest = (isRun || isBonus) && lastRun.newBest === true;
         let practiceAllCleared = false;
-        if (isPractice && this.storage && typeof this.storage.getActiveMistakesCount === "function") {
-          try { practiceAllCleared = clampInt(this.storage.getActiveMistakesCount(), 0, 99999) === 0; } catch (_) { practiceAllCleared = false; }
+        if (
+          isPractice &&
+          this.storage &&
+          typeof this.storage.getActiveMistakesCount === 'function'
+        ) {
+          try {
+            practiceAllCleared =
+              clampInt(this.storage.getActiveMistakesCount(), 0, 99999) === 0;
+          } catch (_) {
+            practiceAllCleared = false;
+          }
         }
 
         let bonusPerfect = false;
         if (isBonus) {
-          const shown = Array.isArray(lastRun.runItemIds) ? lastRun.runItemIds.length : 0;
+          const shown = Array.isArray(lastRun.runItemIds)
+            ? lastRun.runItemIds.length
+            : 0;
           const score = clampInt(Number(lastRun.scoreFP || 0), 0, 99999);
-          const accuracy = shown > 0 ? (score / shown) : -1;
-          const tiers = Array.isArray(cfg?.secretBonus?.endTiers) ? cfg.secretBonus.endTiers : [];
-          let bonusLevel = "";
+          const accuracy = shown > 0 ? score / shown : -1;
+          const tiers = Array.isArray(cfg?.secretBonus?.endTiers)
+            ? cfg.secretBonus.endTiers
+            : [];
+          let bonusLevel = '';
           for (const t of tiers) {
-            const key = String(t?.key || "").trim();
+            const key = String(t?.key || '').trim();
             const min = Number(t?.minAccuracy);
             if (!key || !Number.isFinite(min)) continue;
             if (accuracy >= min) {
@@ -3344,65 +4004,84 @@ void function () {
               break;
             }
           }
-          bonusPerfect = (bonusLevel === "perfect");
+          bonusPerfect = bonusLevel === 'perfect';
         }
 
         const ms = Number(cfg?.ui?.endRecordMomentMs);
 
         const newBestTpl = isBonus
-          ? String((w && w.secretBonus && w.secretBonus.newBest) || endW.newBest || "").trim()
-          : String(endW.newBest || "").trim();
-        const practiceCelebrateTpl = String(practiceW.celebrationAllCleared || practiceW.endLineAllFixed || "").trim();
-        const bonusCelebrateTpl = String(bonusW.celebrationPerfect || "").trim();
-        const celebrationLabel =
-          newBest ? newBestTpl
-            : practiceAllCleared ? practiceCelebrateTpl
-              : bonusPerfect ? bonusCelebrateTpl
-                : "";
+          ? String(
+              (w && w.secretBonus && w.secretBonus.newBest) ||
+                endW.newBest ||
+                ''
+            ).trim()
+          : String(endW.newBest || '').trim();
+        const practiceCelebrateTpl = String(
+          practiceW.celebrationAllCleared || practiceW.endLineAllFixed || ''
+        ).trim();
+        const bonusCelebrateTpl = String(
+          bonusW.celebrationPerfect || ''
+        ).trim();
+        const celebrationLabel = newBest
+          ? newBestTpl
+          : practiceAllCleared
+            ? practiceCelebrateTpl
+            : bonusPerfect
+              ? bonusCelebrateTpl
+              : '';
 
-        const enabled = (!!celebrationLabel && Number.isFinite(ms) && ms > 0);
+        const enabled = !!celebrationLabel && Number.isFinite(ms) && ms > 0;
         if (enabled) {
           if (!this._runtime) this._runtime = {};
           if (this._runtime.endRecordMomentTimer) {
-            clearRuntimeTimer(this, "endRecordMomentTimer");
+            clearRuntimeTimer(this, 'endRecordMomentTimer');
           }
 
           this._runtime.endRecordMomentUntil = Date.now() + ms;
 
-          setRuntimeTimer(this, "endRecordMomentTimer", () => {
-            try {
-              if (this._runtime) {
-                this._runtime.endRecordMomentTimer = null;
-                this._runtime.endRecordMomentUntil = 0;
+          setRuntimeTimer(
+            this,
+            'endRecordMomentTimer',
+            () => {
+              try {
+                if (this._runtime) {
+                  this._runtime.endRecordMomentTimer = null;
+                  this._runtime.endRecordMomentUntil = 0;
+                }
+                this.render();
+              } catch (_) {
+                /* silent */
               }
-              this.render();
-            } catch (_) { /* silent */ }
-          }, ms);
+            },
+            ms
+          );
         } else {
           if (this._runtime) this._runtime.endRecordMomentUntil = 0;
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       // END score victory animation (UI-only; no count-up; respects reduced motion)
       try {
-        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (
+          window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        )
+          return;
 
-        const scoreEl = document.querySelector(".wt-end-score");
+        const scoreEl = document.querySelector('.wt-end-score');
         if (!scoreEl) return;
 
         // Restart animation cleanly on each END entry
-        scoreEl.classList.remove("wt-end-score--celebrate");
+        scoreEl.classList.remove('wt-end-score--celebrate');
         void scoreEl.offsetWidth; // force reflow (Safari-safe)
-        scoreEl.classList.add("wt-end-score--celebrate");
-      } catch (_) { /* silent */ }
-
+        scoreEl.classList.add('wt-end-score--celebrate');
+      } catch (_) {
+        /* silent */
+      }
     }
-
-
-
-
   };
-
 
   // ============================================
   // Modal helpers
@@ -3414,31 +4093,45 @@ void function () {
     }
     // A11Y: store last focused element to restore on close
     try {
-      if (this._runtime) this._runtime._lastFocusBeforeModal = document.activeElement || null;
-    } catch (_) { /* silent */ }
+      if (this._runtime)
+        this._runtime._lastFocusBeforeModal = document.activeElement || null;
+    } catch (_) {
+      /* silent */
+    }
 
     // A11Y: inert the main content so Tab cannot reach behind the modal
     try {
-      const mainEl = document.querySelector(".wt-main");
+      const mainEl = document.querySelector('.wt-main');
       if (mainEl) mainEl.inert = true;
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
-    this.modalEl.classList.remove("wt-hidden");
-    this.modalEl.setAttribute("aria-hidden", "false");
+    this.modalEl.classList.remove('wt-hidden');
+    this.modalEl.setAttribute('aria-hidden', 'false');
 
-    const t = escapeHtml(String(title || "").trim());
-    const closeLabel = escapeHtml(String(this.wording?.system?.close || "").trim());
+    const t = escapeHtml(String(title || '').trim());
+    const closeLabel = escapeHtml(
+      String(this.wording?.system?.close || '').trim()
+    );
     const hideCloseButton = !!(options && options.hideCloseButton === true);
-    const modalClass = String(options?.modalClass || "").trim();
-    const modalKey = String(options?.modalKey || "").trim();
+    const modalClass = String(options?.modalClass || '').trim();
+    const modalKey = String(options?.modalKey || '').trim();
 
     if (this._runtime) this._runtime._modalExtraClass = modalClass;
     if (this._runtime) this._runtime._modalKey = modalKey;
-    this.modalContentEl.classList.remove("wt-modal--sheet", "wt-modal--levelsheet");
-    this.modalContentEl.removeAttribute("data-wt-modal-key");
-    if (modalKey) this.modalContentEl.setAttribute("data-wt-modal-key", modalKey);
+    this.modalContentEl.classList.remove(
+      'wt-modal--sheet',
+      'wt-modal--levelsheet'
+    );
+    this.modalContentEl.removeAttribute('data-wt-modal-key');
+    if (modalKey)
+      this.modalContentEl.setAttribute('data-wt-modal-key', modalKey);
     if (modalClass) {
-      modalClass.split(/\s+/).filter(Boolean).forEach((cls) => this.modalContentEl.classList.add(cls));
+      modalClass
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach((cls) => this.modalContentEl.classList.add(cls));
     }
 
     this.modalContentEl.innerHTML = `
@@ -3460,33 +4153,43 @@ void function () {
         try {
           this.modalContentEl.scrollTop = 0;
           this.modalEl.scrollTop = 0;
-        } catch (_) { /* silent */ }
+        } catch (_) {
+          /* silent */
+        }
       });
-    } catch (_) { /* silent */ }
-
+    } catch (_) {
+      /* silent */
+    }
 
     // A11Y: focus the first actionable element in the modal (close button)
     try {
-      const first = this.modalContentEl.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-      if (first && typeof first.focus === "function") first.focus();
-    } catch (_) { /* silent */ }
+      const first = this.modalContentEl.querySelector(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (first && typeof first.focus === 'function') first.focus();
+    } catch (_) {
+      /* silent */
+    }
 
     // A11Y: minimal focus trap (Tab/Shift+Tab loops inside modal)
     try {
       const self = this;
       const trap = function (e) {
         if (!e) return;
-        if (!self.modalEl || self.modalEl.classList.contains("wt-hidden")) return;
+        if (!self.modalEl || self.modalEl.classList.contains('wt-hidden'))
+          return;
 
         // A11Y: Escape closes the modal
-        if (e.key === "Escape") {
+        if (e.key === 'Escape') {
           e.preventDefault();
-          if (typeof self.closeModal === "function") self.closeModal();
+          if (typeof self.closeModal === 'function') self.closeModal();
           return;
         }
 
-        if (e.key !== "Tab") return;
-        const focusables = self.modalEl.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (e.key !== 'Tab') return;
+        const focusables = self.modalEl.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
         if (!focusables || focusables.length === 0) return;
         if (!focusables || focusables.length === 0) return;
 
@@ -3497,21 +4200,22 @@ void function () {
         if (e.shiftKey) {
           if (active === firstEl || active === self.modalEl) {
             e.preventDefault();
-            if (lastEl && typeof lastEl.focus === "function") lastEl.focus();
+            if (lastEl && typeof lastEl.focus === 'function') lastEl.focus();
           }
         } else {
           if (active === lastEl) {
             e.preventDefault();
-            if (firstEl && typeof firstEl.focus === "function") firstEl.focus();
+            if (firstEl && typeof firstEl.focus === 'function') firstEl.focus();
           }
         }
       };
 
       if (this._runtime) this._runtime._modalTrapHandler = trap;
-      this.modalEl.addEventListener("keydown", trap);
-    } catch (_) { /* silent */ }
+      this.modalEl.addEventListener('keydown', trap);
+    } catch (_) {
+      /* silent */
+    }
   };
-
 
   UI.prototype.closeModal = function () {
     if (!this.modalEl || !this.modalContentEl) return;
@@ -3519,37 +4223,46 @@ void function () {
     // A11Y: remove focus trap listener
     try {
       const h = this._runtime ? this._runtime._modalTrapHandler : null;
-      if (h) this.modalEl.removeEventListener("keydown", h);
+      if (h) this.modalEl.removeEventListener('keydown', h);
       if (this._runtime) this._runtime._modalTrapHandler = null;
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     if (this._runtime) {
       this._runtime.secretBonusPending = false;
     }
 
-    this.modalEl.classList.add("wt-hidden");
-    this.modalEl.setAttribute("aria-hidden", "true");
-    this.modalContentEl.classList.remove("wt-modal--sheet", "wt-modal--levelsheet");
-    this.modalContentEl.removeAttribute("data-wt-modal-key");
-    this.modalContentEl.innerHTML = "";
-    if (this._runtime) this._runtime._modalExtraClass = "";
-    if (this._runtime) this._runtime._modalKey = "";
+    this.modalEl.classList.add('wt-hidden');
+    this.modalEl.setAttribute('aria-hidden', 'true');
+    this.modalContentEl.classList.remove(
+      'wt-modal--sheet',
+      'wt-modal--levelsheet'
+    );
+    this.modalContentEl.removeAttribute('data-wt-modal-key');
+    this.modalContentEl.innerHTML = '';
+    if (this._runtime) this._runtime._modalExtraClass = '';
+    if (this._runtime) this._runtime._modalKey = '';
 
     // A11Y: re-enable main content
     try {
-      const mainEl = document.querySelector(".wt-main");
+      const mainEl = document.querySelector('.wt-main');
       if (mainEl) mainEl.inert = false;
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     // A11Y: restore focus to the element that opened the modal (if still present)
     try {
       const prev = this._runtime ? this._runtime._lastFocusBeforeModal : null;
       if (this._runtime) this._runtime._lastFocusBeforeModal = null;
 
-      if (prev && typeof prev.focus === "function" && document.contains(prev)) {
+      if (prev && typeof prev.focus === 'function' && document.contains(prev)) {
         prev.focus();
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     if (this.state === STATES.PLAYING) {
       syncAutoReadCurrentQuestion(this);
@@ -3567,7 +4280,10 @@ void function () {
     const isPrem = isPremiumNow(this.storage);
 
     // Pull live values from the engine (single source of truth)
-    const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+    const gs =
+      this.game && typeof this.game.getState === 'function'
+        ? this.game.getState() || {}
+        : {};
     const scoreFP = Number(gs.scoreFP);
     const chancesLeft = Number(gs.chancesLeft);
     const speechSupported = supportsQuestionSpeech();
@@ -3575,28 +4291,35 @@ void function () {
 
     // No hardcoded fallback: if runtime values are missing, keep placeholders empty.
     const vars = {
-      score: Number.isFinite(scoreFP) ? scoreFP : "",
-      fpLong: String(ui.fpLong || "").trim(),
-      maxChances: Number.isFinite(maxChances) ? maxChances : "",
-      chancesLeft: Number.isFinite(chancesLeft) ? chancesLeft : (Number.isFinite(maxChances) ? maxChances : "")
+      score: Number.isFinite(scoreFP) ? scoreFP : '',
+      fpLong: String(ui.fpLong || '').trim(),
+      maxChances: Number.isFinite(maxChances) ? maxChances : '',
+      chancesLeft: Number.isFinite(chancesLeft)
+        ? chancesLeft
+        : Number.isFinite(maxChances)
+          ? maxChances
+          : ''
     };
 
-    const line = (s) => `<p>${escapeHtml(fillTemplate(String(s || "").trim(), vars))}</p>`;
+    const line = (s) =>
+      `<p>${escapeHtml(fillTemplate(String(s || '').trim(), vars))}</p>`;
 
     // Business section (Premium + Activate) is ONLY for non-premium users.
-    let premiumHtml = "";
+    let premiumHtml = '';
     if (!isPrem) {
-      const premiumOnlyHint = String(how.premiumOnlyHint || "").trim();
+      const premiumOnlyHint = String(how.premiumOnlyHint || '').trim();
 
-      const paywallBullets = Array.isArray(w.paywall?.valueBullets) ? w.paywall.valueBullets : [];
+      const paywallBullets = Array.isArray(w.paywall?.valueBullets)
+        ? w.paywall.valueBullets
+        : [];
       const premiumBulletsHtml = paywallBullets
-        .map((b) => String(b || "").trim())
+        .map((b) => String(b || '').trim())
         .filter(Boolean)
         .map((b) => `<p class="wt-muted">&bull; ${escapeHtml(b)}</p>`)
-        .join("");
+        .join('');
 
-      const upgradeCta = String(w.paywall?.cta || "").trim();
-      const redeemLabel = String(w.paywall?.alreadyHaveCode || "").trim();
+      const upgradeCta = String(w.paywall?.cta || '').trim();
+      const redeemLabel = String(w.paywall?.alreadyHaveCode || '').trim();
 
       premiumHtml = `
         <div class="wt-divider"></div>
@@ -3606,12 +4329,15 @@ void function () {
         </div>
       `;
     }
-    const audioTitle = String(how.audioTitle || "").trim();
-    const autoReadLabel = String(how.autoReadLabel || "").trim();
-    const autoReadHelp = String(how.autoReadHelp || "").trim();
-    const autoReadStatus = String(autoReadEnabled ? (how.autoReadOn || "") : (how.autoReadOff || "")).trim();
-    const audioSettingsHtml = (speechSupported && autoReadLabel)
-      ? `
+    const audioTitle = String(how.audioTitle || '').trim();
+    const autoReadLabel = String(how.autoReadLabel || '').trim();
+    const autoReadHelp = String(how.autoReadHelp || '').trim();
+    const autoReadStatus = String(
+      autoReadEnabled ? how.autoReadOn || '' : how.autoReadOff || ''
+    ).trim();
+    const audioSettingsHtml =
+      speechSupported && autoReadLabel
+        ? `
         <div class="wt-divider"></div>
         <div class="wt-stack wt-stack--xs wt-how-setting">
           ${audioTitle ? `<p class="wt-question-title">${escapeHtml(audioTitle)}</p>` : ``}
@@ -3619,7 +4345,7 @@ void function () {
             type="button"
             class="wt-text-action wt-how-setting__toggle"
             data-action="toggle-auto-read-questions"
-            aria-pressed="${autoReadEnabled ? "true" : "false"}"
+            aria-pressed="${autoReadEnabled ? 'true' : 'false'}"
           >
             <span>${escapeHtml(autoReadLabel)}</span>
             ${autoReadStatus ? `<span class="wt-how-setting__status">${escapeHtml(autoReadStatus)}</span>` : ``}
@@ -3627,11 +4353,11 @@ void function () {
           ${autoReadHelp ? `<p class="wt-muted">${escapeHtml(autoReadHelp)}</p>` : ``}
         </div>
       `
-      : "";
+        : '';
     const html = `
-     <p class="wt-how-line">${escapeHtml(String(how.howToPlayLine1 || "").trim())}</p>
-<p class="wt-how-line">${escapeHtml(String(how.howToPlayLine2 || "").trim())}</p>
-<p class="wt-how-line">${escapeHtml(String(how.howToPlayLine3 || "").trim())}</p>
+     <p class="wt-how-line">${escapeHtml(String(how.howToPlayLine1 || '').trim())}</p>
+<p class="wt-how-line">${escapeHtml(String(how.howToPlayLine2 || '').trim())}</p>
+<p class="wt-how-line">${escapeHtml(String(how.howToPlayLine3 || '').trim())}</p>
 
 ${audioSettingsHtml}
 
@@ -3639,40 +4365,39 @@ ${audioSettingsHtml}
 
       <div class="wt-stack wt-stack--sm">
         <p class="wt-question-title">
-          ${escapeHtml(String(how.ruleTitle || "").trim())}
+          ${escapeHtml(String(how.ruleTitle || '').trim())}
         </p>
         <p class="wt-muted">
-          ${escapeHtml(fillTemplate(String(how.ruleSentence || "").trim(), vars))}
+          ${escapeHtml(fillTemplate(String(how.ruleSentence || '').trim(), vars))}
         </p>
       </div>
 
       ${premiumHtml}
     `;
 
-
-    this.openModal(html, String(how.title || "").trim());
+    this.openModal(html, String(how.title || '').trim());
   };
 
   UI.prototype.openLevelProgressModal = function () {
     const w = this.wording || {};
     const cfg = this.config || {};
-    const levelsW = (w.levels && typeof w.levels === "object") ? w.levels : {};
+    const levelsW = w.levels && typeof w.levels === 'object' ? w.levels : {};
     const model = getAppLevelModel(this.storage, cfg, w);
     const currentLevel = clampInt(model.state?.currentLevel, 0, 4);
     const current = model.current;
     const next = model.next;
 
-    const currentLabel = String(levelsW.currentLabel || "").trim();
-    const unlockedByLabel = String(levelsW.unlockedByLabel || "").trim();
-    const nextLabel = String(levelsW.nextLabel || "").trim();
-    const reachItLabel = String(levelsW.reachItLabel || "").trim();
-    const progressionLabel = String(levelsW.progressionLabel || "").trim();
-    const noLevelTitle = String(levelsW.noLevelTitle || "").trim();
-    const noLevelBody = String(levelsW.noLevelBody || "").trim();
-    const maxLevelBody = String(levelsW.maxLevelBody || "").trim();
-    const currentPill = String(levelsW.currentPill || "").trim();
-    const unlockedPill = String(levelsW.unlockedPill || "").trim();
-    const lockedPill = String(levelsW.lockedPill || "").trim();
+    const currentLabel = String(levelsW.currentLabel || '').trim();
+    const unlockedByLabel = String(levelsW.unlockedByLabel || '').trim();
+    const nextLabel = String(levelsW.nextLabel || '').trim();
+    const reachItLabel = String(levelsW.reachItLabel || '').trim();
+    const progressionLabel = String(levelsW.progressionLabel || '').trim();
+    const noLevelTitle = String(levelsW.noLevelTitle || '').trim();
+    const noLevelBody = String(levelsW.noLevelBody || '').trim();
+    const maxLevelBody = String(levelsW.maxLevelBody || '').trim();
+    const currentPill = String(levelsW.currentPill || '').trim();
+    const unlockedPill = String(levelsW.unlockedPill || '').trim();
+    const lockedPill = String(levelsW.lockedPill || '').trim();
 
     const currentBlockHtml = (() => {
       if (!current) {
@@ -3691,7 +4416,7 @@ ${audioSettingsHtml}
             <span>${escapeHtml(current.label)}</span>
           </div>
           ${unlockedByLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(unlockedByLabel)}</p>` : ``}
-          ${(current.sheetBody || current.unlock) ? `<p class="wt-level-sheet__body">${escapeHtml(current.sheetBody || current.unlock)}</p>` : ``}
+          ${current.sheetBody || current.unlock ? `<p class="wt-level-sheet__body">${escapeHtml(current.sheetBody || current.unlock)}</p>` : ``}
         </div>
       `;
     })();
@@ -3718,10 +4443,19 @@ ${audioSettingsHtml}
       `;
     })();
 
-    const progressionHtml = model.defs.map((item) => {
-      const pill = item.current ? currentPill : (item.unlocked ? unlockedPill : lockedPill);
-      const stateClass = item.current ? " wt-level-strip__item--current" : (item.unlocked ? " wt-level-strip__item--done" : "");
-      return `
+    const progressionHtml = model.defs
+      .map((item) => {
+        const pill = item.current
+          ? currentPill
+          : item.unlocked
+            ? unlockedPill
+            : lockedPill;
+        const stateClass = item.current
+          ? ' wt-level-strip__item--current'
+          : item.unlocked
+            ? ' wt-level-strip__item--done'
+            : '';
+        return `
         <li class="wt-level-strip__item${stateClass}">
           <div class="wt-level-strip__main">
             <span class="wt-level-strip__dot" aria-hidden="true"></span>
@@ -3733,7 +4467,8 @@ ${audioSettingsHtml}
           ${pill ? `<span class="wt-level-strip__pill">${escapeHtml(pill)}</span>` : ``}
         </li>
       `;
-    }).join("");
+      })
+      .join('');
 
     const html = `
       ${currentBlockHtml}
@@ -3746,39 +4481,62 @@ ${audioSettingsHtml}
       </div>
     `;
 
-    this.openModal(html, String(levelsW.modalTitle || "").trim(), { modalClass: "wt-modal--sheet wt-modal--levelsheet" });
+    this.openModal(html, String(levelsW.modalTitle || '').trim(), {
+      modalClass: 'wt-modal--sheet wt-modal--levelsheet'
+    });
   };
 
   UI.prototype.openLeaderboardModal = function () {
-    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.openModal !== "function") {
+    if (
+      !window.WT_UI_Leaderboard ||
+      typeof window.WT_UI_Leaderboard.openModal !== 'function'
+    ) {
       return;
     }
     return window.WT_UI_Leaderboard.openModal(this, { escapeHtml });
   };
 
   UI.prototype.saveLeaderboardProfileFromModal = async function () {
-    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.saveProfileFromModal !== "function") {
+    if (
+      !window.WT_UI_Leaderboard ||
+      typeof window.WT_UI_Leaderboard.saveProfileFromModal !== 'function'
+    ) {
       return;
     }
-    return window.WT_UI_Leaderboard.saveProfileFromModal(this, { escapeHtml, toastNow });
+    return window.WT_UI_Leaderboard.saveProfileFromModal(this, {
+      escapeHtml,
+      toastNow
+    });
   };
 
   UI.prototype.switchLeaderboardModalTab = function (tabKey) {
-    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.switchModalTab !== "function") {
+    if (
+      !window.WT_UI_Leaderboard ||
+      typeof window.WT_UI_Leaderboard.switchModalTab !== 'function'
+    ) {
       return;
     }
-    return window.WT_UI_Leaderboard.switchModalTab(this, String(tabKey || "").trim());
+    return window.WT_UI_Leaderboard.switchModalTab(
+      this,
+      String(tabKey || '').trim()
+    );
   };
 
   UI.prototype.leaveLeaderboardFromModal = async function () {
-    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.leaveFromModal !== "function") {
+    if (
+      !window.WT_UI_Leaderboard ||
+      typeof window.WT_UI_Leaderboard.leaveFromModal !== 'function'
+    ) {
       return;
     }
     return window.WT_UI_Leaderboard.leaveFromModal(this, { toastNow });
   };
 
   UI.prototype.submitLeaderboardRun = async function (lastRun) {
-    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.submitRun !== "function") {
+    if (
+      !window.WT_UI_Leaderboard ||
+      typeof window.WT_UI_Leaderboard.submitRun !== 'function'
+    ) {
       return;
     }
     return window.WT_UI_Leaderboard.submitRun(this, lastRun, {
@@ -3786,52 +4544,61 @@ ${audioSettingsHtml}
     });
   };
 
-
-
-
   UI.prototype.openRedeemModal = function () {
     const w = this.wording || {};
     const how = w.howto || {};
 
-    const placeholder = String(how.activationCodePlaceholder || "").trim();
-    const phAttr = placeholder ? ` placeholder="${escapeHtml(placeholder)}"` : "";
+    const placeholder = String(how.activationCodePlaceholder || '').trim();
+    const phAttr = placeholder
+      ? ` placeholder="${escapeHtml(placeholder)}"`
+      : '';
 
     // Prefill from storage single source of truth (no raw data access)
-    let existingCode = "";
-    if (this.storage && typeof this.storage.getStoredPremiumCode === "function") {
+    let existingCode = '';
+    if (
+      this.storage &&
+      typeof this.storage.getStoredPremiumCode === 'function'
+    ) {
       try {
-        existingCode = String(this.storage.getStoredPremiumCode() || "").trim();
+        existingCode = String(this.storage.getStoredPremiumCode() || '').trim();
       } catch (_) {
-        existingCode = "";
+        existingCode = '';
       }
     }
 
-    const valAttr = existingCode ? ` value="${escapeHtml(existingCode)}"` : "";
+    const valAttr = existingCode ? ` value="${escapeHtml(existingCode)}"` : '';
 
     const html = `
-      <label class="wt-label" for="wt-code">${escapeHtml(String(how.activationCodeLabel || "").trim())}</label>
+      <label class="wt-label" for="wt-code">${escapeHtml(String(how.activationCodeLabel || '').trim())}</label>
       <input id="wt-code" class="wt-input" autocomplete="off" inputmode="text"${phAttr}${valAttr} />
-      <p class="wt-muted">${escapeHtml(String(how.activateLine2 || "").trim())}</p>
+      <p class="wt-muted">${escapeHtml(String(how.activateLine2 || '').trim())}</p>
 
       <div class="wt-actions">
-        <button class="wt-btn wt-btn--primary" data-action="confirm-redeem">${escapeHtml(String(how.activateCta || "").trim())}</button>
+        <button class="wt-btn wt-btn--primary" data-action="confirm-redeem">${escapeHtml(String(how.activateCta || '').trim())}</button>
       </div>
 
       <p id="wt-code-msg" class="wt-muted" aria-live="polite"></p>
     `;
 
-    this.openModal(html, String(how.activateTitle || "").trim());
+    this.openModal(html, String(how.activateTitle || '').trim());
 
     // UX: focus input (optional, safe)
     try {
-      const input = this.modalContentEl ? this.modalContentEl.querySelector("#wt-code") : null;
-      if (input && typeof input.focus === "function") input.focus();
-      if (input && typeof input.setSelectionRange === "function" && existingCode) {
+      const input = this.modalContentEl
+        ? this.modalContentEl.querySelector('#wt-code')
+        : null;
+      if (input && typeof input.focus === 'function') input.focus();
+      if (
+        input &&
+        typeof input.setSelectionRange === 'function' &&
+        existingCode
+      ) {
         input.setSelectionRange(existingCode.length, existingCode.length);
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
   };
-
 
   UI.prototype.promptAutoRedeemIfReady = function () {
     // Guardrails: StorageManager is the source of truth, and prompt only once per page-load.
@@ -3840,27 +4607,31 @@ ${audioSettingsHtml}
     const isPrem = isPremiumNow(this.storage);
     if (isPrem) return;
 
-    if (!this.storage || typeof this.storage.getVanityCode !== "function") return;
+    if (!this.storage || typeof this.storage.getVanityCode !== 'function')
+      return;
 
-    let code = "";
-    try { code = String(this.storage.getVanityCode() || "").trim(); } catch (_) { code = ""; }
+    let code = '';
+    try {
+      code = String(this.storage.getVanityCode() || '').trim();
+    } catch (_) {
+      code = '';
+    }
     if (!code) return;
 
     if (this._runtime) this._runtime._autoRedeemPromptShown = true;
     this.openAutoRedeemModal();
   };
 
-
   UI.prototype.openAutoRedeemModal = function () {
     const w = this.wording || {};
     const how = w.howto || {};
 
-    const title = String(how.autoActivateTitle || "").trim();
-    const l1 = String(how.autoActivateLine1 || "").trim();
-    const l2 = String(how.autoActivateLine2 || "").trim();
+    const title = String(how.autoActivateTitle || '').trim();
+    const l1 = String(how.autoActivateLine1 || '').trim();
+    const l2 = String(how.autoActivateLine2 || '').trim();
 
-    const cta = String(how.autoActivateCta || "").trim();
-    const later = String(how.autoActivateLater || "").trim();
+    const cta = String(how.autoActivateCta || '').trim();
+    const later = String(how.autoActivateLater || '').trim();
 
     const html = `
       ${l1 ? `<p>${escapeHtml(l1)}</p>` : ``}
@@ -3877,62 +4648,78 @@ ${audioSettingsHtml}
     this.openModal(html, title);
   };
 
-
   UI.prototype._redeemVanityCodeNow = function () {
     const w = this.wording || {};
     const how = w.howto || {};
 
-    const msg = this.modalContentEl ? this.modalContentEl.querySelector("#wt-auto-redeem-msg") : null;
+    const msg = this.modalContentEl
+      ? this.modalContentEl.querySelector('#wt-auto-redeem-msg')
+      : null;
 
-    if (!this.storage || typeof this.storage.tryRedeemPremiumCode !== "function" || typeof this.storage.getVanityCode !== "function") {
-      if (msg) msg.textContent = String(how.codeRejected || "").trim();
+    if (
+      !this.storage ||
+      typeof this.storage.tryRedeemPremiumCode !== 'function' ||
+      typeof this.storage.getVanityCode !== 'function'
+    ) {
+      if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
     }
 
-    let code = "";
-    try { code = String(this.storage.getVanityCode() || "").trim(); } catch (_) { code = ""; }
+    let code = '';
+    try {
+      code = String(this.storage.getVanityCode() || '').trim();
+    } catch (_) {
+      code = '';
+    }
     if (!code) {
-      if (msg) msg.textContent = String(how.codeRejected || "").trim();
+      if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
     }
 
     const res = this.storage.tryRedeemPremiumCode(code);
     if (!res || res.ok !== true) {
-      if (msg) msg.textContent = String(how.codeRejected || "").trim();
+      if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
     }
 
     // Success: clear vanity key to prevent re-prompting
-    if (typeof this.storage.clearVanityCode === "function") {
-      try { this.storage.clearVanityCode(); } catch (_) { /* silent */ }
+    if (typeof this.storage.clearVanityCode === 'function') {
+      try {
+        this.storage.clearVanityCode();
+      } catch (_) {
+        /* silent */
+      }
     }
 
-    toastNow(this.config, String(how.codeOk || "").trim());
+    toastNow(this.config, String(how.codeOk || '').trim());
     this.closeModal();
     this.render();
   };
-
 
   UI.prototype._confirmRedeemCode = function () {
     const w = this.wording || {};
     const how = w.howto || {};
 
-    const input = this.modalContentEl ? this.modalContentEl.querySelector("#wt-code") : null;
-    const msg = this.modalContentEl ? this.modalContentEl.querySelector("#wt-code-msg") : null;
+    const input = this.modalContentEl
+      ? this.modalContentEl.querySelector('#wt-code')
+      : null;
+    const msg = this.modalContentEl
+      ? this.modalContentEl.querySelector('#wt-code-msg')
+      : null;
 
-    const code = String(input && input.value ? input.value : "").trim();
+    const code = String(input && input.value ? input.value : '').trim();
     if (!code) {
-      if (msg) msg.textContent = String(how.enterCode || "").trim();
+      if (msg) msg.textContent = String(how.enterCode || '').trim();
       return;
     }
 
     const cfg = this.config || {};
-    const reRaw = String(cfg.premiumCodeRegex || "").trim();
+    const reRaw = String(cfg.premiumCodeRegex || '').trim();
     if (reRaw) {
       try {
         const re = new RegExp(reRaw);
         if (!re.test(code)) {
-          if (msg) msg.textContent = String(how.codeInvalid || "").trim();
+          if (msg) msg.textContent = String(how.codeInvalid || '').trim();
           return;
         }
       } catch (_) {
@@ -3940,24 +4727,26 @@ ${audioSettingsHtml}
       }
     }
 
-    if (!this.storage || typeof this.storage.tryRedeemPremiumCode !== "function") {
-      if (msg) msg.textContent = String(how.codeRejected || "").trim();
+    if (
+      !this.storage ||
+      typeof this.storage.tryRedeemPremiumCode !== 'function'
+    ) {
+      if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
     }
 
     const res = this.storage.tryRedeemPremiumCode(code);
 
     if (!res || res.ok !== true) {
-      if (msg) msg.textContent = String(how.codeRejected || "").trim();
+      if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
     }
 
     /// Success
-    toastNow(this.config, String(how.codeOk || "").trim());
+    toastNow(this.config, String(how.codeOk || '').trim());
     this.closeModal();
     this.render();
   };
-
 
   // ============================================
   // Game flow
@@ -3980,13 +4769,13 @@ ${audioSettingsHtml}
     const freeRuns = clampInt(this.config?.limits?.freeRuns, 0, 99);
 
     if (isPremiumNow(this.storage)) {
-      if (typeof this.storage.hasSeenPremiumFirstRunFraming !== "function") return false;
+      if (typeof this.storage.hasSeenPremiumFirstRunFraming !== 'function')
+        return false;
       return this.storage.hasSeenPremiumFirstRunFraming() !== true;
     }
 
     return runsUsed < freeRuns;
   };
-
 
   UI.prototype._openFirstRunFraming = function () {
     const w = this.wording || {};
@@ -4000,7 +4789,7 @@ ${audioSettingsHtml}
     const vars = { poolSize, maxChances, freeRuns };
 
     let runsUsed = 0;
-    if (this.storage && typeof this.storage.getRunsUsed === "function") {
+    if (this.storage && typeof this.storage.getRunsUsed === 'function') {
       runsUsed = Number(this.storage.getRunsUsed() || 0);
     }
 
@@ -4009,58 +4798,59 @@ ${audioSettingsHtml}
     const run3Lines = Array.isArray(fr.run3Lines) ? fr.run3Lines : [];
 
     const activeLines =
-      runsUsed === 1
-        ? run2Lines
-        : runsUsed === 2
-          ? run3Lines
-          : run1Lines;
+      runsUsed === 1 ? run2Lines : runsUsed === 2 ? run3Lines : run1Lines;
 
     const renderLines = (arr) => {
       return arr
-        .map(s => String(s || "").trim())
+        .map((s) => String(s || '').trim())
         .filter(Boolean)
-        .map((s, i) => `<p class="wt-meta${i === 0 ? ` wt-meta--strong` : ``}">${escapeHtml(fillTemplate(s, vars))}</p>`)
-        .join("");
+        .map(
+          (s, i) =>
+            `<p class="wt-meta${i === 0 ? ` wt-meta--strong` : ``}">${escapeHtml(fillTemplate(s, vars))}</p>`
+        )
+        .join('');
     };
 
     const html = `
       ${renderLines(activeLines)}
           <div class="wt-actions">
-                     <button class="wt-btn wt-btn--primary" data-action="start-run" aria-label="${escapeHtml(String(fr.ctaLabel || "").trim())}">
-           ${escapeHtml(String(fr.ctaLabel || "").trim())}
+                     <button class="wt-btn wt-btn--primary" data-action="start-run" aria-label="${escapeHtml(String(fr.ctaLabel || '').trim())}">
+           ${escapeHtml(String(fr.ctaLabel || '').trim())}
          </button>
 
       </div>
 
     `;
 
-    let modalTitle = String(fr.titleRun1 || "").trim() || String(w.system?.more || "").trim();
-    if (runsUsed === 1 && String(fr.titleRun2 || "").trim()) {
-      modalTitle = String(fr.titleRun2 || "").trim();
-    } else if (runsUsed === 2 && String(fr.titleRun3 || "").trim()) {
-      modalTitle = String(fr.titleRun3 || "").trim();
+    let modalTitle =
+      String(fr.titleRun1 || '').trim() || String(w.system?.more || '').trim();
+    if (runsUsed === 1 && String(fr.titleRun2 || '').trim()) {
+      modalTitle = String(fr.titleRun2 || '').trim();
+    } else if (runsUsed === 2 && String(fr.titleRun3 || '').trim()) {
+      modalTitle = String(fr.titleRun3 || '').trim();
     }
 
-    try { markSeenFirstRunFraming(this.storage); } catch (_) { }
+    try {
+      markSeenFirstRunFraming(this.storage);
+    } catch (_) {}
 
     try {
       if (
         isPremiumNow(this.storage) &&
-        typeof this.storage.markSeenPremiumFirstRunFraming === "function"
+        typeof this.storage.markSeenPremiumFirstRunFraming === 'function'
       ) {
         this.storage.markSeenPremiumFirstRunFraming();
       }
-    } catch (_) { }
+    } catch (_) {}
 
     this.openModal(html, modalTitle);
   };
-
 
   UI.prototype._maybeTriggerMicroPic = function (res) {
     // Spec: only in RUN (never in practice)
     // Product rule (updated): micro-pics can surface during RUN via gameplay overlay, with cooldown.
     if (!this._runtime) return;
-    const runMode = String(this._runtime?.runMode || "").trim();
+    const runMode = String(this._runtime?.runMode || '').trim();
     if (!runMode) return;
     if (runMode !== MODES.RUN) return;
 
@@ -4068,7 +4858,8 @@ ${audioSettingsHtml}
     if (!mp) return;
 
     const w = this.wording || {};
-    const mpc = (w.micropics && typeof w.micropics === "object") ? w.micropics : {};
+    const mpc =
+      w.micropics && typeof w.micropics === 'object' ? w.micropics : {};
     const cfg = this.config || {};
     const phaseCtx = getRuleKnowledgePhaseContext({
       cfg,
@@ -4078,28 +4869,42 @@ ${audioSettingsHtml}
     });
     const phaseMpc = Object.assign({}, mpc, phaseCtx.micropics || {});
 
-    const mpCfg = (cfg && cfg.microPics) ? cfg.microPics : null;
+    const mpCfg = cfg && cfg.microPics ? cfg.microPics : null;
     if (!mpCfg) return;
 
     let answeredCount = 0;
     try {
-      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      const gs =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
       const idx = Number(gs.idx);
       if (Number.isFinite(idx)) answeredCount = idx + 1;
-    } catch (_) { /* keep 0 */ }
+    } catch (_) {
+      /* keep 0 */
+    }
 
-    const isCorrect = (res && res.isCorrect === true);
+    const isCorrect = res && res.isCorrect === true;
 
     // Live state after engine answer
     let chancesLeft = mp.prevChancesLeft;
     try {
-      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      const gs =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
       if (gs.chancesLeft != null) chancesLeft = clampInt(gs.chancesLeft, 0, 99);
-    } catch (_) { /* keep prev */ }
+    } catch (_) {
+      /* keep prev */
+    }
 
     // Detect chance loss strictly (observable state change)
-    const prev = (mp.prevChancesLeft == null) ? chancesLeft : mp.prevChancesLeft;
-    const chanceLost = (!isCorrect && Number.isFinite(prev) && Number.isFinite(chancesLeft) && chancesLeft < prev);
+    const prev = mp.prevChancesLeft == null ? chancesLeft : mp.prevChancesLeft;
+    const chanceLost =
+      !isCorrect &&
+      Number.isFinite(prev) &&
+      Number.isFinite(chancesLeft) &&
+      chancesLeft < prev;
 
     // Update prev snapshot ASAP
     mp.prevChancesLeft = chancesLeft;
@@ -4107,9 +4912,17 @@ ${audioSettingsHtml}
     // Maintain streak + momentum meter
     if (isCorrect) {
       mp.correctStreak = clampInt(mp.correctStreak + 1, 0, 9999);
-      mp.maxCorrectStreak = Math.max(clampInt(mp.maxCorrectStreak, 0, 9999), mp.correctStreak);
+      mp.maxCorrectStreak = Math.max(
+        clampInt(mp.maxCorrectStreak, 0, 9999),
+        mp.correctStreak
+      );
 
-      const momentumState = getMomentumMeterState(cfg, mp.correctStreak, runMode, mp.momentumLevel);
+      const momentumState = getMomentumMeterState(
+        cfg,
+        mp.correctStreak,
+        runMode,
+        mp.momentumLevel
+      );
       if (momentumState) {
         const maxSegments = getMomentumSegments(cfg);
         const current = clampInt(mp.momentumLevel, 0, maxSegments);
@@ -4139,31 +4952,39 @@ ${audioSettingsHtml}
     }
 
     // Timing bucket (no fallback): required for in-run micro-pics
-    const timing = getToastTiming(cfg, "positive");
+    const timing = getToastTiming(cfg, 'positive');
     if (!timing) return;
 
     const cooldownItems = Number(mpCfg.cooldownItems);
-    if (!Number.isFinite(cooldownItems) || cooldownItems < 0 || cooldownItems > 99) return;
+    if (
+      !Number.isFinite(cooldownItems) ||
+      cooldownItems < 0 ||
+      cooldownItems > 99
+    )
+      return;
 
     function tryShowRunOverlay(msg, variant) {
-      const m = String(msg || "").trim();
+      const m = String(msg || '').trim();
       if (!m) return false;
 
       // 1 message per answer (even if cooldownItems=0)
-      if (answeredCount === clampInt(mp.lastToastAtCount, -9999, 9999)) return false;
+      if (answeredCount === clampInt(mp.lastToastAtCount, -9999, 9999))
+        return false;
 
       // Do not show a positive overlay on the exact same answer as a danger event.
       // Once the next valid answer lands, positives may resume normally.
       const lastDangerAtCount = clampInt(mp.lastDangerAtCount, -9999, 9999);
       if (answeredCount === lastDangerAtCount) return false;
 
-      const canShowNow = (answeredCount - clampInt(mp.lastToastAtCount, -9999, 9999)) >= Math.floor(cooldownItems);
+      const canShowNow =
+        answeredCount - clampInt(mp.lastToastAtCount, -9999, 9999) >=
+        Math.floor(cooldownItems);
       if (!canShowNow) return false;
 
       scheduleGameplayOverlay(m, {
         delayMs: timing.delayMs,
         durationMs: timing.durationMs,
-        variant: String(variant || "info"),
+        variant: String(variant || 'info'),
         cfg,
         mode: runMode
       });
@@ -4172,7 +4993,7 @@ ${audioSettingsHtml}
     }
 
     function setEndHighlight(msg, variant, priority) {
-      const m = String(msg || "").trim();
+      const m = String(msg || '').trim();
       if (!m) return;
 
       const p = Number(priority);
@@ -4183,32 +5004,49 @@ ${audioSettingsHtml}
 
       if (!hasCurrent || p > currentP) {
         mp.endHighlight = m;
-        mp.endHighlightVariant = String(variant || "").trim();
+        mp.endHighlightVariant = String(variant || '').trim();
         mp.endHighlightPriority = Math.floor(p);
       }
     }
-
 
     // Chance loss handler: no gameplay micro-pic on this answer.
     // We can still set END-only highlights (no interruptions).
     if (chanceLost) {
       // Near-miss (one-shot per RUN): error that brings you down to 1 chance left.
-      if (cfg?.microPics?.nearMissEnabled === true && chancesLeft === 1 && mp.nearMissShown !== true) {
-        const msg = String(phaseMpc.nearMiss || mpc.nearMiss || "").trim();
-        setEndHighlight(msg, "info", getEndHighlightPriority(cfg, "nearMiss"));
+      if (
+        cfg?.microPics?.nearMissEnabled === true &&
+        chancesLeft === 1 &&
+        mp.nearMissShown !== true
+      ) {
+        const msg = String(phaseMpc.nearMiss || mpc.nearMiss || '').trim();
+        setEndHighlight(msg, 'info', getEndHighlightPriority(cfg, 'nearMiss'));
         mp.nearMissShown = true;
       }
 
       // Repeated mistakes qualitative feedback (one-shot per RUN)
       const minWrong = Number(cfg?.microPics?.repeatMistakeWrongCountMin);
-      if (Number.isFinite(minWrong) && minWrong > 0 && mp.repeatMistakeShown !== true) {
+      if (
+        Number.isFinite(minWrong) &&
+        minWrong > 0 &&
+        mp.repeatMistakeShown !== true
+      ) {
         const idNum = Number(res?.itemId);
-        if (Number.isFinite(idNum) && this.storage && typeof this.storage.getItemStats === "function") {
+        if (
+          Number.isFinite(idNum) &&
+          this.storage &&
+          typeof this.storage.getItemStats === 'function'
+        ) {
           const st = this.storage.getItemStats(idNum) || null;
           const wc = Number(st?.wrongCount || 0);
           if (Number.isFinite(wc) && wc >= Math.floor(minWrong)) {
-            const msg = String(phaseMpc.repeatMistake || mpc.repeatMistake || "").trim();
-            setEndHighlight(msg, "info", getEndHighlightPriority(cfg, "repeatMistake"));
+            const msg = String(
+              phaseMpc.repeatMistake || mpc.repeatMistake || ''
+            ).trim();
+            setEndHighlight(
+              msg,
+              'info',
+              getEndHighlightPriority(cfg, 'repeatMistake')
+            );
             mp.repeatMistakeShown = true;
           }
         }
@@ -4217,23 +5055,21 @@ ${audioSettingsHtml}
       return;
     }
 
-
     // Survival highlight: reached 1 chance remaining at least once (RUN)
     // Rule: 1 message per answer max -> if survival shows, skip tier streak on this answer.
     if (isCorrect && chancesLeft === 1 && mp.survivalShown !== true) {
-      const msg = String(phaseMpc.runContinues || mpc.runContinues || "").trim();
-      if (tryShowRunOverlay(msg, "info")) {
+      const msg = String(
+        phaseMpc.runContinues || mpc.runContinues || ''
+      ).trim();
+      if (tryShowRunOverlay(msg, 'info')) {
         mp.survivalShown = true;
       }
-      setEndHighlight(msg, "info", getEndHighlightPriority(cfg, "survival"));
+      setEndHighlight(msg, 'info', getEndHighlightPriority(cfg, 'survival'));
       return;
     }
 
     // Flow highlight (highest tier wins)
     const s = clampInt(mp.correctStreak, 0, 9999);
-
-
-
 
     // No fallback: thresholds must exist in WT_CONFIG.microPics.streakThresholds.
     const th = cfg?.microPics?.streakThresholds;
@@ -4253,126 +5089,179 @@ ${audioSettingsHtml}
     if (!ok) return;
 
     // Show at most one tier per answer (priority: highest)
-    const tierOnce = (mp.tierShownOnce && typeof mp.tierShownOnce === "object") ? mp.tierShownOnce : null;
+    const tierOnce =
+      mp.tierShownOnce && typeof mp.tierShownOnce === 'object'
+        ? mp.tierShownOnce
+        : null;
 
-    const againTpl = String(phaseMpc.streakAgainTemplate || "").trim();
+    const againTpl = String(phaseMpc.streakAgainTemplate || '').trim();
     function againMsgFor(threshold) {
-      if (!againTpl) return "";
-      return String(fillTemplate(againTpl, { n: Math.floor(Number(threshold)), streak: s }) || "").trim();
+      if (!againTpl) return '';
+      return String(
+        fillTemplate(againTpl, {
+          n: Math.floor(Number(threshold)),
+          streak: s
+        }) || ''
+      ).trim();
     }
 
     // #3 Recovery non-chiffré (one-shot), même sans record
-    if (mp.justRecoveredFromMistake === true && s >= tBuilding && mp.flowTierShown < tBuilding) {
-      const msg = String(phaseMpc.recovery || "").trim();
-      if (tryShowRunOverlay(msg, "info")) {
+    if (
+      mp.justRecoveredFromMistake === true &&
+      s >= tBuilding &&
+      mp.flowTierShown < tBuilding
+    ) {
+      const msg = String(phaseMpc.recovery || '').trim();
+      if (tryShowRunOverlay(msg, 'info')) {
         mp.flowTierShown = tBuilding;
         mp.justRecoveredFromMistake = false;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
+        mp.maxCorrectStreakDisplayed = Math.max(
+          clampInt(mp.maxCorrectStreakDisplayed, 0, 9999),
+          s
+        );
         if (tierOnce) tierOnce.building = true;
-        setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "recovery"));
+        setEndHighlight(
+          msg,
+          'success',
+          getEndHighlightPriority(cfg, 'recovery')
+        );
       }
       return;
     }
 
     if (s >= tLegendary && mp.flowTierShown < tLegendary) {
       const already = !!(tierOnce && tierOnce.legendary === true);
-      const baseMsg = String(phaseMpc.streakLegendary || "").trim();
-      const msg = (already ? againMsgFor(tLegendary) : "") || baseMsg;
+      const baseMsg = String(phaseMpc.streakLegendary || '').trim();
+      const msg = (already ? againMsgFor(tLegendary) : '') || baseMsg;
 
-      if (tryShowRunOverlay(msg, "info")) {
+      if (tryShowRunOverlay(msg, 'info')) {
         mp.flowTierShown = tLegendary;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
+        mp.maxCorrectStreakDisplayed = Math.max(
+          clampInt(mp.maxCorrectStreakDisplayed, 0, 9999),
+          s
+        );
       }
       if (tierOnce) tierOnce.legendary = true;
-      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakLegendary"));
+      setEndHighlight(
+        msg,
+        'success',
+        getEndHighlightPriority(cfg, 'streakLegendary')
+      );
       mp.justRecoveredFromMistake = false;
       return;
     }
     if (s >= tElite && mp.flowTierShown < tElite) {
       const already = !!(tierOnce && tierOnce.elite === true);
-      const baseMsg = String(phaseMpc.streakElite || "").trim();
-      const msg = (already ? againMsgFor(tElite) : "") || baseMsg;
+      const baseMsg = String(phaseMpc.streakElite || '').trim();
+      const msg = (already ? againMsgFor(tElite) : '') || baseMsg;
 
-      if (tryShowRunOverlay(msg, "info")) {
+      if (tryShowRunOverlay(msg, 'info')) {
         mp.flowTierShown = tElite;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
+        mp.maxCorrectStreakDisplayed = Math.max(
+          clampInt(mp.maxCorrectStreakDisplayed, 0, 9999),
+          s
+        );
       }
       if (tierOnce) tierOnce.elite = true;
-      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakElite"));
+      setEndHighlight(
+        msg,
+        'success',
+        getEndHighlightPriority(cfg, 'streakElite')
+      );
       mp.justRecoveredFromMistake = false;
       return;
     }
     if (s >= tStrong && mp.flowTierShown < tStrong) {
       const already = !!(tierOnce && tierOnce.strong === true);
-      const baseMsg = String(phaseMpc.streakStrong || "").trim();
-      const msg = (already ? againMsgFor(tStrong) : "") || baseMsg;
+      const baseMsg = String(phaseMpc.streakStrong || '').trim();
+      const msg = (already ? againMsgFor(tStrong) : '') || baseMsg;
 
-      if (tryShowRunOverlay(msg, "success")) {
+      if (tryShowRunOverlay(msg, 'success')) {
         mp.flowTierShown = tStrong;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
+        mp.maxCorrectStreakDisplayed = Math.max(
+          clampInt(mp.maxCorrectStreakDisplayed, 0, 9999),
+          s
+        );
       }
       if (tierOnce) tierOnce.strong = true;
-      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakStrong"));
+      setEndHighlight(
+        msg,
+        'success',
+        getEndHighlightPriority(cfg, 'streakStrong')
+      );
       mp.justRecoveredFromMistake = false;
       return;
     }
     if (s >= tBuilding && mp.flowTierShown < tBuilding) {
       const already = !!(tierOnce && tierOnce.building === true);
-      const baseMsg = String(phaseMpc.streakBuilding || "").trim();
-      const msg = (already ? againMsgFor(tBuilding) : "") || baseMsg;
+      const baseMsg = String(phaseMpc.streakBuilding || '').trim();
+      const msg = (already ? againMsgFor(tBuilding) : '') || baseMsg;
 
-      if (tryShowRunOverlay(msg, "info")) {
+      if (tryShowRunOverlay(msg, 'info')) {
         mp.flowTierShown = tBuilding;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
+        mp.maxCorrectStreakDisplayed = Math.max(
+          clampInt(mp.maxCorrectStreakDisplayed, 0, 9999),
+          s
+        );
       }
       if (tierOnce) tierOnce.building = true;
-      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakBuilding"));
+      setEndHighlight(
+        msg,
+        'success',
+        getEndHighlightPriority(cfg, 'streakBuilding')
+      );
       mp.justRecoveredFromMistake = false;
       return;
     }
 
     if (s >= tStart && mp.flowTierShown < tStart) {
       const already = !!(tierOnce && tierOnce.start === true);
-      const baseMsg = String(phaseMpc.streakStart || "").trim();
-      const msg = (already ? againMsgFor(tStart) : "") || baseMsg;
+      const baseMsg = String(phaseMpc.streakStart || '').trim();
+      const msg = (already ? againMsgFor(tStart) : '') || baseMsg;
 
-      if (tryShowRunOverlay(msg, "info")) {
+      if (tryShowRunOverlay(msg, 'info')) {
         mp.flowTierShown = tStart;
-        mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
+        mp.maxCorrectStreakDisplayed = Math.max(
+          clampInt(mp.maxCorrectStreakDisplayed, 0, 9999),
+          s
+        );
       }
       if (tierOnce) tierOnce.start = true;
-      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakStart"));
+      setEndHighlight(
+        msg,
+        'success',
+        getEndHighlightPriority(cfg, 'streakStart')
+      );
       mp.justRecoveredFromMistake = false;
       return;
     }
 
     // End-of-run highlight (only meaningful if the run ended)
-    const done = (res && res.done === true);
+    const done = res && res.done === true;
     if (done === true) {
       if (chancesLeft === 0 && answeredCount >= 6) {
-        setEndHighlight(String(mpc.runEndedAllChancesUsed || "").trim(), "success", getEndHighlightPriority(cfg, "runEndedAllChancesUsed"));
+        setEndHighlight(
+          String(mpc.runEndedAllChancesUsed || '').trim(),
+          'success',
+          getEndHighlightPriority(cfg, 'runEndedAllChancesUsed')
+        );
         return;
       }
     }
 
-
     return;
-
   };
-
-
-
 
   UI.prototype.startRun = function (mistakesOnly) {
     const cfg = this.config || {};
     const moCfg = cfg.mistakesOnly || {};
     const premium = isPremiumNow(this.storage);
-    const startedFromLanding = (this.state === STATES.LANDING);
+    const startedFromLanding = this.state === STATES.LANDING;
 
     // Hook for live stats refresh during run (deck rebuild)
     // Exposed on the UI instance to avoid scope-related ReferenceError.
     this.getStatsByItem = () => {
-      return (this.storage && typeof this.storage.getStatsByItem === "function")
+      return this.storage && typeof this.storage.getStatsByItem === 'function'
         ? this.storage.getStatsByItem()
         : {};
     };
@@ -4383,10 +5272,20 @@ ${audioSettingsHtml}
     // Snapshot PRACTICE backlog at run start (for END stats)
     let practiceBacklogAtStart = null;
     try {
-      if (mistakesOnly === true && this.storage && typeof this.storage.getActiveMistakesCount === "function") {
-        practiceBacklogAtStart = clampInt(this.storage.getActiveMistakesCount(), 0, 99999);
+      if (
+        mistakesOnly === true &&
+        this.storage &&
+        typeof this.storage.getActiveMistakesCount === 'function'
+      ) {
+        practiceBacklogAtStart = clampInt(
+          this.storage.getActiveMistakesCount(),
+          0,
+          99999
+        );
       }
-    } catch (_) { practiceBacklogAtStart = null; }
+    } catch (_) {
+      practiceBacklogAtStart = null;
+    }
 
     if (mistakesOnly === true && practiceBacklogAtStart === 0) {
       return;
@@ -4399,7 +5298,10 @@ ${audioSettingsHtml}
 
     // PRACTICE gate (free users can start a limited number of practice runs)
     if (mistakesOnly === true && !premium) {
-      if (!this.storage || typeof this.storage.consumePracticeOrBlock !== "function") {
+      if (
+        !this.storage ||
+        typeof this.storage.consumePracticeOrBlock !== 'function'
+      ) {
         this.setState(STATES.PAYWALL);
         return;
       }
@@ -4407,7 +5309,8 @@ ${audioSettingsHtml}
       const gate = this.storage.consumePracticeOrBlock();
       if (!gate || gate.ok !== true) {
         const limit = clampInt(this.config?.mistakesOnly?.freeRunsLimit, 0, 99);
-        if (this.openFreeLimitReachedModal(this.wording?.practice, { limit })) return;
+        if (this.openFreeLimitReachedModal(this.wording?.practice, { limit }))
+          return;
         this.setState(STATES.PAYWALL);
         return;
       }
@@ -4418,7 +5321,10 @@ ${audioSettingsHtml}
 
     // RUN economy gate (free runs) is enforced at run start.
     if (mistakesOnly !== true && !premium) {
-      if (!this.storage || typeof this.storage.consumeRunOrBlock !== "function") {
+      if (
+        !this.storage ||
+        typeof this.storage.consumeRunOrBlock !== 'function'
+      ) {
         this.setState(STATES.PAYWALL);
         return;
       }
@@ -4426,22 +5332,30 @@ ${audioSettingsHtml}
       const gate = this.storage.consumeRunOrBlock();
       if (!gate || gate.ok !== true) {
         const limit = clampInt(this.config?.limits?.freeRuns, 0, 99);
-        if (this.openFreeLimitReachedModal(this.wording?.end, { limit })) return;
+        if (this.openFreeLimitReachedModal(this.wording?.end, { limit }))
+          return;
         this.setState(STATES.PAYWALL);
         return;
       }
 
-      if (this.storage && typeof this.storage.getRunsUsed === "function") {
+      if (this.storage && typeof this.storage.getRunsUsed === 'function') {
         const used = Number(this.storage.getRunsUsed());
-        runStartNumber = (Number.isFinite(used) && Math.floor(used) === used && used >= 1) ? used : null;
+        runStartNumber =
+          Number.isFinite(used) && Math.floor(used) === used && used >= 1
+            ? used
+            : null;
       }
     }
 
     if (mistakesOnly !== true && this.storage) {
       try {
-        if (typeof this.storage.reserveRunNumber === "function") {
-          currentRunNumber = clampInt(this.storage.reserveRunNumber(), 0, 999999999);
-        } else if (typeof this.storage.getRunNumber === "function") {
+        if (typeof this.storage.reserveRunNumber === 'function') {
+          currentRunNumber = clampInt(
+            this.storage.reserveRunNumber(),
+            0,
+            999999999
+          );
+        } else if (typeof this.storage.getRunNumber === 'function') {
           const prevRunNumber = Number(this.storage.getRunNumber() || 0);
           currentRunNumber = Math.max(0, Math.floor(prevRunNumber)) + 1;
         }
@@ -4457,7 +5371,10 @@ ${audioSettingsHtml}
     this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
     this._runtime.runAnswerLog = [];
     if (startedFromLanding) {
-      if (this.storage && typeof this.storage.markLandingNextRunStarted === "function") {
+      if (
+        this.storage &&
+        typeof this.storage.markLandingNextRunStarted === 'function'
+      ) {
         this.storage.markLandingNextRunStarted();
       }
       this._runtime.landingRunCompletionPending = true;
@@ -4470,7 +5387,9 @@ ${audioSettingsHtml}
 
     // Start engine after gate succeeded
     // Eligible pool for normal RUN / PRACTICE = full content set.
-    const srcItems = Array.isArray(this._runtime?.contentItems) ? this._runtime.contentItems : [];
+    const srcItems = Array.isArray(this._runtime?.contentItems)
+      ? this._runtime.contentItems
+      : [];
     const eligible = srcItems.slice();
 
     const state = this.game.start({
@@ -4480,18 +5399,17 @@ ${audioSettingsHtml}
       config: cfg,
 
       // game.js contract: "RUN" | "PRACTICE" | "BONUS"
-      mode: (mistakesOnly === true) ? MODES.PRACTICE : MODES.RUN,
+      mode: mistakesOnly === true ? MODES.PRACTICE : MODES.RUN,
 
       // Free RUN only: lets game.js prepend curated opening cards for the first free runs.
       // Null for premium and PRACTICE, so the engine keeps the normal deck.
       runStartNumber
     });
 
-
     this._runtime.runItemIds = [];
     this._runtime.runMistakeIds = [];
     this._runtime.currentRunNumber = currentRunNumber;
-    this._runtime.runMode = (mistakesOnly === true) ? MODES.PRACTICE : MODES.RUN;
+    this._runtime.runMode = mistakesOnly === true ? MODES.PRACTICE : MODES.RUN;
     this._runtime.lastAnswer = null;
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;
@@ -4501,23 +5419,23 @@ ${audioSettingsHtml}
     this._runtime.poolCompleteCelebrationPending = false;
 
     if (this._runtime.feedbackRevealTimerId) {
-      clearRuntimeTimer(this, "feedbackRevealTimerId");
+      clearRuntimeTimer(this, 'feedbackRevealTimerId');
     }
     if (this._runtime.gameOverAfterFeedbackTimerId) {
-      clearRuntimeTimer(this, "gameOverAfterFeedbackTimerId");
+      clearRuntimeTimer(this, 'gameOverAfterFeedbackTimerId');
     }
 
     if (this._runtime.bonusAnswerFeedbackTimerId) {
-      clearRuntimeTimer(this, "bonusAnswerFeedbackTimerId");
+      clearRuntimeTimer(this, 'bonusAnswerFeedbackTimerId');
     }
 
     if (this._runtime.bonusEndTimerId) {
-      clearRuntimeTimer(this, "bonusEndTimerId");
+      clearRuntimeTimer(this, 'bonusEndTimerId');
     }
-    this._runtime.questionAutoReadDoneKey = "";
+    this._runtime.questionAutoReadDoneKey = '';
 
     if (this._runtime.endRecordMomentTimer) {
-      clearRuntimeTimer(this, "endRecordMomentTimer");
+      clearRuntimeTimer(this, 'endRecordMomentTimer');
     }
     this._runtime.endRecordMomentUntil = 0;
 
@@ -4533,9 +5451,15 @@ ${audioSettingsHtml}
     // micro-pics reset (run-only)
     let startChances = clampInt(cfg?.game?.maxChances, 1, 99);
     try {
-      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-      if (gs.chancesLeft != null) startChances = clampInt(gs.chancesLeft, 0, 99);
-    } catch (_) { /* keep cfg */ }
+      const gs =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
+      if (gs.chancesLeft != null)
+        startChances = clampInt(gs.chancesLeft, 0, 99);
+    } catch (_) {
+      /* keep cfg */
+    }
     this._runtime.microPics = createMicroPicsState(startChances);
 
     // input safety
@@ -4557,21 +5481,26 @@ ${audioSettingsHtml}
     // - Premium RUN => UNLIMITED
     // - PRACTICE => PRACTICE
     // - Free users => FREE or LAST_FREE based on runs balance after consuming
-    let runType = "";
+    let runType = '';
     try {
       const isPrem = isPremiumNow(this.storage);
 
       if (mistakesOnly === true) {
-        runType = "PRACTICE";
+        runType = 'PRACTICE';
       } else if (isPrem) {
-        runType = "UNLIMITED";
-      } else if (this.storage && typeof this.storage.getRunsBalance === "function") {
+        runType = 'UNLIMITED';
+      } else if (
+        this.storage &&
+        typeof this.storage.getRunsBalance === 'function'
+      ) {
         const after = Number(this.storage.getRunsBalance());
         if (Number.isFinite(after)) {
-          runType = (after === 0) ? "LAST_FREE" : "FREE";
+          runType = after === 0 ? 'LAST_FREE' : 'FREE';
         }
       }
-    } catch (_) { runType = ""; }
+    } catch (_) {
+      runType = '';
+    }
 
     // Persist runType for PAYWALL rendering (e.g., headlineLastFree).
     this._runtime.runType = runType;
@@ -4584,12 +5513,19 @@ ${audioSettingsHtml}
           if (this.state !== STATES.PLAYING) return;
           e.preventDefault();
         };
-        window.addEventListener("beforeunload", this._beforeUnloadHandler);
+        window.addEventListener('beforeunload', this._beforeUnloadHandler);
       }
 
-      showRunStartOverlay(cfg, this.wording, this.game, "PRACTICE", null, () => {
-        // overlay dismissed — game already visible, nothing else needed
-      });
+      showRunStartOverlay(
+        cfg,
+        this.wording,
+        this.game,
+        'PRACTICE',
+        null,
+        () => {
+          // overlay dismissed — game already visible, nothing else needed
+        }
+      );
 
       this.setState(STATES.PLAYING);
       return;
@@ -4598,12 +5534,20 @@ ${audioSettingsHtml}
     let runDailyModel = null;
     try {
       if (!mistakesOnly) {
-        const currentBest = (this.storage && typeof this.storage.getPersonalBest === "function")
-          ? clampInt(this.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
-          : 0;
-        runDailyModel = getDailyChallengeModel(cfg, this.wording, currentBest, this.storage);
+        const currentBest =
+          this.storage && typeof this.storage.getPersonalBest === 'function'
+            ? clampInt(this.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
+            : 0;
+        runDailyModel = getDailyChallengeModel(
+          cfg,
+          this.wording,
+          currentBest,
+          this.storage
+        );
       }
-    } catch (_) { runDailyModel = null; }
+    } catch (_) {
+      runDailyModel = null;
+    }
 
     // RUN normal: overlay only for LAST_FREE.
     if (!this._beforeUnloadHandler) {
@@ -4611,12 +5555,12 @@ ${audioSettingsHtml}
         if (this.state !== STATES.PLAYING) return;
         e.preventDefault();
       };
-      window.addEventListener("beforeunload", this._beforeUnloadHandler);
+      window.addEventListener('beforeunload', this._beforeUnloadHandler);
     }
 
     this.setState(STATES.PLAYING);
 
-    if (runType === "LAST_FREE") {
+    if (runType === 'LAST_FREE') {
       let dailyExtra = null;
       try {
         const canEarnDailyTicket = !!(
@@ -4626,32 +5570,52 @@ ${audioSettingsHtml}
           runDailyModel.ticketAtCap !== true
         );
         if (canEarnDailyTicket) {
-          const label = String(this.wording?.ui?.dailyChallengeStartOverlayLabel || "").trim();
-          const lineTpl = String(this.wording?.ui?.dailyChallengeStartOverlayLineTemplate || "").trim();
+          const label = String(
+            this.wording?.ui?.dailyChallengeStartOverlayLabel || ''
+          ).trim();
+          const lineTpl = String(
+            this.wording?.ui?.dailyChallengeStartOverlayLineTemplate || ''
+          ).trim();
           dailyExtra = {
             goalLine1: label,
             goalLine2: lineTpl
-              ? fillTemplate(lineTpl, { targetScore: String(runDailyModel.targetScore) })
-              : ""
+              ? fillTemplate(lineTpl, {
+                  targetScore: String(runDailyModel.targetScore)
+                })
+              : ''
           };
         }
-      } catch (_) { dailyExtra = null; }
+      } catch (_) {
+        dailyExtra = null;
+      }
 
-      showRunStartOverlay(cfg, this.wording, this.game, "LAST_FREE", dailyExtra, () => {
-        // overlay dismissed — game already visible, nothing else needed
-      });
+      showRunStartOverlay(
+        cfg,
+        this.wording,
+        this.game,
+        'LAST_FREE',
+        dailyExtra,
+        () => {
+          // overlay dismissed — game already visible, nothing else needed
+        }
+      );
     }
   };
 
-
   UI.prototype.openFreeLimitReachedModal = function (wordingBlock, vars) {
     const block = wordingBlock || {};
-    const title = fillTemplate(String(block.freeLimitReachedTitle || "").trim(), vars || {});
-    const body = fillTemplate(String(block.freeLimitReachedBody || "").trim(), vars || {});
-    const cta = String(block.freeLimitReachedCta || "").trim();
-    const close = String(block.freeLimitReachedClose || "").trim();
+    const title = fillTemplate(
+      String(block.freeLimitReachedTitle || '').trim(),
+      vars || {}
+    );
+    const body = fillTemplate(
+      String(block.freeLimitReachedBody || '').trim(),
+      vars || {}
+    );
+    const cta = String(block.freeLimitReachedCta || '').trim();
+    const close = String(block.freeLimitReachedClose || '').trim();
 
-    if (!title || !body || typeof this.openModal !== "function") return false;
+    if (!title || !body || typeof this.openModal !== 'function') return false;
 
     const html = `
       <p class="wt-text-preline">${escapeHtml(body)}</p>
@@ -4671,53 +5635,58 @@ ${audioSettingsHtml}
     const premium = isPremiumNow(this.storage);
     const tickets = getRapidFireTicketBalance(this.storage);
     const cost = getRapidFireTicketCost(this.storage);
-    const runsBalance = (this.storage && typeof this.storage.getRunsBalance === "function")
-      ? clampInt(this.storage.getRunsBalance(), 0, 999)
-      : 0;
+    const runsBalance =
+      this.storage && typeof this.storage.getRunsBalance === 'function'
+        ? clampInt(this.storage.getRunsBalance(), 0, 999)
+        : 0;
     const nowDate = new Date();
     const localDayKey = [
       nowDate.getFullYear(),
-      String(nowDate.getMonth() + 1).padStart(2, "0"),
-      String(nowDate.getDate()).padStart(2, "0")
-    ].join("-");
-    const earnedToday = (getDailyTicketEarnedDayKey(this.storage) === localDayKey);
+      String(nowDate.getMonth() + 1).padStart(2, '0'),
+      String(nowDate.getDate()).padStart(2, '0')
+    ].join('-');
+    const earnedToday =
+      getDailyTicketEarnedDayKey(this.storage) === localDayKey;
 
-    const title = String(sb.ticketRequiredTitle || "").trim();
-    const close = String(sb.ticketRequiredClose || w.system?.notNow || w.system?.close || "").trim();
-    const ctaDaily = String(sb.ticketRequiredCtaDaily || "").trim();
-    const ctaRun = String(sb.ticketRequiredCtaRun || "").trim();
-    const ctaPaywall = String(sb.ticketRequiredCtaPaywall || "").trim();
+    const title = String(sb.ticketRequiredTitle || '').trim();
+    const close = String(
+      sb.ticketRequiredClose || w.system?.notNow || w.system?.close || ''
+    ).trim();
+    const ctaDaily = String(sb.ticketRequiredCtaDaily || '').trim();
+    const ctaRun = String(sb.ticketRequiredCtaRun || '').trim();
+    const ctaPaywall = String(sb.ticketRequiredCtaPaywall || '').trim();
 
-    let bodyTpl = "";
-    let primaryAction = "";
-    let primaryLabel = "";
+    let bodyTpl = '';
+    let primaryAction = '';
+    let primaryLabel = '';
 
     if (premium && earnedToday) {
-      bodyTpl = String(sb.ticketRequiredBodySpentToday || "").trim();
-      primaryAction = "start-run";
+      bodyTpl = String(sb.ticketRequiredBodySpentToday || '').trim();
+      primaryAction = 'start-run';
       primaryLabel = ctaRun;
     } else if (!premium && runsBalance > 0) {
-      bodyTpl = String(sb.ticketRequiredBodyDaily || "").trim();
-      primaryAction = "start-daily-challenge";
+      bodyTpl = String(sb.ticketRequiredBodyDaily || '').trim();
+      primaryAction = 'start-daily-challenge';
       primaryLabel = ctaDaily;
     } else if (premium) {
-      bodyTpl = String(sb.ticketRequiredBodyPremium || "").trim();
-      primaryAction = "start-run";
+      bodyTpl = String(sb.ticketRequiredBodyPremium || '').trim();
+      primaryAction = 'start-run';
       primaryLabel = ctaRun;
     } else {
-      bodyTpl = String(sb.ticketRequiredBodyLocked || "").trim();
-      primaryAction = "open-paywall";
+      bodyTpl = String(sb.ticketRequiredBodyLocked || '').trim();
+      primaryAction = 'open-paywall';
       primaryLabel = ctaPaywall;
     }
 
-    if (!title || !bodyTpl || typeof this.openModal !== "function") return false;
+    if (!title || !bodyTpl || typeof this.openModal !== 'function')
+      return false;
 
     const body = fillTemplate(bodyTpl, {
       tickets: String(tickets),
       cost: String(cost),
       remaining: String(runsBalance),
-      pluralS: tickets > 1 ? "s" : "",
-      costPluralS: cost > 1 ? "s" : ""
+      pluralS: tickets > 1 ? 's' : '',
+      costPluralS: cost > 1 ? 's' : ''
     });
 
     const html = `
@@ -4746,15 +5715,18 @@ ${audioSettingsHtml}
     }
 
     // Stats snapshot (source of truth for "seen")
-    const statsByItem = (this.storage && typeof this.storage.getStatsByItem === "function")
-      ? this.storage.getStatsByItem()
-      : {};
+    const statsByItem =
+      this.storage && typeof this.storage.getStatsByItem === 'function'
+        ? this.storage.getStatsByItem()
+        : {};
 
-    const srcItems = Array.isArray(this._runtime?.contentItems) ? this._runtime.contentItems : [];
+    const srcItems = Array.isArray(this._runtime?.contentItems)
+      ? this._runtime.contentItems
+      : [];
 
     // Hook for live stats refresh during run (deck rebuild)
     const getStatsByItem = () => {
-      return (this.storage && typeof this.storage.getStatsByItem === "function")
+      return this.storage && typeof this.storage.getStatsByItem === 'function'
         ? this.storage.getStatsByItem()
         : {};
     };
@@ -4771,7 +5743,9 @@ ${audioSettingsHtml}
 
     // No eligible seen-only deck: do nothing unless copy exists (no hardcoded fallback).
     if (state && state.done) {
-      const msg = String(this.wording?.secretBonus?.noSeenWordsToast || "").trim();
+      const msg = String(
+        this.wording?.secretBonus?.noSeenWordsToast || ''
+      ).trim();
       if (msg) toastNow(this.config, msg);
       refundRapidFireTicket(this.storage, clampInt(ticketGate.cost, 0, 99));
       return;
@@ -4792,16 +5766,16 @@ ${audioSettingsHtml}
     this._runtime.poolCompleteCelebrationPending = false;
 
     if (this._runtime.feedbackRevealTimerId) {
-      clearRuntimeTimer(this, "feedbackRevealTimerId");
+      clearRuntimeTimer(this, 'feedbackRevealTimerId');
     }
     if (this._runtime.bonusAnswerFeedbackTimerId) {
-      clearRuntimeTimer(this, "bonusAnswerFeedbackTimerId");
+      clearRuntimeTimer(this, 'bonusAnswerFeedbackTimerId');
     }
     if (this._runtime.bonusEndTimerId) {
-      clearRuntimeTimer(this, "bonusEndTimerId");
+      clearRuntimeTimer(this, 'bonusEndTimerId');
     }
     if (this._runtime.endRecordMomentTimer) {
-      clearRuntimeTimer(this, "endRecordMomentTimer");
+      clearRuntimeTimer(this, 'endRecordMomentTimer');
     }
     this._runtime.endRecordMomentUntil = 0;
 
@@ -4813,9 +5787,15 @@ ${audioSettingsHtml}
     // micro-pics reset (run-only)
     let startChances = clampInt(cfg?.game?.maxChances, 1, 99);
     try {
-      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-      if (gs.chancesLeft != null) startChances = clampInt(gs.chancesLeft, 0, 99);
-    } catch (_) { /* keep cfg */ }
+      const gs =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
+      if (gs.chancesLeft != null)
+        startChances = clampInt(gs.chancesLeft, 0, 99);
+    } catch (_) {
+      /* keep cfg */
+    }
     this._runtime.microPics = createMicroPicsState(startChances);
 
     // input safety
@@ -4839,26 +5819,33 @@ ${audioSettingsHtml}
     // render() → _secretBonusFallStartOrSync() checks isOverlayVisible("wt-run-start-overlay").
     // If setState came first, the overlay wouldn't exist yet and the fall would start immediately.
     const bonusExtra = {};
-    const tpl = String(this.wording?.secretBonus?.startOverlayFreeRunsLimitLine || "").trim();
+    const tpl = String(
+      this.wording?.secretBonus?.startOverlayFreeRunsLimitLine || ''
+    ).trim();
     if (tpl) {
       const tickets = getRapidFireTicketBalance(this.storage);
       const cost = getRapidFireTicketCost(this.storage);
       bonusExtra.bonusLimitLine = fillTemplate(tpl, {
         tickets: String(tickets),
         cost: String(cost),
-        pluralS: tickets > 1 ? "s" : "",
-        costPluralS: cost > 1 ? "s" : ""
+        pluralS: tickets > 1 ? 's' : '',
+        costPluralS: cost > 1 ? 's' : ''
       });
     }
 
-    showRunStartOverlay(cfg, this.wording, this.game, "BONUS", bonusExtra, () => {
-      // no-op: setState already called below
-    });
+    showRunStartOverlay(
+      cfg,
+      this.wording,
+      this.game,
+      'BONUS',
+      bonusExtra,
+      () => {
+        // no-op: setState already called below
+      }
+    );
 
     this.setState(STATES.PLAYING);
-
   };
-
 
   UI.prototype._scheduleHudPulseCleanup = function () {
     if (!this._runtime) return;
@@ -4867,54 +5854,62 @@ ${audioSettingsHtml}
     if (!Number.isFinite(ms) || ms <= 0) return;
 
     if (this._runtime.hudPulseCleanupTimerId) {
-      clearRuntimeTimer(this, "hudPulseCleanupTimerId");
+      clearRuntimeTimer(this, 'hudPulseCleanupTimerId');
     }
 
     // Clean up HUD pulse classes + deltas without full re-render (avoids layout shift).
-    setRuntimeTimer(this, "hudPulseCleanupTimerId", () => {
-      if (!this._runtime) return;
-      this._runtime.hudPulseCleanupTimerId = null;
-      if (this.state !== STATES.PLAYING) return;
-      if (this._runtime.gameOverPending === true) return;
+    setRuntimeTimer(
+      this,
+      'hudPulseCleanupTimerId',
+      () => {
+        if (!this._runtime) return;
+        this._runtime.hudPulseCleanupTimerId = null;
+        if (this.state !== STATES.PLAYING) return;
+        if (this._runtime.gameOverPending === true) return;
 
-      const root = this.appEl || document.getElementById("app");
-      if (!root) { this.render(); return; }
+        const root = this.appEl || document.getElementById('app');
+        if (!root) {
+          this.render();
+          return;
+        }
 
-      let cleaned = false;
-      let scoreFlashCleaned = false;
+        let cleaned = false;
+        let scoreFlashCleaned = false;
 
-      const chancePill = root.querySelector(".wt-pill--danger-pulse");
-      if (chancePill) {
-        chancePill.classList.remove("wt-pill--danger-pulse");
-        const delta = chancePill.querySelector(".wt-pill__delta");
-        if (delta) delta.remove();
-        cleaned = true;
-      }
+        const chancePill = root.querySelector('.wt-pill--danger-pulse');
+        if (chancePill) {
+          chancePill.classList.remove('wt-pill--danger-pulse');
+          const delta = chancePill.querySelector('.wt-pill__delta');
+          if (delta) delta.remove();
+          cleaned = true;
+        }
 
-      const scorePill = root.querySelector(".wt-pill--score-flash");
-      if (scorePill) {
-        scorePill.classList.remove("wt-pill--score-flash");
-        const delta = scorePill.querySelector(".wt-pill__delta");
-        if (delta) delta.remove();
-        cleaned = true;
-        scoreFlashCleaned = true;
-      }
+        const scorePill = root.querySelector('.wt-pill--score-flash');
+        if (scorePill) {
+          scorePill.classList.remove('wt-pill--score-flash');
+          const delta = scorePill.querySelector('.wt-pill__delta');
+          if (delta) delta.remove();
+          cleaned = true;
+          scoreFlashCleaned = true;
+        }
 
-      // Reset timestamps so next render() won't re-add them
-      if (this._runtime.chanceLostPulseAt) this._runtime.chanceLostPulseAt = 0;
-      if (this._runtime.scoreFlashAt) this._runtime.scoreFlashAt = 0;
+        // Reset timestamps so next render() won't re-add them
+        if (this._runtime.chanceLostPulseAt)
+          this._runtime.chanceLostPulseAt = 0;
+        if (this._runtime.scoreFlashAt) this._runtime.scoreFlashAt = 0;
 
-      // Important: near-best is suppressed while scoreFlashOn is true.
-      // When score flash ends, force a render so near-best can appear immediately.
-      if (scoreFlashCleaned) {
-        this.render();
-        return;
-      }
+        // Important: near-best is suppressed while scoreFlashOn is true.
+        // When score flash ends, force a render so near-best can appear immediately.
+        if (scoreFlashCleaned) {
+          this.render();
+          return;
+        }
 
-      if (!cleaned) this.render();
-    }, Math.floor(ms) + 30);
+        if (!cleaned) this.render();
+      },
+      Math.floor(ms) + 30
+    );
   };
-
 
   UI.prototype.answer = function (choiceBool) {
     if (this.state !== STATES.PLAYING) return;
@@ -4932,90 +5927,118 @@ ${audioSettingsHtml}
     let prevScoreFP = null;
 
     try {
-      const gsPrev = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      const gsPrev =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
 
-      if (gsPrev.chancesLeft != null) prevChancesLeft = Number(gsPrev.chancesLeft);
+      if (gsPrev.chancesLeft != null)
+        prevChancesLeft = Number(gsPrev.chancesLeft);
 
       // Snapshot score BEFORE answering (needed for "new best" crossing detection)
       if (gsPrev.scoreFP != null) prevScoreFP = Number(gsPrev.scoreFP);
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
-    const frozen = (this.game && typeof this.game.getCurrent === "function") ? this.game.getCurrent() : null;
+    const frozen =
+      this.game && typeof this.game.getCurrent === 'function'
+        ? this.game.getCurrent()
+        : null;
     this._runtime.frozenItem = frozen;
 
-    const picked = (choiceBool === true);
-    const res = (this.game && typeof this.game.answer === "function") ? this.game.answer(picked) : null;
+    const picked = choiceBool === true;
+    const res =
+      this.game && typeof this.game.answer === 'function'
+        ? this.game.answer(picked)
+        : null;
     // Flag a short-lived pulse when a chance is lost (CSS owns the actual animation)
     let chanceLost = false;
     let nowChancesLeft = null;
 
     try {
-      const gsNow = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-      nowChancesLeft = (gsNow.chancesLeft != null) ? Number(gsNow.chancesLeft) : null;
+      const gsNow =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
+      nowChancesLeft =
+        gsNow.chancesLeft != null ? Number(gsNow.chancesLeft) : null;
 
-      chanceLost = (
+      chanceLost =
         prevChancesLeft != null &&
         nowChancesLeft != null &&
         Number.isFinite(prevChancesLeft) &&
         Number.isFinite(nowChancesLeft) &&
-        nowChancesLeft < prevChancesLeft
-      );
+        nowChancesLeft < prevChancesLeft;
 
       this._runtime.chanceLostPulseAt = chanceLost ? Date.now() : 0;
 
-      const lastChanceEntered = (
+      const lastChanceEntered =
         prevChancesLeft != null &&
         nowChancesLeft != null &&
         Number.isFinite(prevChancesLeft) &&
         Number.isFinite(nowChancesLeft) &&
-        (prevChancesLeft > 1) &&
-        (nowChancesLeft === 1)
-      );
+        prevChancesLeft > 1 &&
+        nowChancesLeft === 1;
       this._runtime.lastChancePulseAt = lastChanceEntered ? Date.now() : 0;
       // PRACTICE: no score flash (consolidation mode, no performance feedback)
-      const isPracticeMode = (String(this._runtime?.runMode || "").trim() === "PRACTICE");
-      this._runtime.scoreFlashAt = (!isPracticeMode && res && res.isCorrect === true) ? Date.now() : 0;
+      const isPracticeMode =
+        String(this._runtime?.runMode || '').trim() === 'PRACTICE';
+      this._runtime.scoreFlashAt =
+        !isPracticeMode && res && res.isCorrect === true ? Date.now() : 0;
 
       // New best (RUN/BONUS + premium): one-shot pulse + toast when you EXCEED the best during PLAYING.
       // Fail-closed: missing config/storage/wording => no celebration.
       try {
-        const modeNow = String(this._runtime?.runMode || "RUN").trim();
-        const isRun = (modeNow === "RUN");
-        const isBonus = (modeNow === "BONUS");
+        const modeNow = String(this._runtime?.runMode || 'RUN').trim();
+        const isRun = modeNow === 'RUN';
+        const isBonus = modeNow === 'BONUS';
 
         const cfg = this.config || {};
         const premium = isPremiumNow(this.storage);
-        const pbCfg = (cfg?.personalBest && typeof cfg.personalBest === "object") ? cfg.personalBest : null;
+        const pbCfg =
+          cfg?.personalBest && typeof cfg.personalBest === 'object'
+            ? cfg.personalBest
+            : null;
         const pbEnabled = !!(pbCfg && pbCfg.enabled === true);
 
         const toastMs = Number(cfg?.ui?.newBestScoreToastMs);
-        const toastLine = String(this.wording?.playing?.newBestScore || "").trim();
+        const toastLine = String(
+          this.wording?.playing?.newBestScore || ''
+        ).trim();
 
         let bestScoreFP = null;
 
         if (premium === true && pbEnabled === true && this.storage) {
-          if (isRun && typeof this.storage.getPersonalBest === "function") {
+          if (isRun && typeof this.storage.getPersonalBest === 'function') {
             const pb = this.storage.getPersonalBest() || null;
             const b = Number(pb?.bestScoreFP);
             if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
-          } else if (isBonus && typeof this.storage.getBonusBest === "function") {
+          } else if (
+            isBonus &&
+            typeof this.storage.getBonusBest === 'function'
+          ) {
             const bb = this.storage.getBonusBest() || null;
             const b = Number(bb?.bestScoreFP);
             if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
           }
         }
 
-        const gsNow2 = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-        const nowScoreFP = (gsNow2.scoreFP != null) ? Number(gsNow2.scoreFP) : NaN;
+        const gsNow2 =
+          this.game && typeof this.game.getState === 'function'
+            ? this.game.getState() || {}
+            : {};
+        const nowScoreFP =
+          gsNow2.scoreFP != null ? Number(gsNow2.scoreFP) : NaN;
 
         const exceeded =
-          (premium === true) &&
-          (pbEnabled === true) &&
-          (bestScoreFP != null) &&
+          premium === true &&
+          pbEnabled === true &&
+          bestScoreFP != null &&
           Number.isFinite(prevScoreFP) &&
           Number.isFinite(nowScoreFP) &&
-          (prevScoreFP <= bestScoreFP) &&
-          (nowScoreFP > bestScoreFP);
+          prevScoreFP <= bestScoreFP &&
+          nowScoreFP > bestScoreFP;
 
         if (exceeded) {
           // Pulse (already styled via .wt-pill--new-best)
@@ -5023,7 +6046,7 @@ ${audioSettingsHtml}
 
           // Toast one-shot per run
           const canToast =
-            (this._runtime.newBestScoreToastShown !== true) &&
+            this._runtime.newBestScoreToastShown !== true &&
             toastLine &&
             Number.isFinite(toastMs) &&
             toastMs > 0;
@@ -5035,12 +6058,14 @@ ${audioSettingsHtml}
             scheduleGameplayOverlay(toastLine, {
               delayMs: 0,
               durationMs: Math.floor(toastMs),
-              variant: "success",
+              variant: 'success',
               mode: modeNow
             });
           }
         }
-      } catch (_) { /* fail closed */ }
+      } catch (_) {
+        /* fail closed */
+      }
     } catch (_) {
       chanceLost = false;
       nowChancesLeft = null;
@@ -5052,7 +6077,6 @@ ${audioSettingsHtml}
     // Ensure the time-based HUD deltas clear even if nothing else re-renders.
     this._scheduleHudPulseCleanup();
 
-
     // If engine didn't answer, unlock (fail-safe)
     if (!res) {
       this._runtime.answerLocked = false;
@@ -5062,35 +6086,45 @@ ${audioSettingsHtml}
     /// One-shot: first-time pool completion (200/200) celebration.
     // Source of truth: storage coverage + persisted "celebrated" flag (not transient engine signal).
     try {
-      const runModeNow = String(this._runtime?.runMode || "").trim();
+      const runModeNow = String(this._runtime?.runMode || '').trim();
       if (!runModeNow) return;
-      const isRunNow = (runModeNow === MODES.RUN);
+      const isRunNow = runModeNow === MODES.RUN;
       if (isRunNow) {
-        const exhausted =
-          !!(this.storage && typeof this.storage.hasSeenAllWordTraps === "function" && this.storage.hasSeenAllWordTraps() === true);
+        const exhausted = !!(
+          this.storage &&
+          typeof this.storage.hasSeenAllWordTraps === 'function' &&
+          this.storage.hasSeenAllWordTraps() === true
+        );
 
-        const alreadyCelebrated =
-          !!(this.storage && typeof this.storage.hasPoolCompleteCelebrated === "function" && this.storage.hasPoolCompleteCelebrated() === true);
+        const alreadyCelebrated = !!(
+          this.storage &&
+          typeof this.storage.hasPoolCompleteCelebrated === 'function' &&
+          this.storage.hasPoolCompleteCelebrated() === true
+        );
 
         if (exhausted && !alreadyCelebrated) {
-          if (this.storage && typeof this.storage.markPoolCompleteCelebrated === "function") {
+          if (
+            this.storage &&
+            typeof this.storage.markPoolCompleteCelebrated === 'function'
+          ) {
             this.storage.markPoolCompleteCelebrated();
           }
 
-          if (this._runtime) this._runtime.poolCompleteCelebrationPending = true;
+          if (this._runtime)
+            this._runtime.poolCompleteCelebrationPending = true;
           this._finishRun();
           return;
         }
       }
-    } catch (_) { }
+    } catch (_) {}
 
     // Game over rule (RUN / PRACTICE only):
     // - Freeze immediately
     // - Transition to END is deferred for the *effective* chance-loss overlay duration
-    const runModeNow = String(this._runtime?.runMode || "").trim();
+    const runModeNow = String(this._runtime?.runMode || '').trim();
     if (!runModeNow) return;
     const isGameOverNow =
-      (runModeNow !== MODES.BONUS) &&
+      runModeNow !== MODES.BONUS &&
       chanceLost &&
       Number.isFinite(nowChancesLeft) &&
       Number(nowChancesLeft) === 0;
@@ -5103,56 +6137,69 @@ ${audioSettingsHtml}
       Number(nowChancesLeft) <= 1 &&
       (runModeNow === MODES.BONUS || !isGameOverNow)
     ) {
-      showChanceLostOverlay(this.config, this.wording, nowChancesLeft, runModeNow);
+      showChanceLostOverlay(
+        this.config,
+        this.wording,
+        nowChancesLeft,
+        runModeNow
+      );
     }
 
     // Bonus: still sync the HUD on the final mistake (avoid stale "2/3" display on the last error).
     const shouldSyncFinalMistakeHud =
       isGameOverNow ||
-      (
-        runModeNow === "BONUS" &&
+      (runModeNow === 'BONUS' &&
         chanceLost &&
         Number.isFinite(nowChancesLeft) &&
-        Number(nowChancesLeft) === 0
-      );
+        Number(nowChancesLeft) === 0);
 
     if (shouldSyncFinalMistakeHud) {
       // Sync HUD lives immediately (avoid stale display on the final mistake)
       try {
-        const root = this.appEl || document.getElementById("app");
-        const pill = root ? root.querySelector(".wt-pill--chances") : null;
+        const root = this.appEl || document.getElementById('app');
+        const pill = root ? root.querySelector('.wt-pill--chances') : null;
 
         if (pill && Number.isFinite(nowChancesLeft)) {
-          const uiW = (this.wording && this.wording.ui) ? this.wording.ui : {};
-          const label = String(uiW.mistakesLabel || "").trim();
+          const uiW = this.wording && this.wording.ui ? this.wording.ui : {};
+          const label = String(uiW.mistakesLabel || '').trim();
 
-          const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+          const gs =
+            this.game && typeof this.game.getState === 'function'
+              ? this.game.getState() || {}
+              : {};
           const mcRaw = Number(gs.maxChances || this.config?.game?.maxChances);
-          const mc = (Number.isFinite(mcRaw) && mcRaw > 0) ? Math.floor(mcRaw) : 0;
+          const mc =
+            Number.isFinite(mcRaw) && mcRaw > 0 ? Math.floor(mcRaw) : 0;
 
           const left = Math.max(0, Math.floor(Number(nowChancesLeft)));
-          const mistakes = (mc > 0) ? Math.max(0, Math.min(mc, mc - left)) : 0;
+          const mistakes = mc > 0 ? Math.max(0, Math.min(mc, mc - left)) : 0;
 
-          const visual = (mc > 0)
-            ? Array(mc)
-              .fill(null)
-              .map((_, i) => {
-                const isOn = i < mistakes;
-                const isLast = isOn && mistakes > 0 && i === (mistakes - 1);
-                return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
-              })
-              .join("")
-            : "";
+          const visual =
+            mc > 0
+              ? Array(mc)
+                  .fill(null)
+                  .map((_, i) => {
+                    const isOn = i < mistakes;
+                    const isLast = isOn && mistakes > 0 && i === mistakes - 1;
+                    return `<span class="wt-hud-lives__dot${isOn ? '' : ' wt-hud-lives__dot--off'}${isLast ? ' wt-hud-lives__dot--last' : ''}" aria-hidden="true"></span>`;
+                  })
+                  .join('')
+              : '';
 
-          pill.classList.remove("wt-pill--danger-pulse");
-          pill.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
+          pill.classList.remove('wt-pill--danger-pulse');
+          pill.setAttribute(
+            'aria-label',
+            label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`
+          );
           pill.innerHTML = `
             ${label ? `<small>${escapeHtml(label)}</small>` : ``}
             ${mistakes}/${mc}
             ${visual}
           `;
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
     }
 
     if (isGameOverNow) {
@@ -5161,11 +6208,10 @@ ${audioSettingsHtml}
       this._runtime.gameOverPending = true;
     }
 
-
     // BONUS game-over guard: block renders BEFORE recordAnswer.
     if (
       res.done === true &&
-      String(this._runtime?.runMode || "").trim() === "BONUS" &&
+      String(this._runtime?.runMode || '').trim() === 'BONUS' &&
       Number.isFinite(nowChancesLeft) &&
       Number(nowChancesLeft) === 0
     ) {
@@ -5173,12 +6219,16 @@ ${audioSettingsHtml}
     }
 
     // Normal path: record answer immediately
-    if (this.storage && typeof this.storage.recordAnswer === "function") {
+    if (this.storage && typeof this.storage.recordAnswer === 'function') {
       this.storage.recordAnswer(res.itemId, res.isCorrect);
     }
     if (Number.isFinite(Number(res.itemId))) {
       const id = Number(res.itemId);
-      const shownAt = Number(this._runtime?.currentQuestionShownAt || this._runtime?.runStartedAt || Date.now());
+      const shownAt = Number(
+        this._runtime?.currentQuestionShownAt ||
+          this._runtime?.runStartedAt ||
+          Date.now()
+      );
       const answerMs = clampInt(Date.now() - shownAt, 0, 10 * 60 * 1000);
       this._runtime.runItemIds.push(id);
       if (Array.isArray(this._runtime.runAnswerLog)) {
@@ -5191,12 +6241,12 @@ ${audioSettingsHtml}
 
       // Track per-run mistakes for END recap (dedup)
       if (res.isCorrect !== true) {
-        if (!Array.isArray(this._runtime.runMistakeIds)) this._runtime.runMistakeIds = [];
-        if (this._runtime.runMistakeIds.indexOf(id) === -1) this._runtime.runMistakeIds.push(id);
+        if (!Array.isArray(this._runtime.runMistakeIds))
+          this._runtime.runMistakeIds = [];
+        if (this._runtime.runMistakeIds.indexOf(id) === -1)
+          this._runtime.runMistakeIds.push(id);
       }
     }
-
-
 
     // micro-pics evaluation happens AFTER the answer is validated (this function is the validation point)
     try {
@@ -5206,74 +6256,106 @@ ${audioSettingsHtml}
     }
 
     this._runtime.lastAnswer = {
-      isCorrect: (res.isCorrect === true),
+      isCorrect: res.isCorrect === true,
       pickedAnswer: picked,
-      correctAnswer: (res.correctAnswer === true || res.correctAnswer === false) ? res.correctAnswer : null,
-      feedbackLine: String(res.feedbackLine || "").trim()
+      correctAnswer:
+        res.correctAnswer === true || res.correctAnswer === false
+          ? res.correctAnswer
+          : null,
+      feedbackLine: String(res.feedbackLine || '').trim()
     };
 
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)
     try {
-      const liveEl = document.getElementById("answer-feedback");
+      const liveEl = document.getElementById('answer-feedback');
       if (liveEl) {
-        const pw = (this.wording && this.wording.playing) ? this.wording.playing : {};
+        const pw =
+          this.wording && this.wording.playing ? this.wording.playing : {};
 
-        const verdictText = (res.isCorrect === true)
-          ? String(pw.feedbackTitleOk || "").trim()
-          : String(pw.feedbackTitleBad || "").trim();
+        const verdictText =
+          res.isCorrect === true
+            ? String(pw.feedbackTitleOk || '').trim()
+            : String(pw.feedbackTitleBad || '').trim();
 
-        const questionText = String(frozen?.question || "").trim();
-        const explanation = String(res.feedbackLine || "").trim();
+        const questionText = String(frozen?.question || '').trim();
+        const explanation = String(res.feedbackLine || '').trim();
 
         const parts = [verdictText, questionText, explanation].filter(Boolean);
-        const msg = parts.join(". ").replace(/\s+/g, " ").trim();
+        const msg = parts.join('. ').replace(/\s+/g, ' ').trim();
 
         if (msg) {
-          liveEl.textContent = "";
-          setUiTimer("feedback.live.announce", () => { liveEl.textContent = msg; }, 0, "feedback");
+          liveEl.textContent = '';
+          setUiTimer(
+            'feedback.live.announce',
+            () => {
+              liveEl.textContent = msg;
+            },
+            0,
+            'feedback'
+          );
         }
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
-    const runMode = String(this._runtime?.runMode || "").trim();
+    const runMode = String(this._runtime?.runMode || '').trim();
     if (!runMode) return;
-    const sbFeedback = String(this.config?.secretBonus?.feedback || "").trim();
+    const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
     if (runMode === MODES.BONUS) {
-
       // Terms-box visual feedback (BONUS): stash verdict, apply after render.
-      const bonusFlashClass = (res.isCorrect === true) ? "wt-terms-box--successflash" : "wt-terms-box--mistakeflash";
+      const bonusFlashClass =
+        res.isCorrect === true
+          ? 'wt-terms-box--successflash'
+          : 'wt-terms-box--mistakeflash';
 
       // BONUS: no pause between items — immediate fall restart after every answer.
 
       // End handling: game over or deck exhausted
       if (res.done === true) {
-        const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
+        const endedByGameOver =
+          Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0;
 
         if (endedByGameOver) {
           // Show flash on the fatal answer before transitioning to game over
-          const goFlashMsRaw = Number(this.config?.secretBonus?.feedbackFlashMs);
+          const goFlashMsRaw = Number(
+            this.config?.secretBonus?.feedbackFlashMs
+          );
           const goFlashMs =
-            (Number.isFinite(goFlashMsRaw) && goFlashMsRaw > 0 && goFlashMsRaw <= 1000)
+            Number.isFinite(goFlashMsRaw) &&
+            goFlashMsRaw > 0 &&
+            goFlashMsRaw <= 1000
               ? Math.floor(goFlashMsRaw)
               : 0;
 
           if (goFlashMs > 0) {
             try {
-              const root = this.appEl || document.getElementById("app");
-              const tb = root ? root.querySelector(".wt-terms-box") : null;
+              const root = this.appEl || document.getElementById('app');
+              const tb = root ? root.querySelector('.wt-terms-box') : null;
               if (tb) {
-                tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+                tb.classList.remove(
+                  'wt-terms-box--mistakeflash',
+                  'wt-terms-box--successflash'
+                );
                 void tb.offsetWidth;
                 tb.classList.add(bonusFlashClass);
               }
-            } catch (_) { /* silent */ }
+            } catch (_) {
+              /* silent */
+            }
 
-            setRuntimeTimer(this, "bonusAnswerFeedbackTimerId", () => {
-              if (!this._runtime) return;
-              this._runtime.answerLocked = false;
-              this._enterGameOverDelay();
-            }, goFlashMs, "feedback");
+            setRuntimeTimer(
+              this,
+              'bonusAnswerFeedbackTimerId',
+              () => {
+                if (!this._runtime) return;
+                this._runtime.answerLocked = false;
+                this._enterGameOverDelay();
+              },
+              goFlashMs,
+              'feedback'
+            );
 
             return;
           }
@@ -5286,26 +6368,35 @@ ${audioSettingsHtml}
         // Deck exhausted: flash on last answer, then show toast, then END
         const deFlashMsRaw = Number(this.config?.secretBonus?.feedbackFlashMs);
         const deFlashMs =
-          (Number.isFinite(deFlashMsRaw) && deFlashMsRaw > 0 && deFlashMsRaw <= 1000)
+          Number.isFinite(deFlashMsRaw) &&
+          deFlashMsRaw > 0 &&
+          deFlashMsRaw <= 1000
             ? Math.floor(deFlashMsRaw)
             : 0;
 
         // Flash on last item
         if (deFlashMs > 0) {
           try {
-            const root = this.appEl || document.getElementById("app");
-            const tb = root ? root.querySelector(".wt-terms-box") : null;
+            const root = this.appEl || document.getElementById('app');
+            const tb = root ? root.querySelector('.wt-terms-box') : null;
             if (tb) {
-              tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+              tb.classList.remove(
+                'wt-terms-box--mistakeflash',
+                'wt-terms-box--successflash'
+              );
               void tb.offsetWidth;
               tb.classList.add(bonusFlashClass);
             }
-          } catch (_) { /* silent */ }
+          } catch (_) {
+            /* silent */
+          }
         }
 
         const bonusTiming = getToastTiming(this.config);
         const bonusDurationMs = bonusTiming ? bonusTiming.durationMs : null;
-        const msg = String(this.wording?.secretBonus?.endDeckExhaustedToast || "").trim();
+        const msg = String(
+          this.wording?.secretBonus?.endDeckExhaustedToast || ''
+        ).trim();
 
         const hasToast = !!(msg && bonusDurationMs != null);
         const toastMs = hasToast ? Math.max(0, Math.floor(bonusDurationMs)) : 0;
@@ -5320,40 +6411,53 @@ ${audioSettingsHtml}
 
         if (totalDelayMs > 0) {
           if (this._runtime.bonusEndTimerId) {
-            clearRuntimeTimer(this, "bonusEndTimerId")
+            clearRuntimeTimer(this, 'bonusEndTimerId');
             this._runtime.bonusEndTimerId = null;
           }
 
           // After flash delay, show toast then transition
-          setRuntimeTimer(this, "bonusEndTimerId", () => {
-            if (!this._runtime) return;
-            this._runtime.bonusEndTimerId = null;
+          setRuntimeTimer(
+            this,
+            'bonusEndTimerId',
+            () => {
+              if (!this._runtime) return;
+              this._runtime.bonusEndTimerId = null;
 
-            if (hasToast) {
-              cancelScheduledToast();
-              if (this._beforeUnloadHandler) {
-                window.removeEventListener("beforeunload", this._beforeUnloadHandler);
-                this._beforeUnloadHandler = null;
+              if (hasToast) {
+                cancelScheduledToast();
+                if (this._beforeUnloadHandler) {
+                  window.removeEventListener(
+                    'beforeunload',
+                    this._beforeUnloadHandler
+                  );
+                  this._beforeUnloadHandler = null;
+                }
+                showGameplayOverlay(msg, {
+                  durationMs: Math.floor(toastMs),
+                  variant: 'success',
+                  cfg: this.config,
+                  mode: MODES.BONUS
+                });
+
+                setRuntimeTimer(
+                  this,
+                  'bonusEndTimerId',
+                  () => {
+                    if (this._runtime) this._runtime.bonusEndTimerId = null;
+                    this._runtime.answerLocked = false;
+                    this._finishRun();
+                  },
+                  toastMs
+                );
+
+                return;
               }
-              showGameplayOverlay(msg, {
-                durationMs: Math.floor(toastMs),
-                variant: "success",
-                cfg: this.config,
-                mode: MODES.BONUS
-              });
 
-              setRuntimeTimer(this, "bonusEndTimerId", () => {
-                if (this._runtime) this._runtime.bonusEndTimerId = null;
-                this._runtime.answerLocked = false;
-                this._finishRun();
-              }, toastMs);
-
-              return;
-            }
-
-            this._runtime.answerLocked = false;
-            this._finishRun();
-          }, deFlashMs);
+              this._runtime.answerLocked = false;
+              this._finishRun();
+            },
+            deFlashMs
+          );
 
           return;
         }
@@ -5364,67 +6468,96 @@ ${audioSettingsHtml}
       }
 
       // Not done: flash on CURRENT terms-box, then swap words in place after delay.
-      const feedbackFlashMsRaw = Number(this.config?.secretBonus?.feedbackFlashMs);
+      const feedbackFlashMsRaw = Number(
+        this.config?.secretBonus?.feedbackFlashMs
+      );
       const feedbackFlashMs =
-        (Number.isFinite(feedbackFlashMsRaw) && feedbackFlashMsRaw > 0 && feedbackFlashMsRaw <= 1000)
+        Number.isFinite(feedbackFlashMsRaw) &&
+        feedbackFlashMsRaw > 0 &&
+        feedbackFlashMsRaw <= 1000
           ? Math.floor(feedbackFlashMsRaw)
           : 0;
 
       // Apply flash on current item (DOM not yet rebuilt)
       try {
-        const root = this.appEl || document.getElementById("app");
-        const tb = root ? root.querySelector(".wt-terms-box") : null;
+        const root = this.appEl || document.getElementById('app');
+        const tb = root ? root.querySelector('.wt-terms-box') : null;
         if (tb) {
-          tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+          tb.classList.remove(
+            'wt-terms-box--mistakeflash',
+            'wt-terms-box--successflash'
+          );
           void tb.offsetWidth;
           tb.classList.add(bonusFlashClass);
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       if (feedbackFlashMs > 0) {
-        setRuntimeTimer(this, "bonusAnswerFeedbackTimerId", () => {
-          if (!this._runtime) return;
-          if (this.state !== STATES.PLAYING) return;
-          if (String(this._runtime?.runMode || "").trim() !== "BONUS") return;
+        setRuntimeTimer(
+          this,
+          'bonusAnswerFeedbackTimerId',
+          () => {
+            if (!this._runtime) return;
+            if (this.state !== STATES.PLAYING) return;
+            if (String(this._runtime?.runMode || '').trim() !== 'BONUS') return;
 
-          this._runtime.answerLocked = false;
+            this._runtime.answerLocked = false;
 
-          // Swap words in place (no full innerHTML rebuild)
-          try {
-            const nextItem = (this.game && typeof this.game.getCurrent === "function") ? this.game.getCurrent() : null;
-            if (nextItem) {
-              const root = this.appEl || document.getElementById("app");
-              const words = root ? root.querySelectorAll(".wt-term-word") : [];
-              if (words.length >= 1) {
-                words[0].textContent = String(nextItem.question || "").trim();
+            // Swap words in place (no full innerHTML rebuild)
+            try {
+              const nextItem =
+                this.game && typeof this.game.getCurrent === 'function'
+                  ? this.game.getCurrent()
+                  : null;
+              if (nextItem) {
+                const root = this.appEl || document.getElementById('app');
+                const words = root
+                  ? root.querySelectorAll('.wt-term-word')
+                  : [];
+                if (words.length >= 1) {
+                  words[0].textContent = String(nextItem.question || '').trim();
+                }
+
+                const sbf = this._runtime?.secretBonusFall;
+                if (sbf) {
+                  sbf.itemKey = '';
+                  sbf.y01 = 0;
+                  sbf.lastTs = 0;
+                  sbf.wasInWarning = false;
+                }
+
+                // Remove flash class
+                const tb = root ? root.querySelector('.wt-terms-box') : null;
+                if (tb) {
+                  tb.classList.remove(
+                    'wt-terms-box--mistakeflash',
+                    'wt-terms-box--successflash'
+                  );
+                  tb.style.transform = 'translate3d(0px, 0px, 0px)';
+                }
+                this._runtime.currentQuestionShownAt = Date.now();
               }
-
-              const sbf = this._runtime?.secretBonusFall;
-              if (sbf) {
-                sbf.itemKey = "";
-                sbf.y01 = 0;
-                sbf.lastTs = 0;
-                sbf.wasInWarning = false;
-              }
-
-              // Remove flash class
-              const tb = root ? root.querySelector(".wt-terms-box") : null;
-              if (tb) {
-                tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
-                tb.style.transform = "translate3d(0px, 0px, 0px)";
-              }
-              this._runtime.currentQuestionShownAt = Date.now();
+            } catch (_) {
+              /* silent */
             }
-          } catch (_) { /* silent */ }
 
-          try {
-            this._secretBonusFallStartOrSync();
-          } catch (_) { /* silent */ }
+            try {
+              this._secretBonusFallStartOrSync();
+            } catch (_) {
+              /* silent */
+            }
 
-          try {
-            this._secretBonusFallStartOrSync();
-          } catch (_) { /* silent */ }
-        }, feedbackFlashMs, "feedback");
+            try {
+              this._secretBonusFallStartOrSync();
+            } catch (_) {
+              /* silent */
+            }
+          },
+          feedbackFlashMs,
+          'feedback'
+        );
 
         return;
       }
@@ -5436,7 +6569,9 @@ ${audioSettingsHtml}
 
       try {
         this._secretBonusFallStartOrSync();
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       return;
     }
@@ -5444,7 +6579,7 @@ ${audioSettingsHtml}
     // Default flow (Option A): show feedback and wait for Continue.
     // UX: if a chance was lost, give Chances a short solo moment before showing the feedback block.
     if (this._runtime.feedbackRevealTimerId) {
-      clearRuntimeTimer(this, "feedbackRevealTimerId");
+      clearRuntimeTimer(this, 'feedbackRevealTimerId');
     }
 
     if (runMode === MODES.PRACTICE && res.done === true) {
@@ -5452,43 +6587,58 @@ ${audioSettingsHtml}
       this._runtime.finishAfterFeedback = true;
     }
 
-
     this._runtime.feedbackPending = true;
     // If last item, do NOT end immediately. End after Continue.
-    this._runtime.finishAfterFeedback = (res.done === true);
+    this._runtime.finishAfterFeedback = res.done === true;
     this._runtime.autoGameOverAfterFeedback = isGameOverNow;
 
     // Single source of truth for timing: WT_CONFIG.ui.toast (schema plat)
     const timing = getToastTiming(this.config);
     const focusMs = timing ? Number(timing.delayMs) : NaN;
-    const postFeedbackTiming = getToastTiming(this.config, "scoreGained");
-    const postFeedbackMsRaw = postFeedbackTiming ? Number(postFeedbackTiming.durationMs) : NaN;
+    const postFeedbackTiming = getToastTiming(this.config, 'scoreGained');
+    const postFeedbackMsRaw = postFeedbackTiming
+      ? Number(postFeedbackTiming.durationMs)
+      : NaN;
     const postFeedbackMs =
-      (Number.isFinite(postFeedbackMsRaw) && postFeedbackMsRaw >= 600 && postFeedbackMsRaw <= 2000)
+      Number.isFinite(postFeedbackMsRaw) &&
+      postFeedbackMsRaw >= 600 &&
+      postFeedbackMsRaw <= 2000
         ? Math.floor(postFeedbackMsRaw)
         : 900;
-    const allowManualFatalContinue = (isGameOverNow && runMode === MODES.RUN);
-    const fatalAutoDelayMs = allowManualFatalContinue ? Math.max(postFeedbackMs, 1600) : postFeedbackMs;
+    const allowManualFatalContinue = isGameOverNow && runMode === MODES.RUN;
+    const fatalAutoDelayMs = allowManualFatalContinue
+      ? Math.max(postFeedbackMs, 1600)
+      : postFeedbackMs;
 
     const scheduleFatalGameOver = () => {
       if (!isGameOverNow) return;
       if (!this._runtime) return;
 
       if (this._runtime.gameOverAfterFeedbackTimerId) {
-        clearRuntimeTimer(this, "gameOverAfterFeedbackTimerId")
+        clearRuntimeTimer(this, 'gameOverAfterFeedbackTimerId');
         this._runtime.gameOverAfterFeedbackTimerId = null;
       }
 
-      setRuntimeTimer(this, "gameOverAfterFeedbackTimerId", () => {
-        if (!this._runtime) return;
-        this._runtime.gameOverAfterFeedbackTimerId = null;
-        if (this.state !== STATES.PLAYING) return;
-        if (this._runtime.feedbackPending !== true) return;
+      setRuntimeTimer(
+        this,
+        'gameOverAfterFeedbackTimerId',
+        () => {
+          if (!this._runtime) return;
+          this._runtime.gameOverAfterFeedbackTimerId = null;
+          if (this.state !== STATES.PLAYING) return;
+          if (this._runtime.feedbackPending !== true) return;
 
-        showChanceLostOverlay(this.config, this.wording, nowChancesLeft, runModeNow);
-        this._runtime.autoGameOverAfterFeedback = false;
-        this._enterGameOverDelay();
-      }, fatalAutoDelayMs);
+          showChanceLostOverlay(
+            this.config,
+            this.wording,
+            nowChancesLeft,
+            runModeNow
+          );
+          this._runtime.autoGameOverAfterFeedback = false;
+          this._enterGameOverDelay();
+        },
+        fatalAutoDelayMs
+      );
     };
 
     // UX: only apply the "solo moment" if timing is explicitly valid in WT_CONFIG.ui.toast
@@ -5496,16 +6646,21 @@ ${audioSettingsHtml}
       this._runtime.feedbackReveal = false;
       this.render();
 
-      setRuntimeTimer(this, "feedbackRevealTimerId", () => {
-        if (!this._runtime) return;
-        if (this.state !== STATES.PLAYING) return;
-        if (this._runtime.feedbackPending !== true) return;
+      setRuntimeTimer(
+        this,
+        'feedbackRevealTimerId',
+        () => {
+          if (!this._runtime) return;
+          if (this.state !== STATES.PLAYING) return;
+          if (this._runtime.feedbackPending !== true) return;
 
-        this._runtime.feedbackRevealTimerId = null;
-        this._runtime.feedbackReveal = true;
-        this.render();
-        scheduleFatalGameOver();
-      }, Math.floor(focusMs));
+          this._runtime.feedbackRevealTimerId = null;
+          this._runtime.feedbackReveal = true;
+          this.render();
+          scheduleFatalGameOver();
+        },
+        Math.floor(focusMs)
+      );
 
       return;
     }
@@ -5515,23 +6670,27 @@ ${audioSettingsHtml}
     scheduleFatalGameOver();
 
     try {
-      const normalFlashClass = (res.isCorrect === true)
-        ? "wt-terms-box--successflash"
-        : "wt-terms-box--mistakeflash";
+      const normalFlashClass =
+        res.isCorrect === true
+          ? 'wt-terms-box--successflash'
+          : 'wt-terms-box--mistakeflash';
 
       window.requestAnimationFrame(() => {
-        const root = this.appEl || document.getElementById("app");
-        const tb = root ? root.querySelector(".wt-terms-box") : null;
+        const root = this.appEl || document.getElementById('app');
+        const tb = root ? root.querySelector('.wt-terms-box') : null;
         if (!tb) return;
 
-        tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
+        tb.classList.remove(
+          'wt-terms-box--mistakeflash',
+          'wt-terms-box--successflash'
+        );
         void tb.offsetWidth;
         tb.classList.add(normalFlashClass);
       });
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
   };
-
-
 
   UI.prototype.continueAfterFeedback = function () {
     if (this.state !== STATES.PLAYING) return;
@@ -5539,23 +6698,28 @@ ${audioSettingsHtml}
 
     if (this._runtime.autoGameOverAfterFeedback === true) {
       if (this._runtime.gameOverAfterFeedbackTimerId) {
-        clearRuntimeTimer(this, "gameOverAfterFeedbackTimerId")
+        clearRuntimeTimer(this, 'gameOverAfterFeedbackTimerId');
         this._runtime.gameOverAfterFeedbackTimerId = null;
       }
 
-      showChanceLostOverlay(this.config, this.wording, 0, String(this._runtime?.runMode || "").trim());
+      showChanceLostOverlay(
+        this.config,
+        this.wording,
+        0,
+        String(this._runtime?.runMode || '').trim()
+      );
       this._runtime.autoGameOverAfterFeedback = false;
       this._enterGameOverDelay();
       return;
     }
 
-    const shouldFinish = (this._runtime.finishAfterFeedback === true);
+    const shouldFinish = this._runtime.finishAfterFeedback === true;
 
     // leaving feedback: cancel any pending (not-yet-shown) toast to avoid cross-state surprises
     cancelScheduledToast();
 
     if (this._runtime.feedbackRevealTimerId) {
-      clearRuntimeTimer(this, "feedbackRevealTimerId");
+      clearRuntimeTimer(this, 'feedbackRevealTimerId');
     }
 
     this._runtime.feedbackPending = false;
@@ -5572,7 +6736,7 @@ ${audioSettingsHtml}
     this._runtime.chanceLostPulseAt = 0;
     this._runtime.scoreFlashAt = 0;
     if (this._runtime.hudPulseCleanupTimerId) {
-      clearRuntimeTimer(this, "hudPulseCleanupTimerId");
+      clearRuntimeTimer(this, 'hudPulseCleanupTimerId');
     }
 
     if (shouldFinish) {
@@ -5602,7 +6766,10 @@ ${audioSettingsHtml}
   //   - Record the answer to storage BEFORE calling this
   //   - Sync HUD if needed BEFORE calling this
   UI.prototype._enterGameOverDelay = function () {
-    if (!this._runtime) { this._finishRun(); return; }
+    if (!this._runtime) {
+      this._finishRun();
+      return;
+    }
 
     // 1. Block renders
     this._runtime.gameOverPending = true;
@@ -5614,7 +6781,7 @@ ${audioSettingsHtml}
     this._secretBonusFallStop();
 
     // 4. Cancel overlay auto-hide timer
-    clearUiTimer("overlay.chance.hide");
+    clearUiTimer('overlay.chance.hide');
 
     // 5. Clear feedback state
     this._runtime.feedbackPending = false;
@@ -5625,10 +6792,10 @@ ${audioSettingsHtml}
 
     // 6. Cancel pending feedback-reveal timer
     if (this._runtime.feedbackRevealTimerId) {
-      clearRuntimeTimer(this, "feedbackRevealTimerId");
+      clearRuntimeTimer(this, 'feedbackRevealTimerId');
     }
     if (this._runtime.gameOverAfterFeedbackTimerId) {
-      clearRuntimeTimer(this, "gameOverAfterFeedbackTimerId");
+      clearRuntimeTimer(this, 'gameOverAfterFeedbackTimerId');
     }
 
     // 7. Schedule _finishRun after overlay duration
@@ -5636,9 +6803,15 @@ ${audioSettingsHtml}
     const baseDurationMs = Number(this.config?.ui?.chanceLostOverlayMs);
 
     // One-shot hook used by the chance-lost overlay to skip immediately to END on tap.
-    try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+    try {
+      window.__wtGameOverSkipToEnd = null;
+    } catch (_) {}
 
-    if (Number.isFinite(baseDurationMs) && baseDurationMs >= 200 && baseDurationMs <= 3000) {
+    if (
+      Number.isFinite(baseDurationMs) &&
+      baseDurationMs >= 200 &&
+      baseDurationMs <= 3000
+    ) {
       let durationMs = baseDurationMs;
 
       const extraMs = Number(this.config?.ui?.gameplayPulseMs);
@@ -5649,7 +6822,7 @@ ${audioSettingsHtml}
 
       // Cancel any existing end timer (idempotent)
       if (this._runtime.bonusEndTimerId) {
-        clearRuntimeTimer(this, "bonusEndTimerId")
+        clearRuntimeTimer(this, 'bonusEndTimerId');
         this._runtime.bonusEndTimerId = null;
       }
 
@@ -5658,28 +6831,39 @@ ${audioSettingsHtml}
           if (this.state !== STATES.PLAYING) return;
 
           if (this._runtime && this._runtime.bonusEndTimerId) {
-            clearRuntimeTimer(this, "bonusEndTimerId")
+            clearRuntimeTimer(this, 'bonusEndTimerId');
             this._runtime.bonusEndTimerId = null;
           }
 
-          try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+          try {
+            window.__wtGameOverSkipToEnd = null;
+          } catch (_) {}
 
           if (this._runtime) this._runtime.gameOverPending = false;
           this._finishRun();
         };
-      } catch (_) { }
+      } catch (_) {}
 
-      setRuntimeTimer(this, "bonusEndTimerId", () => {
-        if (this._runtime) this._runtime.bonusEndTimerId = null;
-        try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+      setRuntimeTimer(
+        this,
+        'bonusEndTimerId',
+        () => {
+          if (this._runtime) this._runtime.bonusEndTimerId = null;
+          try {
+            window.__wtGameOverSkipToEnd = null;
+          } catch (_) {}
 
-        if (this.state !== STATES.PLAYING) return;
-        if (this._runtime) this._runtime.gameOverPending = false;
-        this._finishRun();
-      }, Math.floor(durationMs));
+          if (this.state !== STATES.PLAYING) return;
+          if (this._runtime) this._runtime.gameOverPending = false;
+          this._finishRun();
+        },
+        Math.floor(durationMs)
+      );
     } else {
       // Fail-safe: invalid config → end immediately
-      try { window.__wtGameOverSkipToEnd = null; } catch (_) { }
+      try {
+        window.__wtGameOverSkipToEnd = null;
+      } catch (_) {}
       this._runtime.gameOverPending = false;
       this._finishRun();
     }
@@ -5694,7 +6878,11 @@ ${audioSettingsHtml}
     // both call _save() → _emit() → onStorageUpdated() → render() while still in PLAYING).
     if (this._runtime) this._runtime.finishingRun = true;
 
-    try { window.__wtGameOverSkipToEnd = null; } catch (_) { /* silent */ }
+    try {
+      window.__wtGameOverSkipToEnd = null;
+    } catch (_) {
+      /* silent */
+    }
 
     cleanupPlayingExit(this, { keepChanceOverlayVisible: true });
 
@@ -5702,9 +6890,10 @@ ${audioSettingsHtml}
     const gameState = this.game.getState ? this.game.getState() : {};
     const scoreFP = Number(gameState.scoreFP || 0);
     const maxChances = Number(gameState.maxChances || 0);
-    const chancesLeft = (gameState.chancesLeft != null) ? Number(gameState.chancesLeft) : null;
+    const chancesLeft =
+      gameState.chancesLeft != null ? Number(gameState.chancesLeft) : null;
 
-    const mode = String(this._runtime?.runMode || "").trim();
+    const mode = String(this._runtime?.runMode || '').trim();
     const finalMaxStreak = clampInt(
       Math.max(
         Number(this._runtime?.microPics?.maxCorrectStreakDisplayed || 0),
@@ -5713,7 +6902,6 @@ ${audioSettingsHtml}
       0,
       9999
     );
-
 
     // Single source of truth: storage.js (V2)
     // - PB + history are handled by StorageManager.recordRunComplete()
@@ -5724,26 +6912,47 @@ ${audioSettingsHtml}
     let dailyTicketAwarded = false;
     let dailyTicketAtCap = false;
     let dailyTicketBalance = getRapidFireTicketBalance(this.storage);
-    let dailyTicketDayKey = "";
+    let dailyTicketDayKey = '';
     let dailyTargetScore = 0;
-    let levelProgress = { previousLevel: 0, currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
+    let levelProgress = {
+      previousLevel: 0,
+      currentLevel: 0,
+      unlockedLevel: 0,
+      justUnlocked: false
+    };
 
-    if (mode === "RUN" && this.storage && typeof this.storage.recordRunComplete === "function") {
-      const nextRunNumber = clampInt(this._runtime?.currentRunNumber, 0, 999999999);
-      const priorBestScoreFP = (this.storage && typeof this.storage.getPersonalBest === "function")
-        ? clampInt(this.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
-        : 0;
-      const priorDailyModel = getDailyChallengeModel(this.config || {}, this.wording || {}, priorBestScoreFP, this.storage);
+    if (
+      mode === 'RUN' &&
+      this.storage &&
+      typeof this.storage.recordRunComplete === 'function'
+    ) {
+      const nextRunNumber = clampInt(
+        this._runtime?.currentRunNumber,
+        0,
+        999999999
+      );
+      const priorBestScoreFP =
+        this.storage && typeof this.storage.getPersonalBest === 'function'
+          ? clampInt(this.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
+          : 0;
+      const priorDailyModel = getDailyChallengeModel(
+        this.config || {},
+        this.wording || {},
+        priorBestScoreFP,
+        this.storage
+      );
 
       let newSeenCount = 0;
       try {
-        if (typeof this.storage.getItemStats === "function") {
+        if (typeof this.storage.getItemStats === 'function') {
           const uniqueRunIds = Array.isArray(this._runtime?.runItemIds)
-            ? Array.from(new Set(
-              this._runtime.runItemIds
-                .map((id) => Number(id))
-                .filter((id) => Number.isFinite(id) && id > 0)
-            ))
+            ? Array.from(
+                new Set(
+                  this._runtime.runItemIds
+                    .map((id) => Number(id))
+                    .filter((id) => Number.isFinite(id) && id > 0)
+                )
+              )
             : [];
 
           for (const id of uniqueRunIds) {
@@ -5758,23 +6967,24 @@ ${audioSettingsHtml}
       }
 
       const res = this.storage.recordRunComplete(nextRunNumber, scoreFP, {
-        mode: "RUN",
+        mode: 'RUN',
         maxChances: Number(maxChances || 0),
-        chancesLeft: (chancesLeft == null) ? null : Number(chancesLeft),
+        chancesLeft: chancesLeft == null ? null : Number(chancesLeft),
         newSeenCount: clampInt(newSeenCount, 0, 99999),
         maxCorrectStreak: finalMaxStreak,
-        endedFrom: "ui"
+        endedFrom: 'ui'
       });
 
       newBest = !!(res && res.newBest);
-      bestScoreFP = Number(res && res.bestScoreFP || 0);
+      bestScoreFP = Number((res && res.bestScoreFP) || 0);
 
       try {
         const isPrem = isPremiumNow(this.storage);
-        const isLastFreeRun = String(this._runtime?.runType || "").trim() === "LAST_FREE";
+        const isLastFreeRun =
+          String(this._runtime?.runType || '').trim() === 'LAST_FREE';
         dailyTargetScore = clampInt(priorDailyModel?.targetScore, 0, 99999);
-        dailyChallengeCompleted = (scoreFP >= Math.max(1, dailyTargetScore));
-        dailyTicketDayKey = String(priorDailyModel?.dayKey || "").trim();
+        dailyChallengeCompleted = scoreFP >= Math.max(1, dailyTargetScore);
+        dailyTicketDayKey = String(priorDailyModel?.dayKey || '').trim();
 
         if (
           dailyChallengeCompleted &&
@@ -5782,7 +6992,10 @@ ${audioSettingsHtml}
           getDailyTicketEarnedDayKey(this.storage) !== dailyTicketDayKey &&
           (isPrem || isLastFreeRun)
         ) {
-          const rewardRes = grantDailyRapidFireTicket(this.storage, dailyTicketDayKey);
+          const rewardRes = grantDailyRapidFireTicket(
+            this.storage,
+            dailyTicketDayKey
+          );
           dailyTicketAwarded = !!rewardRes?.granted;
           dailyTicketAtCap = !!rewardRes?.atCap;
           dailyTicketBalance = clampInt(rewardRes?.balance, 0, 999);
@@ -5794,33 +7007,53 @@ ${audioSettingsHtml}
         dailyTicketAwarded = false;
         dailyTicketAtCap = false;
         dailyTicketBalance = getRapidFireTicketBalance(this.storage);
-        dailyTicketDayKey = "";
+        dailyTicketDayKey = '';
       }
-    } else if (mode === "BONUS" && this.storage && typeof this.storage.recordBonusComplete === "function") {
+    } else if (
+      mode === 'BONUS' &&
+      this.storage &&
+      typeof this.storage.recordBonusComplete === 'function'
+    ) {
       const res = this.storage.recordBonusComplete(scoreFP, {
-        mode: "BONUS",
+        mode: 'BONUS',
         maxChances: Number(maxChances || 0),
-        chancesLeft: (chancesLeft == null) ? null : Number(chancesLeft),
-        endedFrom: "ui"
+        chancesLeft: chancesLeft == null ? null : Number(chancesLeft),
+        endedFrom: 'ui'
       });
 
       newBest = !!(res && res.newBest);
-      bestScoreFP = Number(res && res.bestScoreFP || 0);
+      bestScoreFP = Number((res && res.bestScoreFP) || 0);
     }
 
-    if (this.storage && typeof this.storage.updateLevelProgression === "function") {
+    if (
+      this.storage &&
+      typeof this.storage.updateLevelProgression === 'function'
+    ) {
       try {
-        levelProgress = this.storage.updateLevelProgression({
-          mode,
-          scoreFP,
-          totalPresented: Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0
-        }) || levelProgress;
-      } catch (_) { /* silent */ }
+        levelProgress =
+          this.storage.updateLevelProgression({
+            mode,
+            scoreFP,
+            totalPresented: Array.isArray(this._runtime?.runItemIds)
+              ? this._runtime.runItemIds.length
+              : 0
+          }) || levelProgress;
+      } catch (_) {
+        /* silent */
+      }
     }
 
     if (this._runtime?.landingRunCompletionPending) {
-      if (mode !== "BONUS" && this.storage && typeof this.storage.markLandingNextRunCompleted === "function") {
-        try { this.storage.markLandingNextRunCompleted(); } catch (_) { /* silent */ }
+      if (
+        mode !== 'BONUS' &&
+        this.storage &&
+        typeof this.storage.markLandingNextRunCompleted === 'function'
+      ) {
+        try {
+          this.storage.markLandingNextRunCompleted();
+        } catch (_) {
+          /* silent */
+        }
       }
       this._runtime.landingRunCompletionPending = false;
     }
@@ -5828,54 +7061,58 @@ ${audioSettingsHtml}
     // Store for END screen
     this._runtime.lastRun = {
       mode,
-      runType: String(this._runtime?.runType || "").trim(),
-      runId: String(this._runtime?.currentRunId || "").trim(),
+      runType: String(this._runtime?.runType || '').trim(),
+      runId: String(this._runtime?.currentRunId || '').trim(),
       runNumber: clampInt(this._runtime?.currentRunNumber, 0, 999999999),
-      durationMs: clampInt(Date.now() - Number(this._runtime?.runStartedAt || Date.now()), 0, 24 * 60 * 60 * 1000),
+      durationMs: clampInt(
+        Date.now() - Number(this._runtime?.runStartedAt || Date.now()),
+        0,
+        24 * 60 * 60 * 1000
+      ),
       scoreFP,
       maxChances,
       chancesLeft,
       newBest,
       bestScoreFP,
       maxCorrectStreak: finalMaxStreak,
-      mistakeIds: Array.isArray(this._runtime.runMistakeIds) ? this._runtime.runMistakeIds.slice() : [],
-      runItemIds: Array.isArray(this._runtime.runItemIds) ? this._runtime.runItemIds.slice() : [],
+      mistakeIds: Array.isArray(this._runtime.runMistakeIds)
+        ? this._runtime.runMistakeIds.slice()
+        : [],
+      runItemIds: Array.isArray(this._runtime.runItemIds)
+        ? this._runtime.runItemIds.slice()
+        : [],
       dailyChallengeCompleted,
       dailyTargetScore,
       dailyTicketAwarded,
       dailyTicketAtCap,
       dailyTicketBalance,
       dailyTicketDayKey,
-      answerLog: Array.isArray(this._runtime.runAnswerLog) ? this._runtime.runAnswerLog.slice() : [],
+      answerLog: Array.isArray(this._runtime.runAnswerLog)
+        ? this._runtime.runAnswerLog.slice()
+        : [],
       poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending,
       levelProgress
     };
 
     try {
       void this.submitLeaderboardRun(this._runtime.lastRun).then((res) => {
-        const lbW = this.wording?.leaderboard || {};
-        if (!res || res.skipped === true) return;
-        if (res.ok === true) {
-          const weeklyRank = clampInt(res?.data?.weekly_rank, 0, 999999);
-          if (weeklyRank > 0) {
-            const toastTpl = String(lbW.rankToastWeekly || "").trim();
-            if (toastTpl) {
-              toastNow(this.config, fillTemplate(toastTpl, { rank: String(weeklyRank) }), { variant: "info" });
-            }
-          }
-          return;
-        }
-        const rejectedToast = String(lbW.scoreRejectedToast || "").trim();
-        if (rejectedToast) {
-          toastNow(this.config, rejectedToast, { variant: "info" });
+        if (
+          window.WT_UI_Leaderboard &&
+          typeof window.WT_UI_Leaderboard.handleSubmitResult === 'function'
+        ) {
+          window.WT_UI_Leaderboard.handleSubmitResult(this, res, {
+            clampInt,
+            fillTemplate,
+            toastNow
+          });
         }
       });
-    } catch (_) { /* silent */ }
-
+    } catch (_) {
+      /* silent */
+    }
 
     // Consume one-shot runtime flag
     if (this._runtime) this._runtime.poolCompleteCelebrationPending = false;
-
 
     // Clear feedback state
     this._runtime.feedbackPending = false;
@@ -5888,15 +7125,24 @@ ${audioSettingsHtml}
     // BONUS returns to END (no separate BONUS_END state)
     // Persist post-completion milestone state when the full pool is exhausted.
     try {
-      const exhausted =
-        !!(this.storage && typeof this.storage.hasSeenAllWordTraps === "function" && this.storage.hasSeenAllWordTraps() === true);
+      const exhausted = !!(
+        this.storage &&
+        typeof this.storage.hasSeenAllWordTraps === 'function' &&
+        this.storage.hasSeenAllWordTraps() === true
+      );
 
-      if (exhausted && this.storage && typeof this.storage.markPostCompletionSeenOnce === "function") {
+      if (
+        exhausted &&
+        this.storage &&
+        typeof this.storage.markPostCompletionSeenOnce === 'function'
+      ) {
         this.storage.markPostCompletionSeenOnce();
       }
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
-    const fromPlaying = (this.state === STATES.PLAYING);
+    const fromPlaying = this.state === STATES.PLAYING;
 
     // Default behavior (BONUS -> END, etc.)
     if (!fromPlaying) {
@@ -5908,12 +7154,15 @@ ${audioSettingsHtml}
     // Respect reduced motion
     let reduceMotion = false;
     try {
-      reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      reduceMotion = !!(
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      );
     } catch (_) {
       reduceMotion = false;
     }
 
-    const app = el("app");
+    const app = el('app');
     if (!app || reduceMotion) {
       if (this._runtime) this._runtime.finishingRun = false;
       this.setState(STATES.END);
@@ -5923,55 +7172,72 @@ ${audioSettingsHtml}
     const FADE_MS = 200;
 
     try {
-      app.classList.add("transitioning"); // block interactions during fade
-      app.classList.add("wt-fade");
-      app.classList.remove("wt-fade--in");
-      app.classList.add("wt-fade--out");
+      app.classList.add('transitioning'); // block interactions during fade
+      app.classList.add('wt-fade');
+      app.classList.remove('wt-fade--in');
+      app.classList.add('wt-fade--out');
     } catch (_) {
       if (this._runtime) this._runtime.finishingRun = false;
       this.setState(STATES.END);
       return;
     }
-    setRuntimeTimer(this, "finishFadeOutTimerId", () => {
-      if (this._runtime) this._runtime.finishFadeOutTimerId = null;
-      if (this._runtime) this._runtime.finishingRun = false;
-      this.setState(STATES.END);
+    setRuntimeTimer(
+      this,
+      'finishFadeOutTimerId',
+      () => {
+        if (this._runtime) this._runtime.finishFadeOutTimerId = null;
+        if (this._runtime) this._runtime.finishingRun = false;
+        this.setState(STATES.END);
 
-      setRuntimeTimer(this, "finishFadeInStartTimerId", () => {
-        if (this._runtime) this._runtime.finishFadeInStartTimerId = null;
-        const a = el("app");
-        if (!a) return;
+        setRuntimeTimer(
+          this,
+          'finishFadeInStartTimerId',
+          () => {
+            if (this._runtime) this._runtime.finishFadeInStartTimerId = null;
+            const a = el('app');
+            if (!a) return;
 
-        try {
-          a.classList.add("wt-fade");
-          a.classList.remove("wt-fade--out");
-          a.classList.add("wt-fade--in");
-        } catch (_) { }
+            try {
+              a.classList.add('wt-fade');
+              a.classList.remove('wt-fade--out');
+              a.classList.add('wt-fade--in');
+            } catch (_) {}
 
-        setRuntimeTimer(this, "finishFadeCleanupTimerId", () => {
-          if (this._runtime) this._runtime.finishFadeCleanupTimerId = null;
-          const b = el("app");
-          if (!b) return;
-          try {
-            b.classList.remove("wt-fade");
-            b.classList.remove("wt-fade--out");
-            b.classList.remove("wt-fade--in");
-            b.classList.remove("transitioning"); // restore interactions
-          } catch (_) { }
-
-        }, FADE_MS + 40);
-      }, 0);
-    }, FADE_MS);
+            setRuntimeTimer(
+              this,
+              'finishFadeCleanupTimerId',
+              () => {
+                if (this._runtime)
+                  this._runtime.finishFadeCleanupTimerId = null;
+                const b = el('app');
+                if (!b) return;
+                try {
+                  b.classList.remove('wt-fade');
+                  b.classList.remove('wt-fade--out');
+                  b.classList.remove('wt-fade--in');
+                  b.classList.remove('transitioning'); // restore interactions
+                } catch (_) {}
+              },
+              FADE_MS + 40
+            );
+          },
+          0
+        );
+      },
+      FADE_MS
+    );
   };
-
 
   // ============================================
   // Paywall
   // ============================================
 
   UI.prototype._startPaywallTicker = function () {
-    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.startPaywallTicker !== "function") {
-      throw new Error("WT_UI_Checkout.startPaywallTicker missing");
+    if (
+      !window.WT_UI_Checkout ||
+      typeof window.WT_UI_Checkout.startPaywallTicker !== 'function'
+    ) {
+      throw new Error('WT_UI_Checkout.startPaywallTicker missing');
     }
     return window.WT_UI_Checkout.startPaywallTicker(this, {
       syncScopedRenderTicker,
@@ -5981,18 +7247,22 @@ ${audioSettingsHtml}
     });
   };
 
-
-
   UI.prototype._stopPaywallTicker = function () {
-    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.stopPaywallTicker !== "function") {
-      throw new Error("WT_UI_Checkout.stopPaywallTicker missing");
+    if (
+      !window.WT_UI_Checkout ||
+      typeof window.WT_UI_Checkout.stopPaywallTicker !== 'function'
+    ) {
+      throw new Error('WT_UI_Checkout.stopPaywallTicker missing');
     }
     return window.WT_UI_Checkout.stopPaywallTicker(this, { clearUiTimer });
   };
 
   UI.prototype.checkout = function (priceKey, event) {
-    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.checkout !== "function") {
-      throw new Error("WT_UI_Checkout.checkout missing");
+    if (
+      !window.WT_UI_Checkout ||
+      typeof window.WT_UI_Checkout.checkout !== 'function'
+    ) {
+      throw new Error('WT_UI_Checkout.checkout missing');
     }
     return window.WT_UI_Checkout.checkout(this, priceKey, event, {
       isOnline,
@@ -6004,26 +7274,31 @@ ${audioSettingsHtml}
 
   // Single source of truth for share text (used by preview + copy)
   UI.prototype._getShareText = function () {
-    if (!window.WT_UI_Share || typeof window.WT_UI_Share.getShareText !== "function") {
-      throw new Error("WT_UI_Share.getShareText missing");
+    if (
+      !window.WT_UI_Share ||
+      typeof window.WT_UI_Share.getShareText !== 'function'
+    ) {
+      throw new Error('WT_UI_Share.getShareText missing');
     }
     return window.WT_UI_Share.getShareText(this, { clampInt });
   };
 
   UI.prototype.copyShareText = async function () {
-    if (!window.WT_UI_Share || typeof window.WT_UI_Share.copy !== "function") {
-      throw new Error("WT_UI_Share.copy missing");
+    if (!window.WT_UI_Share || typeof window.WT_UI_Share.copy !== 'function') {
+      throw new Error('WT_UI_Share.copy missing');
     }
     return window.WT_UI_Share.copy(this, { clampInt, toastNow });
   };
 
   UI.prototype.sendShareViaEmail = function () {
-    if (!window.WT_UI_Share || typeof window.WT_UI_Share.sendEmail !== "function") {
-      throw new Error("WT_UI_Share.sendEmail missing");
+    if (
+      !window.WT_UI_Share ||
+      typeof window.WT_UI_Share.sendEmail !== 'function'
+    ) {
+      throw new Error('WT_UI_Share.sendEmail missing');
     }
     return window.WT_UI_Share.sendEmail(this, { clampInt });
   };
-
 
   // ============================================
   // Mistakes only toggle (Landing)
@@ -6035,7 +7310,7 @@ ${audioSettingsHtml}
     const moCfg = cfg.mistakesOnly || {};
     if (!moCfg.enabled) return;
 
-    const premiumOnly = (moCfg.premiumOnly === true);
+    const premiumOnly = moCfg.premiumOnly === true;
     const premium = isPremiumNow(this.storage);
 
     if (premiumOnly && !premium) {
@@ -6043,8 +7318,11 @@ ${audioSettingsHtml}
       return;
     }
 
-    const on = (typeof this.storage.getMistakesOnly === "function") ? this.storage.getMistakesOnly() : false;
-    if (typeof this.storage.setMistakesOnly === "function") {
+    const on =
+      typeof this.storage.getMistakesOnly === 'function'
+        ? this.storage.getMistakesOnly()
+        : false;
+    if (typeof this.storage.setMistakesOnly === 'function') {
       this.storage.setMistakesOnly(!on);
     }
   };
@@ -6053,24 +7331,31 @@ ${audioSettingsHtml}
   // Support modal
   // ============================================
   UI.prototype.openSupportModal = function () {
-    if (!window.WT_UI_Support || typeof window.WT_UI_Support.openSupport !== "function") {
-      throw new Error("WT_UI_Support.openSupport missing");
+    if (
+      !window.WT_UI_Support ||
+      typeof window.WT_UI_Support.openSupport !== 'function'
+    ) {
+      throw new Error('WT_UI_Support.openSupport missing');
     }
     return window.WT_UI_Support.openSupport(this, { escapeHtml, toastNow });
   };
 
-
   UI.prototype.copySupportEmail = async function () {
-    if (!window.WT_UI_Support || typeof window.WT_UI_Support.copySupportEmail !== "function") {
-      throw new Error("WT_UI_Support.copySupportEmail missing");
+    if (
+      !window.WT_UI_Support ||
+      typeof window.WT_UI_Support.copySupportEmail !== 'function'
+    ) {
+      throw new Error('WT_UI_Support.copySupportEmail missing');
     }
     return window.WT_UI_Support.copySupportEmail(this, { toastNow });
   };
 
-
   UI.prototype.openSupportEmailApp = function (kind) {
-    if (!window.WT_UI_Support || typeof window.WT_UI_Support.openSupportEmail !== "function") {
-      throw new Error("WT_UI_Support.openSupportEmail missing");
+    if (
+      !window.WT_UI_Support ||
+      typeof window.WT_UI_Support.openSupportEmail !== 'function'
+    ) {
+      throw new Error('WT_UI_Support.openSupportEmail missing');
     }
     return window.WT_UI_Support.openSupportEmail(this, kind);
   };
@@ -6079,8 +7364,11 @@ ${audioSettingsHtml}
   // Pool complete (one-shot modal on END entry)
   // ============================================
   UI.prototype.openPoolCompleteModal = function () {
-    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.openPoolComplete !== "function") {
-      throw new Error("WT_UI_Growth.openPoolComplete missing");
+    if (
+      !window.WT_UI_Growth ||
+      typeof window.WT_UI_Growth.openPoolComplete !== 'function'
+    ) {
+      throw new Error('WT_UI_Growth.openPoolComplete missing');
     }
     return window.WT_UI_Growth.openPoolComplete(this, {
       escapeHtml,
@@ -6089,80 +7377,94 @@ ${audioSettingsHtml}
     });
   };
 
-
   // ============================================
   // Milestone modal (one-shot on END entry)
   // ============================================
   UI.prototype.openMilestoneModal = function (milestoneKey) {
-    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.openMilestone !== "function") {
-      throw new Error("WT_UI_Growth.openMilestone missing");
+    if (
+      !window.WT_UI_Growth ||
+      typeof window.WT_UI_Growth.openMilestone !== 'function'
+    ) {
+      throw new Error('WT_UI_Growth.openMilestone missing');
     }
-    return window.WT_UI_Growth.openMilestone(this, milestoneKey, { escapeHtml });
+    return window.WT_UI_Growth.openMilestone(this, milestoneKey, {
+      escapeHtml
+    });
   };
-
 
   // ============================================
   // Waitlist (mailto, no backend)
   // ============================================
   UI.prototype.openWaitlistModal = function () {
-    if (!window.WT_UI_Support || typeof window.WT_UI_Support.openWaitlist !== "function") {
-      throw new Error("WT_UI_Support.openWaitlist missing");
+    if (
+      !window.WT_UI_Support ||
+      typeof window.WT_UI_Support.openWaitlist !== 'function'
+    ) {
+      throw new Error('WT_UI_Support.openWaitlist missing');
     }
     return window.WT_UI_Support.openWaitlist(this, { escapeHtml });
   };
 
   UI.prototype.sendWaitlistViaEmail = function () {
-    if (!window.WT_UI_Support || typeof window.WT_UI_Support.sendWaitlist !== "function") {
-      throw new Error("WT_UI_Support.sendWaitlist missing");
+    if (
+      !window.WT_UI_Support ||
+      typeof window.WT_UI_Support.sendWaitlist !== 'function'
+    ) {
+      throw new Error('WT_UI_Support.sendWaitlist missing');
     }
     return window.WT_UI_Support.sendWaitlist(this, { toastNow });
   };
-
 
   // ============================================
   // Anonymous Stats Payload (opt-in sharing)
   // ============================================
 
-
   UI.prototype._getStatsPayloadWithTerms = function () {
-    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.getPayload !== "function") {
-      throw new Error("WT_UI_StatsSharing.getPayload missing");
+    if (
+      !window.WT_UI_StatsSharing ||
+      typeof window.WT_UI_StatsSharing.getPayload !== 'function'
+    ) {
+      throw new Error('WT_UI_StatsSharing.getPayload missing');
     }
     return window.WT_UI_StatsSharing.getPayload(this);
   };
 
-
   UI.prototype.openStatsSharingModal = function () {
-    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.openModal !== "function") {
-      throw new Error("WT_UI_StatsSharing.openModal missing");
+    if (
+      !window.WT_UI_StatsSharing ||
+      typeof window.WT_UI_StatsSharing.openModal !== 'function'
+    ) {
+      throw new Error('WT_UI_StatsSharing.openModal missing');
     }
     return window.WT_UI_StatsSharing.openModal(this, { escapeHtml, toastNow });
   };
 
-
-
-
-
-
   UI.prototype.sendStatsViaEmail = function () {
-    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.sendEmail !== "function") {
-      throw new Error("WT_UI_StatsSharing.sendEmail missing");
+    if (
+      !window.WT_UI_StatsSharing ||
+      typeof window.WT_UI_StatsSharing.sendEmail !== 'function'
+    ) {
+      throw new Error('WT_UI_StatsSharing.sendEmail missing');
     }
     return window.WT_UI_StatsSharing.sendEmail(this, { toastNow });
   };
 
-
   UI.prototype.copyStatsToClipboard = async function () {
-    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.copy !== "function") {
-      throw new Error("WT_UI_StatsSharing.copy missing");
+    if (
+      !window.WT_UI_StatsSharing ||
+      typeof window.WT_UI_StatsSharing.copy !== 'function'
+    ) {
+      throw new Error('WT_UI_StatsSharing.copy missing');
     }
     return window.WT_UI_StatsSharing.copy(this, { toastNow });
   };
 
-
   UI.prototype._maybePromptStatsSharingMilestone = function () {
-    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.maybePrompt !== "function") {
-      throw new Error("WT_UI_StatsSharing.maybePrompt missing");
+    if (
+      !window.WT_UI_StatsSharing ||
+      typeof window.WT_UI_StatsSharing.maybePrompt !== 'function'
+    ) {
+      throw new Error('WT_UI_StatsSharing.maybePrompt missing');
     }
     return window.WT_UI_StatsSharing.maybePrompt(this, {
       clampInt,
@@ -6175,17 +7477,22 @@ ${audioSettingsHtml}
     });
   };
 
-
   UI.prototype.openInstallPromptModal = function () {
-    if (!window.WT_UI_Install || typeof window.WT_UI_Install.openModal !== "function") {
-      throw new Error("WT_UI_Install.openModal missing");
+    if (
+      !window.WT_UI_Install ||
+      typeof window.WT_UI_Install.openModal !== 'function'
+    ) {
+      throw new Error('WT_UI_Install.openModal missing');
     }
     return window.WT_UI_Install.openModal(this, { escapeHtml });
   };
 
   UI.prototype._canShowInstallPrompt = function () {
-    if (!window.WT_UI_Install || typeof window.WT_UI_Install.canShow !== "function") {
-      throw new Error("WT_UI_Install.canShow missing");
+    if (
+      !window.WT_UI_Install ||
+      typeof window.WT_UI_Install.canShow !== 'function'
+    ) {
+      throw new Error('WT_UI_Install.canShow missing');
     }
     return window.WT_UI_Install.canShow(this);
   };
@@ -6194,43 +7501,48 @@ ${audioSettingsHtml}
   // Install prompt (minimal)
   // ============================================
   UI.prototype.promptInstall = function () {
-    if (!window.WT_UI_Install || typeof window.WT_UI_Install.prompt !== "function") {
-      throw new Error("WT_UI_Install.prompt missing");
+    if (
+      !window.WT_UI_Install ||
+      typeof window.WT_UI_Install.prompt !== 'function'
+    ) {
+      throw new Error('WT_UI_Install.prompt missing');
     }
     return window.WT_UI_Install.prompt(this, { escapeHtml });
   };
 
-
-
   UI.prototype.applyUpdateToast = function () {
-    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.applyUpdateToast !== "function") {
-      throw new Error("WT_UI_Checkout.applyUpdateToast missing");
+    if (
+      !window.WT_UI_Checkout ||
+      typeof window.WT_UI_Checkout.applyUpdateToast !== 'function'
+    ) {
+      throw new Error('WT_UI_Checkout.applyUpdateToast missing');
     }
     return window.WT_UI_Checkout.applyUpdateToast(this, { el });
   };
-
-
-
 
   // ============================================
   // ============================================
   // House ad (optional)
   // ============================================
   UI.prototype.remindHouseAdLater = function () {
-    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.remindHouseAdLater !== "function") {
-      throw new Error("WT_UI_Growth.remindHouseAdLater missing");
+    if (
+      !window.WT_UI_Growth ||
+      typeof window.WT_UI_Growth.remindHouseAdLater !== 'function'
+    ) {
+      throw new Error('WT_UI_Growth.remindHouseAdLater missing');
     }
     return window.WT_UI_Growth.remindHouseAdLater(this);
   };
 
-
   UI.prototype.openHouseAd = function () {
-    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.openHouseAd !== "function") {
-      throw new Error("WT_UI_Growth.openHouseAd missing");
+    if (
+      !window.WT_UI_Growth ||
+      typeof window.WT_UI_Growth.openHouseAd !== 'function'
+    ) {
+      throw new Error('WT_UI_Growth.openHouseAd missing');
     }
     return window.WT_UI_Growth.openHouseAd(this);
   };
-
 
   // ============================================
   // Secret Bonus fall (UI-only)
@@ -6241,7 +7553,9 @@ ${audioSettingsHtml}
     if (!sbf) return;
 
     if (sbf.rafId) {
-      try { window.cancelAnimationFrame(sbf.rafId); } catch (_) { }
+      try {
+        window.cancelAnimationFrame(sbf.rafId);
+      } catch (_) {}
     }
 
     sbf.rafId = 0;
@@ -6261,13 +7575,12 @@ ${audioSettingsHtml}
     sbf.failLineEl = null;
     sbf.failLabelEl = null;
 
-    sbf.itemKey = "";
+    sbf.itemKey = '';
     sbf.y01 = 0;
     sbf.speed01PerSec = 0;
     sbf.trackPxMax = 0;
     sbf.wasInWarning = false;
   };
-
 
   UI.prototype._secretBonusFailCurrentItem = function () {
     // Fail-closed: only during BONUS + PLAYING
@@ -6275,7 +7588,7 @@ ${audioSettingsHtml}
     if (!this._runtime) return;
 
     // Local source of truth (this method must not rely on render-time locals)
-    const modeNow = String(this._runtime?.runMode || "").trim();
+    const modeNow = String(this._runtime?.runMode || '').trim();
     if (!modeNow) return;
     if (modeNow !== MODES.BONUS) return;
 
@@ -6289,21 +7602,38 @@ ${audioSettingsHtml}
     // Snapshot chances BEFORE answering (for pulse/toast)
     let prevChancesLeft = null;
     try {
-      const gsPrev = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-      if (gsPrev.chancesLeft != null) prevChancesLeft = Number(gsPrev.chancesLeft);
-    } catch (_) { /* silent */ }
+      const gsPrev =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
+      if (gsPrev.chancesLeft != null)
+        prevChancesLeft = Number(gsPrev.chancesLeft);
+    } catch (_) {
+      /* silent */
+    }
 
     // Timeout / no answer:
     // The engine contract expects a strict boolean. Force a guaranteed-wrong boolean by inverting correctAnswer.
     let forcedWrong = false;
     try {
-      const cur = (this.game && typeof this.game.getCurrent === "function") ? this.game.getCurrent() : null;
-      const correct = (cur && (cur.correctAnswer === true || cur.correctAnswer === false)) ? cur.correctAnswer : null;
+      const cur =
+        this.game && typeof this.game.getCurrent === 'function'
+          ? this.game.getCurrent()
+          : null;
+      const correct =
+        cur && (cur.correctAnswer === true || cur.correctAnswer === false)
+          ? cur.correctAnswer
+          : null;
       if (correct === true) forcedWrong = false;
       else if (correct === false) forcedWrong = true;
-    } catch (_) { forcedWrong = false; }
+    } catch (_) {
+      forcedWrong = false;
+    }
 
-    const res = (this.game && typeof this.game.answer === "function") ? this.game.answer(forcedWrong) : null;
+    const res =
+      this.game && typeof this.game.answer === 'function'
+        ? this.game.answer(forcedWrong)
+        : null;
 
     // Stop fall loop immediately to avoid double-fail
     this._secretBonusFallStop();
@@ -6319,27 +7649,29 @@ ${audioSettingsHtml}
     let nowChancesLeft = null;
 
     try {
-      const gsNow = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-      nowChancesLeft = (gsNow.chancesLeft != null) ? Number(gsNow.chancesLeft) : null;
+      const gsNow =
+        this.game && typeof this.game.getState === 'function'
+          ? this.game.getState() || {}
+          : {};
+      nowChancesLeft =
+        gsNow.chancesLeft != null ? Number(gsNow.chancesLeft) : null;
 
-      chanceLost = (
+      chanceLost =
         prevChancesLeft != null &&
         nowChancesLeft != null &&
         Number.isFinite(prevChancesLeft) &&
         Number.isFinite(nowChancesLeft) &&
-        nowChancesLeft < prevChancesLeft
-      );
+        nowChancesLeft < prevChancesLeft;
 
       this._runtime.chanceLostPulseAt = chanceLost ? Date.now() : 0;
 
-      const lastChanceEntered = (
+      const lastChanceEntered =
         prevChancesLeft != null &&
         nowChancesLeft != null &&
         Number.isFinite(prevChancesLeft) &&
         Number.isFinite(nowChancesLeft) &&
-        (prevChancesLeft > 1) &&
-        (nowChancesLeft === 1)
-      );
+        prevChancesLeft > 1 &&
+        nowChancesLeft === 1;
       this._runtime.lastChancePulseAt = lastChanceEntered ? Date.now() : 0;
 
       this._runtime.scoreFlashAt = 0;
@@ -6354,44 +7686,59 @@ ${audioSettingsHtml}
 
     if (chanceLost && Number.isFinite(nowChancesLeft)) {
       try {
-        const root = this.appEl || document.getElementById("app");
-        const pill = root ? root.querySelector(".wt-pill--chances") : null;
+        const root = this.appEl || document.getElementById('app');
+        const pill = root ? root.querySelector('.wt-pill--chances') : null;
 
         if (pill) {
-          const uiW = (this.wording && this.wording.ui) ? this.wording.ui : {};
-          const label = String(uiW.mistakesLabel || "").trim();
+          const uiW = this.wording && this.wording.ui ? this.wording.ui : {};
+          const label = String(uiW.mistakesLabel || '').trim();
 
-          const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+          const gs =
+            this.game && typeof this.game.getState === 'function'
+              ? this.game.getState() || {}
+              : {};
           const mcRaw = Number(gs.maxChances || this.config?.game?.maxChances);
-          const mc = (Number.isFinite(mcRaw) && mcRaw > 0) ? Math.floor(mcRaw) : 0;
+          const mc =
+            Number.isFinite(mcRaw) && mcRaw > 0 ? Math.floor(mcRaw) : 0;
 
           const left = Math.max(0, Math.floor(Number(nowChancesLeft)));
-          const mistakes = (mc > 0) ? Math.max(0, Math.min(mc, mc - left)) : 0;
+          const mistakes = mc > 0 ? Math.max(0, Math.min(mc, mc - left)) : 0;
 
-          const visual = (mc > 0)
-            ? Array(mc)
-              .fill(null)
-              .map((_, i) => {
-                const isOn = i < mistakes;
-                const isLast = isOn && mistakes > 0 && i === (mistakes - 1);
-                return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
-              })
-              .join("")
-            : "";
+          const visual =
+            mc > 0
+              ? Array(mc)
+                  .fill(null)
+                  .map((_, i) => {
+                    const isOn = i < mistakes;
+                    const isLast = isOn && mistakes > 0 && i === mistakes - 1;
+                    return `<span class="wt-hud-lives__dot${isOn ? '' : ' wt-hud-lives__dot--off'}${isLast ? ' wt-hud-lives__dot--last' : ''}" aria-hidden="true"></span>`;
+                  })
+                  .join('')
+              : '';
 
-          pill.classList.remove("wt-pill--danger-pulse");
-          pill.setAttribute("aria-label", label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`);
+          pill.classList.remove('wt-pill--danger-pulse');
+          pill.setAttribute(
+            'aria-label',
+            label ? `${label}: ${mistakes}/${mc}` : `${mistakes}/${mc}`
+          );
           pill.innerHTML = `
             ${label ? `<small>${escapeHtml(label)}</small>` : ``}
             ${mistakes}/${mc}
             ${visual}
           `;
         }
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
     }
 
     if (chanceLost && Number.isFinite(nowChancesLeft)) {
-      showChanceLostOverlay(this.config, this.wording, nowChancesLeft, String(this._runtime?.runMode || "").trim());
+      showChanceLostOverlay(
+        this.config,
+        this.wording,
+        nowChancesLeft,
+        String(this._runtime?.runMode || '').trim()
+      );
     }
 
     // Block renders before recordAnswer if game over (same contract as answer()).
@@ -6403,7 +7750,7 @@ ${audioSettingsHtml}
       this._runtime.gameOverPending = true;
     }
 
-    if (this.storage && typeof this.storage.recordAnswer === "function") {
+    if (this.storage && typeof this.storage.recordAnswer === 'function') {
       this.storage.recordAnswer(res.itemId, res.isCorrect);
     }
 
@@ -6412,15 +7759,17 @@ ${audioSettingsHtml}
       this._runtime.runItemIds.push(id);
 
       if (res.isCorrect !== true) {
-        if (!Array.isArray(this._runtime.runMistakeIds)) this._runtime.runMistakeIds = [];
-        if (this._runtime.runMistakeIds.indexOf(id) === -1) this._runtime.runMistakeIds.push(id);
+        if (!Array.isArray(this._runtime.runMistakeIds))
+          this._runtime.runMistakeIds = [];
+        if (this._runtime.runMistakeIds.indexOf(id) === -1)
+          this._runtime.runMistakeIds.push(id);
       }
     }
 
     // BONUS feedback policy already handled in UI.prototype.answer, but here we enforce the same "none/minimal".
-    const sbFeedback = String(this.config?.secretBonus?.feedback || "").trim();
+    const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
-    if (sbFeedback === "none") {
+    if (sbFeedback === 'none') {
       this._runtime.feedbackPending = false;
       this._runtime.lastAnswer = null;
       this._runtime.frozenItem = null;
@@ -6428,7 +7777,8 @@ ${audioSettingsHtml}
       this._runtime.answerLocked = false;
 
       if (res.done === true) {
-        const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
+        const endedByGameOver =
+          Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0;
         if (endedByGameOver) {
           // Fall already stopped (line above). Use factored delay for freeze + overlay hold.
           this._enterGameOverDelay();
@@ -6442,18 +7792,27 @@ ${audioSettingsHtml}
 
       try {
         this._secretBonusFallStartOrSync();
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
 
       return;
     }
     if (res.done === true) {
       let nowChancesLeft = null;
       try {
-        const gsNow = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-        nowChancesLeft = (gsNow.chancesLeft != null) ? Number(gsNow.chancesLeft) : null;
-      } catch (_) { nowChancesLeft = null; }
+        const gsNow =
+          this.game && typeof this.game.getState === 'function'
+            ? this.game.getState() || {}
+            : {};
+        nowChancesLeft =
+          gsNow.chancesLeft != null ? Number(gsNow.chancesLeft) : null;
+      } catch (_) {
+        nowChancesLeft = null;
+      }
 
-      const endedByGameOver = (Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0);
+      const endedByGameOver =
+        Number.isFinite(nowChancesLeft) && Number(nowChancesLeft) === 0;
 
       if (endedByGameOver) {
         // Fall already stopped. Use factored delay for freeze + overlay hold.
@@ -6462,28 +7821,40 @@ ${audioSettingsHtml}
       }
 
       // Deck exhausted: show gameplay overlay then transition to END
-      const msg = String(this.wording?.secretBonus?.endDeckExhaustedToast || "").trim();
-      const timing = getToastTiming(this.config, "");
+      const msg = String(
+        this.wording?.secretBonus?.endDeckExhaustedToast || ''
+      ).trim();
+      const timing = getToastTiming(this.config, '');
       const durationMs = timing ? Number(timing.durationMs) : NaN;
 
-      if (msg && Number.isFinite(durationMs) && durationMs >= 600 && durationMs <= 4000) {
+      if (
+        msg &&
+        Number.isFinite(durationMs) &&
+        durationMs >= 600 &&
+        durationMs <= 4000
+      ) {
         showGameplayOverlay(msg, {
           durationMs: Math.floor(durationMs),
-          variant: "success",
+          variant: 'success',
           cfg: this.config,
           mode: MODES.BONUS
         });
 
         if (this._runtime.bonusEndTimerId) {
-          clearRuntimeTimer(this, "bonusEndTimerId")
+          clearRuntimeTimer(this, 'bonusEndTimerId');
           this._runtime.bonusEndTimerId = null;
         }
 
-        setRuntimeTimer(this, "bonusEndTimerId", () => {
-          this._runtime.bonusEndTimerId = null;
-          if (this.state !== STATES.PLAYING) return;
-          this._finishRun();
-        }, Math.floor(durationMs));
+        setRuntimeTimer(
+          this,
+          'bonusEndTimerId',
+          () => {
+            this._runtime.bonusEndTimerId = null;
+            if (this.state !== STATES.PLAYING) return;
+            this._finishRun();
+          },
+          Math.floor(durationMs)
+        );
 
         return;
       }
@@ -6496,25 +7867,24 @@ ${audioSettingsHtml}
 
     try {
       this._secretBonusFallStartOrSync();
-    } catch (_) { /* silent */ }
-
+    } catch (_) {
+      /* silent */
+    }
   };
-
-
 
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
 
     const cfg = this.config || {};
     const sb = cfg?.secretBonus || {};
-    const fall = (sb && typeof sb === "object") ? sb.fall : null;
+    const fall = sb && typeof sb === 'object' ? sb.fall : null;
 
     // No fallback: require full fall config (speed in % of lane height per second).
     // Config uses % (e.g. 25 = 25%/s), code converts to ratio (0.25).
     if (
       !fall ||
-      typeof fall !== "object" ||
-      (fall.enabled !== true) ||
+      typeof fall !== 'object' ||
+      fall.enabled !== true ||
       !Number.isFinite(Number(fall.initialSpeed)) ||
       Number(fall.initialSpeed) <= 0 ||
       !Number.isFinite(Number(fall.maxSpeed)) ||
@@ -6533,10 +7903,18 @@ ${audioSettingsHtml}
     if (!sbf) return;
 
     // Bind DOM references (fresh after render)
-    const lane = this.appEl ? this.appEl.querySelector("[data-wt-bonus-lane]") : null;
-    const chip = this.appEl ? this.appEl.querySelector("[data-wt-bonus-chip]") : null;
-    const failLineEl = this.appEl ? this.appEl.querySelector("[data-wt-bonus-fail]") : null;
-    const failLabel = this.appEl ? this.appEl.querySelector("[data-wt-bonus-fail-label]") : null;
+    const lane = this.appEl
+      ? this.appEl.querySelector('[data-wt-bonus-lane]')
+      : null;
+    const chip = this.appEl
+      ? this.appEl.querySelector('[data-wt-bonus-chip]')
+      : null;
+    const failLineEl = this.appEl
+      ? this.appEl.querySelector('[data-wt-bonus-fail]')
+      : null;
+    const failLabel = this.appEl
+      ? this.appEl.querySelector('[data-wt-bonus-fail-label]')
+      : null;
 
     if (!lane || !chip || !failLineEl) {
       this._secretBonusFallStop();
@@ -6548,20 +7926,25 @@ ${audioSettingsHtml}
     sbf.failLineEl = failLineEl;
     sbf.failLabelEl = failLabel || null;
 
-
     // Cache the available track height once (avoid layout reads every frame)
     try {
       const laneH = lane.getBoundingClientRect().height || 0;
       const chipH = chip.getBoundingClientRect().height || 0;
-      sbf.trackPxMax = Math.max(0, laneH - (Number.isFinite(chipH) ? chipH : 0));
+      sbf.trackPxMax = Math.max(
+        0,
+        laneH - (Number.isFinite(chipH) ? chipH : 0)
+      );
     } catch (_) {
       sbf.trackPxMax = 0;
     }
 
     // Detect new item -> reset fall position/speed
-    const cur = (this.game && typeof this.game.getCurrent === "function") ? this.game.getCurrent() : null;
-    const itemId = (cur && cur.id != null) ? String(cur.id) : "";
-    const itemKey = itemId ? `id:${itemId}` : "";
+    const cur =
+      this.game && typeof this.game.getCurrent === 'function'
+        ? this.game.getCurrent()
+        : null;
+    const itemId = cur && cur.id != null ? String(cur.id) : '';
+    const itemKey = itemId ? `id:${itemId}` : '';
 
     if (itemKey && itemKey !== sbf.itemKey) {
       sbf.itemKey = itemKey;
@@ -6575,19 +7958,19 @@ ${audioSettingsHtml}
       try {
         if (sbf.chipEl && sbf.chipEl.classList) {
           sbf.chipEl.classList.remove(
-            "wt-bonus-chip--warning",
-            "wt-bonus-chip--warning-once",
-            "wt-bonus-chip--spawn"
+            'wt-bonus-chip--warning',
+            'wt-bonus-chip--warning-once',
+            'wt-bonus-chip--spawn'
           );
-          sbf.chipEl.style.animationDuration = "";
+          sbf.chipEl.style.animationDuration = '';
         }
         if (sbf.failLineEl && sbf.failLineEl.classList) {
-          sbf.failLineEl.classList.remove("wt-bonus-fail-line--pulse");
+          sbf.failLineEl.classList.remove('wt-bonus-fail-line--pulse');
         }
         if (sbf.failLabelEl && sbf.failLabelEl.classList) {
-          sbf.failLabelEl.classList.remove("wt-bonus-fail-label--pulse");
+          sbf.failLabelEl.classList.remove('wt-bonus-fail-label--pulse');
         }
-      } catch (_) { }
+      } catch (_) {}
 
       // Speed contract (single type): progression based on items served (not time).
       // Config values are % of lane height per second (e.g. 25 => 25%/s),
@@ -6596,60 +7979,84 @@ ${audioSettingsHtml}
       const incPct = Number(fall.speedIncrement);
       const maxPct = Number(fall.maxSpeed);
 
-      const servedSoFar = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
+      const servedSoFar = Array.isArray(this._runtime?.runItemIds)
+        ? this._runtime.runItemIds.length
+        : 0;
 
-      if (!Number.isFinite(initialPct) || initialPct <= 0) { this._secretBonusFallStop(); return; }
-      if (!Number.isFinite(incPct) || incPct < 0) { this._secretBonusFallStop(); return; }
-      if (!Number.isFinite(maxPct) || maxPct <= 0) { this._secretBonusFallStop(); return; }
+      if (!Number.isFinite(initialPct) || initialPct <= 0) {
+        this._secretBonusFallStop();
+        return;
+      }
+      if (!Number.isFinite(incPct) || incPct < 0) {
+        this._secretBonusFallStop();
+        return;
+      }
+      if (!Number.isFinite(maxPct) || maxPct <= 0) {
+        this._secretBonusFallStop();
+        return;
+      }
 
-      const speedPct = Math.min(maxPct, Math.max(0, initialPct + (incPct * servedSoFar)));
+      const speedPct = Math.min(
+        maxPct,
+        Math.max(0, initialPct + incPct * servedSoFar)
+      );
       sbf.speed01PerSec = speedPct / 100;
 
       // Reset transform immediately
-      try { sbf.chipEl.style.transform = "translate3d(0px, 0px, 0px)"; } catch (_) { }
+      try {
+        sbf.chipEl.style.transform = 'translate3d(0px, 0px, 0px)';
+      } catch (_) {}
 
       // Micro-juice: spawn pop (1 shot)
       try {
         if (sbf.chipEl && sbf.chipEl.classList) {
-          sbf.chipEl.classList.add("wt-bonus-chip--spawn");
+          sbf.chipEl.classList.add('wt-bonus-chip--spawn');
 
           const onDone = () => {
-            try { sbf.chipEl.classList.remove("wt-bonus-chip--spawn"); } catch (_) { }
+            try {
+              sbf.chipEl.classList.remove('wt-bonus-chip--spawn');
+            } catch (_) {}
           };
 
-          sbf.chipEl.addEventListener("animationend", onDone, { once: true });
-          sbf.chipEl.addEventListener("animationcancel", onDone, { once: true });
+          sbf.chipEl.addEventListener('animationend', onDone, { once: true });
+          sbf.chipEl.addEventListener('animationcancel', onDone, {
+            once: true
+          });
         }
-      } catch (_) { }
-
-
+      } catch (_) {}
     }
 
     if (sbf.running === true) return;
 
     // Don't start falling while run-start overlay is visible (chip would move unseen).
     // The wt-runstart-dismissed event will re-trigger _secretBonusFallStartOrSync.
-    if (isOverlayVisible("wt-run-start-overlay")) return;
+    if (isOverlayVisible('wt-run-start-overlay')) return;
 
     sbf.running = true;
-    sbf.rafId = window.requestAnimationFrame((ts) => this._secretBonusFallTick(ts));
+    sbf.rafId = window.requestAnimationFrame((ts) =>
+      this._secretBonusFallTick(ts)
+    );
   };
-
 
   UI.prototype._secretBonusFallTick = function (ts) {
     const sbf = this._runtime?.secretBonusFall;
     if (!sbf || sbf.running !== true) return;
 
     // Validate still on BONUS playing with required DOM nodes
-    const modeNow = String(this._runtime?.runMode || "RUN").trim();
-    if (this.state !== STATES.PLAYING || modeNow !== "BONUS" || !sbf.laneEl || !sbf.chipEl) {
+    const modeNow = String(this._runtime?.runMode || 'RUN').trim();
+    if (
+      this.state !== STATES.PLAYING ||
+      modeNow !== 'BONUS' ||
+      !sbf.laneEl ||
+      !sbf.chipEl
+    ) {
       this._secretBonusFallStop();
       return;
     }
 
     const cfg = this.config || {};
     const fall = cfg?.secretBonus?.fall || null;
-    if (!fall || typeof fall !== "object") {
+    if (!fall || typeof fall !== 'object') {
       this._secretBonusFallStop();
       return;
     }
@@ -6676,7 +8083,10 @@ ${audioSettingsHtml}
       try {
         const laneRect = sbf.laneEl.getBoundingClientRect();
         const chipRect = sbf.chipEl.getBoundingClientRect();
-        trackPxMax = Math.max(0, Number(laneRect.height || 0) - Number(chipRect.height || 0));
+        trackPxMax = Math.max(
+          0,
+          Number(laneRect.height || 0) - Number(chipRect.height || 0)
+        );
         sbf.trackPxMax = trackPxMax;
       } catch (_) {
         trackPxMax = 0;
@@ -6694,7 +8104,9 @@ ${audioSettingsHtml}
 
     // First frame: just schedule next
     if (!last || !Number.isFinite(last)) {
-      sbf.rafId = window.requestAnimationFrame((t2) => this._secretBonusFallTick(t2));
+      sbf.rafId = window.requestAnimationFrame((t2) =>
+        this._secretBonusFallTick(t2)
+      );
       return;
     }
 
@@ -6703,19 +8115,24 @@ ${audioSettingsHtml}
 
     // Speed is set once per item in _secretBonusFallStartOrSync (items-served progression).
     // Clamp to max to fail-safe if config changed mid-run.
-    const speed01 = Math.min(maxSpeed01, Math.max(0, Number(sbf.speed01PerSec || 0)));
+    const speed01 = Math.min(
+      maxSpeed01,
+      Math.max(0, Number(sbf.speed01PerSec || 0))
+    );
     if (!Number.isFinite(speed01) || speed01 <= 0) {
       this._secretBonusFallStop();
       return;
     }
 
     // Clamp y01 to [0..1] so the chip never overshoots the track
-    sbf.y01 = Math.min(1, Math.max(0, Number(sbf.y01 || 0) + (speed01 * dtSec)));
+    sbf.y01 = Math.min(1, Math.max(0, Number(sbf.y01 || 0) + speed01 * dtSec));
 
     const yPx = sbf.y01 * trackPxMax;
 
     // Apply transform (no re-render)
-    try { sbf.chipEl.style.transform = `translate3d(0px, ${Math.round(yPx)}px, 0px)`; } catch (_) { }
+    try {
+      sbf.chipEl.style.transform = `translate3d(0px, ${Math.round(yPx)}px, 0px)`;
+    } catch (_) {}
 
     // Warning zone: keep the existing policy, but let micro-juice handle the "one-shot"
     if (Number.isFinite(danger01) && danger01 > 0 && sbf.chipEl) {
@@ -6723,47 +8140,61 @@ ${audioSettingsHtml}
       const inWarning = sbf.y01 >= warningThreshold;
 
       // Persistent warning pulse
-      sbf.chipEl.classList.toggle("wt-bonus-chip--warning", inWarning);
+      sbf.chipEl.classList.toggle('wt-bonus-chip--warning', inWarning);
 
       // Micro-juice: one-shot hit when entering the zone
       if (inWarning && sbf.wasInWarning !== true) {
         try {
-          sbf.chipEl.classList.remove("wt-bonus-chip--warning-once");
-          sbf.chipEl.classList.add("wt-bonus-chip--warning-once");
+          sbf.chipEl.classList.remove('wt-bonus-chip--warning-once');
+          sbf.chipEl.classList.add('wt-bonus-chip--warning-once');
 
           const onDone = () => {
-            try { sbf.chipEl.classList.remove("wt-bonus-chip--warning-once"); } catch (_) { }
+            try {
+              sbf.chipEl.classList.remove('wt-bonus-chip--warning-once');
+            } catch (_) {}
           };
-          sbf.chipEl.addEventListener("animationend", onDone, { once: true });
-          sbf.chipEl.addEventListener("animationcancel", onDone, { once: true });
-
-        } catch (_) { }
+          sbf.chipEl.addEventListener('animationend', onDone, { once: true });
+          sbf.chipEl.addEventListener('animationcancel', onDone, {
+            once: true
+          });
+        } catch (_) {}
 
         // Pulse the fail line + label once for clarity
         try {
           if (sbf.failLineEl && sbf.failLineEl.classList) {
-            sbf.failLineEl.classList.remove("wt-bonus-fail-line--pulse");
-            sbf.failLineEl.classList.add("wt-bonus-fail-line--pulse");
+            sbf.failLineEl.classList.remove('wt-bonus-fail-line--pulse');
+            sbf.failLineEl.classList.add('wt-bonus-fail-line--pulse');
 
             const onDoneLine = () => {
-              try { sbf.failLineEl.classList.remove("wt-bonus-fail-line--pulse"); } catch (_) { }
+              try {
+                sbf.failLineEl.classList.remove('wt-bonus-fail-line--pulse');
+              } catch (_) {}
             };
-            sbf.failLineEl.addEventListener("animationend", onDoneLine, { once: true });
-            sbf.failLineEl.addEventListener("animationcancel", onDoneLine, { once: true });
-
+            sbf.failLineEl.addEventListener('animationend', onDoneLine, {
+              once: true
+            });
+            sbf.failLineEl.addEventListener('animationcancel', onDoneLine, {
+              once: true
+            });
           }
 
           if (sbf.failLabelEl && sbf.failLabelEl.classList) {
-            sbf.failLabelEl.classList.remove("wt-bonus-fail-label--pulse");
-            sbf.failLabelEl.classList.add("wt-bonus-fail-label--pulse");
+            sbf.failLabelEl.classList.remove('wt-bonus-fail-label--pulse');
+            sbf.failLabelEl.classList.add('wt-bonus-fail-label--pulse');
 
             const onDoneLabel = () => {
-              try { sbf.failLabelEl.classList.remove("wt-bonus-fail-label--pulse"); } catch (_) { }
+              try {
+                sbf.failLabelEl.classList.remove('wt-bonus-fail-label--pulse');
+              } catch (_) {}
             };
-            sbf.failLabelEl.addEventListener("animationend", onDoneLabel, { once: true });
-            sbf.failLabelEl.addEventListener("animationcancel", onDoneLabel, { once: true });
+            sbf.failLabelEl.addEventListener('animationend', onDoneLabel, {
+              once: true
+            });
+            sbf.failLabelEl.addEventListener('animationcancel', onDoneLabel, {
+              once: true
+            });
           }
-        } catch (_) { }
+        } catch (_) {}
       }
 
       sbf.wasInWarning = inWarning;
@@ -6776,37 +8207,45 @@ ${audioSettingsHtml}
       return;
     }
 
-    sbf.rafId = window.requestAnimationFrame((t2) => this._secretBonusFallTick(t2));
+    sbf.rafId = window.requestAnimationFrame((t2) =>
+      this._secretBonusFallTick(t2)
+    );
   };
-
-
 
   // ============================================
   // Render
   // ============================================
   UI.prototype.render = function () {
-
     if (!this.appEl) return;
 
     // Safety net: clear stuck overlay locks on LANDING/END (fail-closed)
     if (this.state !== STATES.PLAYING) {
       try {
-        if (this.appEl.getAttribute("data-wt-runstart-lock") === "1") {
-          this.appEl.style.pointerEvents = "";
-          try { this.appEl.inert = false; } catch (_) { }
-          this.appEl.removeAttribute("data-wt-runstart-lock");
-          this.appEl.removeAttribute("data-wt-runstart-prev-pe");
-          this.appEl.removeAttribute("data-wt-runstart-prev-inert");
+        if (this.appEl.getAttribute('data-wt-runstart-lock') === '1') {
+          this.appEl.style.pointerEvents = '';
+          try {
+            this.appEl.inert = false;
+          } catch (_) {}
+          this.appEl.removeAttribute('data-wt-runstart-lock');
+          this.appEl.removeAttribute('data-wt-runstart-prev-pe');
+          this.appEl.removeAttribute('data-wt-runstart-prev-inert');
         }
-        if (this.appEl.inert === true) { try { this.appEl.inert = false; } catch (_) { } }
-        if (this.appEl.style.pointerEvents === "none") { this.appEl.style.pointerEvents = ""; }
-      } catch (_) { }
+        if (this.appEl.inert === true) {
+          try {
+            this.appEl.inert = false;
+          } catch (_) {}
+        }
+        if (this.appEl.style.pointerEvents === 'none') {
+          this.appEl.style.pointerEvents = '';
+        }
+      } catch (_) {}
     }
 
     const premium = isPremiumNow(this.storage);
 
-
-    const prevRenderedState = this._runtime ? this._runtime.lastRenderedState : null;
+    const prevRenderedState = this._runtime
+      ? this._runtime.lastRenderedState
+      : null;
 
     // Funnel counter: count LANDING views once per entry into the screen (not per re-render)
     try {
@@ -6814,28 +8253,39 @@ ${audioSettingsHtml}
       const next = this.state;
 
       if (next === STATES.LANDING && prev !== STATES.LANDING) {
-        if (this.storage && typeof this.storage.markLandingViewed === "function") {
+        if (
+          this.storage &&
+          typeof this.storage.markLandingViewed === 'function'
+        ) {
           this.storage.markLandingViewed();
         }
       }
 
       if (this._runtime) this._runtime.lastRenderedState = next;
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     // Preserve footer if it exists inside #app (otherwise leave it alone).
     // We keep the same DOM node (not HTML string) to avoid losing any nested content.
     if (!this._footerNode) {
       try {
         const candidate =
-          this.appEl.querySelector("[data-wt-footer]") ||
-          this.appEl.querySelector(".wt-footer") ||
-          this.appEl.querySelector("footer");
+          this.appEl.querySelector('[data-wt-footer]') ||
+          this.appEl.querySelector('.wt-footer') ||
+          this.appEl.querySelector('footer');
         if (candidate) this._footerNode = candidate;
-      } catch (_) { /* silent */ }
+      } catch (_) {
+        /* silent */
+      }
     }
 
     if (this._footerNode && this._footerNode.parentNode === this.appEl) {
-      try { this.appEl.removeChild(this._footerNode); } catch (_) { /* silent */ }
+      try {
+        this.appEl.removeChild(this._footerNode);
+      } catch (_) {
+        /* silent */
+      }
     }
     switch (this.state) {
       case STATES.LANDING:
@@ -6847,7 +8297,7 @@ ${audioSettingsHtml}
         // while the engine is already cleaned up. Never re-render PLAYING without a game.
         if (!this.game) return;
 
-        if (this.modalEl && !this.modalEl.classList.contains("wt-hidden")) {
+        if (this.modalEl && !this.modalEl.classList.contains('wt-hidden')) {
           this.closeModal();
         }
         this.appEl.innerHTML = this._renderPlaying();
@@ -6855,10 +8305,12 @@ ${audioSettingsHtml}
         // BONUS: re-bind fall DOM refs after every render (innerHTML detaches previous nodes).
         // _secretBonusFallStartOrSync is idempotent: if already running with same itemKey, it just rebinds refs.
         try {
-          if (String(this._runtime?.runMode || "").trim() === MODES.BONUS) {
+          if (String(this._runtime?.runMode || '').trim() === MODES.BONUS) {
             this._secretBonusFallStartOrSync();
           }
-        } catch (_) { /* silent */ }
+        } catch (_) {
+          /* silent */
+        }
         break;
 
       case STATES.END:
@@ -6876,131 +8328,186 @@ ${audioSettingsHtml}
 
     // Screen-scoped body class (CSS can react without DOM branching)
     try {
-      const playing = (this.state === STATES.PLAYING);
-      const ended = (this.state === STATES.END);
-      document.body.classList.toggle("wt-state--playing", playing);
-      document.body.classList.toggle("wt-state--end", ended);
-    } catch (_) { /* silent */ }
+      const playing = this.state === STATES.PLAYING;
+      const ended = this.state === STATES.END;
+      document.body.classList.toggle('wt-state--playing', playing);
+      document.body.classList.toggle('wt-state--end', ended);
+    } catch (_) {
+      /* silent */
+    }
 
     try {
       this._handleEndEntryModals(prevRenderedState, premium);
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
 
     try {
       syncDailyCountdownTicker(this);
-    } catch (_) { /* silent */ }
+    } catch (_) {
+      /* silent */
+    }
   };
 
-
-
   UI.prototype._handleEndEntryModals = function (prevRenderedState, premium) {
-    const enteredEnd = (this.state === STATES.END && prevRenderedState !== STATES.END);
+    const enteredEnd =
+      this.state === STATES.END && prevRenderedState !== STATES.END;
 
     // Clean up game-over overlay as soon as we are no longer on PLAYING.
     // Goal: keep PLAYING frozen under the overlay, but never let the overlay leak onto END/LANDING/PAYWALL.
     if (this.state !== STATES.PLAYING) {
-      try { hideChanceLostOverlay(); } catch (_) { /* silent */ }
+      try {
+        hideChanceLostOverlay();
+      } catch (_) {
+        /* silent */
+      }
     }
 
     if (!enteredEnd) return;
 
     const lastRun = this._runtime?.lastRun || {};
-    const mode = String(lastRun.mode || "").trim();
-    const enteredKnownEndMode = [MODES.RUN, MODES.PRACTICE, MODES.BONUS].includes(mode);
+    const mode = String(lastRun.mode || '').trim();
+    const enteredKnownEndMode = [
+      MODES.RUN,
+      MODES.PRACTICE,
+      MODES.BONUS
+    ].includes(mode);
 
     if (!enteredKnownEndMode) return;
 
     const delayMsRaw = Number(this.config?.ui?.endAutoModalDelayMs);
-    const delayMs = (Number.isFinite(delayMsRaw) && delayMsRaw >= 0 && delayMsRaw <= 4000)
-      ? Math.floor(delayMsRaw)
-      : null;
+    const delayMs =
+      Number.isFinite(delayMsRaw) && delayMsRaw >= 0 && delayMsRaw <= 4000
+        ? Math.floor(delayMsRaw)
+        : null;
 
     if (delayMs == null) return;
 
     if (this._runtime?.endAutoModalTimerId) {
-      clearRuntimeTimer(this, "endAutoModalTimerId")
+      clearRuntimeTimer(this, 'endAutoModalTimerId');
       this._runtime.endAutoModalTimerId = null;
     }
 
-    setRuntimeTimer(this, "endAutoModalTimerId", () => {
-      try {
-        if (this._runtime) this._runtime.endAutoModalTimerId = null;
-        if (this.state !== STATES.END) return;
-
-        const run = this._runtime?.lastRun || {};
-        const runMode = String(run.mode || "").trim();
-        if (![MODES.RUN, MODES.PRACTICE, MODES.BONUS].includes(runMode)) return;
-
-        const isRun = (runMode === MODES.RUN);
-        const poolCompleteCelebration = isRun && !!run.poolCompleteCelebration;
-
-        const modalOpen0 = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
-
-        // Pool complete modal
-        if (poolCompleteCelebration && !modalOpen0) {
-          this.openPoolCompleteModal();
-          return;
-        }
-
-        // Discovery milestones: END-only, RUN-only, not when pool is exhausted.
-        // Show at most one modal per END entry, prioritizing the highest reached threshold.
+    setRuntimeTimer(
+      this,
+      'endAutoModalTimerId',
+      () => {
         try {
-          const modalOpen1 = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
+          if (this._runtime) this._runtime.endAutoModalTimerId = null;
+          if (this.state !== STATES.END) return;
 
-          if (isRun && !poolCompleteCelebration && !modalOpen1) {
-            const poolSize = clampInt(this.config?.game?.poolSize, 0, 9999);
+          const run = this._runtime?.lastRun || {};
+          const runMode = String(run.mode || '').trim();
+          if (![MODES.RUN, MODES.PRACTICE, MODES.BONUS].includes(runMode))
+            return;
 
-            const thresholds = Array.isArray(this.config?.postCompletion?.milestoneThresholds)
-              ? this.config.postCompletion.milestoneThresholds
-              : null;
+          const isRun = runMode === MODES.RUN;
+          const poolCompleteCelebration =
+            isRun && !!run.poolCompleteCelebration;
 
-            const uniqueSeen =
-              (this.storage && typeof this.storage.getUniqueSeenCount === "function")
-                ? clampInt(this.storage.getUniqueSeenCount(), 0, 999999)
-                : 0;
+          const modalOpen0 = !!(
+            this.modalEl && !this.modalEl.classList.contains('wt-hidden')
+          );
 
-            const exhausted =
-              !!(this.storage && typeof this.storage.isPoolExhausted === "function" && this.storage.isPoolExhausted() === true);
-            if (!exhausted && poolSize > 0 && Array.isArray(thresholds)) {
-              const milestoneChecks = [
-                { key: "threeQuarters", index: 2, hasFn: "hasThreeQuartersMilestoneShown" },
-                { key: "halfway", index: 1, hasFn: "hasHalfwayMilestoneShown" },
-                { key: "quarter", index: 0, hasFn: "hasQuarterMilestoneShown" }
-              ];
+          // Pool complete modal
+          if (poolCompleteCelebration && !modalOpen0) {
+            this.openPoolCompleteModal();
+            return;
+          }
 
-              for (const item of milestoneChecks) {
-                const rawPct = Number(thresholds[item.index]);
-                const pct = (Number.isFinite(rawPct) && rawPct > 0 && rawPct < 1) ? rawPct : null;
-                const threshold = (pct != null) ? Math.floor(poolSize * pct) : 0;
-                const already =
-                  !!(item.hasFn && this.storage && typeof this.storage[item.hasFn] === "function" && this.storage[item.hasFn]() === true);
+          // Discovery milestones: END-only, RUN-only, not when pool is exhausted.
+          // Show at most one modal per END entry, prioritizing the highest reached threshold.
+          try {
+            const modalOpen1 = !!(
+              this.modalEl && !this.modalEl.classList.contains('wt-hidden')
+            );
 
-                if (threshold > 0 && uniqueSeen >= threshold && !already) {
-                  this.openMilestoneModal(item.key);
-                  return;
+            if (isRun && !poolCompleteCelebration && !modalOpen1) {
+              const poolSize = clampInt(this.config?.game?.poolSize, 0, 9999);
+
+              const thresholds = Array.isArray(
+                this.config?.postCompletion?.milestoneThresholds
+              )
+                ? this.config.postCompletion.milestoneThresholds
+                : null;
+
+              const uniqueSeen =
+                this.storage &&
+                typeof this.storage.getUniqueSeenCount === 'function'
+                  ? clampInt(this.storage.getUniqueSeenCount(), 0, 999999)
+                  : 0;
+
+              const exhausted = !!(
+                this.storage &&
+                typeof this.storage.isPoolExhausted === 'function' &&
+                this.storage.isPoolExhausted() === true
+              );
+              if (!exhausted && poolSize > 0 && Array.isArray(thresholds)) {
+                const milestoneChecks = [
+                  {
+                    key: 'threeQuarters',
+                    index: 2,
+                    hasFn: 'hasThreeQuartersMilestoneShown'
+                  },
+                  {
+                    key: 'halfway',
+                    index: 1,
+                    hasFn: 'hasHalfwayMilestoneShown'
+                  },
+                  {
+                    key: 'quarter',
+                    index: 0,
+                    hasFn: 'hasQuarterMilestoneShown'
+                  }
+                ];
+
+                for (const item of milestoneChecks) {
+                  const rawPct = Number(thresholds[item.index]);
+                  const pct =
+                    Number.isFinite(rawPct) && rawPct > 0 && rawPct < 1
+                      ? rawPct
+                      : null;
+                  const threshold =
+                    pct != null ? Math.floor(poolSize * pct) : 0;
+                  const already = !!(
+                    item.hasFn &&
+                    this.storage &&
+                    typeof this.storage[item.hasFn] === 'function' &&
+                    this.storage[item.hasFn]() === true
+                  );
+
+                  if (threshold > 0 && uniqueSeen >= threshold && !already) {
+                    this.openMilestoneModal(item.key);
+                    return;
+                  }
                 }
               }
             }
+          } catch (_) {
+            /* silent */
           }
-        } catch (_) { /* silent */ }
 
-        // Free limit reached must be intentional:
-        // gate on CTA click via startRun()/startRun(true), never auto-open on END.
+          // Free limit reached must be intentional:
+          // gate on CTA click via startRun()/startRun(true), never auto-open on END.
 
-        // Waitlist is now a stable LANDING block, not an END auto-modal.
-      } catch (_) { /* silent */ }
-    }, delayMs);
+          // Waitlist is now a stable LANDING block, not an END auto-modal.
+        } catch (_) {
+          /* silent */
+        }
+      },
+      delayMs
+    );
   };
 
   function renderLandingStatsCard(opts) {
-    const badgeHtml = String(opts?.badgeHtml || "");
-    const label = String(opts?.label || "").trim();
-    const title = String(opts?.title || "").trim();
-    const sub = String(opts?.sub || "").trim();
+    const badgeHtml = String(opts?.badgeHtml || '');
+    const label = String(opts?.label || '').trim();
+    const title = String(opts?.title || '').trim();
+    const sub = String(opts?.sub || '').trim();
     const pct = clampInt(Number(opts?.pct), 0, 100);
-    const progressClass = String(opts?.progressClass || "");
+    const progressClass = String(opts?.progressClass || '');
 
-    if (!badgeHtml && !label && !title && !sub) return "";
+    if (!badgeHtml && !label && !title && !sub) return '';
 
     return `
       <div class="wt-landing-stats">
@@ -7018,14 +8525,17 @@ ${audioSettingsHtml}
   }
 
   function renderEndCopyLine(text, cls) {
-    const value = String(text || "").trim();
-    if (!value) return "";
+    const value = String(text || '').trim();
+    if (!value) return '';
     return `<p class="${cls}">${escapeHtml(value)}</p>`;
   }
 
   UI.prototype._renderLanding = function () {
-    if (!window.WT_UI_Landing || typeof window.WT_UI_Landing.render !== "function") {
-      throw new Error("WT_UI_Landing.render missing");
+    if (
+      !window.WT_UI_Landing ||
+      typeof window.WT_UI_Landing.render !== 'function'
+    ) {
+      throw new Error('WT_UI_Landing.render missing');
     }
     return window.WT_UI_Landing.render(this, {
       escapeHtml,
@@ -7043,7 +8553,11 @@ ${audioSettingsHtml}
       hasSolvedSecretChestHint,
       mmss,
       renderLeaderboardLandingCard: function (ui) {
-        if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.renderLandingCard !== "function") return "";
+        if (
+          !window.WT_UI_Leaderboard ||
+          typeof window.WT_UI_Leaderboard.renderLandingCard !== 'function'
+        )
+          return '';
         return window.WT_UI_Leaderboard.renderLandingCard(ui, { escapeHtml });
       }
     });
@@ -7051,33 +8565,45 @@ ${audioSettingsHtml}
 
   function buildEndModeCopy(ctx) {
     const {
-      isRun, isPractice, isBonus,
-      cfg, bonusW, practiceW, end,
-      scoreFP, totalPresented, seen,
-      lastRun, vars, storage, runtime
+      isRun,
+      isPractice,
+      isBonus,
+      cfg,
+      bonusW,
+      practiceW,
+      end,
+      scoreFP,
+      totalPresented,
+      seen,
+      lastRun,
+      vars,
+      storage,
+      runtime
     } = ctx;
 
-    let endLineTpl = "";
-    let bonusLevel = "";
-    let bonusIdentityTpl = "";
-    let bonusLensTpl = "";
-    let practiceRepeatTierKey = "";
-    let practiceStatsLineTpl = "";
-    let practiceRepeatNoteTpl = "";
-    let runVerdictKey = "";
-    let runIdentityTpl = "";
-    let runPoolCompleteLine2Tpl = "";
-    let bonusDeckTier = "";
-    let bonusRecoLine = "";
+    let endLineTpl = '';
+    let bonusLevel = '';
+    let bonusIdentityTpl = '';
+    let bonusLensTpl = '';
+    let practiceRepeatTierKey = '';
+    let practiceStatsLineTpl = '';
+    let practiceRepeatNoteTpl = '';
+    let runVerdictKey = '';
+    let runIdentityTpl = '';
+    let runPoolCompleteLine2Tpl = '';
+    let bonusDeckTier = '';
+    let bonusRecoLine = '';
 
     if (isBonus) {
       const total = clampInt(totalPresented, 0, 99999);
 
       if (total > 0) {
         const accuracy = scoreFP / total;
-        const tiers = Array.isArray(cfg?.secretBonus?.endTiers) ? cfg.secretBonus.endTiers : [];
+        const tiers = Array.isArray(cfg?.secretBonus?.endTiers)
+          ? cfg.secretBonus.endTiers
+          : [];
         for (const t of tiers) {
-          const key = String(t?.key || "").trim();
+          const key = String(t?.key || '').trim();
           const min = Number(t?.minAccuracy);
           if (!key || !Number.isFinite(min)) continue;
           if (accuracy >= min) {
@@ -7087,10 +8613,12 @@ ${audioSettingsHtml}
         }
       }
 
-      const deckTiers = Array.isArray(cfg?.secretBonus?.endDeckTiers) ? cfg.secretBonus.endDeckTiers : [];
-      const seenCount = (seen != null && Number.isFinite(seen)) ? seen : 0;
+      const deckTiers = Array.isArray(cfg?.secretBonus?.endDeckTiers)
+        ? cfg.secretBonus.endDeckTiers
+        : [];
+      const seenCount = seen != null && Number.isFinite(seen) ? seen : 0;
       for (const dt of deckTiers) {
-        const key = String(dt?.key || "").trim();
+        const key = String(dt?.key || '').trim();
         const min = Number(dt?.minSeen);
         if (!key || !Number.isFinite(min)) continue;
         if (seenCount >= min) {
@@ -7099,106 +8627,139 @@ ${audioSettingsHtml}
         }
       }
 
-      const byTier = bonusW && typeof bonusW === "object" ? bonusW.endByTier : null;
-      const lines = (bonusLevel && Array.isArray(byTier?.[bonusLevel])) ? byTier[bonusLevel] : null;
+      const byTier =
+        bonusW && typeof bonusW === 'object' ? bonusW.endByTier : null;
+      const lines =
+        bonusLevel && Array.isArray(byTier?.[bonusLevel])
+          ? byTier[bonusLevel]
+          : null;
       endLineTpl =
-        (lines && lines.length === 2)
-          ? `${String(lines[0] || "").trim()} ${String(lines[1] || "").trim()}`.trim()
-          : "";
+        lines && lines.length === 2
+          ? `${String(lines[0] || '').trim()} ${String(lines[1] || '').trim()}`.trim()
+          : '';
       if (total > 0 && scoreFP === 0) {
-        const zeroLine = String(bonusW?.endLineZero || "").trim();
+        const zeroLine = String(bonusW?.endLineZero || '').trim();
         if (zeroLine) endLineTpl = zeroLine;
       }
 
       if (bonusLevel && bonusDeckTier) {
         const recoKey = `${bonusLevel}_${bonusDeckTier}`;
-        bonusRecoLine = String(bonusW?.endRecoByTier?.[recoKey] || "").trim();
+        bonusRecoLine = String(bonusW?.endRecoByTier?.[recoKey] || '').trim();
       }
     } else if (isPractice) {
-      let practiceEndLineTpl = String(practiceW.endLine || "").trim();
-      const practiceEndStatsTpl = String(practiceW.endStatsLine || "").trim();
-      const practiceEndStatsAllFixedTpl = String(practiceW.endStatsLineAllFixed || "").trim();
-      const rawMistakeCount = Array.isArray(lastRun.mistakeIds) ? lastRun.mistakeIds.length : 0;
+      let practiceEndLineTpl = String(practiceW.endLine || '').trim();
+      const practiceEndStatsTpl = String(practiceW.endStatsLine || '').trim();
+      const practiceEndStatsAllFixedTpl = String(
+        practiceW.endStatsLineAllFixed || ''
+      ).trim();
+      const rawMistakeCount = Array.isArray(lastRun.mistakeIds)
+        ? lastRun.mistakeIds.length
+        : 0;
       const total = clampInt(totalPresented, 0, 99999);
       const mistakeCount = clampInt(rawMistakeCount, 0, total);
 
       let remainingBacklog = null;
       try {
-        if (storage && typeof storage.getActiveMistakesCount === "function") {
-          remainingBacklog = clampInt(storage.getActiveMistakesCount(), 0, 99999);
+        if (storage && typeof storage.getActiveMistakesCount === 'function') {
+          remainingBacklog = clampInt(
+            storage.getActiveMistakesCount(),
+            0,
+            99999
+          );
         }
-      } catch (_) { remainingBacklog = null; }
+      } catch (_) {
+        remainingBacklog = null;
+      }
 
       let backlogAtStart = clampInt(runtime?.practiceBacklogAtStart, 0, 99999);
       if (!backlogAtStart && remainingBacklog != null) {
         backlogAtStart = remainingBacklog + mistakeCount;
       }
-      const fixedCount = (remainingBacklog == null)
-        ? 0
-        : clampInt(backlogAtStart - remainingBacklog, 0, backlogAtStart);
+      const fixedCount =
+        remainingBacklog == null
+          ? 0
+          : clampInt(backlogAtStart - remainingBacklog, 0, backlogAtStart);
 
       vars.fixed = fixedCount;
       if (remainingBacklog != null) vars.remaining = remainingBacklog;
 
       if (remainingBacklog === 0) {
-        const allFixedLine = String(practiceW.endLineAllFixed || "").trim();
+        const allFixedLine = String(practiceW.endLineAllFixed || '').trim();
         if (allFixedLine) practiceEndLineTpl = allFixedLine;
       }
 
-      let repeatNote = "";
+      let repeatNote = '';
       try {
-        const tiers = Array.isArray(cfg?.routing?.practiceRepeatTiers) ? cfg.routing.practiceRepeatTiers : null;
+        const tiers = Array.isArray(cfg?.routing?.practiceRepeatTiers)
+          ? cfg.routing.practiceRepeatTiers
+          : null;
 
-        if (tiers && remainingBacklog != null && remainingBacklog >= 1 && fixedCount >= 1) {
+        if (
+          tiers &&
+          remainingBacklog != null &&
+          remainingBacklog >= 1 &&
+          fixedCount >= 1
+        ) {
           for (const t of tiers) {
-            const key = String(t?.key || "").trim();
+            const key = String(t?.key || '').trim();
             const rawMin = Number(t?.minRemaining);
-            const min = (Number.isFinite(rawMin) && rawMin >= 1) ? Math.floor(rawMin) : null;
+            const min =
+              Number.isFinite(rawMin) && rawMin >= 1
+                ? Math.floor(rawMin)
+                : null;
             if (!key || min == null) continue;
             if (remainingBacklog < min) continue;
-            if (key === "last" && remainingBacklog !== 1) continue;
-            if (key === "light" && fixedCount < remainingBacklog) continue;
+            if (key === 'last' && remainingBacklog !== 1) continue;
+            if (key === 'light' && fixedCount < remainingBacklog) continue;
             practiceRepeatTierKey = key;
             break;
           }
         }
 
         const tpl = practiceRepeatTierKey
-          ? String(practiceW?.endRepeatNoteByTier?.[practiceRepeatTierKey] || "").trim()
-          : "";
+          ? String(
+              practiceW?.endRepeatNoteByTier?.[practiceRepeatTierKey] || ''
+            ).trim()
+          : '';
         if (tpl) repeatNote = tpl;
       } catch (_) {
-        repeatNote = "";
-        practiceRepeatTierKey = "";
+        repeatNote = '';
+        practiceRepeatTierKey = '';
       }
 
       if (practiceRepeatTierKey) {
-        const tierLine = String(practiceW?.endLineByTier?.[practiceRepeatTierKey] || "").trim();
+        const tierLine = String(
+          practiceW?.endLineByTier?.[practiceRepeatTierKey] || ''
+        ).trim();
         if (tierLine) practiceEndLineTpl = tierLine;
       }
       if (total > 0 && scoreFP === 0 && remainingBacklog !== 0) {
-        const zeroLine = String(practiceW?.endLineZero || "").trim();
+        const zeroLine = String(practiceW?.endLineZero || '').trim();
         if (zeroLine) practiceEndLineTpl = zeroLine;
       }
 
       endLineTpl = practiceEndLineTpl;
       practiceStatsLineTpl =
-        (remainingBacklog === 0 && practiceEndStatsAllFixedTpl)
+        remainingBacklog === 0 && practiceEndStatsAllFixedTpl
           ? practiceEndStatsAllFixedTpl
-          : ((practiceEndStatsTpl && remainingBacklog != null) ? practiceEndStatsTpl : "");
+          : practiceEndStatsTpl && remainingBacklog != null
+            ? practiceEndStatsTpl
+            : '';
       practiceRepeatNoteTpl = repeatNote;
     } else {
       if (isRun && !!lastRun.poolCompleteCelebration) {
-        endLineTpl = String(end.poolCompleteLine1 || "").trim();
-        runPoolCompleteLine2Tpl = String(end.poolCompleteLine2 || "").trim();
+        endLineTpl = String(end.poolCompleteLine1 || '').trim();
+        runPoolCompleteLine2Tpl = String(end.poolCompleteLine2 || '').trim();
       } else {
-        endLineTpl = String(end.endLine || "").trim();
+        endLineTpl = String(end.endLine || '').trim();
       }
 
       runVerdictKey = getRunVerdictKeyFromScore(cfg, scoreFP);
-      runIdentityTpl = String(end?.identityByVerdict?.[runVerdictKey] || "").trim();
+      runIdentityTpl = String(
+        end?.identityByVerdict?.[runVerdictKey] || ''
+      ).trim();
       if (totalPresented > 0 && scoreFP === 0) {
-        const zeroLine = String(end?.identityZero || "").trim();
+        const zeroLine = String(end?.identityZero || '').trim();
         if (zeroLine) runIdentityTpl = zeroLine;
       }
     }
@@ -7242,65 +8803,120 @@ ${audioSettingsHtml}
     const lines = [];
 
     if (isPractice) {
-      const statsLine = practiceStatsLineTpl ? fillTemplate(practiceStatsLineTpl, vars) : "";
-      const repeatLine = practiceRepeatNoteTpl ? fillTemplate(practiceRepeatNoteTpl, vars) : "";
-      if (statsLine) lines.push(renderEndCopyLine(statsLine, "wt-end-copy__stats"));
-      if (endLine) lines.push(renderEndCopyLine(endLine, "wt-end-copy__verdict"));
-      if (repeatLine) lines.push(renderEndCopyLine(repeatLine, "wt-end-copy__note"));
-      return lines.join("");
+      const statsLine = practiceStatsLineTpl
+        ? fillTemplate(practiceStatsLineTpl, vars)
+        : '';
+      const repeatLine = practiceRepeatNoteTpl
+        ? fillTemplate(practiceRepeatNoteTpl, vars)
+        : '';
+      if (statsLine)
+        lines.push(renderEndCopyLine(statsLine, 'wt-end-copy__stats'));
+      if (endLine)
+        lines.push(renderEndCopyLine(endLine, 'wt-end-copy__verdict'));
+      if (repeatLine)
+        lines.push(renderEndCopyLine(repeatLine, 'wt-end-copy__note'));
+      return lines.join('');
     }
 
     if (isBonus) {
-      if (bonusStatsLine) lines.push(renderEndCopyLine(bonusStatsLine, "wt-end-copy__stats"));
-      if (endLine) lines.push(renderEndCopyLine(endLine, "wt-end-copy__verdict"));
-      if (bonusDecisionLine) lines.push(renderEndCopyLine(bonusDecisionLine, "wt-end-copy__note"));
-      return lines.join("");
+      if (bonusStatsLine)
+        lines.push(renderEndCopyLine(bonusStatsLine, 'wt-end-copy__stats'));
+      if (endLine)
+        lines.push(renderEndCopyLine(endLine, 'wt-end-copy__verdict'));
+      if (bonusDecisionLine)
+        lines.push(renderEndCopyLine(bonusDecisionLine, 'wt-end-copy__note'));
+      return lines.join('');
     }
 
     if (isRun) {
-      const directToConsolidation =
-        !!(poolCompleteCelebration && clampInt(vars.backlog, 0, 99999) === 0);
+      const directToConsolidation = !!(
+        poolCompleteCelebration && clampInt(vars.backlog, 0, 99999) === 0
+      );
       const directToConsolidationLine = directToConsolidation
-        ? String(end.directToConsolidationLine || "").trim()
-        : "";
+        ? String(end.directToConsolidationLine || '').trim()
+        : '';
 
-      if (runStatsLine) lines.push(renderEndCopyLine(runStatsLine, "wt-end-copy__stats"));
-      if (endLine) lines.push(renderEndCopyLine(endLine, "wt-end-copy__verdict"));
-      if (directToConsolidationLine) lines.push(renderEndCopyLine(directToConsolidationLine, "wt-end-copy__note"));
-      if (runIdentityTpl) lines.push(renderEndCopyLine(fillTemplate(runIdentityTpl, vars), "wt-end-copy__note"));
-      if (!premium && freeRunMessage) lines.push(renderEndCopyLine(freeRunMessage, "wt-end-copy__free"));
+      if (runStatsLine)
+        lines.push(renderEndCopyLine(runStatsLine, 'wt-end-copy__stats'));
+      if (endLine)
+        lines.push(renderEndCopyLine(endLine, 'wt-end-copy__verdict'));
+      if (directToConsolidationLine)
+        lines.push(
+          renderEndCopyLine(directToConsolidationLine, 'wt-end-copy__note')
+        );
+      if (runIdentityTpl)
+        lines.push(
+          renderEndCopyLine(
+            fillTemplate(runIdentityTpl, vars),
+            'wt-end-copy__note'
+          )
+        );
+      if (!premium && freeRunMessage)
+        lines.push(renderEndCopyLine(freeRunMessage, 'wt-end-copy__free'));
       if (runPoolCompleteLine2Tpl && !directToConsolidation) {
-        lines.push(renderEndCopyLine(fillTemplate(runPoolCompleteLine2Tpl, vars), "wt-end-copy__note"));
+        lines.push(
+          renderEndCopyLine(
+            fillTemplate(runPoolCompleteLine2Tpl, vars),
+            'wt-end-copy__note'
+          )
+        );
       }
-      return lines.join("");
+      return lines.join('');
     }
 
-    if (endLine) lines.push(renderEndCopyLine(endLine, "wt-end-copy__verdict"));
-    return lines.join("");
+    if (endLine) lines.push(renderEndCopyLine(endLine, 'wt-end-copy__verdict'));
+    return lines.join('');
   }
 
   function buildEndMistakesRecap(ctx) {
-    const { isRun, isPractice, isBonus, lastRun, maxChances, bonusW, practiceW, end, runtime, ui, cfg, vars } = ctx;
-    if (!isRun && !isPractice && !isBonus) return "";
+    const {
+      isRun,
+      isPractice,
+      isBonus,
+      lastRun,
+      maxChances,
+      bonusW,
+      practiceW,
+      end,
+      runtime,
+      ui,
+      cfg,
+      vars
+    } = ctx;
+    if (!isRun && !isPractice && !isBonus) return '';
 
     const rawIds = Array.isArray(lastRun.mistakeIds) ? lastRun.mistakeIds : [];
     const ids = isRun ? rawIds.slice(0, maxChances) : rawIds.slice();
-    const recapW = isBonus ? (bonusW || {}) : (isPractice ? (practiceW || {}) : (end || {}));
+    const recapW = isBonus
+      ? bonusW || {}
+      : isPractice
+        ? practiceW || {}
+        : end || {};
 
-    const toggleTpl = String(recapW.mistakesToggle || end.mistakesToggle || "").trim();
-    const title = String(recapW.mistakesTitle || end.mistakesTitle || "").trim();
+    const toggleTpl = String(
+      recapW.mistakesToggle || end.mistakesToggle || ''
+    ).trim();
+    const title = String(
+      recapW.mistakesTitle || end.mistakesTitle || ''
+    ).trim();
 
     if (!ids.length) {
-      return "";
+      return '';
     }
 
-    const labelRaw = toggleTpl ? fillTemplate(toggleTpl, { count: String(ids.length) }) : title;
-    const label = String(labelRaw || "").replace(/\(\s*\)/g, "").replace(/\s+/g, " ").trim();
-    if (!label) return "";
+    const labelRaw = toggleTpl
+      ? fillTemplate(toggleTpl, { count: String(ids.length) })
+      : title;
+    const label = String(labelRaw || '')
+      .replace(/\(\s*\)/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!label) return '';
 
-    const byId = (runtime && runtime.contentById && typeof runtime.contentById === "object")
-      ? runtime.contentById
-      : {};
+    const byId =
+      runtime && runtime.contentById && typeof runtime.contentById === 'object'
+        ? runtime.contentById
+        : {};
 
     const items = [];
     for (const rawId of ids) {
@@ -7308,37 +8924,54 @@ ${audioSettingsHtml}
       if (!Number.isFinite(id)) continue;
       const it = byId[String(id)] || null;
       const t = extractTermsFromItem(it);
-      const questionText = String(t.question || "").trim();
+      const questionText = String(t.question || '').trim();
       if (!questionText) continue;
 
-      const answerLabel = (t.correctAnswer === true)
-        ? String(ui.trueLabel || "").trim()
-        : (t.correctAnswer === false)
-          ? String(ui.falseLabel || "").trim()
-          : "";
+      const answerLabel =
+        t.correctAnswer === true
+          ? String(ui.trueLabel || '').trim()
+          : t.correctAnswer === false
+            ? String(ui.falseLabel || '').trim()
+            : '';
 
-      const expl = String(t.explanationShort || "").trim();
+      const expl = String(t.explanationShort || '').trim();
       const pairHtml = answerLabel
         ? `<span class="wt-mistake-pair">${escapeHtml(questionText)} <strong>(${escapeHtml(answerLabel)})</strong></span>`
         : `<span class="wt-mistake-pair">${escapeHtml(questionText)}</span>`;
-      const explHtml = expl ? `<span class="wt-mistake-expl">${formatExplanationForDisplay(expl, cfg, questionText)}</span>` : "";
+      const explHtml = expl
+        ? `<span class="wt-mistake-expl">${formatExplanationForDisplay(expl, cfg, questionText)}</span>`
+        : '';
       items.push(`<div class="wt-mistake-item">${pairHtml}${explHtml}</div>`);
     }
 
-    const openAttr = (vars && Number(vars.backlog) > 0) ? " open" : "";
-  return `
+    const openAttr = vars && Number(vars.backlog) > 0 ? ' open' : '';
+    return `
   <details class="wt-accordion"${openAttr}>
-    <summary class="wt-accordion-toggle">${renderIcon("chevron-right")}<span>${escapeHtml(label)}</span></summary>
-    <div class="wt-accordion-content">${items.join("")}</div>
+    <summary class="wt-accordion-toggle">${renderIcon('chevron-right')}<span>${escapeHtml(label)}</span></summary>
+    <div class="wt-accordion-content">${items.join('')}</div>
   </details>
 `;
   }
 
   function buildEndMicroLines(ctx) {
     const {
-      isRun, premium, end, runtime, pbLine, poolCompleteCelebration,
-      runIdentityTpl, vars, pbPremiumHint, freeRunMessage, lastRun, wording,
-      streakLine, tierLine, tierNextLine, dailyChallengeLine, beatBestLine
+      isRun,
+      premium,
+      end,
+      runtime,
+      pbLine,
+      poolCompleteCelebration,
+      runIdentityTpl,
+      vars,
+      pbPremiumHint,
+      freeRunMessage,
+      lastRun,
+      wording,
+      streakLine,
+      tierLine,
+      tierNextLine,
+      dailyChallengeLine,
+      beatBestLine
     } = ctx;
 
     const microLines = [];
@@ -7349,45 +8982,93 @@ ${audioSettingsHtml}
       // (beat your best, best streak, daily challenge). If none of these are available,
       // we deliberately fall back to category insights, then older PB/tier/support lines
       // instead of leaving the END summary empty.
-      if (beatBestLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`);
-      if (streakLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`);
-      if (dailyChallengeLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`);
+      if (beatBestLine)
+        microLines.push(
+          `<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`
+        );
+      if (streakLine)
+        microLines.push(
+          `<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`
+        );
+      if (dailyChallengeLine)
+        microLines.push(
+          `<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`
+        );
 
       if (microLines.length) {
         return `
     <div class="wt-end-table">
-      ${microLines.slice(0, 3).map((line) => `<div class="wt-end-table__row">${line}</div>`).join("")}
+      ${microLines
+        .slice(0, 3)
+        .map((line) => `<div class="wt-end-table__row">${line}</div>`)
+        .join('')}
     </div>
   `;
       }
 
-      const strongestTagTpl = String(end?.strongestTagLine || "").trim();
-      const weakestTagTpl = String(end?.weakestTagLine || "").trim();
-      const copyByTag = (end && typeof end.endTagHighlights === "object") ? end.endTagHighlights : null;
-      const runMistakeIds = Array.isArray(lastRun?.mistakeIds) ? lastRun.mistakeIds : [];
-      const runItemIds = Array.isArray(lastRun?.runItemIds) ? lastRun.runItemIds : [];
-      const correctAnswers = clampInt(runItemIds.length - runMistakeIds.length, 0, 99999);
-      const allowCategoryInsights = correctAnswers >= 5;
-      const byId = (runtime && runtime.contentById && typeof runtime.contentById === "object")
-        ? runtime.contentById
-        : {};
-      const ignored = new Set(["Easy", "Medium", "Intermediate", "Hard", "Singles", "Doubles", "Tournament", "Both", "Singles only", "Doubles only"]);
-      const formatEndTag = (tag) => {
-        const raw = String(tag || "").trim();
-        if (!raw) return "";
-        const tagLabels = (wording && wording.common && typeof wording.common.tagLabels === "object")
-          ? wording.common.tagLabels
+      const strongestTagTpl = String(end?.strongestTagLine || '').trim();
+      const weakestTagTpl = String(end?.weakestTagLine || '').trim();
+      const copyByTag =
+        end && typeof end.endTagHighlights === 'object'
+          ? end.endTagHighlights
           : null;
-        if (tagLabels && typeof tagLabels[raw] === "string" && tagLabels[raw].trim()) {
+      const runMistakeIds = Array.isArray(lastRun?.mistakeIds)
+        ? lastRun.mistakeIds
+        : [];
+      const runItemIds = Array.isArray(lastRun?.runItemIds)
+        ? lastRun.runItemIds
+        : [];
+      const correctAnswers = clampInt(
+        runItemIds.length - runMistakeIds.length,
+        0,
+        99999
+      );
+      const allowCategoryInsights = correctAnswers >= 5;
+      const byId =
+        runtime &&
+        runtime.contentById &&
+        typeof runtime.contentById === 'object'
+          ? runtime.contentById
+          : {};
+      const ignored = new Set([
+        'Easy',
+        'Medium',
+        'Intermediate',
+        'Hard',
+        'Singles',
+        'Doubles',
+        'Tournament',
+        'Both',
+        'Singles only',
+        'Doubles only'
+      ]);
+      const formatEndTag = (tag) => {
+        const raw = String(tag || '').trim();
+        if (!raw) return '';
+        const tagLabels =
+          wording &&
+          wording.common &&
+          typeof wording.common.tagLabels === 'object'
+            ? wording.common.tagLabels
+            : null;
+        if (
+          tagLabels &&
+          typeof tagLabels[raw] === 'string' &&
+          tagLabels[raw].trim()
+        ) {
           return tagLabels[raw].trim();
         }
-        return raw.replace(/_/g, " ");
+        return raw.replace(/_/g, ' ');
       };
 
       let strongestShown = false;
       let weakestShown = false;
 
-      if (allowCategoryInsights && runItemIds.length > 0 && (strongestTagTpl || weakestTagTpl)) {
+      if (
+        allowCategoryInsights &&
+        runItemIds.length > 0 &&
+        (strongestTagTpl || weakestTagTpl)
+      ) {
         const servedCounts = Object.create(null);
         const mistakeCounts = Object.create(null);
 
@@ -7395,7 +9076,11 @@ ${audioSettingsHtml}
           const item = byId[String(rawId)] || byId[rawId] || null;
           const tags = extractTagsFromItem(item).filter((t) => !ignored.has(t));
           for (const tag of tags) {
-            servedCounts[tag] = clampInt(Number(servedCounts[tag] || 0) + 1, 0, 9999);
+            servedCounts[tag] = clampInt(
+              Number(servedCounts[tag] || 0) + 1,
+              0,
+              9999
+            );
           }
         }
 
@@ -7403,14 +9088,18 @@ ${audioSettingsHtml}
           const item = byId[String(rawId)] || byId[rawId] || null;
           const tags = extractTagsFromItem(item).filter((t) => !ignored.has(t));
           for (const tag of tags) {
-            mistakeCounts[tag] = clampInt(Number(mistakeCounts[tag] || 0) + 1, 0, 9999);
+            mistakeCounts[tag] = clampInt(
+              Number(mistakeCounts[tag] || 0) + 1,
+              0,
+              9999
+            );
           }
         }
 
-        let strongestTag = "";
+        let strongestTag = '';
         let strongestCount = 0;
         let strongestTie = false;
-        let weakestTag = "";
+        let weakestTag = '';
         let weakestCount = 0;
         let weakestTie = false;
 
@@ -7436,18 +9125,33 @@ ${audioSettingsHtml}
           }
         }
 
-        if (!strongestTie && strongestCount > 0 && strongestTag && strongestTagTpl) {
-          microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(strongestTagTpl, { tag: formatEndTag(strongestTag) }))}</p>`);
+        if (
+          !strongestTie &&
+          strongestCount > 0 &&
+          strongestTag &&
+          strongestTagTpl
+        ) {
+          microLines.push(
+            `<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(strongestTagTpl, { tag: formatEndTag(strongestTag) }))}</p>`
+          );
           strongestShown = true;
         }
 
         if (!weakestTie && weakestCount > 0 && weakestTag && weakestTagTpl) {
-          microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(weakestTagTpl, { tag: formatEndTag(weakestTag) }))}</p>`);
+          microLines.push(
+            `<p class="wt-meta wt-truncate">${escapeHtml(fillTemplate(weakestTagTpl, { tag: formatEndTag(weakestTag) }))}</p>`
+          );
           weakestShown = true;
         }
       }
 
-      if (allowCategoryInsights && !strongestShown && !weakestShown && copyByTag && runMistakeIds.length > 0) {
+      if (
+        allowCategoryInsights &&
+        !strongestShown &&
+        !weakestShown &&
+        copyByTag &&
+        runMistakeIds.length > 0
+      ) {
         const counts = Object.create(null);
 
         for (const rawId of runMistakeIds) {
@@ -7458,7 +9162,7 @@ ${audioSettingsHtml}
           }
         }
 
-        let bestTag = "";
+        let bestTag = '';
         let bestCount = 0;
         let tie = false;
         for (const tag in counts) {
@@ -7473,71 +9177,110 @@ ${audioSettingsHtml}
         }
 
         if (!tie && bestCount >= 1) {
-          const line = String(copyByTag[bestTag] || "").trim();
-          if (line) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(line)}</p>`);
+          const line = String(copyByTag[bestTag] || '').trim();
+          if (line)
+            microLines.push(
+              `<p class="wt-meta wt-truncate">${escapeHtml(line)}</p>`
+            );
         }
       }
     }
 
-    if (pbLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbLine)}</p>`);
-    if (pbPremiumHint) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbPremiumHint)}</p>`);
-    if (streakLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`);
-    if (tierLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(tierLine)}</p>`);
-    if (tierNextLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(tierNextLine)}</p>`);
-    if (dailyChallengeLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`);
-    if (beatBestLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`);
+    if (pbLine)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(pbLine)}</p>`
+      );
+    if (pbPremiumHint)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(pbPremiumHint)}</p>`
+      );
+    if (streakLine)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`
+      );
+    if (tierLine)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(tierLine)}</p>`
+      );
+    if (tierNextLine)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(tierNextLine)}</p>`
+      );
+    if (dailyChallengeLine)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`
+      );
+    if (beatBestLine)
+      microLines.push(
+        `<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`
+      );
 
     return microLines.length
       ? `
     <div class="wt-end-table">
-      ${microLines.slice(0, 3).map((line) => `<div class="wt-end-table__row">${line}</div>`).join("")}
+      ${microLines
+        .slice(0, 3)
+        .map((line) => `<div class="wt-end-table__row">${line}</div>`)
+        .join('')}
     </div>
   `
-      : "";
+      : '';
   }
 
   function buildEndShareBlock(ctx) {
     const { shareEnabled, w, shareTitle, getShareText } = ctx;
-    if (!shareEnabled) return "";
+    if (!shareEnabled) return '';
 
     const share = w.share || {};
-    const title = String(shareTitle || "").trim();
-    const ctaLabel = String(share.ctaLabel || "").trim();
-    const emailLabel = String(share.emailLabel || "").trim();
-    const emailSubject = String(share.emailSubject || "").trim();
-    const shareAria = String(w.system?.shareAria || "").trim();
-    const text = String(getShareText ? getShareText() : "").trim();
+    const title = String(shareTitle || '').trim();
+    const ctaLabel = String(share.ctaLabel || '').trim();
+    const emailLabel = String(share.emailLabel || '').trim();
+    const emailSubject = String(share.emailSubject || '').trim();
+    const shareAria = String(w.system?.shareAria || '').trim();
+    const text = String(getShareText ? getShareText() : '').trim();
 
     const canCopy = !!(ctaLabel && text);
     const canEmail = !!(emailLabel && emailSubject && text);
 
-    if (!title && !text) return "";
-    if (!canCopy && !canEmail && !text) return "";
+    if (!title && !text) return '';
+    if (!canCopy && !canEmail && !text) return '';
 
     return `
       <details class="wt-accordion">
         <summary class="wt-accordion-toggle" aria-label="${escapeHtml(shareAria)}">
-          ${renderIcon("chevron-right")}<span>${escapeHtml(title)}</span>
+          ${renderIcon('chevron-right')}<span>${escapeHtml(title)}</span>
         </summary>
 
         <div class="wt-accordion-content">
           ${text ? `<p class="wt-muted wt-text-wrap-anywhere">${escapeHtml(text)}</p>` : ``}
 
-          ${(canCopy || canEmail) ? `
+          ${
+            canCopy || canEmail
+              ? `
             <div class="wt-actions">
-              ${canCopy ? `
+              ${
+                canCopy
+                  ? `
                 <button type="button" class="wt-btn wt-btn--secondary" data-action="copy-share">
                   ${escapeHtml(ctaLabel)}
                 </button>
-              ` : ``}
+              `
+                  : ``
+              }
 
-              ${canEmail ? `
+              ${
+                canEmail
+                  ? `
                 <button type="button" class="wt-btn wt-btn--secondary" data-action="send-share-email">
                   ${escapeHtml(emailLabel)}
                 </button>
-              ` : ``}
+              `
+                  : ``
+              }
             </div>
-          ` : ``}
+          `
+              : ``
+          }
         </div>
       </details>
     `;
@@ -7552,26 +9295,45 @@ ${audioSettingsHtml}
     const poolSize = clampInt(input?.poolSize, 0, 99999);
 
     let seen = clampInt(input?.seen, 0, 99999);
-    if (!seen && storage && typeof storage.getUniqueSeenCount === "function") {
-      try { seen = clampInt(storage.getUniqueSeenCount(), 0, 99999); } catch (_) { seen = 0; }
+    if (!seen && storage && typeof storage.getUniqueSeenCount === 'function') {
+      try {
+        seen = clampInt(storage.getUniqueSeenCount(), 0, 99999);
+      } catch (_) {
+        seen = 0;
+      }
     }
 
     let mistakes = clampInt(input?.mistakes, 0, 99999);
-    if (input?.mistakes == null && storage && typeof storage.getActiveMistakesCount === "function") {
-      try { mistakes = clampInt(storage.getActiveMistakesCount(), 0, 99999); } catch (_) { mistakes = 0; }
+    if (
+      input?.mistakes == null &&
+      storage &&
+      typeof storage.getActiveMistakesCount === 'function'
+    ) {
+      try {
+        mistakes = clampInt(storage.getActiveMistakesCount(), 0, 99999);
+      } catch (_) {
+        mistakes = 0;
+      }
     }
 
     const isComplete = poolSize > 0 && seen >= poolSize;
     const mastered = clampInt(poolSize - mistakes, 0, poolSize);
-    const key = !isComplete ? "discovery" : (mistakes > 0 ? "correction" : "consolidation");
+    const key = !isComplete
+      ? 'discovery'
+      : mistakes > 0
+        ? 'correction'
+        : 'consolidation';
 
-    const phaseW = (w.phaseJourney && typeof w.phaseJourney === "object") ? (w.phaseJourney[key] || {}) : {};
+    const phaseW =
+      w.phaseJourney && typeof w.phaseJourney === 'object'
+        ? w.phaseJourney[key] || {}
+        : {};
     const fallbackBadge =
-      key === "discovery"
-        ? String(landing.statsPhaseBadgeDiscovery || "").trim()
-        : key === "correction"
-          ? String(landing.statsPhaseBadgeCorrection || "").trim()
-          : String(landing.statsPhaseBadgeConsolidation || "").trim();
+      key === 'discovery'
+        ? String(landing.statsPhaseBadgeDiscovery || '').trim()
+        : key === 'correction'
+          ? String(landing.statsPhaseBadgeCorrection || '').trim()
+          : String(landing.statsPhaseBadgeConsolidation || '').trim();
 
     return {
       key,
@@ -7579,41 +9341,60 @@ ${audioSettingsHtml}
       mistakes,
       mastered,
       isComplete,
-      badge: String(phaseW.badge || fallbackBadge || "").trim(),
-      landingSummaryTemplate: String(phaseW.landingSummaryTemplate || "").trim(),
-      landingDetail: String(phaseW.landingDetail || "").trim(),
-      landingDetailTemplate: String(phaseW.landingDetailTemplate || "").trim(),
-      endLens: String(phaseW.endLens || "").trim(),
-      micropics: (phaseW.micropics && typeof phaseW.micropics === "object") ? phaseW.micropics : {}
+      badge: String(phaseW.badge || fallbackBadge || '').trim(),
+      landingSummaryTemplate: String(
+        phaseW.landingSummaryTemplate || ''
+      ).trim(),
+      landingDetail: String(phaseW.landingDetail || '').trim(),
+      landingDetailTemplate: String(phaseW.landingDetailTemplate || '').trim(),
+      endLens: String(phaseW.endLens || '').trim(),
+      micropics:
+        phaseW.micropics && typeof phaseW.micropics === 'object'
+          ? phaseW.micropics
+          : {}
     };
   }
 
   function getLandingStatsPreviewState(cfg, poolSize) {
-    const statsCfg = (cfg?.landingStats && typeof cfg.landingStats === "object") ? cfg.landingStats : null;
-    const previewCfg = (statsCfg?.preview && typeof statsCfg.preview === "object") ? statsCfg.preview : null;
+    const statsCfg =
+      cfg?.landingStats && typeof cfg.landingStats === 'object'
+        ? cfg.landingStats
+        : null;
+    const previewCfg =
+      statsCfg?.preview && typeof statsCfg.preview === 'object'
+        ? statsCfg.preview
+        : null;
 
     if (!previewCfg || previewCfg.enabled !== true) return null;
 
-    const paramName = String(previewCfg.queryParam || "").trim();
-    if (!paramName || typeof window === "undefined" || !window.location) return null;
+    const paramName = String(previewCfg.queryParam || '').trim();
+    if (!paramName || typeof window === 'undefined' || !window.location)
+      return null;
 
-    let raw = "";
+    let raw = '';
     try {
-      raw = String(new URLSearchParams(window.location.search).get(paramName) || "").trim().toLowerCase();
+      raw = String(
+        new URLSearchParams(window.location.search).get(paramName) || ''
+      )
+        .trim()
+        .toLowerCase();
     } catch (_) {
-      raw = "";
+      raw = '';
     }
     if (!raw) return null;
 
-    const states = (previewCfg.states && typeof previewCfg.states === "object") ? previewCfg.states : null;
+    const states =
+      previewCfg.states && typeof previewCfg.states === 'object'
+        ? previewCfg.states
+        : null;
     const state = states ? states[raw] : null;
-    if (!state || typeof state !== "object") return null;
+    if (!state || typeof state !== 'object') return null;
 
     const safePoolSize = clampInt(poolSize, 1, 99999);
 
     function resolvePreviewInt(value) {
-      const rawValue = String(value || "").trim();
-      if (rawValue === "poolSize") return safePoolSize;
+      const rawValue = String(value || '').trim();
+      if (rawValue === 'poolSize') return safePoolSize;
       return clampInt(value, 0, safePoolSize);
     }
 
@@ -7624,23 +9405,33 @@ ${audioSettingsHtml}
   }
 
   function getLevelPreviewState(cfg) {
-    const previewCfg = (cfg?.levels?.preview && typeof cfg.levels.preview === "object") ? cfg.levels.preview : null;
-    if (!previewCfg || previewCfg.enabled !== true) return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+    const previewCfg =
+      cfg?.levels?.preview && typeof cfg.levels.preview === 'object'
+        ? cfg.levels.preview
+        : null;
+    if (!previewCfg || previewCfg.enabled !== true)
+      return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
 
-    const paramName = String(previewCfg.queryParam || "").trim();
-    if (!paramName || typeof window === "undefined" || !window.location) {
+    const paramName = String(previewCfg.queryParam || '').trim();
+    if (!paramName || typeof window === 'undefined' || !window.location) {
       return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
     }
 
-    let raw = "";
+    let raw = '';
     try {
-      raw = String(new URLSearchParams(window.location.search).get(paramName) || "").trim().toLowerCase();
+      raw = String(
+        new URLSearchParams(window.location.search).get(paramName) || ''
+      )
+        .trim()
+        .toLowerCase();
     } catch (_) {
-      raw = "";
+      raw = '';
     }
-    if (!raw) return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
+    if (!raw)
+      return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
 
-    if (raw === "none") return { currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
+    if (raw === 'none')
+      return { currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
 
     const unlockMatch = raw.match(/^unlock([1-4])$/);
     if (unlockMatch) {
@@ -7658,20 +9449,28 @@ ${audioSettingsHtml}
   }
 
   function getAppLevelModel(storage, cfg, w) {
-    const levelsW = (w && w.levels && typeof w.levels === "object") ? w.levels : {};
-    const baseState = (storage && typeof storage.getLevelState === "function")
-      ? storage.getLevelState()
-      : { currentLevel: 0, unlockedAtByLevel: { 1: 0, 2: 0, 3: 0, 4: 0 } };
+    const levelsW =
+      w && w.levels && typeof w.levels === 'object' ? w.levels : {};
+    const baseState =
+      storage && typeof storage.getLevelState === 'function'
+        ? storage.getLevelState()
+        : { currentLevel: 0, unlockedAtByLevel: { 1: 0, 2: 0, 3: 0, 4: 0 } };
     const preview = getLevelPreviewState(cfg);
-    const effectiveLevel = (preview.currentLevel == null) ? clampInt(baseState.currentLevel, 0, 4) : clampInt(preview.currentLevel, 0, 4);
+    const effectiveLevel =
+      preview.currentLevel == null
+        ? clampInt(baseState.currentLevel, 0, 4)
+        : clampInt(preview.currentLevel, 0, 4);
 
     const defs = [1, 2, 3, 4].map((level) => {
-      const raw = (levelsW.byLevel && typeof levelsW.byLevel === "object") ? (levelsW.byLevel[level] || {}) : {};
+      const raw =
+        levelsW.byLevel && typeof levelsW.byLevel === 'object'
+          ? levelsW.byLevel[level] || {}
+          : {};
       return {
         level,
-        label: String(raw.label || "").trim(),
-        unlock: String(raw.unlock || "").trim(),
-        sheetBody: String(raw.sheetBody || "").trim(),
+        label: String(raw.label || '').trim(),
+        unlock: String(raw.unlock || '').trim(),
+        sheetBody: String(raw.sheetBody || '').trim(),
         unlocked: effectiveLevel >= level,
         current: effectiveLevel === level
       };
@@ -7684,7 +9483,7 @@ ${audioSettingsHtml}
       },
       defs,
       current: defs.find((item) => item.level === effectiveLevel) || null,
-      next: defs.find((item) => item.level === (effectiveLevel + 1)) || null,
+      next: defs.find((item) => item.level === effectiveLevel + 1) || null,
       levelsW,
       preview
     };
@@ -7692,24 +9491,53 @@ ${audioSettingsHtml}
 
   function buildEndActionsHtml(ctx) {
     const {
-      storage, w, cfg, vars, premium, end, postW, isRun, isPractice, isBonus,
-      runShouldPromotePractice, practiceCta, runsExhausted, upgradeCta, runPlayAgain,
-      runShouldPromoteBonus, runBonusPrimaryLabel, canPractice, practiceAgain, bonusW,
-      bonusDeckTier, bonusAgain, poolCompleteCelebration, seen, poolSize,
-      dailyChallengeIncomplete, dailyChallengeNeedsReplayReward, dailyChallengeCta
+      storage,
+      w,
+      cfg,
+      vars,
+      premium,
+      end,
+      postW,
+      isRun,
+      isPractice,
+      isBonus,
+      runShouldPromotePractice,
+      practiceCta,
+      runsExhausted,
+      upgradeCta,
+      runPlayAgain,
+      runShouldPromoteBonus,
+      runBonusPrimaryLabel,
+      canPractice,
+      practiceAgain,
+      bonusW,
+      bonusDeckTier,
+      bonusAgain,
+      poolCompleteCelebration,
+      seen,
+      poolSize,
+      dailyChallengeIncomplete,
+      dailyChallengeNeedsReplayReward,
+      dailyChallengeCta
     } = ctx;
 
-    const exhausted =
-      !!(storage && typeof storage.isPoolExhausted === "function" && storage.isPoolExhausted() === true);
-    const mastered =
-      !!(storage && typeof storage.isMastered === "function" && storage.isMastered() === true);
-    const hasActiveMistakes = (clampInt(vars.backlog, 0, 99999) > 0);
+    const exhausted = !!(
+      storage &&
+      typeof storage.isPoolExhausted === 'function' &&
+      storage.isPoolExhausted() === true
+    );
+    const mastered = !!(
+      storage &&
+      typeof storage.isMastered === 'function' &&
+      storage.isMastered() === true
+    );
+    const hasActiveMistakes = clampInt(vars.backlog, 0, 99999) > 0;
 
-    const masteredTitle = String(postW.masteredTitle || "").trim();
-    const masteredL1 = String(postW.masteredLine1 || "").trim();
-    const masteredL2 = String(postW.masteredLine2 || "").trim();
+    const masteredTitle = String(postW.masteredTitle || '').trim();
+    const masteredL1 = String(postW.masteredLine1 || '').trim();
+    const masteredL2 = String(postW.masteredLine2 || '').trim();
     const masteredHtml =
-      (mastered && (masteredTitle || masteredL1 || masteredL2))
+      mastered && (masteredTitle || masteredL1 || masteredL2)
         ? `
         <div class="wt-end-mastered-copy wt-stack wt-stack--xs">
           ${masteredTitle ? `<p class="wt-meta"><strong>${escapeHtml(masteredTitle)}</strong></p>` : ``}
@@ -7719,66 +9547,76 @@ ${audioSettingsHtml}
       `
         : ``;
 
-    let primaryAction = "";
-    let primaryLabel = "";
-    let secondaryAction = "";
-    let secondaryLabel = "";
+    let primaryAction = '';
+    let primaryLabel = '';
+    let secondaryAction = '';
+    let secondaryLabel = '';
 
     if (mastered) {
-      primaryAction = "start-secret-bonus";
-      primaryLabel = String(postW.masteredCtaBonus || "").trim();
-      secondaryAction = "start-run";
-      secondaryLabel = String(postW.masteredCtaReplay || "").trim();
+      primaryAction = 'start-secret-bonus';
+      primaryLabel = String(postW.masteredCtaBonus || '').trim();
+      secondaryAction = 'start-run';
+      secondaryLabel = String(postW.masteredCtaReplay || '').trim();
     } else if (exhausted && hasActiveMistakes) {
-      primaryAction = "start-practice";
-      const tpl = premium ? String(end.practiceCtaCountPremium || "").trim() : String(end.practiceCta || "").trim();
-      primaryLabel = tpl ? fillTemplate(tpl, { backlog: String(vars.backlog) }) : "";
-      secondaryAction = "start-run";
-      secondaryLabel = String(end.playAgain || "").trim();
+      primaryAction = 'start-practice';
+      const tpl = premium
+        ? String(end.practiceCtaCountPremium || '').trim()
+        : String(end.practiceCta || '').trim();
+      primaryLabel = tpl
+        ? fillTemplate(tpl, { backlog: String(vars.backlog) })
+        : '';
+      secondaryAction = 'start-run';
+      secondaryLabel = String(end.playAgain || '').trim();
     } else if (isRun) {
       if (runShouldPromotePractice) {
-        primaryAction = "start-practice";
-        primaryLabel = String(practiceCta || "").trim();
-        secondaryAction = runsExhausted ? "open-paywall" : "start-run";
-        secondaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
+        primaryAction = 'start-practice';
+        primaryLabel = String(practiceCta || '').trim();
+        secondaryAction = runsExhausted ? 'open-paywall' : 'start-run';
+        secondaryLabel = runsExhausted
+          ? String(upgradeCta || '').trim()
+          : String(runPlayAgain || '').trim();
       } else if (runShouldPromoteBonus) {
-        primaryAction = "start-secret-bonus";
+        primaryAction = 'start-secret-bonus';
         primaryLabel = runBonusPrimaryLabel;
-        secondaryAction = runsExhausted ? "open-paywall" : "start-run";
-        secondaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
+        secondaryAction = runsExhausted ? 'open-paywall' : 'start-run';
+        secondaryLabel = runsExhausted
+          ? String(upgradeCta || '').trim()
+          : String(runPlayAgain || '').trim();
       } else {
-        primaryAction = runsExhausted ? "open-paywall" : "start-run";
-        primaryLabel = runsExhausted ? String(upgradeCta || "").trim() : String(runPlayAgain || "").trim();
+        primaryAction = runsExhausted ? 'open-paywall' : 'start-run';
+        primaryLabel = runsExhausted
+          ? String(upgradeCta || '').trim()
+          : String(runPlayAgain || '').trim();
         if (canPractice) {
-          secondaryAction = "start-practice";
-          secondaryLabel = String(practiceCta || "").trim();
+          secondaryAction = 'start-practice';
+          secondaryLabel = String(practiceCta || '').trim();
         }
       }
     } else if (isPractice) {
       const remaining = Number(vars.remaining);
-      const isZero = (Number.isFinite(remaining) && remaining <= 0);
+      const isZero = Number.isFinite(remaining) && remaining <= 0;
       if (isZero) {
-        primaryAction = "start-run";
-        primaryLabel = String(end.playAgain || "").trim();
+        primaryAction = 'start-run';
+        primaryLabel = String(end.playAgain || '').trim();
       } else {
-        primaryAction = "start-practice";
-        primaryLabel = String(practiceAgain || "").trim();
-        secondaryAction = "start-run";
-        secondaryLabel = String(end.playAgain || "").trim();
+        primaryAction = 'start-practice';
+        primaryLabel = String(practiceAgain || '').trim();
+        secondaryAction = 'start-run';
+        secondaryLabel = String(end.playAgain || '').trim();
       }
     } else if (isBonus) {
-      const expandDeckLabel = String(bonusW?.ctaExpandDeck || "").trim();
-      const shouldExpandDeck = (bonusDeckTier === "small") && !!expandDeckLabel;
+      const expandDeckLabel = String(bonusW?.ctaExpandDeck || '').trim();
+      const shouldExpandDeck = bonusDeckTier === 'small' && !!expandDeckLabel;
       if (shouldExpandDeck) {
-        primaryAction = "start-run";
+        primaryAction = 'start-run';
         primaryLabel = expandDeckLabel;
-        secondaryAction = "start-secret-bonus";
-        secondaryLabel = String(bonusAgain || "").trim();
+        secondaryAction = 'start-secret-bonus';
+        secondaryLabel = String(bonusAgain || '').trim();
       } else {
-        primaryAction = "start-secret-bonus";
-        primaryLabel = String(bonusAgain || "").trim();
-        secondaryAction = "start-run";
-        secondaryLabel = String(end.playAgain || "").trim();
+        primaryAction = 'start-secret-bonus';
+        primaryLabel = String(bonusAgain || '').trim();
+        secondaryAction = 'start-run';
+        secondaryLabel = String(end.playAgain || '').trim();
       }
     }
 
@@ -7787,10 +9625,10 @@ ${audioSettingsHtml}
       !runsExhausted &&
       dailyChallengeNeedsReplayReward === true &&
       dailyChallengeCta &&
-      primaryAction === "start-run"
+      primaryAction === 'start-run'
     ) {
-      primaryAction = "start-daily-challenge";
-      primaryLabel = String(dailyChallengeCta || "").trim();
+      primaryAction = 'start-daily-challenge';
+      primaryLabel = String(dailyChallengeCta || '').trim();
     }
 
     if (
@@ -7798,18 +9636,18 @@ ${audioSettingsHtml}
       !runsExhausted &&
       dailyChallengeIncomplete === true &&
       dailyChallengeCta &&
-      primaryAction !== "start-run" &&
+      primaryAction !== 'start-run' &&
       !secondaryAction &&
       !secondaryLabel
     ) {
-      secondaryAction = "start-daily-challenge";
-      secondaryLabel = String(dailyChallengeCta || "").trim();
+      secondaryAction = 'start-daily-challenge';
+      secondaryLabel = String(dailyChallengeCta || '').trim();
     }
 
     if (!primaryLabel || !primaryAction) return masteredHtml || ``;
 
     const secondaryBtn =
-      (secondaryLabel && secondaryAction)
+      secondaryLabel && secondaryAction
         ? `
         <button class="wt-btn wt-btn--secondary" data-action="${escapeHtml(secondaryAction)}">
           ${escapeHtml(secondaryLabel)}
@@ -7826,11 +9664,9 @@ ${audioSettingsHtml}
 `;
   }
 
-
-
   UI.prototype._renderEnd = function () {
-    if (!window.WT_UI_End || typeof window.WT_UI_End.render !== "function") {
-      throw new Error("WT_UI_End.render missing");
+    if (!window.WT_UI_End || typeof window.WT_UI_End.render !== 'function') {
+      throw new Error('WT_UI_End.render missing');
     }
     return window.WT_UI_End.render(this, {
       buildEndModeCopy,
@@ -7853,7 +9689,6 @@ ${audioSettingsHtml}
     });
   };
 
-
   UI.prototype._renderPlaying = function () {
     const wAll = this.wording || {};
     const w = wAll.playing || {};
@@ -7865,52 +9700,75 @@ ${audioSettingsHtml}
 
     // Contract: PRACTICE has null chances → respect null (no fallback to config)
     const maxChancesRaw = gameState.maxChances;
-    const maxChances = (maxChancesRaw != null) ? Number(maxChancesRaw) : Number(cfg.game?.maxChances);
+    const maxChances =
+      maxChancesRaw != null
+        ? Number(maxChancesRaw)
+        : Number(cfg.game?.maxChances);
     const chancesLeftRaw = gameState.chancesLeft;
-    const chancesLeft = (chancesLeftRaw != null) ? Number(chancesLeftRaw) : NaN;
-    const hasChances = (chancesLeftRaw != null && Number.isFinite(maxChances) && maxChances > 0 && Number.isFinite(chancesLeft));
+    const chancesLeft = chancesLeftRaw != null ? Number(chancesLeftRaw) : NaN;
+    const hasChances =
+      chancesLeftRaw != null &&
+      Number.isFinite(maxChances) &&
+      maxChances > 0 &&
+      Number.isFinite(chancesLeft);
     const scoreFP = Number(gameState.scoreFP);
 
-    const scoreLabel = String(ui.scoreLabel || "").trim();
+    const scoreLabel = String(ui.scoreLabel || '').trim();
 
-    const fpShort = String(ui.fpShort || "").trim();
-    const scoreAriaTpl = String(ui.scoreAriaTemplate || "").trim();
+    const fpShort = String(ui.fpShort || '').trim();
+    const scoreAriaTpl = String(ui.scoreAriaTemplate || '').trim();
 
     // HUD policy: do NOT show FP in PLAYING (unit is explicit in END only).
     // We still replace {fpShort} in aria templates to avoid leaking "{fpShort}".
     const scoreAria = scoreAriaTpl
-      ? fillTemplate(scoreAriaTpl, { scoreLabel, score: scoreFP, fpShort: "" }).replace(/\s+/g, " ").trim()
-      : "";
+      ? fillTemplate(scoreAriaTpl, { scoreLabel, score: scoreFP, fpShort: '' })
+          .replace(/\s+/g, ' ')
+          .trim()
+      : '';
 
     // Personal best (HUD anchor): show for everyone if explicitly enabled + a best exists
-    const bestLabel = String(ui?.bestScoreLabel || "").trim();
-    const bestAriaTpl = String(ui?.bestScoreAriaTemplate || "").trim();
+    const bestLabel = String(ui?.bestScoreLabel || '').trim();
+    const bestAriaTpl = String(ui?.bestScoreAriaTemplate || '').trim();
 
-    const pbCfg = (cfg?.personalBest && typeof cfg.personalBest === "object") ? cfg.personalBest : null;
+    const pbCfg =
+      cfg?.personalBest && typeof cfg.personalBest === 'object'
+        ? cfg.personalBest
+        : null;
     const pbEnabled = !!(pbCfg && pbCfg.enabled === true);
 
-    const modeNow = String(this._runtime?.runMode || "RUN").trim();
+    const modeNow = String(this._runtime?.runMode || 'RUN').trim();
 
     let bestScoreFP = null;
     if (pbEnabled && this.storage) {
       try {
-        if (modeNow === "BONUS" && typeof this.storage.getBonusBest === "function") {
+        if (
+          modeNow === 'BONUS' &&
+          typeof this.storage.getBonusBest === 'function'
+        ) {
           const bb = this.storage.getBonusBest() || null;
           const b = Number(bb?.bestScoreFP);
           if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
-        } else if (typeof this.storage.getPersonalBest === "function") {
+        } else if (typeof this.storage.getPersonalBest === 'function') {
           const pb = this.storage.getPersonalBest() || null;
           const b = Number(pb?.bestScoreFP);
           if (Number.isFinite(b) && b > 0) bestScoreFP = Math.floor(b);
         }
-      } catch (_) { bestScoreFP = null; }
+      } catch (_) {
+        bestScoreFP = null;
+      }
     }
 
-    const bestAria = (bestScoreFP != null && bestAriaTpl)
-      ? fillTemplate(bestAriaTpl, { best: bestScoreFP }).replace(/\s+/g, " ").trim()
-      : "";
+    const bestAria =
+      bestScoreFP != null && bestAriaTpl
+        ? fillTemplate(bestAriaTpl, { best: bestScoreFP })
+            .replace(/\s+/g, ' ')
+            .trim()
+        : '';
 
-    const scoreAriaFull = [scoreAria, bestAria].filter(Boolean).join(" ").trim();
+    const scoreAriaFull = [scoreAria, bestAria]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
 
     // Header (score left, best/lives right)
     const pulseAt = Number(this._runtime?.chanceLostPulseAt || 0);
@@ -7919,64 +9777,63 @@ ${audioSettingsHtml}
 
     // Fail-closed: invalid/missing config => no pulse
     const pulseOn =
-      (pulseAt > 0) &&
+      pulseAt > 0 &&
       Number.isFinite(pulseMs) &&
-      (pulseMs > 0) &&
-      ((Date.now() - pulseAt) <= pulseMs);
+      pulseMs > 0 &&
+      Date.now() - pulseAt <= pulseMs;
 
     // Score flash: mirrors danger-pulse logic (correct answer â†’ green flash)
     const scoreFlashAt = Number(this._runtime?.scoreFlashAt || 0);
     const scoreFlashMs = Number(cfg?.ui?.gameplayPulseMs);
     const scoreFlashOn =
-      (scoreFlashAt > 0) &&
+      scoreFlashAt > 0 &&
       Number.isFinite(scoreFlashMs) &&
-      (scoreFlashMs > 0) &&
-      ((Date.now() - scoreFlashAt) <= scoreFlashMs);
+      scoreFlashMs > 0 &&
+      Date.now() - scoreFlashAt <= scoreFlashMs;
 
     // HUD deltas (arcade): +1 on score flash, +1 mistake on mistake pulse
     // Copy visible => WT_WORDING.ui (pas WT_CONFIG)
-    const scoreDeltaText = String(ui?.scoreGainedDeltaText || "").trim();
-    const scoreDeltaHtml = (scoreFlashOn && scoreDeltaText)
-      ? `<span class="wt-pill__delta wt-pill__delta--score" aria-hidden="true">${escapeHtml(scoreDeltaText)}</span>`
-      : "";
+    const scoreDeltaText = String(ui?.scoreGainedDeltaText || '').trim();
+    const scoreDeltaHtml =
+      scoreFlashOn && scoreDeltaText
+        ? `<span class="wt-pill__delta wt-pill__delta--score" aria-hidden="true">${escapeHtml(scoreDeltaText)}</span>`
+        : '';
 
-    const mistakeDeltaText = String(ui?.mistakeGainedDeltaText || "").trim();
-    const mistakeDeltaHtml = (pulseOn && mistakeDeltaText)
-      ? ``
-      : "";
+    const mistakeDeltaText = String(ui?.mistakeGainedDeltaText || '').trim();
+    const mistakeDeltaHtml = pulseOn && mistakeDeltaText ? `` : '';
 
-    const bonusBadge = String(this.wording?.secretBonus?.badge || "").trim();
-    const practiceBadge = String(this.wording?.practice?.title || "").trim();
+    const bonusBadge = String(this.wording?.secretBonus?.badge || '').trim();
+    const practiceBadge = String(this.wording?.practice?.title || '').trim();
 
     // At-best (RUN + premium): one-shot pulse when you REACH the best during PLAYING.
     // UI-only: driven by this._runtime.atBestPulseAt (timestamp). Fail-closed => false.
     const atBestPulseAt = Number(this._runtime?.atBestPulseAt || 0);
     const atBestOn =
-      (atBestPulseAt > 0) &&
+      atBestPulseAt > 0 &&
       Number.isFinite(pulseMs) &&
-      (pulseMs > 0) &&
-      ((Date.now() - atBestPulseAt) <= pulseMs);
+      pulseMs > 0 &&
+      Date.now() - atBestPulseAt <= pulseMs;
 
     // New best (RUN + premium): celebration pulse when you EXCEED personal best during PLAYING (best -> best+1).
     const newBestPulseAt = Number(this._runtime?.newBestPulseAt || 0);
     const newBestOn =
-      (newBestPulseAt > 0) &&
+      newBestPulseAt > 0 &&
       Number.isFinite(pulseMs) &&
-      (pulseMs > 0) &&
-      ((Date.now() - newBestPulseAt) <= pulseMs);
+      pulseMs > 0 &&
+      Date.now() - newBestPulseAt <= pulseMs;
 
     // Near-best tension (RUN + premium only): subtle pulse when within 2 FP of personal best.
     // Priority: do NOT stack with score flash / at-best / new-best.
     const nearBestOn =
-      (!scoreFlashOn) &&
-      (!atBestOn) &&
-      (!newBestOn) &&
-      ((modeNow === "RUN") || (modeNow === "BONUS")) &&
-      (pbEnabled === true) &&
-      (premium === true) &&
-      (bestScoreFP != null) &&
-      (bestScoreFP > scoreFP) &&
-      ((bestScoreFP - scoreFP) <= 2);
+      !scoreFlashOn &&
+      !atBestOn &&
+      !newBestOn &&
+      (modeNow === 'RUN' || modeNow === 'BONUS') &&
+      pbEnabled === true &&
+      premium === true &&
+      bestScoreFP != null &&
+      bestScoreFP > scoreFP &&
+      bestScoreFP - scoreFP <= 2;
 
     const deckSizeRaw = Number(gameState?.deckSize);
 
@@ -7985,124 +9842,172 @@ ${audioSettingsHtml}
         ? Math.floor(deckSizeRaw)
         : null;
 
-    const seenOnlyLine = secretBonusDeckCount != null
-      ? fillTemplate(
-        String(this.wording?.secretBonus?.seenOnlyLine || "").trim(),
-        { count: secretBonusDeckCount }
-      )
-      : "";
-    const servedSoFar = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
+    const seenOnlyLine =
+      secretBonusDeckCount != null
+        ? fillTemplate(
+            String(this.wording?.secretBonus?.seenOnlyLine || '').trim(),
+            { count: secretBonusDeckCount }
+          )
+        : '';
+    const servedSoFar = Array.isArray(this._runtime?.runItemIds)
+      ? this._runtime.runItemIds.length
+      : 0;
 
-    const qHeadingTpl = String(w.questionHeadingTemplate || "").trim();
-    const qNum = (this._runtime?.feedbackPending === true) ? servedSoFar : (servedSoFar + 1);
-    const headingHtml = (qHeadingTpl && Number.isFinite(qNum) && qNum > 0)
-      ? `<p class="wt-muted wt-question-heading">${escapeHtml(fillTemplate(qHeadingTpl, { n: qNum }))}</p>`
-      : "";
+    const qHeadingTpl = String(w.questionHeadingTemplate || '').trim();
+    const qNum =
+      this._runtime?.feedbackPending === true ? servedSoFar : servedSoFar + 1;
+    const headingHtml =
+      qHeadingTpl && Number.isFinite(qNum) && qNum > 0
+        ? `<p class="wt-muted wt-question-heading">${escapeHtml(fillTemplate(qHeadingTpl, { n: qNum }))}</p>`
+        : '';
 
     const showSeenOnlyRule =
-      (modeNow === "BONUS") &&
-      (this._runtime?.feedbackPending !== true) &&
+      modeNow === 'BONUS' &&
+      this._runtime?.feedbackPending !== true &&
       !!seenOnlyLine;
 
     // --- Mistakes model ---
-    const mistakesLabel = String(ui.mistakesLabel || "").trim();
+    const mistakesLabel = String(ui.mistakesLabel || '').trim();
 
-    const mcInt = (Number.isFinite(maxChances) && maxChances > 0)
-      ? Math.floor(maxChances)
-      : 0;
+    const mcInt =
+      Number.isFinite(maxChances) && maxChances > 0
+        ? Math.floor(maxChances)
+        : 0;
 
     const leftInt = Number.isFinite(chancesLeft)
       ? Math.max(0, Math.floor(chancesLeft))
       : 0;
 
-    const mistakesCount = (mcInt > 0)
-      ? Math.max(0, Math.min(mcInt, mcInt - leftInt))
-      : 0;
+    const mistakesCount =
+      mcInt > 0 ? Math.max(0, Math.min(mcInt, mcInt - leftInt)) : 0;
 
-    const livesVisual = (mcInt > 0)
-      ? Array(mcInt)
-        .fill(null)
-        .map((_, i) => {
-          const isOn = i < mistakesCount;
-          const isLast = isOn && mistakesCount > 0 && i === (mistakesCount - 1);
-          return `<span class="wt-hud-lives__dot${isOn ? "" : " wt-hud-lives__dot--off"}${isLast ? " wt-hud-lives__dot--last" : ""}" aria-hidden="true"></span>`;
-        })
-        .join("")
-      : "";
+    const livesVisual =
+      mcInt > 0
+        ? Array(mcInt)
+            .fill(null)
+            .map((_, i) => {
+              const isOn = i < mistakesCount;
+              const isLast =
+                isOn && mistakesCount > 0 && i === mistakesCount - 1;
+              return `<span class="wt-hud-lives__dot${isOn ? '' : ' wt-hud-lives__dot--off'}${isLast ? ' wt-hud-lives__dot--last' : ''}" aria-hidden="true"></span>`;
+            })
+            .join('')
+        : '';
 
-    const correctStreak = clampInt(this._runtime?.microPics?.correctStreak, 0, 9999);
+    const correctStreak = clampInt(
+      this._runtime?.microPics?.correctStreak,
+      0,
+      9999
+    );
     const momentumMax = getMomentumSegments(cfg) || 6;
-    const momentumLevel = clampInt(this._runtime?.microPics?.momentumLevel, 0, momentumMax);
-    const momentumState = getMomentumMeterState(cfg, correctStreak, modeNow, momentumLevel);
+    const momentumLevel = clampInt(
+      this._runtime?.microPics?.momentumLevel,
+      0,
+      momentumMax
+    );
+    const momentumState = getMomentumMeterState(
+      cfg,
+      correctStreak,
+      modeNow,
+      momentumLevel
+    );
 
     const momentumHtml = momentumState
       ? `
         <div class="wt-momentum-wrap">
           <div class="wt-momentum" aria-label="${escapeHtml(fillTemplate(String(wording?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
-            ${Array(momentumState.segments).fill(null).map((_, i) => `
-              <span class="wt-momentum__seg${i < momentumState.filled ? " wt-momentum__seg--on" : ""}${momentumState.filled === momentumState.segments && i === momentumState.segments - 1 ? " wt-momentum__seg--max" : ""}" aria-hidden="true"></span>
-            `).join("")}
+            ${Array(momentumState.segments)
+              .fill(null)
+              .map(
+                (_, i) => `
+              <span class="wt-momentum__seg${i < momentumState.filled ? ' wt-momentum__seg--on' : ''}${momentumState.filled === momentumState.segments && i === momentumState.segments - 1 ? ' wt-momentum__seg--max' : ''}" aria-hidden="true"></span>
+            `
+              )
+              .join('')}
           </div>
-          ${momentumState.streak > momentumState.segments ? `
+          ${
+            momentumState.streak > momentumState.segments
+              ? `
             <span class="wt-momentum__combo" aria-hidden="true">${momentumState.streak}</span>
-          ` : ``}
+          `
+              : ``
+          }
         </div>
       `
-      : "";
+      : '';
 
     const headerHtml = `
 	   <div class="wt-hud">
           <div class="wt-hud__left">
-            ${hasChances ? `
-              <div class="wt-pill wt-hud-metric wt-hud-metric--mistakes wt-pill--chances${pulseOn ? " wt-pill--danger-pulse" : ""}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
+            ${
+              hasChances
+                ? `
+              <div class="wt-pill wt-hud-metric wt-hud-metric--mistakes wt-pill--chances${pulseOn ? ' wt-pill--danger-pulse' : ''}" aria-label="${escapeHtml(mistakesLabel)}: ${mistakesCount}/${mcInt}">
                 ${mistakesLabel ? `<small>${escapeHtml(mistakesLabel)}</small>` : ``}
                 ${mistakesCount}/${mcInt}${mistakeDeltaHtml}
                 ${livesVisual}
               </div>
-            ` : ``}
-            ${(modeNow === "PRACTICE" && practiceBadge) ? `
+            `
+                : ``
+            }
+            ${
+              modeNow === 'PRACTICE' && practiceBadge
+                ? `
               <div class="wt-pill wt-hud-metric wt-hud-metric--mode" aria-label="${escapeHtml(practiceBadge)}">
                 <span>${escapeHtml(practiceBadge)}</span>
               </div>
-            ` : ``}
+            `
+                : ``
+            }
           </div>
           <div class="wt-hud__right">
-          ${(modeNow !== "PRACTICE") ? `
-            <div class="wt-pill wt-hud-metric wt-hud-metric--score wt-pill--score${scoreFlashOn ? " wt-pill--score-flash" : ""}${atBestOn ? " wt-pill--at-best" : ""}${newBestOn ? " wt-pill--new-best" : ""}${nearBestOn ? " wt-pill--near-best" : ""}"
+          ${
+            modeNow !== 'PRACTICE'
+              ? `
+            <div class="wt-pill wt-hud-metric wt-hud-metric--score wt-pill--score${scoreFlashOn ? ' wt-pill--score-flash' : ''}${atBestOn ? ' wt-pill--at-best' : ''}${newBestOn ? ' wt-pill--new-best' : ''}${nearBestOn ? ' wt-pill--near-best' : ''}"
               role="status"
               aria-live="polite"
               aria-atomic="true"
               aria-label="${escapeHtml(scoreAriaFull)}">
               ${scoreLabel ? `<small>${escapeHtml(scoreLabel)}</small>` : ``}
               ${scoreFP}${scoreDeltaHtml}
-              ${(bestScoreFP != null && bestLabel) ? `<span class="wt-pill__sub">${escapeHtml(bestLabel)} ${bestScoreFP}</span>` : ``}
+              ${bestScoreFP != null && bestLabel ? `<span class="wt-pill__sub">${escapeHtml(bestLabel)} ${bestScoreFP}</span>` : ``}
             </div>
-          ` : ``}
+          `
+              : ``
+          }
           </div>
 	    </div>
 
       ${momentumHtml}
 
-	  	    ${showSeenOnlyRule ? `
+	  	    ${
+            showSeenOnlyRule
+              ? `
 	      <p class="wt-muted wt-playing-seenonly">
 	        ${escapeHtml(seenOnlyLine)}
 	      </p>
-	    ` : ``}
+	    `
+              : ``
+          }
 	  `;
 
     // Current item (question)
     const item = this._runtime.feedbackPending
       ? this._runtime.frozenItem
-      : (this.game.getCurrent ? this.game.getCurrent() : null);
+      : this.game.getCurrent
+        ? this.game.getCurrent()
+        : null;
 
     // Secret bonus fall: only if config is explicitly provided and valid.
     const sb = cfg?.secretBonus || {};
-    const fall = (sb && typeof sb === "object") ? sb.fall : null;
+    const fall = sb && typeof sb === 'object' ? sb.fall : null;
 
     const fallEnabled =
-      (modeNow === "BONUS") &&
-      (fall && typeof fall === "object") &&
-      (fall.enabled === true) &&
+      modeNow === 'BONUS' &&
+      fall &&
+      typeof fall === 'object' &&
+      fall.enabled === true &&
       Number.isFinite(Number(fall.initialSpeed)) &&
       Number(fall.initialSpeed) > 0 &&
       Number.isFinite(Number(fall.maxSpeed)) &&
@@ -8119,33 +10024,38 @@ ${audioSettingsHtml}
     ];
     if (fallEnabled) shellAttrs.push(`data-wt-bonus-layout="fall"`);
 
-    const logoUrl = String(cfg?.identity?.uiLogoUrl || "").trim();
-    const bonusTitle = String(this.wording?.secretBonus?.title || "").trim();
-    const bonusSubtitle = String(this.wording?.secretBonus?.subtitle || "").trim();
+    const logoUrl = String(cfg?.identity?.uiLogoUrl || '').trim();
+    const bonusTitle = String(this.wording?.secretBonus?.title || '').trim();
+    const bonusSubtitle = String(
+      this.wording?.secretBonus?.subtitle || ''
+    ).trim();
 
     // PLAYING: branding always visible (Option A)
     // KISS: reuse the existing go-home action so BONUS can exit the same way as other modes.
     let brandingHtml = renderBrandingRow(cfg, true, false);
 
-    if (modeNow === "BONUS") {
+    if (modeNow === 'BONUS') {
       brandingHtml = `
         <div class="wt-bonus-branding">
           <div class="wt-bonus-branding__top">
             ${renderBrandingRow(cfg, true, false)}
           </div>
         </div>
-              ${bonusSubtitle ? `
+              ${
+                bonusSubtitle
+                  ? `
           <p class="wt-muted wt-bonus-subtitle">
             ${escapeHtml(bonusSubtitle)}
           </p>
-        ` : ``}
+        `
+                  : ``
+              }
       `;
     }
 
-
     function renderShell(innerHtml) {
       return `
-  <div class="wt-container" ${shellAttrs.join(" ")}>
+  <div class="wt-container" ${shellAttrs.join(' ')}>
     <div class="wt-playing-hero">
       ${brandingHtml}
       ${headingHtml}
@@ -8156,16 +10066,15 @@ ${audioSettingsHtml}
 `;
     }
 
-
     if (!item) {
       return renderShell(`
       <div class="wt-card">
-        <p class="wt-muted">${escapeHtml(String(wAll.system?.loading || "").trim())}</p>
+        <p class="wt-muted">${escapeHtml(String(wAll.system?.loading || '').trim())}</p>
       </div>
     `);
     }
 
-    const questionText = String(item.question || "").trim();
+    const questionText = String(item.question || '').trim();
     const speechSupported = supportsQuestionSpeech();
     const speechLocale = getQuestionSpeechLocale();
     const speechKey = `${speechLocale}:${Number(item?.id || 0)}:${questionText}`;
@@ -8174,54 +10083,74 @@ ${audioSettingsHtml}
       this._runtime?.questionSpeechActive === true &&
       this._runtime?.questionSpeechKey === speechKey;
     const autoReadEnabled = isAutoReadQuestionsEnabled(this.storage);
-    const speakLabel = String(wAll.system?.speakQuestion || "").trim();
-    const replayLabel = String(wAll.system?.replayQuestion || speakLabel).trim();
-    const stopLabel = String(wAll.system?.stopQuestion || "").trim();
-    const speakAria = String(wAll.system?.speakQuestionAria || speakLabel).trim();
-    const replayAria = String(wAll.system?.replayQuestionAria || replayLabel || speakAria).trim();
+    const speakLabel = String(wAll.system?.speakQuestion || '').trim();
+    const replayLabel = String(
+      wAll.system?.replayQuestion || speakLabel
+    ).trim();
+    const stopLabel = String(wAll.system?.stopQuestion || '').trim();
+    const speakAria = String(
+      wAll.system?.speakQuestionAria || speakLabel
+    ).trim();
+    const replayAria = String(
+      wAll.system?.replayQuestionAria || replayLabel || speakAria
+    ).trim();
     const stopAria = String(wAll.system?.stopQuestionAria || stopLabel).trim();
     const questionAudioHtml =
-      speechSupported && !this._runtime.feedbackPending && (speakLabel || stopLabel)
+      speechSupported &&
+      !this._runtime.feedbackPending &&
+      (speakLabel || stopLabel)
         ? `
   <div class="wt-question-tools">
     <button
       type="button"
-      class="wt-text-action wt-question-audio${isQuestionSpeaking ? " wt-pulse" : ""}"
+      class="wt-text-action wt-question-audio${isQuestionSpeaking ? ' wt-pulse' : ''}"
       data-action="toggle-question-audio"
-      aria-pressed="${isQuestionSpeaking ? "true" : "false"}"
-      aria-label="${escapeHtml(isQuestionSpeaking ? stopAria : (autoReadEnabled ? replayAria : speakAria))}"
+      aria-pressed="${isQuestionSpeaking ? 'true' : 'false'}"
+      aria-label="${escapeHtml(isQuestionSpeaking ? stopAria : autoReadEnabled ? replayAria : speakAria)}"
     >
-      ${renderIcon("volume-2")}
-      <span>${escapeHtml(isQuestionSpeaking ? (stopLabel || replayLabel || speakLabel) : (autoReadEnabled ? (replayLabel || speakLabel) : speakLabel))}</span>
+      ${renderIcon('volume-2')}
+      <span>${escapeHtml(isQuestionSpeaking ? stopLabel || replayLabel || speakLabel : autoReadEnabled ? replayLabel || speakLabel : speakLabel)}</span>
     </button>
   </div>
 `
-        : "";
+        : '';
 
-    const bonusPrompt = String(this.wording?.secretBonus?.questionPrompt || "").trim();
+    const bonusPrompt = String(
+      this.wording?.secretBonus?.questionPrompt || ''
+    ).trim();
 
     // PRACTICE: calm progress line instead of assertion
     // RUN: always show assertion
     // BONUS: no assertion
-    let questionPrompt = "";
-    if (modeNow === "PRACTICE") {
-      const deckTotal = (this.game && typeof this.game.getTotal === "function") ? this.game.getTotal() : 0;
-      const progressTpl = String(wAll.practice?.playingProgressLine || "").trim();
-      questionPrompt = (progressTpl && deckTotal > 0)
-        ? fillTemplate(progressTpl, { current: qNum, total: deckTotal })
-        : "";
-    } else if (modeNow !== "BONUS") {
-      questionPrompt = String(w.assertion || "").trim();
+    let questionPrompt = '';
+    if (modeNow === 'PRACTICE') {
+      const deckTotal =
+        this.game && typeof this.game.getTotal === 'function'
+          ? this.game.getTotal()
+          : 0;
+      const progressTpl = String(
+        wAll.practice?.playingProgressLine || ''
+      ).trim();
+      questionPrompt =
+        progressTpl && deckTotal > 0
+          ? fillTemplate(progressTpl, { current: qNum, total: deckTotal })
+          : '';
+    } else if (modeNow !== 'BONUS') {
+      questionPrompt = String(w.assertion || '').trim();
     }
 
     const questionHtml = `
 
 
-${questionPrompt ? `
+${
+  questionPrompt
+    ? `
   <p class="wt-question-prompt">
     ${escapeHtml(questionPrompt)}
   </p>
-` : ``}
+`
+    : ``
+}
 ${questionAudioHtml}
 <div class="wt-terms-box">
   <div class="wt-term-row">
@@ -8232,9 +10161,11 @@ ${questionAudioHtml}
 
     syncAutoReadCurrentQuestion(this);
 
-
     // If feedback is pending but temporarily hidden (chance lost focus), show frozen item only (no choices).
-    if (this._runtime.feedbackPending && this._runtime.feedbackReveal !== true) {
+    if (
+      this._runtime.feedbackPending &&
+      this._runtime.feedbackReveal !== true
+    ) {
       return renderShell(`
       <div class="wt-card" role="status" aria-live="polite">
         ${questionHtml}
@@ -8246,40 +10177,47 @@ ${questionAudioHtml}
     if (this._runtime.feedbackPending && this._runtime.lastAnswer) {
       const ans = this._runtime.lastAnswer;
       const isCorrect = ans.isCorrect === true;
-      const feedbackClass = isCorrect ? "wt-feedback--ok" : "wt-feedback--bad";
+      const feedbackClass = isCorrect ? 'wt-feedback--ok' : 'wt-feedback--bad';
 
       const verdictText = isCorrect
-        ? String(w.feedbackTitleOk || "").trim()
-        : String(w.feedbackTitleBad || "").trim();
+        ? String(w.feedbackTitleOk || '').trim()
+        : String(w.feedbackTitleBad || '').trim();
 
       // Show the correct answer label in the title (no fallback)
-      const correctLabel = (ans.correctAnswer === true)
-        ? String(ui.trueLabel || "").trim()
-        : String(ui.falseLabel || "").trim();
+      const correctLabel =
+        ans.correctAnswer === true
+          ? String(ui.trueLabel || '').trim()
+          : String(ui.falseLabel || '').trim();
 
       const titleLine =
-        (verdictText && correctLabel) ? `${verdictText} - ${correctLabel}` :
-          (verdictText || correctLabel || "");
+        verdictText && correctLabel
+          ? `${verdictText} - ${correctLabel}`
+          : verdictText || correctLabel || '';
 
       // Optional clarity line: "You chose: <label>" (no fallback)
-      const pickedLabel = (ans.pickedAnswer === true)
-        ? String(ui.trueLabel || "").trim()
-        : String(ui.falseLabel || "").trim();
+      const pickedLabel =
+        ans.pickedAnswer === true
+          ? String(ui.trueLabel || '').trim()
+          : String(ui.falseLabel || '').trim();
 
-      const youChosePrefix = String(wAll.system?.youChosePrefix || "").trim();
-      const youChoseLine = (youChosePrefix && pickedLabel) ? `${youChosePrefix} ${pickedLabel}` : "";
+      const youChosePrefix = String(wAll.system?.youChosePrefix || '').trim();
+      const youChoseLine =
+        youChosePrefix && pickedLabel ? `${youChosePrefix} ${pickedLabel}` : '';
 
-      const continueCta = String(wAll.system?.continue || "").trim();
-      const tapToContinue = String(wAll.system?.tapToContinue || "").trim();
-      const autoGameOverAfterFeedback = (this._runtime?.autoGameOverAfterFeedback === true);
-      const feedbackActionAttr = autoGameOverAfterFeedback ? ` data-action="continue"` : "";
+      const continueCta = String(wAll.system?.continue || '').trim();
+      const tapToContinue = String(wAll.system?.tapToContinue || '').trim();
+      const autoGameOverAfterFeedback =
+        this._runtime?.autoGameOverAfterFeedback === true;
+      const feedbackActionAttr = autoGameOverAfterFeedback
+        ? ` data-action="continue"`
+        : '';
 
       // Stable explanation for the frozen item during feedback (KISS)
-      const stableExplanation = String(ans.feedbackLine || "").trim();
+      const stableExplanation = String(ans.feedbackLine || '').trim();
 
       const explanationHtml = stableExplanation
         ? `<p class="wt-explanation">${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
-        : "";
+        : '';
 
       return renderShell(`
   <div class="wt-card" role="status" aria-live="polite"${feedbackActionAttr}>
@@ -8289,64 +10227,89 @@ ${questionAudioHtml}
       <strong class="wt-feedback-title">
                     ${escapeHtml(titleLine)}
       </strong>
-      ${youChoseLine ? `
+      ${
+        youChoseLine
+          ? `
         <div class="wt-muted wt-feedback__subline">
           ${escapeHtml(youChoseLine)}
         </div>
-      ` : ``}
+      `
+          : ``
+      }
     </div>
 
             ${explanationHtml}
 
 
-            ${!autoGameOverAfterFeedback ? `
+            ${
+              !autoGameOverAfterFeedback
+                ? `
       <div class="wt-actions wt-modal-actions wt-modal-actions--lg">
         <button class="wt-btn wt-btn--primary" data-action="continue">
           ${escapeHtml(continueCta)}
         </button>
       </div>
-    ` : ``}
+    `
+                : ``
+            }
 
 
-    ${(!autoGameOverAfterFeedback && shouldTapToContinue() && tapToContinue) ? `
+    ${
+      !autoGameOverAfterFeedback && shouldTapToContinue() && tapToContinue
+        ? `
       <p class="wt-muted wt-tap-hint">
         ${escapeHtml(tapToContinue)}
       </p>
-    ` : ``}
+    `
+        : ``
+    }
   </div>
 `);
-
     }
 
-    const trueLabel = String(ui.trueLabel || "").trim();
-    const falseLabel = String(ui.falseLabel || "").trim();
+    const trueLabel = String(ui.trueLabel || '').trim();
+    const falseLabel = String(ui.falseLabel || '').trim();
 
     // Default: show question with True/False buttons
     // Secret bonus fall adds semantic wrappers only (CSS decides fixed/no-scroll layout).
     const danger01 = fallEnabled ? Number(fall.dangerThreshold) : 0;
 
-    const dangerLabel = fallEnabled ? String(this.wording?.secretBonus?.dangerLineLabel || "").trim() : "";
-    const dangerAria = fallEnabled ? String(this.wording?.secretBonus?.dangerLineAria || "").trim() : "";
+    const dangerLabel = fallEnabled
+      ? String(this.wording?.secretBonus?.dangerLineLabel || '').trim()
+      : '';
+    const dangerAria = fallEnabled
+      ? String(this.wording?.secretBonus?.dangerLineAria || '').trim()
+      : '';
 
     return renderShell(`
     <div class="wt-card">
-      ${fallEnabled ? `
+      ${
+        fallEnabled
+          ? `
         <div class="wt-bonus-lane" data-wt-bonus-lane>
           <div class="wt-bonus-fail-line" data-wt-bonus-fail style="top:${Math.round(danger01 * 100)}%"></div>
-          ${dangerLabel ? `
+          ${
+            dangerLabel
+              ? `
             <div class="wt-bonus-fail-label" data-wt-bonus-fail-label style="top:${Math.round(danger01 * 100)}%" aria-label="${escapeHtml(dangerAria || dangerLabel)}">
               ${escapeHtml(dangerLabel)}
             </div>
-          ` : ``}
+          `
+              : ``
+          }
           <div class="wt-bonus-chip" data-wt-bonus-chip>
             ${questionHtml}
           </div>
         </div>
-      ` : `
+      `
+          : `
         ${questionHtml}
-      `}
+      `
+      }
 
-      ${fallEnabled ? `
+      ${
+        fallEnabled
+          ? `
         <div class="wt-choices">
           <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
             <span class="wt-choice-icon">\u2714</span>
@@ -8357,7 +10320,8 @@ ${questionAudioHtml}
             ${escapeHtml(falseLabel)}
           </button>
         </div>
-      ` : `
+      `
+          : `
         <div class="wt-answer-zone">
           <div class="wt-choices">
             <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
@@ -8370,7 +10334,8 @@ ${questionAudioHtml}
             </button>
           </div>
         </div>
-      `}
+      `
+      }
 
 
 
@@ -8378,11 +10343,10 @@ ${questionAudioHtml}
   `);
   };
 
-
   UI.prototype._renderPaywall = function () {
     const mod = window.WT_UI_Paywall;
-    if (!mod || typeof mod.render !== "function") {
-      throw new Error("WT_UI_Paywall.render missing");
+    if (!mod || typeof mod.render !== 'function') {
+      throw new Error('WT_UI_Paywall.render missing');
     }
     return mod.render(this, {
       escapeHtml,
@@ -8396,11 +10360,9 @@ ${questionAudioHtml}
     });
   };
 
-
-
   // ============================================
   // Export
   // ============================================
 
   window.WT_UI = UI;
-}();
+})();

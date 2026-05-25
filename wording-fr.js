@@ -10,8 +10,8 @@
   window.WT_WORDING_ALL = window.WT_WORDING_ALL || {};
   window.WT_WORDING_ALL.fr = {
   brand: {
-    creatorLine: "Un jeu indé par Carole",
-    creatorLineHtml: "Un jeu indé par <a href=\"./press.html\">Carole</a><br><a href=\"https://bonjourpickleball.fr/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
+    creatorLine: "Un jeu indépendant créé par Carole",
+    creatorLineHtml: "Un jeu indépendant créé par <a href=\"./press.html\">Carole</a><br><a href=\"https://bonjourpickleball.fr/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
   },
 
   common: {
@@ -179,7 +179,7 @@
     title: "Quiz Pickleball",
     tagline: "**Vous croyez connaître le pickleball ? Prouvez-le.**",
     subtitle: "Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.",
-    microFun: "Parties courtes · Sans inscription · Gratuit à essayer",
+    microFun: "Parties courtes · Sans inscription · Essai gratuit",
     microTrust: "Installez-la après votre première partie.",
 
     runsLabel: "",

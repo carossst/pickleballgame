@@ -300,3 +300,92 @@ test('leaderboard submitRun surfaces HTTP rejection as non-skipped failure', asy
     reason: 'http_409'
   });
 });
+
+test('leaderboard handleSubmitResult shows weekly rank toast on successful submit', () => {
+  const leaderboard = loadLeaderboardModule();
+  const toasts = [];
+  const ui = {
+    config: {},
+    wording: {
+      leaderboard: {
+        rankToastWeekly: 'Public weekly rank: #{rank}.',
+        scoreRejectedToast: 'Rejected'
+      }
+    }
+  };
+
+  leaderboard.handleSubmitResult(
+    ui,
+    {
+      ok: true,
+      data: { weekly_rank: 12 }
+    },
+    {
+      clampInt(value, min, max) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return min;
+        return Math.max(min, Math.min(max, Math.floor(n)));
+      },
+      fillTemplate(tpl, vars) {
+        return String(tpl || '').replace(/\{(\w+)\}/g, (_m, key) =>
+          Object.prototype.hasOwnProperty.call(vars || {}, key)
+            ? String(vars[key])
+            : ''
+        );
+      },
+      toastNow(_cfg, message, opts) {
+        toasts.push({ message, opts });
+      }
+    }
+  );
+
+  expect(toasts).toEqual([
+    {
+      message: 'Public weekly rank: #12.',
+      opts: { variant: 'info' }
+    }
+  ]);
+});
+
+test('leaderboard handleSubmitResult shows rejection toast for non-skipped failure', () => {
+  const leaderboard = loadLeaderboardModule();
+  const toasts = [];
+  const ui = {
+    config: {},
+    wording: {
+      leaderboard: {
+        rankToastWeekly: 'Public weekly rank: #{rank}.',
+        scoreRejectedToast: 'This RUN was not added.'
+      }
+    }
+  };
+
+  leaderboard.handleSubmitResult(
+    ui,
+    {
+      ok: false,
+      skipped: false,
+      reason: 'http_409'
+    },
+    {
+      clampInt(value, min, max) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return min;
+        return Math.max(min, Math.min(max, Math.floor(n)));
+      },
+      fillTemplate(tpl) {
+        return String(tpl || '');
+      },
+      toastNow(_cfg, message, opts) {
+        toasts.push({ message, opts });
+      }
+    }
+  );
+
+  expect(toasts).toEqual([
+    {
+      message: 'This RUN was not added.',
+      opts: { variant: 'info' }
+    }
+  ]);
+});

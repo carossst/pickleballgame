@@ -135,7 +135,8 @@ function loadBrowserScript(scriptRelativePath, options) {
     WeakSet,
     Symbol,
     Promise,
-    URL
+    URL,
+    URLSearchParams
   };
 
   context.globalThis = context;
