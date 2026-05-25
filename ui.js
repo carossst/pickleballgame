@@ -2999,6 +2999,7 @@ void (function () {
         // Backdrop click: close modal even if overlay has no data-action
         if (t === self.modalEl) {
           e.preventDefault();
+          e.stopImmediatePropagation();
           self.closeModal();
           return;
         }
@@ -3011,6 +3012,7 @@ void (function () {
         if (!action) return;
 
         e.preventDefault();
+        e.stopImmediatePropagation();
         dispatchAction(action, e);
       };
 
