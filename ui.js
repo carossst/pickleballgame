@@ -2735,6 +2735,15 @@ void (function () {
         }
 
         case 'start-practice':
+          if (!(self._runtime && Number(self._runtime.contentTotal) > 0)) {
+            const msg = String(self.getContentLoadingCopy() || '').trim();
+            if (msg)
+              toastNow(self.config, msg, {
+                variant: 'info',
+                timingKey: 'contentLoading'
+              });
+            break;
+          }
           if (self.state === STATES.LANDING) {
             if (
               self.storage &&

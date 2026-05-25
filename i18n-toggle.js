@@ -97,7 +97,7 @@
   function getEntryHrefForLocale(loc) {
     const normalized = String(loc || "").trim().toLowerCase();
     if (normalized === "fr") return "./fr.html";
-    return "./";
+    return "./index.html";
   }
 
   function getNavigationHref(loc) {
