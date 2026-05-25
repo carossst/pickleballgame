@@ -74,6 +74,7 @@ const ASSETS_TO_CACHE = [
   "./ui-stats-sharing.js",
   "./ui-checkout.js",
   "./ui-growth.js",
+  "./ui-leaderboard.js",
   "./ui.js",
   "./pwa.js",
   "./email.js",
@@ -120,6 +121,7 @@ const CRITICAL_ASSETS = [
   "./logic/leaderboard-logic.js",
   "./storage.js",
   "./game.js",
+  "./ui-leaderboard.js",
   "./ui.js",
   "./main.js",
   "./content.json"
@@ -268,6 +270,7 @@ function isNetworkFirstAppShellRequest(req, url) {
     path === "/ui-stats-sharing.js" ||
     path === "/ui-checkout.js" ||
     path === "/ui-growth.js" ||
+    path === "/ui-leaderboard.js" ||
     path === "/ui.js" ||
     path === "/pwa.js" ||
     path === "/email.js" ||

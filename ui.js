@@ -3043,7 +3043,19 @@ void (function () {
       if (pointerEvt !== 'click') {
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - (self._lastActionDispatchTs || 0) < 400) return;
+          if (now - (self._lastActionDispatchTs || 0) < 400) {
+            try {
+              if (e && typeof e.preventDefault === 'function') e.preventDefault();
+              if (e && typeof e.stopImmediatePropagation === 'function') {
+                e.stopImmediatePropagation();
+              } else if (e && typeof e.stopPropagation === 'function') {
+                e.stopPropagation();
+              }
+            } catch (_) {
+              /* silent */
+            }
+            return;
+          }
           modalActionHandler(e);
         };
 
@@ -3137,7 +3149,19 @@ void (function () {
         const origHandler = appActionHandler;
         const dedupHandler = (e) => {
           const now = e.timeStamp || Date.now();
-          if (now - (self._lastActionDispatchTs || 0) < 400) return;
+          if (now - (self._lastActionDispatchTs || 0) < 400) {
+            try {
+              if (e && typeof e.preventDefault === 'function') e.preventDefault();
+              if (e && typeof e.stopImmediatePropagation === 'function') {
+                e.stopImmediatePropagation();
+              } else if (e && typeof e.stopPropagation === 'function') {
+                e.stopPropagation();
+              }
+            } catch (_) {
+              /* silent */
+            }
+            return true;
+          }
           origHandler(e);
         };
         this.appEl.removeEventListener(pointerEvt, appActionHandler);

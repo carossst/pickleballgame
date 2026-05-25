@@ -742,12 +742,6 @@ ${(() => {
   `;
       })()}
 
-      ${((ui._runtime && ui._runtime.contentLoading === true)
-        ? (() => {
-          const msg = String(ui.getContentLoadingCopy() || "").trim();
-          return msg ? `<p class="wt-muted wt-loading-copy">${escapeHtml(msg)}</p>` : ``;
-        })()
-        : ``)}
     </div>
 
     ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted wt-landing-followup">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
