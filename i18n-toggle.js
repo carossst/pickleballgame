@@ -135,8 +135,15 @@
   function buildButtonHtml(active) {
     const other = getOtherLocale(active);
     const label = LABELS[other] || String(other).toUpperCase();
-    // aria-label is descriptive of the action (the click target switches TO 'other')
     const aria = getSwitchAria(other);
+    const href = getNavigationHref(other);
+    if (href) {
+      return `<a
+      class="wt-locale-swap"
+      data-wt-locale-swap-to="${other}"
+      href="${href}"
+      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
+    }
     return `<button type="button"
       class="wt-locale-swap"
       data-wt-locale-swap-to="${other}"
@@ -185,13 +192,12 @@
     if (!target) return;
     const loc = target.getAttribute("data-wt-locale-swap-to");
     if (!loc) return;
-    e.preventDefault();
     const href = getNavigationHref(loc);
     if (href) {
       persistLocaleChoice(loc);
-      window.location.assign(href);
       return;
     }
+    e.preventDefault();
     I18N.setLocale(loc);
   }
 
