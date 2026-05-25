@@ -226,6 +226,9 @@
       personalBestFirstTitle: 'Set your first score',
       personalBestFirstSubTemplate:
         'Score {nextTarget}+ to unlock your first tier.',
+      personalBestLockedTitle: 'Record your score',
+      personalBestLockedSub:
+        'Unlock full access to record your score and keep building your best.',
       progressSectionTitle: 'YOUR PROGRESS',
       progressSectionBody: 'Pick one next step and keep moving.',
       dailyChallengeBadge: "TODAY'S CHALLENGE",
@@ -234,7 +237,8 @@
         'Today: {score}/{targetScore} score. Resets in {time}.',
       dailyChallengeResetTemplate:
         'Reach {targetScore}+ score. Resets in {time}.',
-      dailyChallengeCompletedTemplate: 'Completed today. Resets in {time}.',
+      dailyChallengeCompletedTemplate:
+        'Completed today. Resets in {time}. Come back tomorrow for a new challenge.',
       dailyChallengeRewardTemplate:
         "Clear today's challenge to earn 1 Rapid Fire ticket.",
       dailyChallengeRewardCappedTemplate:
@@ -245,7 +249,7 @@
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
-        'Unlock unlimited RUNs, all 200 questions in the game, explanations after every answer, and unlimited Mistakes Mode.',
+        'Unlock unlimited RUNs, record your score, all 200 questions in the game, explanations after every answer, and unlimited Mistakes Mode.',
       practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
@@ -586,7 +590,7 @@
       ticketRequiredBodyDaily:
         "Rapid Fire costs {cost} ticket{costPluralS}.\nYou have {tickets} right now.\nPlay today's challenge to earn one.",
       ticketRequiredBodySpentToday:
-        "Rapid Fire costs {cost} ticket{costPluralS}.\nYou have {tickets} right now.\nYou've already claimed today's ticket. Come back tomorrow's challenge to earn another one.",
+        "Rapid Fire costs {cost} ticket{costPluralS}.\nYou have {tickets} right now.\nYou've already claimed today's ticket. Come back tomorrow for a new challenge and another ticket.",
       ticketRequiredBodyPremium:
         "Rapid Fire costs {cost} ticket{costPluralS}.\nYou have {tickets} right now.\nPlay a run and clear today's challenge to earn one.",
       ticketRequiredBodyLocked:
@@ -798,6 +802,8 @@
       compactBullets: [
         '**All 200 questions in the game**',
         '**Unlimited RUNs**',
+        '**Record and keep improving your score**',
+        '**See the best scores on the public leaderboard**',
         '**Explanations after every answer**',
         '**Mistakes Mode** and offline play'
       ],
@@ -805,6 +811,8 @@
       valueBullets: [
         '**All 200 questions in the game**',
         '**Unlimited RUNs** across the full game',
+        '**Record your score and keep improving your best**',
+        '**See the best scores on the public leaderboard**',
         '**A mix of easy, intermediate, and hard questions**',
         '**Explanations after every answer**',
         '**Unlimited Mistakes Mode** to fix what you missed'
@@ -812,9 +820,9 @@
 
       bridgeTitle: 'Know the pickleball rules better.',
       bridgeBody:
-        "Unlock unlimited RUNs, all 200 questions in the game, Mistakes Mode, and keep today's challenge alive over time.",
+        "Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and keep today's challenge alive over time.",
       bridgeBodyLastFreeMiss:
-        "You've seen the real pace of the game. Unlock unlimited RUNs, all 200 questions in the game, Mistakes Mode, and come back to today's challenge whenever you want.",
+        "You've seen the real pace of the game. Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and come back to today's challenge whenever you want.",
 
       trustLine: '**One-time unlock**',
       trustBullets: [

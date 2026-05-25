@@ -3065,6 +3065,16 @@ void (function () {
 
         const ignoreUntil = Number(self._ignoreAppActionsUntil || 0);
         if (ignoreUntil > 0 && Date.now() <= ignoreUntil) {
+          try {
+            if (e && typeof e.preventDefault === 'function') e.preventDefault();
+            if (e && typeof e.stopImmediatePropagation === 'function') {
+              e.stopImmediatePropagation();
+            } else if (e && typeof e.stopPropagation === 'function') {
+              e.stopPropagation();
+            }
+          } catch (_) {
+            /* silent */
+          }
           return false;
         }
 

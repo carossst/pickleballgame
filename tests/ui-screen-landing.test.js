@@ -121,6 +121,7 @@ function buildHelpers(renderLeaderboardLandingCard) {
 function createUi(runCompletes, options = {}) {
   const bestScoreFP = Number(options.bestScoreFP || 0);
   const seenCount = Number(options.seenCount || 0);
+  const runsBalance = options.runsBalance == null ? 1 : Number(options.runsBalance);
   return {
     state: 'LANDING',
     _runtime: {},
@@ -151,6 +152,9 @@ function createUi(runCompletes, options = {}) {
         personalBestFirstTitle: 'Set your first score',
         personalBestFirstSubTemplate:
           'Score {nextTarget}+ to unlock your first tier.',
+        personalBestLockedTitle: 'Record your score',
+        personalBestLockedSub:
+          'Unlock full access to record your score and keep building your best.',
         dailyChallengeBadge: 'DAILY CHALLENGE',
         dailyChallengeTitleTemplate: 'Goal: {targetScore}+ score',
         dailyChallengeProgressTemplate: 'Best today: {bestToday}',
@@ -171,6 +175,9 @@ function createUi(runCompletes, options = {}) {
     storage: {
       getRunNumber() {
         return runCompletes;
+      },
+      getRunsBalance() {
+        return runsBalance;
       },
       getRunsUsed() {
         return runCompletes;
@@ -244,4 +251,18 @@ test('landing hides phase progress card when no seen questions exist yet', () =>
   expect(html).not.toContain("You've seen 0 questions so far.");
   expect(html).toContain('Levels');
   expect(html).toContain('PERSONAL BEST');
+});
+
+test('landing first-score card routes to paywall when free runs are exhausted', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, { seenCount: 8, bestScoreFP: 0, runsBalance: 0 }),
+    buildHelpers(modules.renderLeaderboardLandingCard)
+  );
+
+  expect(html).toContain('Record your score');
+  expect(html).toContain(
+    'Unlock full access to record your score and keep building your best.'
+  );
+  expect(html).toContain('data-action="open-paywall"');
 });

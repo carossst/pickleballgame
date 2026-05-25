@@ -679,7 +679,8 @@ body.wt-state--end .wt-card--end {
 
 .wt-landing-dashboard__spotlight .wt-landing-stat,
 .wt-landing-dashboard__secondary .wt-landing-stat,
-.wt-landing-dashboard__leaderboard .wt-leaderboard-card {
+.wt-landing-dashboard__tertiary .wt-landing-stat,
+.wt-landing-leaderboard-section .wt-leaderboard-card {
   min-height: 100%;
 }
 
@@ -696,7 +697,8 @@ body.wt-state--end .wt-card--end {
 }
 
 .wt-landing-dashboard__secondary .wt-landing-stat,
-.wt-landing-dashboard__leaderboard .wt-leaderboard-card,
+.wt-landing-dashboard__tertiary .wt-landing-stat,
+.wt-landing-leaderboard-section .wt-leaderboard-card,
 .wt-landing-level-quick {
   padding: var(--space-14);
   border-radius: var(--r-card);
@@ -709,8 +711,16 @@ body.wt-state--end .wt-card--end {
   margin-bottom: 0;
 }
 
-.wt-landing-dashboard__leaderboard .wt-leaderboard-card {
+.wt-landing-leaderboard-section {
+  margin-top: var(--space-18);
+}
+
+.wt-landing-leaderboard-section .wt-leaderboard-card {
   margin: 0;
+}
+
+.wt-landing-stat--level {
+  cursor: pointer;
 }
 
 @media (min-width: 760px) {
@@ -727,9 +737,10 @@ body.wt-state--end .wt-card--end {
     grid-column: 2;
   }
 
-  .wt-landing-dashboard__leaderboard {
+  .wt-landing-dashboard__tertiary {
     grid-column: 1 / -1;
   }
+
 }
 
 .wt-landing-stat__kicker {

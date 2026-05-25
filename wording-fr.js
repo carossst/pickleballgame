@@ -229,6 +229,9 @@
       personalBestFirstTitle: 'Enregistrez votre score',
       personalBestFirstSubTemplate:
         'Marquez {nextTarget}+ pour débloquer votre premier palier.',
+      personalBestLockedTitle: 'Enregistrez votre score',
+      personalBestLockedSub:
+        "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
       progressSectionTitle: 'VOTRE PROGRESSION',
       progressSectionBody: 'Choisissez une prochaine étape utile et continuez.',
       dailyChallengeBadge: 'DÉFI DU JOUR',
@@ -238,7 +241,7 @@
       dailyChallengeResetTemplate:
         'Atteignez {targetScore}+ au score. Réinitialisation dans {time}.',
       dailyChallengeCompletedTemplate:
-        "Terminé aujourd'hui. Réinitialisation dans {time}.",
+        "Terminé aujourd'hui. Réinitialisation dans {time}. Revenez demain pour un nouveau défi.",
       dailyChallengeRewardTemplate:
         'Réussissez le défi du jour pour gagner 1 ticket Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
@@ -249,7 +252,7 @@
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
-        'Débloquez des RUNs illimitées, les 200 questions du jeu sur les règles du pickleball, les explications après chaque réponse et le Mode Erreurs illimité.',
+        "Débloquez des RUNs illimitées, enregistrez votre score, accédez aux 200 questions du jeu sur les règles du pickleball, aux explications après chaque réponse et au Mode Erreurs illimité.",
       practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
@@ -606,7 +609,7 @@
       ticketRequiredBodyDaily:
         "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez le défi du jour pour en gagner un.",
       ticketRequiredBodySpentToday:
-        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nLe ticket du jour a déjà été réclamé. Revenez au défi de demain pour en regagner un.",
+        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nLe ticket du jour a déjà été réclamé. Revenez demain pour un nouveau défi et un nouveau ticket.",
       ticketRequiredBodyPremium:
         "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez une run et réussissez le défi du jour pour en gagner un.",
       ticketRequiredBodyLocked:
@@ -820,6 +823,8 @@
       compactBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
         '**RUNs illimitées**',
+        '**Enregistrez votre score et faites progresser votre meilleur résultat**',
+        '**Voyez les meilleurs scores dans le classement public**',
         '**Explications après chaque réponse**',
         '**Mode Erreurs** et jeu hors ligne'
       ],
@@ -827,6 +832,8 @@
       valueBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
         '**RUNs illimitées** sur tout le jeu',
+        '**Enregistrez votre score et faites progresser votre meilleur résultat**',
+        '**Voyez les meilleurs scores dans le classement public**',
         '**Un mélange de questions faciles, intermédiaires et difficiles**',
         '**Explications après chaque réponse**',
         '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
@@ -834,9 +841,9 @@
 
       bridgeTitle: 'Connaissez mieux les règles du pickleball.',
       bridgeBody:
-        'Débloquez des RUNs illimitées, les 200 questions du jeu, le Mode Erreurs, et gardez le défi du jour vivant dans le temps.',
+        'Débloquez des RUNs illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et gardez le défi du jour vivant dans le temps.',
       bridgeBodyLastFreeMiss:
-        'Vous avez vu le vrai rythme du jeu. Débloquez des RUNs illimitées, les 200 questions du jeu, le Mode Erreurs, et revenez sur le défi du jour quand vous voulez.',
+        'Vous avez vu le vrai rythme du jeu. Débloquez des RUNs illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et revenez sur le défi du jour quand vous voulez.',
 
       trustLine: '**Déverrouillage unique**',
       trustBullets: [
