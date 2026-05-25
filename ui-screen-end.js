@@ -204,14 +204,7 @@
     const endLine = endLineTpl ? fillTemplate(endLineTpl, vars) : "";
     const practiceCelebrateLine = String(practiceW.celebrationAllCleared || practiceW.endLineAllFixed || "").trim();
     const bonusCelebrateLine = String(bonusW.celebrationPerfect || "").trim();
-    const runStatsLine = (() => {
-      if (!isRun || !!lastRun.poolCompleteCelebration) return "";
-
-      const tpl = String(end.endStatsLine || "").trim();
-      if (!tpl) return "";
-
-      return fillTemplate(tpl, vars);
-    })();
+    const runStatsLine = "";
 
     const bonusDecisionLine = isBonus ? bonusRecoLine : "";
 
@@ -242,7 +235,6 @@
               <span class="wt-level-chip__dot" aria-hidden="true"></span>
               <span>${escapeHtml(unlockDef.label)}</span>
             </button>
-            <p class="wt-level-unlock__line">${escapeHtml(fillTemplate(String(levelModel.levelsW?.reachedTemplate || "").trim(), { label: unlockDef.label }))}</p>
           </div>
         </div>
       `

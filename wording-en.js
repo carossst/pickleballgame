@@ -765,16 +765,16 @@
       streakLine: '',
       scoreTierLine: 'Current score tier: {tier}.',
       scoreTierNextLine: 'Next tier: {nextTier} at {nextTarget}+.',
-      dailyChallengeCleared: "Today's challenge cleared: {targetScore}+ score.",
+      dailyChallengeCleared: "Daily challenge cleared.",
       dailyChallengeClearedFreeRun:
         "Today's challenge is cleared. The Rapid Fire ticket unlocks on your last free run.",
       dailyChallengeTicketWon:
         "Today's challenge cleared. +1 Rapid Fire ticket.",
       dailyChallengeTicketCapped:
         "Today's challenge cleared. Tickets are capped at {cap}. Spend one to earn more.",
-      dailyChallengeMiss: "Today's challenge was {targetScore}+ score.",
+      dailyChallengeMiss: 'Daily challenge missed.',
       dailyChallengeMissLastFree:
-        "Not this time. Today's challenge was {targetScore}+ score.",
+        'Not this time. Daily challenge missed.',
       dailyChallengeCtaRetry: 'Try the challenge again',
       dailyChallengeToast: "Today's challenge complete. +1 Rapid Fire ticket.",
       modeMissingFallback: 'Your run summary is still available.',

@@ -779,15 +779,15 @@
       streakLine: '',
       scoreTierLine: 'Palier actuel : {tier}.',
       scoreTierNextLine: 'Prochain palier : {nextTier} à {nextTarget}+.',
-      dailyChallengeCleared: 'Défi du jour réussi : {targetScore}+.',
+      dailyChallengeCleared: 'Défi du jour réussi.',
       dailyChallengeClearedFreeRun:
         'Défi du jour réussi. Le jeton Mode Rapide se gagne sur votre dernière partie gratuite.',
       dailyChallengeTicketWon: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       dailyChallengeTicketCapped:
         'Défi du jour réussi. Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
-      dailyChallengeMiss: 'Le défi du jour demandait {targetScore}+.',
+      dailyChallengeMiss: 'Défi du jour manqué.',
       dailyChallengeMissLastFree:
-        'Pas encore. Le défi du jour demandait {targetScore}+.',
+        'Pas cette fois. Défi du jour manqué.',
       dailyChallengeCtaRetry: 'Retenter le défi du jour',
       dailyChallengeToast: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       modeMissingFallback: 'Le récapitulatif de votre partie reste disponible.',

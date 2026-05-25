@@ -9062,10 +9062,6 @@ ${audioSettingsHtml}
       // (beat your best, best streak, daily challenge). If none of these are available,
       // we deliberately fall back to category insights, then older PB/tier/support lines
       // instead of leaving the END summary empty.
-      if (beatBestLine)
-        microLines.push(
-          `<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`
-        );
       if (streakLine)
         microLines.push(
           `<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`
@@ -9290,11 +9286,6 @@ ${audioSettingsHtml}
       microLines.push(
         `<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`
       );
-    if (beatBestLine)
-      microLines.push(
-        `<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`
-      );
-
     return microLines.length
       ? `
     <div class="wt-end-table">
