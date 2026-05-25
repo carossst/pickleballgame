@@ -289,6 +289,14 @@ body.wt-state--end .wt-card--end {
   line-height: 1.22;
 }
 
+
+@media (min-width: 900px) {
+  .wt-container[data-wt-state='playing'] .wt-term-word {
+    font-size: clamp(var(--fs-lg), 2.8vw, 22px);
+    line-height: 1.28;
+  }
+}
+
 .wt-container[data-wt-state='playing'] .wt-choices {
   gap: var(--space-10);
   margin-top: var(--space-14);
@@ -533,21 +541,6 @@ body.wt-state--end .wt-card--end {
   font-size: var(--fs-md);
   line-height: 1.4;
   color: rgb(var(--text));
-}
-
-
-.wt-leaderboard-card__freshness,
-.wt-leaderboard-modal__reset {
-  margin: var(--space-8) 0 0;
-  display: grid;
-  gap: var(--space-4);
-  font-size: var(--fs-xs);
-  line-height: 1.35;
-  color: rgb(var(--text-muted));
-}
-
-.wt-leaderboard-card__freshness span {
-  display: block;
 }
 
 .wt-leaderboard-list,

@@ -195,7 +195,7 @@
 
     landing: {
       title: 'Pickleball Rules Quiz',
-      tagline: '**MAINTENANCE IN PROGRESS PLEASE COME BACK LATER**',
+      tagline: '**Think you know pickleball? Prove it.**',
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: 'Quick games · No signup · Free to try',
@@ -210,9 +210,9 @@
       statsSeenLabel: 'Questions seen',
 
       statsSeenSummaryTemplate: 'Seen: {seen} questions',
-      statsPhaseBadgeDiscovery: 'Keep going',
-      statsPhaseBadgeCorrection: 'Fix mistakes',
-      statsPhaseBadgeConsolidation: 'Pressure test',
+      statsPhaseBadgeDiscovery: 'Phase 1/3: First pass',
+      statsPhaseBadgeCorrection: 'Phase 2/3: Fix mistakes',
+      statsPhaseBadgeConsolidation: 'Phase 3/3: Pressure test',
 
       statsSeenCompleteLabel: 'Quiz progress',
       statsMistakesLabel: 'Mistakes',
@@ -231,7 +231,7 @@
         'Unlock full access to record your score and keep building your best.',
       progressSectionTitle: 'NEXT UP',
       progressSectionBody: '',
-      dailyChallengeBadge: "TODAY\'S TARGET",
+      dailyChallengeBadge: "TODAY'S TARGET",
       dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
       dailyChallengeProgressTemplate:
         'Today: {score}/{targetScore}. Best: {best}. New target at {resetTime}, your time.',
@@ -240,11 +240,11 @@
       dailyChallengeCompletedTemplate:
         'Completed today. Best: {best}. Come back at {resetTime}, your time, for the next target.',
       dailyChallengeRewardTemplate:
-        'Reward: 1 Rapid Fire ticket.',
+        "Beat today's target to earn 1 Rapid Fire ticket. Rapid Fire costs 1 ticket.",
       dailyChallengeRewardCappedTemplate:
-        'Tickets full. Spend one to earn another.',
+        'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
-        'Already cleared once. Clear it again on your last free run to earn 1 Rapid Fire ticket.',
+        'You already cleared it once. Clear it again today on your last free run to earn 1 Rapid Fire ticket.',
       dailyChallengeCta: 'Start challenge',
 
       postPaywallTitle: 'Your free preview is complete.',
@@ -267,7 +267,7 @@
       cardCtaView: 'View leaderboard',
       statusBadge: 'UPDATED',
       lastUpdatedTemplate: 'Last updated: {time}',
-      nextRefreshTemplate: 'Next refresh: {time}',
+      nextRefreshTemplate: 'Next update: {time}',
       weeklyResetLine:
         'Weekly reset: {localTime}, your time (Monday 00:00 UTC).',
       loading: 'Loading leaderboard...',
@@ -335,8 +335,8 @@
         title: 'First quarter complete.',
         bodyLines: [
           "You've seen the first quarter of the question set.",
-          'Keep going. You are building your rule base.',
-          "Keep going. You are building your rule base."
+          'This is still phase 1: discovery.',
+          "Keep going. You're building your first pass through the rules."
         ],
         cta: 'Next'
       },
@@ -344,8 +344,8 @@
         title: 'Halfway there.',
         bodyLines: [
           "You've seen half of the question set.",
-          "Keep going. You are building your rule base.",
-          "See the full set first. Then fix what still catches you."
+          "You're still in the discovery phase.",
+          "Finish the full set first. Then you'll fix what still catches you."
         ],
         cta: 'Next'
       },
@@ -353,7 +353,7 @@
         title: 'Three quarters complete.',
         bodyLines: [
           "You've seen three quarters of the question set.",
-          "You are close to seeing the full question set.",
+          "You're close to finishing phase 1.",
           "One more push, then you'll know exactly what still needs work."
         ],
         cta: 'Next'
@@ -362,11 +362,11 @@
 
     phaseJourney: {
       discovery: {
-        badge: 'Keep going',
+        badge: 'Phase 1/3: First pass',
         landingSummaryTemplate: "You've seen {seen} questions so far.",
-        landingDetailTemplate: '{remaining} questions left in the full set.',
+        landingDetailTemplate: '{remaining} left in your first pass.',
         endLens:
-          'Keep going. Right now the goal is to cover more of the set.',
+          "You're still on your first pass. Right now the goal is to cover more of the set.",
         micropics: {
           streakStart: '3 in a row. Good read.',
           streakBuilding: '6 in a row. Good read.',
@@ -378,7 +378,7 @@
         }
       },
       correction: {
-        badge: 'Fix mistakes',
+        badge: 'Phase 2/3: Fix mistakes',
         landingSummaryTemplate: 'Mistakes left: {mistakes}',
         landingDetail:
           "You've seen the full set. Now clear the rules that still catch you.",
@@ -395,7 +395,7 @@
         }
       },
       consolidation: {
-        badge: 'Pressure test',
+        badge: 'Phase 3/3: Pressure test',
         landingSummaryTemplate: 'No active mistakes',
         landingDetail: 'Your mistakes are clear. Build your Rapid Fire score.',
         endLens: 'Your mistakes are clear. Build your Rapid Fire score.',
@@ -433,7 +433,7 @@
           label: 'COURT-READY',
           unlock: 'Finish one RUN.',
           sheetBody:
-            'You finished your first full pass. Now make the rules stick.'
+            'You finished your first RUN. You are officially on the board.'
         },
         2: {
           label: 'CLUB-LEVEL',
@@ -701,7 +701,7 @@
         'You made it through the full set. Now replay, fix mistakes, and know the rules better.',
       poolCompleteLine2: 'Come back later and see what you still remember.',
       directToConsolidationLine:
-        'You finished the full set with no active mistakes, so you are ready for the pressure test.',
+        'You finished the full set with no active mistakes, so you move straight to phase 3.',
       poolCompleteScoreLine: 'This game: {score} {fpShort}',
       poolCompleteCtaPrimary: 'Replay in a new order',
       poolCompleteCtaPractice: 'Fix your mistakes',

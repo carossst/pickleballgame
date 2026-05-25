@@ -865,34 +865,6 @@ void (function () {
     return `${minutes}m`;
   }
 
-  function getDisplayLocaleForTime() {
-    try {
-      if (window.WT_I18N && typeof window.WT_I18N.getLocale === 'function') {
-        const loc = String(window.WT_I18N.getLocale() || '')
-          .trim()
-          .toLowerCase();
-        if (loc === 'fr') return 'fr-FR';
-      }
-    } catch (_) {
-      /* silent */
-    }
-    return 'en-US';
-  }
-
-  function formatDailyResetTime(ts) {
-    const n = Number(ts);
-    if (!Number.isFinite(n) || n <= 0) return '';
-
-    try {
-      return new Intl.DateTimeFormat(getDisplayLocaleForTime(), {
-        hour: '2-digit',
-        minute: '2-digit'
-      }).format(new Date(n));
-    } catch (_) {
-      return '';
-    }
-  }
-
   function getDailyChallengeModel(cfg, wording, bestScoreFP, storage) {
     const safeBest = clampInt(bestScoreFP, 0, 99999);
     const tier = getRunTierInfo(cfg, wording, safeBest);
@@ -1011,8 +983,7 @@ void (function () {
       ticketAtCap,
       resetAt: dayEndMs,
       resetInMs,
-      resetCountdown: formatDailyResetCountdown(resetInMs),
-      resetTime: formatDailyResetTime(dayEndMs)
+      resetCountdown: formatDailyResetCountdown(resetInMs)
     };
   }
 

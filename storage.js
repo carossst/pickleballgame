@@ -2034,7 +2034,49 @@
   };
 
   StorageManager.prototype.getLevelState = function () {
-    const p = this.data?.progression || {};
+    if (!this.data) {
+      return {
+        currentLevel: 0,
+        unlockedAtByLevel: { 1: 0, 2: 0, 3: 0, 4: 0 }
+      };
+    }
+
+    if (!this.data.progression || typeof this.data.progression !== 'object') {
+      this.data.progression = deepCopy(this.defaultData.progression);
+    }
+    if (
+      !this.data.progression.unlockedAtByLevel ||
+      typeof this.data.progression.unlockedAtByLevel !== 'object'
+    ) {
+      this.data.progression.unlockedAtByLevel = deepCopy(
+        this.defaultData.progression.unlockedAtByLevel
+      );
+    }
+
+    const levelsCfg =
+      this.config?.levels && typeof this.config.levels === 'object'
+        ? this.config.levels
+        : {};
+    const level1MinRunCompletes = Math.max(
+      1,
+      clampNonNegativeInt(levelsCfg.level1MinRunCompletes)
+    );
+    const runCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
+    const currentLevel = Math.min(
+      4,
+      clampNonNegativeInt(this.data.progression.currentLevel)
+    );
+
+    // Self-heal older local progress: if the user already completed a RUN
+    // before the easier level-1 rule shipped, unlock level 1 on next read.
+    if (currentLevel === 0 && runCompletes >= level1MinRunCompletes) {
+      this.data.progression.currentLevel = 1;
+      this.data.progression.unlockedAtByLevel[1] =
+        clampNonNegativeInt(this.data.progression.unlockedAtByLevel[1]) || now();
+      this._save();
+    }
+
+    const p = this.data.progression || {};
     const unlockedAtByLevelRaw = p.unlockedAtByLevel || {};
     return {
       currentLevel: Math.min(4, clampNonNegativeInt(p.currentLevel)),
@@ -2086,21 +2128,18 @@
       this.config?.levels && typeof this.config.levels === 'object'
         ? this.config.levels
         : {};
-    const level1Raw = Number(levelsCfg.level1MinRunCompletes);
-    const level1MinRunCompletes =
-      Number.isFinite(level1Raw) && level1Raw >= 1
-        ? Math.floor(level1Raw)
-        : Number.MAX_SAFE_INTEGER;
+    const level1MinRunCompletes = Math.max(
+      1,
+      clampNonNegativeInt(levelsCfg.level1MinRunCompletes)
+    );
     const level3MinSeen = clampNonNegativeInt(levelsCfg.level3MinSeen);
     const level4MinSeen = clampNonNegativeInt(levelsCfg.level4MinSeen);
     const level3MinAccuracy = Number(levelsCfg.level3MinAccuracy);
     const level4MinAccuracy = Number(levelsCfg.level4MinAccuracy);
 
-    const runCompletes = clampNonNegativeInt(
-      this.data?.counters?.runCompletes
-    );
     const seenPool = this.getUniqueSeenCount();
     const mastered = this.isMastered();
+    const runCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
 
     if (prevLevel === 0 && runCompletes >= level1MinRunCompletes) {
       nextLevel = 1;

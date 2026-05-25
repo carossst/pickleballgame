@@ -212,9 +212,9 @@
       statsSeenLabel: 'Questions vues',
 
       statsSeenSummaryTemplate: 'Questions vues : {seen}',
-      statsPhaseBadgeDiscovery: 'Continuez',
-      statsPhaseBadgeCorrection: 'Corriger les erreurs',
-      statsPhaseBadgeConsolidation: 'Test sous pression',
+      statsPhaseBadgeDiscovery: 'Phase 1/3 : Premier passage',
+      statsPhaseBadgeCorrection: 'Phase 2/3 : Corriger les erreurs',
+      statsPhaseBadgeConsolidation: 'Phase 3/3 : Test sous pression',
 
       statsSeenCompleteLabel: 'Progression du quiz',
       statsMistakesLabel: 'Erreurs',
@@ -232,10 +232,10 @@
       personalBestLockedTitle: 'Enregistrez votre score',
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
-      progressSectionTitle: 'À FAIRE',
+      progressSectionTitle: 'PROCHAINE ÉTAPE',
       progressSectionBody: '',
       dailyChallengeBadge: 'OBJECTIF DU JOUR',
-      dailyChallengeTitleTemplate: "Atteignez {targetScore}+ aujourd'hui",
+      dailyChallengeTitleTemplate: 'Atteignez {targetScore}+ aujourd\'hui',
       dailyChallengeProgressTemplate:
         "Aujourd'hui : {score}/{targetScore}. Record : {best}. Nouvel objectif à {resetTime}, votre heure locale.",
       dailyChallengeResetTemplate:
@@ -243,16 +243,16 @@
       dailyChallengeCompletedTemplate:
         "Terminé aujourd'hui. Record : {best}. Revenez à {resetTime}, votre heure locale, pour le prochain objectif.",
       dailyChallengeRewardTemplate:
-        'Récompense : 1 ticket Mode Rapide.',
+        'Réussissez l\'objectif du jour pour gagner 1 ticket Mode Rapide. Le Mode Rapide coûte 1 ticket.',
       dailyChallengeRewardCappedTemplate:
-        'Tickets au maximum. Dépensez-en un pour en regagner.',
+        'Les tickets sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
-        "Déjà réussi une fois. Réussissez-le à nouveau sur votre dernière run gratuite pour gagner 1 ticket Mode Rapide.",
+        "Vous l'avez déjà réussi une fois. Réussissez-le à nouveau aujourd'hui sur votre dernière run gratuite pour gagner 1 ticket Mode Rapide.",
       dailyChallengeCta: 'Commencer',
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
-        "Débloquez des RUNs illimitées, enregistrez votre score, accédez aux 200 questions du jeu sur les règles du pickleball, aux explications après chaque réponse et au Mode Erreurs illimité.",
+        "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu sur les règles du pickleball, aux explications après chaque réponse et au Mode Erreurs illimité.",
       practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
@@ -271,7 +271,7 @@
       cardCtaView: 'Voir le classement',
       statusBadge: 'MIS À JOUR',
       lastUpdatedTemplate: 'Dernière mise à jour : {time}',
-      nextRefreshTemplate: 'Prochaine actualisation : {time}',
+      nextRefreshTemplate: 'Prochaine mise à jour : {time}',
       weeklyResetLine:
         'Remise à zéro hebdomadaire : {localTime}, votre heure locale (lundi 00:00 UTC).',
       loading: 'Chargement du classement...',
@@ -339,8 +339,8 @@
         title: 'Premier quart terminé.',
         bodyLines: [
           'Vous avez vu le premier quart des questions.',
-          'Continuez. Vous construisez votre base de règles.',
-          'Continuez. Vous construisez votre base de règles.'
+          'Toujours phase 1 : la découverte.',
+          'Continuez. Vous parcourez les règles une première fois.'
         ],
         cta: 'Suivant'
       },
@@ -348,8 +348,8 @@
         title: 'Moitié atteinte.',
         bodyLines: [
           'Vous avez vu la moitié des questions.',
-          'Continuez. Vous construisez votre base de règles.',
-          "Voyez d'abord toutes les questions. Vous corrigerez ensuite ce qui vous piège encore."
+          'Vous êtes toujours en phase de découverte.',
+          "Finissez d'abord le tour complet. Vous corrigerez ensuite ce qui vous piège encore."
         ],
         cta: 'Suivant'
       },
@@ -357,7 +357,7 @@
         title: 'Trois quarts terminés.',
         bodyLines: [
           'Vous avez vu trois quarts des questions.',
-          "Vous approchez du tour complet des questions.",
+          'Vous approchez de la fin de la phase 1.',
           'Encore un effort, puis vous saurez exactement quoi retravailler.'
         ],
         cta: 'Suivant'
@@ -366,12 +366,12 @@
 
     phaseJourney: {
       discovery: {
-        badge: 'Continuez',
+        badge: 'Phase 1/3 : Premier passage',
         landingSummaryTemplate: 'Vous avez déjà vu {seen} questions.',
         landingDetailTemplate:
-          'Il reste {remaining} questions dans le tour complet.',
+          'Il vous en reste {remaining} pour terminer ce premier passage.',
         endLens:
-          "Continuez. L'objectif est maintenant de voir plus de questions.",
+          "Vous faites votre premier passage. L'objectif est maintenant de voir plus de questions.",
         micropics: {
           streakStart: "3 d'affilée. Bonne lecture.",
           streakBuilding: "6 d'affilée. Bonne lecture.",
@@ -383,7 +383,7 @@
         }
       },
       correction: {
-        badge: 'Corriger les erreurs',
+        badge: 'Phase 2/3 : Corriger les erreurs',
         landingSummaryTemplate: 'Erreurs restantes : {mistakes}',
         landingDetail:
           'Vous avez vu toutes les questions. Corrigez maintenant les règles qui vous piègent encore.',
@@ -400,7 +400,7 @@
         }
       },
       consolidation: {
-        badge: 'Test sous pression',
+        badge: 'Phase 3/3 : Test sous pression',
         landingSummaryTemplate: 'Aucune erreur active',
         landingDetail:
           'Vos erreurs sont corrigées. Testez votre score en Mode Rapide.',
@@ -720,14 +720,14 @@
       poolCompleteLine2:
         'Revenez plus tard pour voir ce qui reste vraiment acquis.',
       directToConsolidationLine:
-        "Vous avez terminé tout l'ensemble sans erreur active : vous êtes prêt pour le test sous pression.",
+        "Vous avez terminé tout l'ensemble sans erreur active : vous passez directement en phase 3.",
       poolCompleteScoreLine: 'Cette partie : {score} {fpShort}',
       poolCompleteCtaPrimary: 'Rejouer dans un nouvel ordre',
       poolCompleteCtaPractice: 'Corriger vos erreurs',
 
       freeLimitReachedTitle: 'Belle partie.',
       freeLimitReachedBody:
-        "Vous avez utilisé vos {limit} parties gratuites.\n\nL'accès complet débloque des RUNs illimitées, les 200 questions du jeu sur les règles du pickleball, les explications après chaque réponse, le Mode Erreurs illimité et la boucle Daily dans la durée.",
+        "Vous avez utilisé vos {limit} parties gratuites.\n\nL'accès complet débloque des parties illimitées, les 200 questions du jeu sur les règles du pickleball, les explications après chaque réponse, le Mode Erreurs illimité et la boucle Daily dans la durée.",
       freeLimitReachedCta: 'Continuer à jouer',
       freeLimitReachedClose: 'Plus tard',
 
@@ -826,7 +826,7 @@
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**RUNs illimitées**',
+        '**parties illimitées**',
         '**Enregistrez votre score et faites progresser votre meilleur résultat**',
         '**Voyez les meilleurs scores dans le classement public**',
         '**Explications après chaque réponse**',
@@ -835,7 +835,7 @@
 
       valueBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**RUNs illimitées** sur tout le jeu',
+        '**parties illimitées** sur tout le jeu',
         '**Enregistrez votre score et faites progresser votre meilleur résultat**',
         '**Voyez les meilleurs scores dans le classement public**',
         '**Un mélange de questions faciles, intermédiaires et difficiles**',
@@ -845,9 +845,9 @@
 
       bridgeTitle: 'Connaissez mieux les règles du pickleball.',
       bridgeBody:
-        'Débloquez des RUNs illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et gardez le défi du jour vivant dans le temps.',
+        'Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et gardez le défi du jour vivant dans le temps.',
       bridgeBodyLastFreeMiss:
-        'Vous avez vu le vrai rythme du jeu. Débloquez des RUNs illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et revenez sur le défi du jour quand vous voulez.',
+        'Vous avez vu le vrai rythme du jeu. Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et revenez sur le défi du jour quand vous voulez.',
 
       trustLine: '**Déverrouillage unique**',
       trustBullets: [
