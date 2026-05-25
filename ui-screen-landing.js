@@ -775,12 +775,6 @@ ${(() => {
 
     ${hasDashboard ? `
       <section class="wt-landing-dashboard">
-        ${(progressSectionTitle || progressSectionBody) ? `
-          <div class="wt-landing-dashboard__intro">
-            ${progressSectionTitle ? `<p class="wt-meta wt-landing-dashboard__eyebrow">${escapeHtml(progressSectionTitle)}</p>` : ``}
-            ${progressSectionBody ? `<p class="wt-sub wt-muted wt-landing-dashboard__body">${escapeHtml(progressSectionBody)}</p>` : ``}
-          </div>
-        ` : ``}
         ${welcomeBackHtml ? `
           <div class="wt-landing-dashboard__summary">
             ${welcomeBackHtml}

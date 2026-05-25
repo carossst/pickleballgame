@@ -235,6 +235,38 @@
     }
   }
 
+  function getNextWeeklyResetUtcMs(baseTs) {
+    const n = Number(baseTs);
+    const nowTs = Number.isFinite(n) && n > 0 ? n : Date.now();
+    const d = new Date(nowTs);
+    if (!Number.isFinite(d.getTime())) return 0;
+
+    const todayUtcMidnight = Date.UTC(
+      d.getUTCFullYear(),
+      d.getUTCMonth(),
+      d.getUTCDate()
+    );
+    const utcDay = new Date(todayUtcMidnight).getUTCDay() || 7;
+    let daysUntilNextMonday = (8 - utcDay) % 7;
+    if (daysUntilNextMonday === 0) daysUntilNextMonday = 7;
+
+    return todayUtcMidnight + daysUntilNextMonday * 24 * 60 * 60 * 1000;
+  }
+
+  function formatLocalWeekdayTime(ts) {
+    const safeTs = clampInt(ts, 0, Number.MAX_SAFE_INTEGER);
+    if (safeTs <= 0) return '';
+    try {
+      return new Intl.DateTimeFormat(getDisplayLocale(), {
+        weekday: 'long',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(new Date(safeTs));
+    } catch (_) {
+      return '';
+    }
+  }
+
   function fillTemplate(template, vars) {
     let out = String(template || '');
     const map = vars && typeof vars === 'object' ? vars : {};
