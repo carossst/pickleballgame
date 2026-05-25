@@ -232,6 +232,7 @@
         } catch (_) {
           /* silent */
         }
+        rerenderOpenLeaderboard(ui);
       });
 
     bucket.inflight = p;
@@ -250,6 +251,30 @@
 
     if (!bucket.loading && stale) {
       void refresh(ui);
+    }
+  }
+
+  function isLeaderboardRankingOpen(ui) {
+    if (!ui || !ui.modalEl || !ui.modalContentEl || !ui._runtime) return false;
+    if (ui.modalEl.classList.contains('wt-hidden')) return false;
+    if (String(ui._runtime._modalKey || '').trim() !== 'leaderboard') {
+      return false;
+    }
+
+    const rankingPanel = ui.modalContentEl.querySelector(
+      '[data-wt-leaderboard-panel="ranking"]'
+    );
+    if (!rankingPanel) return true;
+    return !rankingPanel.hasAttribute('hidden');
+  }
+
+  function rerenderOpenLeaderboard(ui) {
+    if (!isLeaderboardRankingOpen(ui)) return;
+    if (typeof ui?.openLeaderboardModal !== 'function') return;
+    try {
+      ui.openLeaderboardModal();
+    } catch (_) {
+      /* silent */
     }
   }
 
@@ -896,6 +921,7 @@
         bucket.lastKnownWeeklyRank = weeklyRank;
         bucket.lastKnownAllTimeRank = allTimeRank;
       }
+      rerenderOpenLeaderboard(ui);
       if (weeklyRank > 0) {
         const toastTpl = String(w.rankToastWeekly || '').trim();
         if (toastTpl) {
@@ -912,6 +938,7 @@
     }
 
     const rejectedToast = String(w.scoreRejectedToast || '').trim();
+    rerenderOpenLeaderboard(ui);
     if (rejectedToast) {
       toastNow(ui.config, rejectedToast, { variant: 'info' });
     }

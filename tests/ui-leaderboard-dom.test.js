@@ -428,13 +428,39 @@ test('leaderboard submitRun surfaces HTTP rejection as non-skipped failure', asy
 test('leaderboard handleSubmitResult shows weekly rank toast on successful submit', () => {
   const leaderboard = loadLeaderboardModule();
   const toasts = [];
+  let reopened = 0;
   const ui = {
     config: {},
+    modalEl: {
+      classList: {
+        contains(name) {
+          return String(name) === 'wt-hidden' ? false : false;
+        }
+      }
+    },
+    modalContentEl: {
+      querySelector(selector) {
+        if (selector === '[data-wt-leaderboard-panel="ranking"]') {
+          return {
+            hasAttribute(name) {
+              return String(name) === 'hidden' ? false : false;
+            }
+          };
+        }
+        return null;
+      }
+    },
+    _runtime: {
+      _modalKey: 'leaderboard'
+    },
     wording: {
       leaderboard: {
         rankToastWeekly: 'Public weekly rank: #{rank}.',
         scoreRejectedToast: 'Rejected'
       }
+    },
+    openLeaderboardModal() {
+      reopened += 1;
     }
   };
 
@@ -469,6 +495,7 @@ test('leaderboard handleSubmitResult shows weekly rank toast on successful submi
       opts: { variant: 'info' }
     }
   ]);
+  expect(reopened).toBe(1);
 });
 
 test('leaderboard handleSubmitResult shows rejection toast for non-skipped failure', () => {

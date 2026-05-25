@@ -246,7 +246,7 @@
       dailyChallengeCompletedTemplate:
         'Défi du jour réussi. Prochain défi à {resetTime}.',
       dailyChallengeRewardTemplate:
-        'Réussissez l\'objectif du jour pour gagner 1 jeton Mode Rapide. Le Mode Rapide coûte 1 jeton.',
+        'Réussissez le défi du jour pour gagner 1 jeton Mode Rapide. Le Mode Rapide coûte 1 jeton.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -267,11 +267,11 @@
     leaderboard: {
       cardTitle: 'CETTE SEMAINE',
       cardSubDefault:
-        'Meilleurs scores de la semaine. Ajoutez votre pseudo public après votre première partie terminée.',
+        'Meilleurs scores de la semaine. Ajoutez votre pseudo après votre première partie terminée.',
       cardSubJoined:
-        'Votre pseudo public est enregistré. Voir le classement ou modifier Mon pseudo.',
+        'Votre score apparaîtra ici dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi. Voir le classement ou modifier Mon pseudo.',
       cardBestScoreLine: 'Votre meilleur score : {score}',
-      cardCtaJoin: 'Choisir un pseudo public',
+      cardCtaJoin: 'Choisir un pseudo',
       cardCtaView: 'Voir le classement',
       statusBadge: '',
       lastUpdatedTemplate: '',
@@ -284,14 +284,14 @@
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
       modalBodyDefault:
-        'Choisissez un pseudo public. Votre meilleur score en partie pourra apparaître dans le classement hebdomadaire et le classement général.',
+        'Choisissez un pseudo. Votre score apparaîtra dans le classement dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi.',
       modalBodyJoined:
-        'Votre pseudo public est enregistré. Votre meilleur score peut apparaître dans le classement hebdomadaire et le classement général.',
+        'Votre score apparaîtra dans le classement dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi.',
       rankingTab: 'Classement',
       profileTab: 'Mon pseudo',
       weeklyTitle: 'Cette semaine',
       allTitle: 'Classement général',
-      nicknameLabel: 'Pseudo public',
+      nicknameLabel: 'Pseudo',
       nicknamePlaceholder: 'Choisissez un pseudo',
       joinCta: 'Rejoindre le classement',
       updateCta: 'Mettre à jour le pseudo',
@@ -302,7 +302,7 @@
       nicknameInvalidCharsToast:
         'Utilisez seulement des lettres, chiffres, espaces, tirets ou traits de soulignement.',
       saveOkToast:
-        'Pseudo public enregistré. Vous pouvez le modifier dans Mon pseudo.',
+        'Pseudo enregistré. Votre score apparaîtra dans le classement dans quelques minutes.',
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
         'Pseudo enregistré sur cet appareil. La synchronisation en ligne pourra être ajoutée plus tard.',
@@ -855,11 +855,12 @@
         '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
       ],
 
-      bridgeTitle: 'Connaissez mieux les règles du pickleball.',
+      bridgeTitle: 'Maîtrisez mieux les règles du pickleball.',
+
       bridgeBody:
-        'Débloquez des Parties illimitées, les 200 questions du jeu, consultez les meilleurs scores du classement public, utilisez le Mode Erreurs et gardez le défi du jour actif dans la durée.',
+        'Débloquez des Parties illimitées, les 200 questions du jeu, consultez les meilleurs scores du classement public, utilisez le Mode Erreurs et revenez chaque jour pour le défi du jour.',
       bridgeBodyLastFreeMiss:
-        'Vous avez vu le vrai rythme du jeu. Débloquez des Parties illimitées, les 200 questions du jeu, consultez les meilleurs scores du classement public, utilisez le Mode Erreurs et revenez sur le défi du jour quand vous voulez.',
+        'Vous avez vu le rythme du jeu. Débloquez des Parties illimitées, les 200 questions du jeu, consultez les meilleurs scores du classement public, utilisez le Mode Erreurs et revenez au défi du jour.',
 
       trustLine: '**Déverrouillage unique**',
       trustBullets: [

@@ -258,17 +258,17 @@
 
       postPaywallSbTitle: "Today's challenge is live",
       postPaywallSbBody:
-        "Unlock full access to keep chasing today's challenge and earning Rapid Fire tickets."
+        "Unlock full access to keep coming back for today's challenge and earning Rapid Fire tickets."
     },
 
     leaderboard: {
       cardTitle: 'THIS WEEK',
       cardSubDefault:
-        'Top scores this week. Add your public nickname after your first completed game.',
+        'Top scores this week. Add your nickname after your first completed game.',
       cardSubJoined:
-        'Your public nickname is saved. View the leaderboard or edit My nickname.',
+        'Your score will appear here in the next few minutes. Weekly reset every Monday. View the leaderboard or edit My nickname.',
       cardBestScoreLine: 'Your best: {score}',
-      cardCtaJoin: 'Choose public nickname',
+      cardCtaJoin: 'Choose nickname',
       cardCtaView: 'View leaderboard',
       statusBadge: '',
       lastUpdatedTemplate: '',
@@ -281,14 +281,14 @@
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
       modalBodyDefault:
-        'Choose a public nickname. Your best game can appear in the weekly and all-time leaderboard.',
+        'Choose a nickname. Your score will appear in the leaderboard in the next few minutes. Weekly reset every Monday.',
       modalBodyJoined:
-        'Your public nickname is saved. Your best game can appear in the weekly and all-time leaderboard.',
+        'Your score will appear in the leaderboard in the next few minutes. Weekly reset every Monday.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
       allTitle: 'All-time',
-      nicknameLabel: 'Public nickname',
+      nicknameLabel: 'Nickname',
       nicknamePlaceholder: 'Choose a nickname',
       joinCta: 'Join leaderboard',
       updateCta: 'Update nickname',
@@ -299,11 +299,11 @@
       nicknameInvalidCharsToast:
         'Use letters, numbers, spaces, hyphens, or underscores only.',
       saveOkToast:
-        'Public nickname saved. You can edit it in My nickname.',
+        'Nickname saved. Your score will appear in the leaderboard in the next few minutes.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
         'Nickname saved on this device. Remote sync can be connected later.',
-      rankToastWeekly: 'Public weekly rank: #{rank}.',
+      rankToastWeekly: 'This week: #{rank}.',
       scoreRejectedToast:
         'This game was not added to the public leaderboard this time.'
     },
@@ -841,9 +841,9 @@
 
       bridgeTitle: 'Know the pickleball rules better.',
       bridgeBody:
-        "Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and keep today's challenge alive over time.",
+        "Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and keep coming back for today's challenge.",
       bridgeBodyLastFreeMiss:
-        "You've seen the real pace of the game. Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and come back to today's challenge whenever you want.",
+        "You've seen the pace of the game. Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and come back for today's challenge.",
 
       trustLine: '**One-time unlock**',
       trustBullets: [
