@@ -208,7 +208,7 @@ test('French entry toggle navigates back to EN root immediately', () => {
     }
   };
 
-  expect(ctx.host.innerHTML).toContain('href="./"');
+  expect(ctx.host.innerHTML).toContain('href="./index.html"');
 
   ctx.host.dispatch('click', event);
 
@@ -216,7 +216,7 @@ test('French entry toggle navigates back to EN root immediately', () => {
     ctx.windowLike.localStorage.getItem('pickleball-rules-quiz:locale')
   ).toBe('en');
   expect(event.preventDefault).toHaveBeenCalledTimes(1);
-  expect(ctx.windowLike.location.assign).toHaveBeenCalledWith('./');
+  expect(ctx.windowLike.location.assign).toHaveBeenCalledWith('./index.html');
   expect(ctx.state.setLocaleCalls).toEqual([]);
 });
 
