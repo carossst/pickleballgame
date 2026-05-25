@@ -246,10 +246,9 @@
 
   // BONUS mode:
   // - deck = ONLY items already seen by the player (seenCount > 0)
-  // - respects poolSize
+  // - respects poolSize defensively (without excluding content if config lags behind)
   // - respects secretBonus.minDeckSize
   // - ends when deck ends (no reshuffle, no loop)
-  // - uses RUN chances if secretBonus.useRunChances is true
   function buildSeenDeck({ items, statsByItem, config }) {
     const normalized = normalizePool(items);
     const poolAll = normalized.pool;
@@ -689,7 +688,13 @@
           runStartNumber: null
         });
         this.run.byId = deck.byId || this.run.byId || {};
-        this.run.ids = Array.isArray(deck.ids) ? deck.ids.slice() : [];
+        let nextIds = Array.isArray(deck.ids) ? deck.ids.slice() : [];
+        const lastId = safeIdNum(this.run.last?.itemId);
+        if (lastId != null && nextIds.length > 1) {
+          nextIds = nextIds.filter((id) => id !== lastId);
+          nextIds.push(lastId);
+        }
+        this.run.ids = nextIds;
         this.run.idx = 0;
 
         // one-shot UI signal
@@ -729,4 +734,3 @@
     GameEngine
   };
 })();
-

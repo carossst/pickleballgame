@@ -75,13 +75,19 @@
   /* Accent (used by mistakes list, etc.) */
   --accent: var(--primary-dark);
 
-  /* Opacity tokens (single source of truth) */
+  /* ============================================
+     OPACITY SCALE
+     --------------------------------------------
+     Granular by design: opacity tokens cover a wide range so a single
+     consistent ramp can fit every UI surface (borders, tints, glass,
+     shadows, text fades). Reuse the closest existing token instead of
+     introducing a new value.
+     ============================================ */
   --wt-a-05: 0.05;
   --wt-a-06: 0.06;
   --wt-a-08: 0.08;
   --wt-a-10: 0.10;
   --wt-a-12: 0.12;
-  --wt-a-13: 0.13;
   --wt-a-14: 0.14;
   --wt-a-16: 0.16;
   --wt-a-18: 0.18;
@@ -95,7 +101,6 @@
   --wt-a-55: 0.55;
   --wt-a-65: 0.65;
   --wt-a-70: 0.70;
-  --wt-a-72: 0.72;
   --wt-a-75: 0.75;
   --wt-a-78: 0.78;
   --wt-a-82: 0.82;
@@ -104,9 +109,18 @@
   --wt-a-92: 0.92;
   --wt-a-95: 0.95;
 
-  /* Glass (derived from --surface) */
+  /* ============================================
+     GLASS / BLUR
+     --------------------------------------------
+     Translucent surfaces for icon buttons, sticky headers, pills and
+     modal backdrops. Used together with --wt-blur-md under @supports
+     (backdrop-filter:…) so the look degrades gracefully on browsers
+     that don't support backdrop blur.
+       --glass-65 → .wt-btn-icon, .wt-landing-hero/.wt-end-hero icons
+       --glass-92 → sticky modal/section headers
+       --wt-blur-md → universal backdrop-filter on glass surfaces
+     ============================================ */
   --glass-65: rgb(var(--surface) / var(--wt-a-65));
-  --glass-72: rgb(var(--surface) / var(--wt-a-72));
   --glass-92: rgb(var(--surface) / var(--wt-a-92));
   --wt-blur-md: blur(12px) saturate(1.4);
 
@@ -135,9 +149,20 @@
   --lh-base: 1.5;
   --lh-relaxed: 1.45;
 
-  /* Font scale (single source of truth)
-     --fs-body is the main reading size, intentionally comfortable for older players.
-     --fs-base is reserved for compact UI controls and dense interface elements. */
+  /* ============================================
+     FONT SCALE (single source of truth)
+     --------------------------------------------
+     Two semantic anchors, distinct on purpose:
+       --fs-body  → MAIN reading size. Paragraphs, copy, in-game prompts.
+                    Intentionally comfortable for older players. Stays 18px
+                    everywhere (no desktop downgrade).
+       --fs-base  → COMPACT UI size. Dense interface elements (HUD chips,
+                    pills, inline meta). Equals --fs-md on mobile, bumped
+                    to 18px on desktop where viewport allows more breathing.
+     If you reach for a font-size and hesitate between the two, pick
+     --fs-body for "things the user reads" and --fs-base for "things
+     the user scans".
+     ============================================ */
   --fs-xs: 13px;
   --fs-sm: 15px;
   --fs-md: 16px;
@@ -159,16 +184,12 @@
   --wt-anim-fade-in: 120ms;
   --wt-anim-bonus-spawn: 220ms;
   --wt-anim-bonus-warning-once: 240ms;
-  --wt-anim-danger-pulse: 880ms;
-  --wt-anim-answer-feedback: 360ms;
   --wt-anim-score-flash: 700ms;
   --wt-anim-chip-flash: 600ms;
   --wt-anim-overlay-pop: 500ms;
   --wt-anim-overlay-shake: 220ms;
   --wt-anim-celebrate: 520ms;
   --wt-anim-pulse: 1s;
-  --wt-anim-tease: 1600ms;
-  --wt-anim-near-best: 1200ms;
   --wt-anim-loading: 1.2s;
   --wt-anim-spin: 1s;
 
@@ -203,14 +224,13 @@
   --space-18: 18px;
 
   /* Micro typography */
-  --ls-ui-tight: 0.4px;
   --ls-ui-wide: 1.2px;
 
   /* Branding */
   --wt-title-size: 27px;
   --wt-logo-scale: 1.18;
 
-  /* Calmer “premium” glow (less corporate, less neon) */
+  /* Calmer "premium" glow (less corporate, less neon) */
   --hero-glow: 0.10;
 }
 

@@ -1,0 +1,43 @@
+{
+  "name": "Quiz Pickleball",
+  "short_name": "Quiz Pickleball",
+  "id": "./fr.html",
+  "description": "Vous croyez connaître le pickleball ? Prouvez-le. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne, changements de règles.",
+  "start_url": "./fr.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#38bdf8",
+  "categories": [
+    "education",
+    "games"
+  ],
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "./icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192x192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

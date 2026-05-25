@@ -93,6 +93,76 @@ void function () {
     try { storage.markSeenFirstRunFraming(); } catch (_) { }
   }
 
+  function getDailyChallengeToastDayKey(storage) {
+    if (!storage || typeof storage.getDailyChallengeToastDayKey !== "function") return "";
+    try { return String(storage.getDailyChallengeToastDayKey() || "").trim(); } catch (_) { return ""; }
+  }
+
+  function markDailyChallengeToastShown(storage, dayKey) {
+    if (!storage || typeof storage.markDailyChallengeToastShown !== "function") return;
+    try { storage.markDailyChallengeToastShown(dayKey); } catch (_) { }
+  }
+
+  function getRapidFireTicketBalance(storage) {
+    if (!storage || typeof storage.getRapidFireTicketBalance !== "function") return 0;
+    try { return clampInt(storage.getRapidFireTicketBalance(), 0, 999); } catch (_) { return 0; }
+  }
+
+  function getRapidFireTicketCost(storage) {
+    if (!storage || typeof storage.getRapidFireTicketCost !== "function") return 1;
+    try { return Math.max(1, clampInt(storage.getRapidFireTicketCost(), 1, 999)); } catch (_) { return 1; }
+  }
+
+  function getDailyTicketEarnedDayKey(storage) {
+    if (!storage || typeof storage.getDailyTicketEarnedDayKey !== "function") return "";
+    try { return String(storage.getDailyTicketEarnedDayKey() || "").trim(); } catch (_) { return ""; }
+  }
+
+  function generateRunUuid() {
+    try {
+      if (typeof crypto !== "undefined" && crypto && typeof crypto.randomUUID === "function") {
+        return String(crypto.randomUUID());
+      }
+    } catch (_) { /* fall through */ }
+    const rand = Math.random().toString(36).slice(2, 10);
+    return `run-${Date.now().toString(36)}-${rand}`;
+  }
+
+  function getLeaderboardContentVersion(cfg) {
+    const contentVersion = String(cfg?.leaderboard?.contentVersion || "").trim();
+    if (contentVersion) return contentVersion;
+    const version = String(cfg?.version || "").trim();
+    return version || "unknown";
+  }
+
+  function grantStarterRapidFireTicketIfNeeded(storage) {
+    if (!storage || typeof storage.grantStarterRapidFireTicketIfNeeded !== "function") {
+      return { ok: false, granted: false, balance: 0, cap: 0 };
+    }
+    try { return storage.grantStarterRapidFireTicketIfNeeded() || { ok: false, granted: false, balance: 0, cap: 0 }; } catch (_) { return { ok: false, granted: false, balance: 0, cap: 0 }; }
+  }
+
+  function grantDailyRapidFireTicket(storage, dayKey) {
+    if (!storage || typeof storage.grantDailyRapidFireTicket !== "function") {
+      return { ok: false, granted: false, balance: 0, cap: 0, atCap: false };
+    }
+    try { return storage.grantDailyRapidFireTicket(dayKey) || { ok: false, granted: false, balance: 0, cap: 0, atCap: false }; } catch (_) { return { ok: false, granted: false, balance: 0, cap: 0, atCap: false }; }
+  }
+
+  function consumeRapidFireTicketOrBlock(storage) {
+    if (!storage || typeof storage.consumeRapidFireTicketOrBlock !== "function") {
+      return { ok: false, reason: "NO_DATA", balance: 0, cost: 1 };
+    }
+    try { return storage.consumeRapidFireTicketOrBlock() || { ok: false, reason: "NO_DATA", balance: 0, cost: 1 }; } catch (_) { return { ok: false, reason: "NO_DATA", balance: 0, cost: 1 }; }
+  }
+
+  function refundRapidFireTicket(storage, amount) {
+    if (!storage || typeof storage.refundRapidFireTicket !== "function") {
+      return { ok: false, balance: 0, cap: 0 };
+    }
+    try { return storage.refundRapidFireTicket(amount) || { ok: false, balance: 0, cap: 0 }; } catch (_) { return { ok: false, balance: 0, cap: 0 }; }
+  }
+
   // Stats sharing prompt stage:
   // UI must NOT write localStorage directly (StorageManager owns persistence).
   function getStatsSharingPromptStage(storage) {
@@ -124,6 +194,169 @@ void function () {
     if (!list.length) return String(fallback || "").trim();
     const index = Math.floor(Math.random() * list.length);
     return list[index] || String(fallback || "").trim();
+  }
+
+  function supportsQuestionSpeech() {
+    try {
+      return (
+        typeof window !== "undefined" &&
+        typeof window.speechSynthesis !== "undefined" &&
+        typeof window.SpeechSynthesisUtterance === "function"
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function getQuestionSpeechLocale() {
+    let loc = "";
+    try {
+      if (window.WT_I18N && typeof window.WT_I18N.getLocale === "function") {
+        loc = String(window.WT_I18N.getLocale() || "").trim().toLowerCase();
+      }
+    } catch (_) { loc = ""; }
+    if (!loc) {
+      try { loc = String(document.documentElement.getAttribute("lang") || "").trim().toLowerCase(); } catch (_) { loc = ""; }
+    }
+    if (loc === "fr") return "fr-FR";
+    return "en-US";
+  }
+
+  function getQuestionSpeechVoice(locale) {
+    if (!supportsQuestionSpeech()) return null;
+    try {
+      const voices = Array.isArray(window.speechSynthesis.getVoices())
+        ? window.speechSynthesis.getVoices()
+        : [];
+      if (!voices.length) return null;
+      const target = String(locale || "").trim().toLowerCase();
+      const primary = target.split(/[-_]/)[0];
+      for (const voice of voices) {
+        const lang = String(voice?.lang || "").trim().toLowerCase();
+        if (lang === target) return voice;
+      }
+      for (const voice of voices) {
+        const lang = String(voice?.lang || "").trim().toLowerCase();
+        if (lang.split(/[-_]/)[0] === primary) return voice;
+      }
+    } catch (_) { /* silent */ }
+    return null;
+  }
+
+  function warmQuestionSpeechVoices(ui) {
+    if (!supportsQuestionSpeech()) return;
+    if (ui && ui._speechVoicesWarmed === true) return;
+    try {
+      window.speechSynthesis.getVoices();
+      if (ui) ui._speechVoicesWarmed = true;
+    } catch (_) { /* silent */ }
+
+    try {
+      const synth = window.speechSynthesis;
+      if (!synth || typeof synth.addEventListener !== "function" || !ui || ui._speechVoicesListenerBound === true) {
+        return;
+      }
+      const onVoicesChanged = () => {
+        try { synth.getVoices(); } catch (_) { /* silent */ }
+        ui._speechVoicesWarmed = true;
+      };
+      synth.addEventListener("voiceschanged", onVoicesChanged, { once: true });
+      ui._speechVoicesListenerBound = true;
+    } catch (_) { /* silent */ }
+  }
+
+  function cancelQuestionSpeech(ui) {
+    if (!ui || !ui._runtime) return;
+    ui._runtime.questionSpeechActive = false;
+    ui._runtime.questionSpeechKey = "";
+    ui._runtime.questionSpeechText = "";
+    try {
+      if (supportsQuestionSpeech()) window.speechSynthesis.cancel();
+    } catch (_) { /* silent */ }
+  }
+
+  function getCurrentQuestionSpeechModel(ui) {
+    if (!ui || ui.state !== STATES.PLAYING) return null;
+
+    let item = null;
+    try {
+      item = ui.game && typeof ui.game.getCurrent === "function" ? ui.game.getCurrent() : null;
+    } catch (_) { item = null; }
+
+    const questionText = String(item?.question || "").trim();
+    const itemId = Number(item?.id || 0);
+    if (!questionText) return null;
+
+    const locale = getQuestionSpeechLocale();
+    return {
+      itemId,
+      questionText,
+      locale,
+      speechKey: `${locale}:${itemId}:${questionText}`
+    };
+  }
+
+  function isAutoReadQuestionsEnabled(storage) {
+    if (!storage || typeof storage.getAutoReadQuestions !== "function") return false;
+    try { return storage.getAutoReadQuestions() === true; } catch (_) { return false; }
+  }
+
+  function startQuestionSpeech(ui, model, opts) {
+    const options = opts || {};
+    if (!ui || !ui._runtime || !model || !supportsQuestionSpeech()) return false;
+
+    cancelQuestionSpeech(ui);
+
+    try {
+      const utterance = new window.SpeechSynthesisUtterance(model.questionText);
+      utterance.lang = model.locale;
+      utterance.voice = getQuestionSpeechVoice(model.locale);
+      utterance.rate = 1;
+
+      ui._runtime.questionSpeechActive = true;
+      ui._runtime.questionSpeechKey = model.speechKey;
+      ui._runtime.questionSpeechText = model.questionText;
+
+      utterance.onend = () => {
+        if (!ui._runtime || ui._runtime.questionSpeechKey !== model.speechKey) return;
+        ui._runtime.questionSpeechActive = false;
+        ui._runtime.questionSpeechKey = "";
+        ui._runtime.questionSpeechText = "";
+        if (ui.state === STATES.PLAYING) ui.render();
+      };
+
+      utterance.onerror = () => {
+        if (!ui._runtime || ui._runtime.questionSpeechKey !== model.speechKey) return;
+        ui._runtime.questionSpeechActive = false;
+        ui._runtime.questionSpeechKey = "";
+        ui._runtime.questionSpeechText = "";
+        if (ui.state === STATES.PLAYING) ui.render();
+      };
+
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+
+      if (options.render !== false) ui.render();
+      return true;
+    } catch (_) {
+      cancelQuestionSpeech(ui);
+      return false;
+    }
+  }
+
+  function syncAutoReadCurrentQuestion(ui) {
+    if (!ui || !ui._runtime) return;
+    if (ui.state !== STATES.PLAYING) return;
+    if (!supportsQuestionSpeech()) return;
+    if (!isAutoReadQuestionsEnabled(ui.storage)) return;
+    if (ui._runtime.feedbackPending) return;
+
+    const model = getCurrentQuestionSpeechModel(ui);
+    if (!model) return;
+    if (ui._runtime.questionAutoReadDoneKey === model.speechKey) return;
+
+    ui._runtime.questionAutoReadDoneKey = model.speechKey;
+    startQuestionSpeech(ui, model, { render: true });
   }
 
   function markStatsSharingPromptFlag(storage, flagBit) {
@@ -187,6 +420,14 @@ void function () {
     return out;
   }
 
+  function getMomentumSegments(cfg) {
+    const segments = Number(cfg?.ui?.momentumMeter?.segments);
+    if (!Number.isFinite(segments)) return 0;
+    if (!Number.isInteger(segments)) return 0;
+    if (segments < 3 || segments > 10) return 0;
+    return segments;
+  }
+
   function getMomentumMeterState(cfg, streak, modeNow, currentLevel) {
     const mm = (cfg?.ui?.momentumMeter && typeof cfg.ui.momentumMeter === "object")
       ? cfg.ui.momentumMeter
@@ -195,47 +436,123 @@ void function () {
     if (!mm || mm.enabled !== true) return null;
     if (String(mm.mode || "").trim() !== String(modeNow || "").trim()) return null;
 
-    const segments = Number(mm.segments);
-    if (!Number.isFinite(segments) || Math.floor(segments) !== 6) return null;
+    const segments = getMomentumSegments(cfg);
+    if (!segments) return null;
 
     const th = (mm.thresholds && typeof mm.thresholds === "object") ? mm.thresholds : null;
     if (!th) return null;
 
-    const s1 = Number(th.s1);
-    const s2 = Number(th.s2);
-    const s3 = Number(th.s3);
-    const s4 = Number(th.s4);
-    const s5 = Number(th.s5);
-    const s6 = Number(th.s6);
-
-    const ok =
-      Number.isFinite(s1) &&
-      Number.isFinite(s2) &&
-      Number.isFinite(s3) &&
-      Number.isFinite(s4) &&
-      Number.isFinite(s5) &&
-      Number.isFinite(s6);
-
-    if (!ok) return null;
+    const thresholds = [];
+    for (let i = 1; i <= segments; i += 1) {
+      const raw = Number(th[`s${i}`]);
+      if (!Number.isFinite(raw)) return null;
+      thresholds.push(raw);
+    }
 
     const safeStreak = clampInt(streak, 0, 9999);
-    const safeLevel = clampInt(currentLevel, 0, 6);
+    const safeLevel = clampInt(currentLevel, 0, segments);
 
     let target = 0;
-    if (safeStreak >= s1) target = 1;
-    if (safeStreak >= s2) target = 2;
-    if (safeStreak >= s3) target = 3;
-    if (safeStreak >= s4) target = 4;
-    if (safeStreak >= s5) target = 5;
-    if (safeStreak >= s6) target = 6;
+    for (let i = 0; i < thresholds.length; i += 1) {
+      if (safeStreak >= thresholds[i]) {
+        target = i + 1;
+      }
+    }
 
     return {
       target,
       filled: Math.max(target, safeLevel),
-      segments: 6,
+      segments,
       streak: safeStreak,
-      overflow: Math.max(0, safeStreak - 6)
+      overflow: Math.max(0, safeStreak - segments)
     };
+  }
+
+  function getMomentumDropLevel(cfg, currentLevel) {
+    const maxSegments = getMomentumSegments(cfg) || 6;
+    const safeLevel = clampInt(currentLevel, 0, maxSegments);
+    const rawTiers = cfg?.ui?.momentumMeter?.dropTiers;
+    const tiers = Array.isArray(rawTiers) ? rawTiers : null;
+
+    if (tiers && tiers.length) {
+      for (const raw of tiers) {
+        const minLevel = clampInt(raw?.minLevel, 0, maxSegments);
+        const dropTo = clampInt(raw?.dropTo, 0, maxSegments);
+        if (safeLevel >= minLevel) {
+          return dropTo;
+        }
+      }
+    }
+
+    // Legacy fallback keeps the existing feel if config is absent or invalid:
+    // 1-3 -> 0
+    // 4-5 -> 2
+    // 6+  -> 3
+    if (safeLevel >= 6) return 3;
+    if (safeLevel >= 4) return 2;
+    return 0;
+  }
+
+  function createMicroPicsState(startChances) {
+    const hasStartChances = (startChances != null && Number.isFinite(Number(startChances)));
+    return {
+      correctStreak: 0,
+      maxCorrectStreak: 0,
+      momentumLevel: 0,
+
+      // #3/#4 runtime flags (UI-only)
+      justRecoveredFromMistake: false,
+      maxCorrectStreakDisplayed: 0,
+
+      flowTierShown: 0,
+      survivalShown: false,
+      twoChancesShown: false,
+      lastToastAtCount: -999,
+      lastDangerAtCount: -999,
+      lastDangerAtMs: 0,
+      prevChancesLeft: hasStartChances ? clampInt(startChances, 0, 99) : null,
+
+      // Near-miss + repeated mistakes (one-shot per RUN)
+      nearMissShown: false,
+      repeatMistakeShown: false,
+
+      // Per-run memory: if a tier was reached before in this run, show "...Again" copy.
+      tierShownOnce: {
+        start: false,
+        building: false,
+        strong: false,
+        elite: false,
+        legendary: false
+      },
+
+      // END-only highlight (no gameplay interruptions)
+      endHighlight: "",
+      endHighlightVariant: "",
+      endHighlightPriority: -1
+    };
+  }
+
+  function getEndHighlightPriority(cfg, key) {
+    const priorities = (cfg?.microPics?.endHighlightPriorities && typeof cfg.microPics.endHighlightPriorities === "object")
+      ? cfg.microPics.endHighlightPriorities
+      : null;
+    const safeKey = String(key || "").trim();
+    const configured = Number(priorities?.[safeKey]);
+    if (Number.isFinite(configured)) return Math.floor(configured);
+
+    switch (safeKey) {
+      case "survival": return 40;
+      case "repeatMistake": return 50;
+      case "nearMiss": return 55;
+      case "runEndedAllChancesUsed": return 60;
+      case "streakStart": return 65;
+      case "recovery": return 70;
+      case "streakBuilding": return 70;
+      case "streakStrong": return 80;
+      case "streakElite": return 90;
+      case "streakLegendary": return 100;
+      default: return 0;
+    }
   }
 
 
@@ -262,6 +579,280 @@ void function () {
     if (Number.isFinite(start) && n >= start) return "start";
 
     return "none";
+  }
+
+  function getRunTierInfo(cfg, wording, scoreFP) {
+    const safeScore = clampInt(scoreFP, 0, 99999);
+    const th = (cfg && cfg.routing && typeof cfg.routing.runScoreThresholds === "object")
+      ? cfg.routing.runScoreThresholds
+      : null;
+    const labels = (wording && wording.end && typeof wording.end.labelByVerdict === "object")
+      ? wording.end.labelByVerdict
+      : null;
+
+    const ordered = [
+      { key: "start", target: Number(th?.start) },
+      { key: "building", target: Number(th?.building) },
+      { key: "strong", target: Number(th?.strong) },
+      { key: "elite", target: Number(th?.elite) },
+      { key: "legendary", target: Number(th?.legendary) }
+    ].filter((item) => Number.isFinite(item.target) && item.target >= 1);
+
+    const currentKey = getRunVerdictKeyFromScore(cfg, safeScore);
+    const currentLabel = String(labels?.[currentKey] || "").trim();
+
+    let currentFloor = 0;
+    let nextKey = "";
+    let nextLabel = "";
+    let nextTarget = null;
+
+    for (let i = 0; i < ordered.length; i += 1) {
+      const item = ordered[i];
+      if (safeScore >= item.target) {
+        currentFloor = item.target;
+        continue;
+      }
+      nextKey = item.key;
+      nextTarget = item.target;
+      nextLabel = String(labels?.[item.key] || "").trim();
+      break;
+    }
+
+    let pct = 100;
+    if (nextTarget != null) {
+      const span = Math.max(1, nextTarget - currentFloor);
+      pct = Math.round(((safeScore - currentFloor) / span) * 100);
+      pct = clampInt(pct, 0, 100);
+    }
+
+    return {
+      currentKey,
+      currentLabel,
+      currentFloor,
+      nextKey,
+      nextLabel,
+      nextTarget,
+      progressPct: pct
+    };
+  }
+
+  function formatDailyResetCountdown(ms) {
+    const safeMs = Math.max(0, Number(ms || 0));
+    const totalMinutes = Math.max(1, Math.ceil(safeMs / 60000));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    let locale = "en";
+    try {
+      if (window.WT_I18N && typeof window.WT_I18N.getLocale === "function") {
+        locale = String(window.WT_I18N.getLocale() || "en").trim().toLowerCase();
+      }
+    } catch (_) { locale = "en"; }
+
+    if (locale === "fr") {
+      if (hours > 0) return minutes > 0 ? `${hours} h ${minutes} min` : `${hours} h`;
+      return `${minutes} min`;
+    }
+
+    if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    return `${minutes}m`;
+  }
+
+  function getDailyChallengeModel(cfg, wording, bestScoreFP, storage) {
+    const safeBest = clampInt(bestScoreFP, 0, 99999);
+    const tier = getRunTierInfo(cfg, wording, safeBest);
+
+    const nowDate = new Date();
+    const localDayKey = [
+      nowDate.getFullYear(),
+      String(nowDate.getMonth() + 1).padStart(2, "0"),
+      String(nowDate.getDate()).padStart(2, "0")
+    ].join("-");
+
+    const dayStartMs = new Date(
+      nowDate.getFullYear(),
+      nowDate.getMonth(),
+      nowDate.getDate()
+    ).getTime();
+    const dayEndMs = new Date(
+      nowDate.getFullYear(),
+      nowDate.getMonth(),
+      nowDate.getDate() + 1
+    ).getTime();
+    const fallbackScore = 3;
+    const candidateTargetScore =
+      (tier.nextTarget != null)
+        ? clampInt(tier.nextTarget, 1, 99999)
+        : Math.max(fallbackScore, safeBest + 1);
+    let targetScore = candidateTargetScore;
+    try {
+      if (storage && typeof storage.ensureDailyChallengeTarget === "function") {
+        targetScore = clampInt(storage.ensureDailyChallengeTarget(localDayKey, candidateTargetScore), 1, 99999);
+      }
+    } catch (_) {
+      targetScore = candidateTargetScore;
+    }
+
+    let todayBestScore = 0;
+    let todayRunCount = 0;
+    try {
+      if (storage && typeof storage.getLastRuns === "function") {
+        const lastRuns = storage.getLastRuns(20);
+        const list = Array.isArray(lastRuns) ? lastRuns : [];
+        for (const raw of list) {
+          const run = (raw && typeof raw === "object") ? raw : {};
+          const endedAt = Number(run.endedAt || 0);
+          if (!Number.isFinite(endedAt) || endedAt < dayStartMs || endedAt >= dayEndMs) continue;
+
+          const meta = (run.meta && typeof run.meta === "object") ? run.meta : {};
+          const mode = String(meta.mode || "").trim().toUpperCase();
+          if (mode !== "RUN") continue;
+
+          todayRunCount += 1;
+          todayBestScore = Math.max(todayBestScore, clampInt(run.scoreFP, 0, 99999));
+        }
+      }
+    } catch (_) {
+      todayBestScore = 0;
+      todayRunCount = 0;
+    }
+
+    const scoreProgressPct = clampInt(Math.round((Math.min(todayBestScore, targetScore) / Math.max(1, targetScore)) * 100), 0, 100);
+    const completedToday = (todayBestScore >= targetScore);
+    const progressPct = completedToday ? 100 : scoreProgressPct;
+    const resetInMs = Math.max(0, dayEndMs - Date.now());
+    const premium = isPremiumNow(storage);
+    const runsBalance = (storage && typeof storage.getRunsBalance === "function")
+      ? clampInt(storage.getRunsBalance(), 0, 999)
+      : 0;
+    const challengePlayable = premium || runsBalance > 0;
+    const rewardAvailableToday = getDailyTicketEarnedDayKey(storage) !== localDayKey;
+    const rewardPendingReplay = (
+      !premium &&
+      runsBalance > 0 &&
+      completedToday &&
+      rewardAvailableToday
+    );
+    const ticketCost = getRapidFireTicketCost(storage);
+    const ticketBalance = getRapidFireTicketBalance(storage);
+    const ticketCap = (storage && typeof storage.getRapidFireTicketCap === "function")
+      ? clampInt(storage.getRapidFireTicketCap(), 0, 999)
+      : 0;
+    const ticketAtCap = ticketCap > 0 && ticketBalance >= ticketCap;
+
+    return {
+      dayKey: localDayKey,
+      targetScore,
+      progressPct,
+      scoreProgressPct,
+      todayBestScore,
+      todayRunCount,
+      completedToday,
+      challengePlayable,
+      rewardPendingReplay,
+      rewardAvailableToday,
+      ticketCost,
+      ticketBalance,
+      ticketCap,
+      ticketAtCap,
+      resetAt: dayEndMs,
+      resetInMs,
+      resetCountdown: formatDailyResetCountdown(resetInMs)
+    };
+  }
+
+  function getNextDailyCountdownTickDelayMs() {
+    const msIntoMinute = Date.now() % 60000;
+    const wait = (msIntoMinute === 0) ? 60000 : (60000 - msIntoMinute + 50);
+    return clampInt(wait, 1000, 61000);
+  }
+
+  function syncScopedRenderTicker(ui, opts) {
+    const o = (opts && typeof opts === "object") ? opts : {};
+    const key = String(o.key || "").trim();
+    const scope = String(o.scope || "").trim();
+    const shouldRun = (typeof o.shouldRun === "function") ? o.shouldRun : null;
+    const shouldContinueAfterRender = (typeof o.shouldContinueAfterRender === "function")
+      ? o.shouldContinueAfterRender
+      : shouldRun;
+    const getDelayMs = (typeof o.getDelayMs === "function") ? o.getDelayMs : null;
+    const onStop = (typeof o.onStop === "function") ? o.onStop : null;
+
+    function stop() {
+      if (key) clearUiTimer(key);
+      if (onStop) {
+        try { onStop(ui); } catch (_) { /* silent */ }
+      }
+      return 0;
+    }
+
+    if (!ui || typeof ui.render !== "function" || !key || !shouldRun || !getDelayMs) {
+      return stop();
+    }
+
+    if (shouldRun(ui) !== true) {
+      return stop();
+    }
+
+    const delay = Number(getDelayMs(ui));
+    if (!Number.isFinite(delay) || delay < 50) {
+      return stop();
+    }
+
+    return setUiTimer(key, () => {
+      if (shouldRun(ui) !== true) {
+        stop();
+        return;
+      }
+
+      try {
+        ui.render();
+      } catch (_) { /* silent */ }
+
+      if (shouldContinueAfterRender(ui) !== true) {
+        stop();
+        return;
+      }
+
+      syncScopedRenderTicker(ui, o);
+    }, Math.floor(delay), scope);
+  }
+
+  function shouldRefreshDailyCountdown(ui) {
+    if (!ui || ui.state !== STATES.LANDING) return false;
+    const counters = (ui.storage && typeof ui.storage.getCounters === "function")
+      ? (ui.storage.getCounters() || {})
+      : null;
+    const runCompletes = Number(counters?.runCompletes || 0);
+    if (!Number.isFinite(runCompletes) || runCompletes < 1) return false;
+    try {
+      return !!(ui.appEl && ui.appEl.querySelector("[data-wt-daily-challenge-card]"));
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function syncDailyCountdownTicker(ui) {
+    syncScopedRenderTicker(ui, {
+      key: "daily.countdown.refresh",
+      scope: "daily",
+      shouldRun: shouldRefreshDailyCountdown,
+      shouldContinueAfterRender: shouldRefreshDailyCountdown,
+      getDelayMs: getNextDailyCountdownTickDelayMs
+    });
+  }
+
+  function isEarlyPriceWindowActive(storage) {
+    let ep = null;
+    if (storage && typeof storage.getEarlyPriceState === "function") {
+      try { ep = storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
+    }
+
+    return !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
+  }
+
+  function shouldRefreshPaywallTimer(ui) {
+    return !!(ui && (ui.state === STATES.PAYWALL || ui.state === STATES.LANDING));
   }
 
   function extractTermsFromItem(item) {
@@ -741,6 +1332,7 @@ void function () {
     const keepChanceOverlayVisible = !!(o && o.keepChanceOverlayVisible === true);
     const preserveEndSignals = !!(ui && ui._runtime && ui._runtime.finishingRun === true);
 
+    cancelQuestionSpeech(ui);
     cancelScheduledToast({ keepChanceOverlayVisible });
 
     if (keepChanceOverlayVisible) {
@@ -1464,35 +2056,19 @@ void function () {
       poolCompleteCelebrationPending: false,
 
       // micro-pics (run-only; UI-only)
-      microPics: {
-        correctStreak: 0,
-        maxCorrectStreak: 0,
-        momentumLevel: 0,
-
-        // #3/#4 runtime flags (UI-only)
-        justRecoveredFromMistake: false,
-        maxCorrectStreakDisplayed: 0,
-
-        flowTierShown: 0,
-        survivalShown: false,
-        twoChancesShown: false,
-        lastToastAtCount: -999,
-        lastDangerAtCount: -999,
-        lastDangerAtMs: 0,
-        prevChancesLeft: null,
-
-        // Per-run memory: if a tier was reached before in this run, show "...Again" copy.
-        tierShownOnce: {
-          start: false,
-          building: false,
-          strong: false,
-          elite: false,
-          legendary: false
-        }
-      },
+      microPics: createMicroPicsState(null),
 
       // current run
       // current run
+      currentRunNumber: 0,
+      currentRunId: "",
+      runStartedAt: 0,
+      currentQuestionShownAt: 0,
+      runAnswerLog: [],
+      questionSpeechActive: false,
+      questionSpeechKey: "",
+      questionSpeechText: "",
+      questionAutoReadDoneKey: "",
       runItemIds: [],
       runMistakeIds: [],
       runMode: "",
@@ -1596,6 +2172,22 @@ void function () {
           self.openLevelProgressModal();
           break;
 
+        case "open-leaderboard":
+          self.openLeaderboardModal();
+          break;
+
+        case "switch-leaderboard-tab":
+          self.switchLeaderboardModalTab(btn.getAttribute("data-wt-leaderboard-tab"));
+          break;
+
+        case "save-leaderboard-profile":
+          void self.saveLeaderboardProfileFromModal();
+          break;
+
+        case "leave-leaderboard":
+          void self.leaveLeaderboardFromModal();
+          break;
+
         case "close-modal":
           self.closeModal();
           break;
@@ -1612,12 +2204,24 @@ void function () {
           if (typeof self.startSecretBonusRun === "function") self.startSecretBonusRun();
           break;
 
-        case "start-run": {
+        case "start-run":
+        case "start-daily-challenge": {
           const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
           if (!ready) {
             const msg = String(self.getContentLoadingCopy() || "").trim();
             if (msg) toastNow(self.config, msg, { variant: "info", timingKey: "contentLoading" });
             break;
+          }
+
+          // Product choice for MVP:
+          // the Daily Challenge CTA stays a tracked entry point into the regular RUN flow.
+          // We separate the CTA analytics now without creating a dedicated gameplay mode yet.
+          if (
+            action === "start-daily-challenge" &&
+            self.storage &&
+            typeof self.storage.markDailyChallengeClicked === "function"
+          ) {
+            try { self.storage.markDailyChallengeClicked(); } catch (_) { /* silent */ }
           }
 
           const startedFromModal =
@@ -1659,6 +2263,7 @@ void function () {
 
 
         case "answer-true": {
+          cancelQuestionSpeech(self);
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
           try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
 
@@ -1667,12 +2272,21 @@ void function () {
         }
 
         case "answer-false": {
+          cancelQuestionSpeech(self);
           // BONUS: stop fall tick to prevent race (tick could fail item before rAF fires)
           try { if (self._runtime?.secretBonusFall?.running) self._secretBonusFallStop(); } catch (_) { }
 
           window.requestAnimationFrame(() => self.answer(false));
           break;
         }
+
+        case "toggle-question-audio":
+          self.toggleQuestionSpeech();
+          break;
+
+        case "toggle-auto-read-questions":
+          self.toggleAutoReadQuestions();
+          break;
 
         case "play-again": {
           const ready = !!(self._runtime && Number(self._runtime.contentTotal) > 0);
@@ -1687,9 +2301,6 @@ void function () {
         }
 
         case "open-paywall":
-          // Hard capture origin for "Not now" routing
-          if (self._nav) self._nav.paywallFromState = self.state;
-
           // If opened from a modal (e.g., How to play), close it first
           // to prevent backdrop/inert/focus-trap from blocking PAYWALL.
           self.closeModal();
@@ -1802,6 +2413,11 @@ void function () {
           break;
 
         case "dismiss-install-prompt":
+          try {
+            if (self.storage && typeof self.storage.markInstallPromptShown === "function") {
+              self.storage.markInstallPromptShown();
+            }
+          } catch (_) { /* silent */ }
           self.closeModal();
           break;
 
@@ -1827,12 +2443,22 @@ void function () {
 
           self.closeModal();
 
-          if (self.state === STATES.PLAYING) {
-            cleanupPlayingExit(self, { keepChanceOverlayVisible: false });
-          }
-
           if (self.state === STATES.PAYWALL) {
-            if (self._nav) self._nav.landingVariant = "POST_PAYWALL";
+            const fromState = String(self._nav?.paywallFromState || "").trim();
+
+            if (fromState === STATES.END) {
+              if (self._nav) {
+                self._nav.landingVariant = null;
+                self._nav.paywallFromState = null;
+              }
+              self.setState(STATES.END);
+              break;
+            }
+
+            if (self._nav) {
+              self._nav.landingVariant = (fromState === STATES.LANDING) ? "POST_PAYWALL" : null;
+              self._nav.paywallFromState = null;
+            }
             self.setState(STATES.LANDING);
             break;
           }
@@ -2041,10 +2667,6 @@ void function () {
 
         self.closeModal();
 
-        if (self.state === STATES.PLAYING) {
-          cleanupPlayingExit(self, { keepChanceOverlayVisible: false });
-        }
-
         if (self.state !== STATES.LANDING) {
           self.setState(STATES.LANDING);
           return;
@@ -2110,9 +2732,15 @@ void function () {
 
       const sb = self.wording?.secretBonus || {};
       const title = String(sb.modalTitle || "").trim();
-      const body = String(sb.modalBody || "").trim();
+      const bodyTpl = String(sb.modalBody || "").trim();
       const cta = String(sb.modalCta || "").trim();
       const notNow = String(self.wording?.system?.notNow || "").trim() || String(self.wording?.system?.close || "").trim();
+      const body = fillTemplate(bodyTpl, {
+        tickets: String(getRapidFireTicketBalance(self.storage)),
+        cost: String(getRapidFireTicketCost(self.storage)),
+        pluralS: getRapidFireTicketBalance(self.storage) > 1 ? "s" : "",
+        costPluralS: getRapidFireTicketCost(self.storage) > 1 ? "s" : ""
+      });
 
       function enterSecretBonusFlow() {
         // If the welcome modal was already shown earlier, avoid a second modal here.
@@ -2249,11 +2877,25 @@ void function () {
       history.replaceState({ wt: true, screen: STATES.LANDING }, "", baseUrl + "#home");
     } catch (_) { }
 
+    warmQuestionSpeechVoices(this);
+    const starterTicketRes = grantStarterRapidFireTicketIfNeeded(this.storage);
+
     // Populate footer with config values
     this.updateFooter();
 
     if (this._nav) this._nav.landingVariant = null;
     this.setState(STATES.LANDING);
+
+    try {
+      const toastTpl = String(this.wording?.secretBonus?.starterTicketToast || "").trim();
+      if (starterTicketRes?.granted === true && toastTpl) {
+        const msg = fillTemplate(toastTpl, {
+          tickets: String(clampInt(starterTicketRes?.balance, 0, 999)),
+          cap: String(clampInt(starterTicketRes?.cap, 0, 999))
+        });
+        if (msg) toastNow(this.config, msg, { variant: "success" });
+      }
+    } catch (_) { /* silent */ }
 
     // Boot case: constructor already starts on LANDING, so the "Entering LANDING"
     // hook inside setState does not run on first load.
@@ -2348,6 +2990,49 @@ void function () {
     if (!timing) return;
 
     scheduleGameplayOverlay(msg, { delayMs: 0, durationMs: timing.durationMs, variant: "info", mode });
+  };
+
+  UI.prototype.toggleQuestionSpeech = function () {
+    const model = getCurrentQuestionSpeechModel(this);
+    if (!model) return;
+
+    if (this._runtime?.questionSpeechActive === true && this._runtime?.questionSpeechKey === model.speechKey) {
+      cancelQuestionSpeech(this);
+      this.render();
+      return;
+    }
+
+    if (this._runtime) {
+      this._runtime.questionAutoReadDoneKey = model.speechKey;
+    }
+    startQuestionSpeech(this, model, { render: true });
+  };
+
+  UI.prototype.toggleAutoReadQuestions = function () {
+    if (!this.storage || typeof this.storage.getAutoReadQuestions !== "function" || typeof this.storage.setAutoReadQuestions !== "function") {
+      return;
+    }
+
+    const next = !isAutoReadQuestionsEnabled(this.storage);
+    try {
+      this.storage.setAutoReadQuestions(next);
+    } catch (_) {
+      return;
+    }
+
+    if (next !== true) {
+      cancelQuestionSpeech(this);
+    } else if (this._runtime) {
+      this._runtime.questionAutoReadDoneKey = "";
+      const modalOpen = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
+      if (!modalOpen) syncAutoReadCurrentQuestion(this);
+    }
+
+    if (this.modalEl && !this.modalEl.classList.contains("wt-hidden")) {
+      this.openHowToModal();
+    } else if (this.state === STATES.PLAYING) {
+      this.render();
+    }
   };
 
 
@@ -2465,6 +3150,10 @@ void function () {
 
   function cleanupStateTransition(ui, prev, next) {
     if (!ui || prev === next) return;
+
+    if (next !== STATES.LANDING) {
+      clearUiTimersByScope("daily");
+    }
 
     // PLAYING owns feedback, live gameplay, bonus fall, beforeunload, and answer locks.
     if (prev === STATES.PLAYING && next !== STATES.PLAYING) {
@@ -2585,6 +3274,24 @@ void function () {
       try {
         if (typeof this._maybePromptStatsSharingMilestone === "function") {
           this._maybePromptStatsSharingMilestone();
+        }
+      } catch (_) { /* silent */ }
+
+      // Daily challenge ticket toast (RUN only, once per local day)
+      try {
+        const lastRun = this._runtime?.lastRun || {};
+        const mode = String(lastRun.mode || "").trim().toUpperCase();
+        if (mode === "RUN") {
+          const alreadyShown = getDailyChallengeToastDayKey(this.storage);
+          const toastTpl = String(this.wording?.end?.dailyChallengeToast || "").trim();
+          const dayKey = String(lastRun.dailyTicketDayKey || "").trim();
+          if (lastRun.dailyTicketAwarded === true && dayKey && alreadyShown !== dayKey && toastTpl) {
+            const msg = fillTemplate(toastTpl, {
+              tickets: String(clampInt(lastRun.dailyTicketBalance, 0, 999))
+            });
+            if (msg) toastNow(this.config, msg, { variant: "success", timingKey: "dailyChallengeComplete" });
+            markDailyChallengeToastShown(this.storage, dayKey);
+          }
         }
       } catch (_) { /* silent */ }
 
@@ -2723,9 +3430,13 @@ void function () {
     const closeLabel = escapeHtml(String(this.wording?.system?.close || "").trim());
     const hideCloseButton = !!(options && options.hideCloseButton === true);
     const modalClass = String(options?.modalClass || "").trim();
+    const modalKey = String(options?.modalKey || "").trim();
 
     if (this._runtime) this._runtime._modalExtraClass = modalClass;
+    if (this._runtime) this._runtime._modalKey = modalKey;
     this.modalContentEl.classList.remove("wt-modal--sheet", "wt-modal--levelsheet");
+    this.modalContentEl.removeAttribute("data-wt-modal-key");
+    if (modalKey) this.modalContentEl.setAttribute("data-wt-modal-key", modalKey);
     if (modalClass) {
       modalClass.split(/\s+/).filter(Boolean).forEach((cls) => this.modalContentEl.classList.add(cls));
     }
@@ -2819,8 +3530,10 @@ void function () {
     this.modalEl.classList.add("wt-hidden");
     this.modalEl.setAttribute("aria-hidden", "true");
     this.modalContentEl.classList.remove("wt-modal--sheet", "wt-modal--levelsheet");
+    this.modalContentEl.removeAttribute("data-wt-modal-key");
     this.modalContentEl.innerHTML = "";
     if (this._runtime) this._runtime._modalExtraClass = "";
+    if (this._runtime) this._runtime._modalKey = "";
 
     // A11Y: re-enable main content
     try {
@@ -2837,6 +3550,10 @@ void function () {
         prev.focus();
       }
     } catch (_) { /* silent */ }
+
+    if (this.state === STATES.PLAYING) {
+      syncAutoReadCurrentQuestion(this);
+    }
   };
 
   UI.prototype.openHowToModal = function () {
@@ -2853,6 +3570,8 @@ void function () {
     const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
     const scoreFP = Number(gs.scoreFP);
     const chancesLeft = Number(gs.chancesLeft);
+    const speechSupported = supportsQuestionSpeech();
+    const autoReadEnabled = isAutoReadQuestionsEnabled(this.storage);
 
     // No hardcoded fallback: if runtime values are missing, keep placeholders empty.
     const vars = {
@@ -2887,10 +3606,34 @@ void function () {
         </div>
       `;
     }
+    const audioTitle = String(how.audioTitle || "").trim();
+    const autoReadLabel = String(how.autoReadLabel || "").trim();
+    const autoReadHelp = String(how.autoReadHelp || "").trim();
+    const autoReadStatus = String(autoReadEnabled ? (how.autoReadOn || "") : (how.autoReadOff || "")).trim();
+    const audioSettingsHtml = (speechSupported && autoReadLabel)
+      ? `
+        <div class="wt-divider"></div>
+        <div class="wt-stack wt-stack--xs wt-how-setting">
+          ${audioTitle ? `<p class="wt-question-title">${escapeHtml(audioTitle)}</p>` : ``}
+          <button
+            type="button"
+            class="wt-text-action wt-how-setting__toggle"
+            data-action="toggle-auto-read-questions"
+            aria-pressed="${autoReadEnabled ? "true" : "false"}"
+          >
+            <span>${escapeHtml(autoReadLabel)}</span>
+            ${autoReadStatus ? `<span class="wt-how-setting__status">${escapeHtml(autoReadStatus)}</span>` : ``}
+          </button>
+          ${autoReadHelp ? `<p class="wt-muted">${escapeHtml(autoReadHelp)}</p>` : ``}
+        </div>
+      `
+      : "";
     const html = `
      <p class="wt-how-line">${escapeHtml(String(how.howToPlayLine1 || "").trim())}</p>
 <p class="wt-how-line">${escapeHtml(String(how.howToPlayLine2 || "").trim())}</p>
 <p class="wt-how-line">${escapeHtml(String(how.howToPlayLine3 || "").trim())}</p>
+
+${audioSettingsHtml}
 
 <div class="wt-divider"></div>
 
@@ -3004,6 +3747,43 @@ void function () {
     `;
 
     this.openModal(html, String(levelsW.modalTitle || "").trim(), { modalClass: "wt-modal--sheet wt-modal--levelsheet" });
+  };
+
+  UI.prototype.openLeaderboardModal = function () {
+    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.openModal !== "function") {
+      return;
+    }
+    return window.WT_UI_Leaderboard.openModal(this, { escapeHtml });
+  };
+
+  UI.prototype.saveLeaderboardProfileFromModal = async function () {
+    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.saveProfileFromModal !== "function") {
+      return;
+    }
+    return window.WT_UI_Leaderboard.saveProfileFromModal(this, { escapeHtml, toastNow });
+  };
+
+  UI.prototype.switchLeaderboardModalTab = function (tabKey) {
+    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.switchModalTab !== "function") {
+      return;
+    }
+    return window.WT_UI_Leaderboard.switchModalTab(this, String(tabKey || "").trim());
+  };
+
+  UI.prototype.leaveLeaderboardFromModal = async function () {
+    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.leaveFromModal !== "function") {
+      return;
+    }
+    return window.WT_UI_Leaderboard.leaveFromModal(this, { toastNow });
+  };
+
+  UI.prototype.submitLeaderboardRun = async function (lastRun) {
+    if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.submitRun !== "function") {
+      return;
+    }
+    return window.WT_UI_Leaderboard.submitRun(this, lastRun, {
+      getLeaderboardContentVersion
+    });
   };
 
 
@@ -3331,31 +4111,23 @@ void function () {
 
       const momentumState = getMomentumMeterState(cfg, mp.correctStreak, runMode, mp.momentumLevel);
       if (momentumState) {
-        const current = clampInt(mp.momentumLevel, 0, 6);
-        const target = clampInt(momentumState.target, 0, 6);
+        const maxSegments = getMomentumSegments(cfg);
+        const current = clampInt(mp.momentumLevel, 0, maxSegments);
+        const target = clampInt(momentumState.target, 0, maxSegments);
 
         // Recovery must feel immediate:
         // after a loss, each correct answer rebuilds +1 visible segment
         // instead of waiting for the new streak to "catch up".
-        mp.momentumLevel = Math.min(6, Math.max(target, current + 1));
+        mp.momentumLevel = Math.min(maxSegments, Math.max(target, current + 1));
       }
     } else {
-      const currentLevel = clampInt(mp.momentumLevel, 0, 6);
+      const maxSegments = getMomentumSegments(cfg) || 6;
+      const currentLevel = clampInt(mp.momentumLevel, 0, maxSegments);
 
       mp.correctStreak = 0;
       mp.flowTierShown = 0;
 
-      // Progressive drop:
-      // 1-3 -> 0
-      // 4-5 -> 2
-      // 6+  -> 3
-      if (currentLevel >= 6) {
-        mp.momentumLevel = 3;
-      } else if (currentLevel >= 4) {
-        mp.momentumLevel = 2;
-      } else {
-        mp.momentumLevel = 0;
-      }
+      mp.momentumLevel = getMomentumDropLevel(cfg, currentLevel);
     }
 
     // Danger overlays are handled centrally (no micro-pic overlay on chance loss)
@@ -3423,7 +4195,7 @@ void function () {
       // Near-miss (one-shot per RUN): error that brings you down to 1 chance left.
       if (cfg?.microPics?.nearMissEnabled === true && chancesLeft === 1 && mp.nearMissShown !== true) {
         const msg = String(phaseMpc.nearMiss || mpc.nearMiss || "").trim();
-        setEndHighlight(msg, "info", 55);
+        setEndHighlight(msg, "info", getEndHighlightPriority(cfg, "nearMiss"));
         mp.nearMissShown = true;
       }
 
@@ -3436,7 +4208,7 @@ void function () {
           const wc = Number(st?.wrongCount || 0);
           if (Number.isFinite(wc) && wc >= Math.floor(minWrong)) {
             const msg = String(phaseMpc.repeatMistake || mpc.repeatMistake || "").trim();
-            setEndHighlight(msg, "info", 50);
+            setEndHighlight(msg, "info", getEndHighlightPriority(cfg, "repeatMistake"));
             mp.repeatMistakeShown = true;
           }
         }
@@ -3453,7 +4225,7 @@ void function () {
       if (tryShowRunOverlay(msg, "info")) {
         mp.survivalShown = true;
       }
-      setEndHighlight(msg, "info", 40);
+      setEndHighlight(msg, "info", getEndHighlightPriority(cfg, "survival"));
       return;
     }
 
@@ -3497,7 +4269,7 @@ void function () {
         mp.justRecoveredFromMistake = false;
         mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
         if (tierOnce) tierOnce.building = true;
-        setEndHighlight(msg, "success", 70);
+        setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "recovery"));
       }
       return;
     }
@@ -3512,7 +4284,7 @@ void function () {
         mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
       }
       if (tierOnce) tierOnce.legendary = true;
-      setEndHighlight(msg, "success", 100);
+      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakLegendary"));
       mp.justRecoveredFromMistake = false;
       return;
     }
@@ -3526,7 +4298,7 @@ void function () {
         mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
       }
       if (tierOnce) tierOnce.elite = true;
-      setEndHighlight(msg, "success", 90);
+      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakElite"));
       mp.justRecoveredFromMistake = false;
       return;
     }
@@ -3540,7 +4312,7 @@ void function () {
         mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
       }
       if (tierOnce) tierOnce.strong = true;
-      setEndHighlight(msg, "success", 80);
+      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakStrong"));
       mp.justRecoveredFromMistake = false;
       return;
     }
@@ -3554,7 +4326,7 @@ void function () {
         mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
       }
       if (tierOnce) tierOnce.building = true;
-      setEndHighlight(msg, "success", 70);
+      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakBuilding"));
       mp.justRecoveredFromMistake = false;
       return;
     }
@@ -3569,7 +4341,7 @@ void function () {
         mp.maxCorrectStreakDisplayed = Math.max(clampInt(mp.maxCorrectStreakDisplayed, 0, 9999), s);
       }
       if (tierOnce) tierOnce.start = true;
-      setEndHighlight(msg, "success", 65);
+      setEndHighlight(msg, "success", getEndHighlightPriority(cfg, "streakStart"));
       mp.justRecoveredFromMistake = false;
       return;
     }
@@ -3578,7 +4350,7 @@ void function () {
     const done = (res && res.done === true);
     if (done === true) {
       if (chancesLeft === 0 && answeredCount >= 6) {
-        setEndHighlight(String(mpc.runEndedAllChancesUsed || "").trim(), "success", 60);
+        setEndHighlight(String(mpc.runEndedAllChancesUsed || "").trim(), "success", getEndHighlightPriority(cfg, "runEndedAllChancesUsed"));
         return;
       }
     }
@@ -3621,7 +4393,6 @@ void function () {
     }
 
     if (mistakesOnly === true && moCfg.premiumOnly === true && !premium) {
-      if (this._nav) this._nav.paywallFromState = this.state;
       this.setState(STATES.PAYWALL);
       return;
     }
@@ -3637,13 +4408,13 @@ void function () {
       if (!gate || gate.ok !== true) {
         const limit = clampInt(this.config?.mistakesOnly?.freeRunsLimit, 0, 99);
         if (this.openFreeLimitReachedModal(this.wording?.practice, { limit })) return;
-        if (this._nav) this._nav.paywallFromState = this.state;
         this.setState(STATES.PAYWALL);
         return;
       }
     }
 
     let runStartNumber = null;
+    let currentRunNumber = 0;
 
     // RUN economy gate (free runs) is enforced at run start.
     if (mistakesOnly !== true && !premium) {
@@ -3656,7 +4427,6 @@ void function () {
       if (!gate || gate.ok !== true) {
         const limit = clampInt(this.config?.limits?.freeRuns, 0, 99);
         if (this.openFreeLimitReachedModal(this.wording?.end, { limit })) return;
-        if (this._nav) this._nav.paywallFromState = this.state;
         this.setState(STATES.PAYWALL);
         return;
       }
@@ -3667,7 +4437,25 @@ void function () {
       }
     }
 
+    if (mistakesOnly !== true && this.storage) {
+      try {
+        if (typeof this.storage.reserveRunNumber === "function") {
+          currentRunNumber = clampInt(this.storage.reserveRunNumber(), 0, 999999999);
+        } else if (typeof this.storage.getRunNumber === "function") {
+          const prevRunNumber = Number(this.storage.getRunNumber() || 0);
+          currentRunNumber = Math.max(0, Math.floor(prevRunNumber)) + 1;
+        }
+      } catch (_) {
+        currentRunNumber = 0;
+      }
+    }
+
     this._runtime.practiceBacklogAtStart = practiceBacklogAtStart;
+    this._runtime.currentRunNumber = currentRunNumber;
+    this._runtime.currentRunId = generateRunUuid();
+    this._runtime.runStartedAt = Date.now();
+    this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
+    this._runtime.runAnswerLog = [];
     if (startedFromLanding) {
       if (this.storage && typeof this.storage.markLandingNextRunStarted === "function") {
         this.storage.markLandingNextRunStarted();
@@ -3702,6 +4490,7 @@ void function () {
 
     this._runtime.runItemIds = [];
     this._runtime.runMistakeIds = [];
+    this._runtime.currentRunNumber = currentRunNumber;
     this._runtime.runMode = (mistakesOnly === true) ? MODES.PRACTICE : MODES.RUN;
     this._runtime.lastAnswer = null;
     this._runtime.feedbackPending = false;
@@ -3725,6 +4514,7 @@ void function () {
     if (this._runtime.bonusEndTimerId) {
       clearRuntimeTimer(this, "bonusEndTimerId");
     }
+    this._runtime.questionAutoReadDoneKey = "";
 
     if (this._runtime.endRecordMomentTimer) {
       clearRuntimeTimer(this, "endRecordMomentTimer");
@@ -3741,48 +4531,12 @@ void function () {
     this._runtime.newBestScoreToastShown = false;
 
     // micro-pics reset (run-only)
-    if (this._runtime.microPics) {
-      this._runtime.microPics.correctStreak = 0;
-      this._runtime.microPics.maxCorrectStreak = 0;
-      this._runtime.microPics.momentumLevel = 0;
-      this._runtime.microPics.flowTierShown = 0;
-      this._runtime.microPics.twoChancesShown = false;
-      this._runtime.microPics.survivalShown = false;
-      this._runtime.microPics.lastToastAtCount = -999;
-      this._runtime.microPics.lastDangerAtCount = -999;
-
-      // #2/#3/#4 runtime flags (UI-only)
-      this._runtime.microPics.justRecoveredFromMistake = false;
-      this._runtime.microPics.maxCorrectStreakDisplayed = 0;
-
-      // Near-miss + repeated mistakes (one-shot per RUN)
-      this._runtime.microPics.nearMissShown = false;
-      this._runtime.microPics.repeatMistakeShown = false;
-
-      // Per-run memory: reset only at run start (not on chance loss)
-      this._runtime.microPics.tierShownOnce = {
-        start: false,
-        building: false,
-        strong: false,
-        elite: false,
-        legendary: false
-      };
-
-      // END-only highlight (no gameplay interruptions)
-      this._runtime.microPics.endHighlight = "";
-      this._runtime.microPics.endHighlightVariant = "";
-      this._runtime.microPics.endHighlightPriority = -1;
-
-      // snapshot chances at run start
-      let startChances = clampInt(cfg?.game?.maxChances, 1, 99);
-      try {
-
-        const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-        if (gs.chancesLeft != null) startChances = clampInt(gs.chancesLeft, 0, 99);
-      } catch (_) { /* keep cfg */ }
-
-      this._runtime.microPics.prevChancesLeft = startChances;
-    }
+    let startChances = clampInt(cfg?.game?.maxChances, 1, 99);
+    try {
+      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      if (gs.chancesLeft != null) startChances = clampInt(gs.chancesLeft, 0, 99);
+    } catch (_) { /* keep cfg */ }
+    this._runtime.microPics = createMicroPicsState(startChances);
 
     // input safety
     this._runtime.answerLocked = false;
@@ -3840,6 +4594,17 @@ void function () {
       this.setState(STATES.PLAYING);
       return;
     }
+    // Freeze the Daily target before the run starts so the challenge stays stable for the whole day.
+    let runDailyModel = null;
+    try {
+      if (!mistakesOnly) {
+        const currentBest = (this.storage && typeof this.storage.getPersonalBest === "function")
+          ? clampInt(this.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
+          : 0;
+        runDailyModel = getDailyChallengeModel(cfg, this.wording, currentBest, this.storage);
+      }
+    } catch (_) { runDailyModel = null; }
+
     // RUN normal: overlay only for LAST_FREE.
     if (!this._beforeUnloadHandler) {
       this._beforeUnloadHandler = (e) => {
@@ -3852,7 +4617,27 @@ void function () {
     this.setState(STATES.PLAYING);
 
     if (runType === "LAST_FREE") {
-      showRunStartOverlay(cfg, this.wording, this.game, "LAST_FREE", null, () => {
+      let dailyExtra = null;
+      try {
+        const canEarnDailyTicket = !!(
+          runDailyModel &&
+          runDailyModel.completedToday !== true &&
+          runDailyModel.rewardAvailableToday === true &&
+          runDailyModel.ticketAtCap !== true
+        );
+        if (canEarnDailyTicket) {
+          const label = String(this.wording?.ui?.dailyChallengeStartOverlayLabel || "").trim();
+          const lineTpl = String(this.wording?.ui?.dailyChallengeStartOverlayLineTemplate || "").trim();
+          dailyExtra = {
+            goalLine1: label,
+            goalLine2: lineTpl
+              ? fillTemplate(lineTpl, { targetScore: String(runDailyModel.targetScore) })
+              : ""
+          };
+        }
+      } catch (_) { dailyExtra = null; }
+
+      showRunStartOverlay(cfg, this.wording, this.game, "LAST_FREE", dailyExtra, () => {
         // overlay dismissed — game already visible, nothing else needed
       });
     }
@@ -3880,6 +4665,73 @@ void function () {
     return true;
   };
 
+  UI.prototype.openRapidFireTicketRequiredModal = function () {
+    const w = this.wording || {};
+    const sb = w.secretBonus || {};
+    const premium = isPremiumNow(this.storage);
+    const tickets = getRapidFireTicketBalance(this.storage);
+    const cost = getRapidFireTicketCost(this.storage);
+    const runsBalance = (this.storage && typeof this.storage.getRunsBalance === "function")
+      ? clampInt(this.storage.getRunsBalance(), 0, 999)
+      : 0;
+    const nowDate = new Date();
+    const localDayKey = [
+      nowDate.getFullYear(),
+      String(nowDate.getMonth() + 1).padStart(2, "0"),
+      String(nowDate.getDate()).padStart(2, "0")
+    ].join("-");
+    const earnedToday = (getDailyTicketEarnedDayKey(this.storage) === localDayKey);
+
+    const title = String(sb.ticketRequiredTitle || "").trim();
+    const close = String(sb.ticketRequiredClose || w.system?.notNow || w.system?.close || "").trim();
+    const ctaDaily = String(sb.ticketRequiredCtaDaily || "").trim();
+    const ctaRun = String(sb.ticketRequiredCtaRun || "").trim();
+    const ctaPaywall = String(sb.ticketRequiredCtaPaywall || "").trim();
+
+    let bodyTpl = "";
+    let primaryAction = "";
+    let primaryLabel = "";
+
+    if (premium && earnedToday) {
+      bodyTpl = String(sb.ticketRequiredBodySpentToday || "").trim();
+      primaryAction = "start-run";
+      primaryLabel = ctaRun;
+    } else if (!premium && runsBalance > 0) {
+      bodyTpl = String(sb.ticketRequiredBodyDaily || "").trim();
+      primaryAction = "start-daily-challenge";
+      primaryLabel = ctaDaily;
+    } else if (premium) {
+      bodyTpl = String(sb.ticketRequiredBodyPremium || "").trim();
+      primaryAction = "start-run";
+      primaryLabel = ctaRun;
+    } else {
+      bodyTpl = String(sb.ticketRequiredBodyLocked || "").trim();
+      primaryAction = "open-paywall";
+      primaryLabel = ctaPaywall;
+    }
+
+    if (!title || !bodyTpl || typeof this.openModal !== "function") return false;
+
+    const body = fillTemplate(bodyTpl, {
+      tickets: String(tickets),
+      cost: String(cost),
+      remaining: String(runsBalance),
+      pluralS: tickets > 1 ? "s" : "",
+      costPluralS: cost > 1 ? "s" : ""
+    });
+
+    const html = `
+      <p class="wt-text-preline">${escapeHtml(body)}</p>
+      <div class="wt-actions">
+        ${primaryAction && primaryLabel ? `<button class="wt-btn wt-btn--primary" data-action="${escapeHtml(primaryAction)}">${escapeHtml(primaryLabel)}</button>` : ``}
+        ${close ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(close)}</button>` : ``}
+      </div>
+    `;
+
+    this.openModal(html, title, { hideCloseButton: true });
+    return true;
+  };
+
   // Secret bonus: seen-only bonus run (seenCount > 0).
   // Does NOT consume run economy.
   // IMPORTANT: deck is consumed once (no reshuffle, no loop). BONUS ends when the deck is exhausted.
@@ -3887,21 +4739,12 @@ void function () {
   UI.prototype.startSecretBonusRun = function () {
     const cfg = this.config || {};
     const premium = isPremiumNow(this.storage);
-
-    // Bonus free runs gate (teaser premium)
-    if (!premium) {
-      const limit = clampInt(cfg?.secretBonus?.freeRunsLimit, 0, 99);
-      const used = (this.storage && typeof this.storage.getSecretBonusFreeRunsUsed === "function")
-        ? Number(this.storage.getSecretBonusFreeRunsUsed())
-        : 0;
-
-      if (Number.isFinite(limit) && limit > 0 && used >= limit) {
-        this.openFreeLimitReachedModal(this.wording?.secretBonus, { limit });
-        return;
-      }
-
-      // Free user increment: deferred AFTER deck check (avoid burning a free run on empty deck).
+    const ticketGate = consumeRapidFireTicketOrBlock(this.storage);
+    if (!ticketGate.ok) {
+      this.openRapidFireTicketRequiredModal();
+      return;
     }
+
     // Stats snapshot (source of truth for "seen")
     const statsByItem = (this.storage && typeof this.storage.getStatsByItem === "function")
       ? this.storage.getStatsByItem()
@@ -3930,17 +4773,16 @@ void function () {
     if (state && state.done) {
       const msg = String(this.wording?.secretBonus?.noSeenWordsToast || "").trim();
       if (msg) toastNow(this.config, msg);
+      refundRapidFireTicket(this.storage, clampInt(ticketGate.cost, 0, 99));
       return;
-    }
-
-    // Increment counter for free users only after the run really started.
-    if (!premium) {
-      if (this.storage && typeof this.storage.incrementSecretBonusFreeRunsUsed === "function") {
-        this.storage.incrementSecretBonusFreeRunsUsed();
-      }
     }
     this._runtime.runItemIds = [];
     this._runtime.runMistakeIds = [];
+    this._runtime.currentRunNumber = 0;
+    this._runtime.currentRunId = generateRunUuid();
+    this._runtime.runStartedAt = Date.now();
+    this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
+    this._runtime.runAnswerLog = [];
     this._runtime.runMode = MODES.BONUS;
     this._runtime.lastAnswer = null;
     this._runtime.feedbackPending = false;
@@ -3969,31 +4811,12 @@ void function () {
     // One-shot per run: "New best score" toast (PLAYING)
     this._runtime.newBestScoreToastShown = false;
     // micro-pics reset (run-only)
-    if (this._runtime.microPics) {
-      this._runtime.microPics.correctStreak = 0;
-      this._runtime.microPics.maxCorrectStreak = 0;
-      this._runtime.microPics.momentumLevel = 0;
-      this._runtime.microPics.flowTierShown = 0;
-      this._runtime.microPics.survivalShown = false;
-      this._runtime.microPics.lastToastAtCount = -999;
-      this._runtime.microPics.lastDangerAtCount = -999;
-
-      // Per-run memory: reset only at run start (not on chance loss)
-      this._runtime.microPics.tierShownOnce = {
-        start: false,
-        building: false,
-        strong: false,
-        elite: false,
-        legendary: false
-      };
-
-      let startChances = clampInt(cfg?.game?.maxChances, 1, 99);
-      try {
-        const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
-        if (gs.chancesLeft != null) startChances = clampInt(gs.chancesLeft, 0, 99);
-      } catch (_) { /* keep cfg */ }
-      this._runtime.microPics.prevChancesLeft = startChances;
-    }
+    let startChances = clampInt(cfg?.game?.maxChances, 1, 99);
+    try {
+      const gs = (this.game && typeof this.game.getState === "function") ? (this.game.getState() || {}) : {};
+      if (gs.chancesLeft != null) startChances = clampInt(gs.chancesLeft, 0, 99);
+    } catch (_) { /* keep cfg */ }
+    this._runtime.microPics = createMicroPicsState(startChances);
 
     // input safety
     this._runtime.answerLocked = false;
@@ -4016,16 +4839,16 @@ void function () {
     // render() → _secretBonusFallStartOrSync() checks isOverlayVisible("wt-run-start-overlay").
     // If setState came first, the overlay wouldn't exist yet and the fall would start immediately.
     const bonusExtra = {};
-    if (!premium) {
-      const limit = clampInt(cfg?.secretBonus?.freeRunsLimit, 0, 99);
-      const used = (this.storage && typeof this.storage.getSecretBonusFreeRunsUsed === "function")
-        ? Number(this.storage.getSecretBonusFreeRunsUsed())
-        : 0;
-      const remaining = Math.max(0, limit - used);
-      const tpl = String(this.wording?.secretBonus?.startOverlayFreeRunsLimitLine || "").trim();
-      if (tpl && limit > 0) {
-        bonusExtra.bonusLimitLine = fillTemplate(tpl, { remaining, limit });
-      }
+    const tpl = String(this.wording?.secretBonus?.startOverlayFreeRunsLimitLine || "").trim();
+    if (tpl) {
+      const tickets = getRapidFireTicketBalance(this.storage);
+      const cost = getRapidFireTicketCost(this.storage);
+      bonusExtra.bonusLimitLine = fillTemplate(tpl, {
+        tickets: String(tickets),
+        cost: String(cost),
+        pluralS: tickets > 1 ? "s" : "",
+        costPluralS: cost > 1 ? "s" : ""
+      });
     }
 
     showRunStartOverlay(cfg, this.wording, this.game, "BONUS", bonusExtra, () => {
@@ -4355,7 +5178,16 @@ void function () {
     }
     if (Number.isFinite(Number(res.itemId))) {
       const id = Number(res.itemId);
+      const shownAt = Number(this._runtime?.currentQuestionShownAt || this._runtime?.runStartedAt || Date.now());
+      const answerMs = clampInt(Date.now() - shownAt, 0, 10 * 60 * 1000);
       this._runtime.runItemIds.push(id);
+      if (Array.isArray(this._runtime.runAnswerLog)) {
+        this._runtime.runAnswerLog.push({
+          id,
+          answer: picked === true,
+          ms: answerMs
+        });
+      }
 
       // Track per-run mistakes for END recap (dedup)
       if (res.isCorrect !== true) {
@@ -4581,6 +5413,7 @@ void function () {
                 tb.classList.remove("wt-terms-box--mistakeflash", "wt-terms-box--successflash");
                 tb.style.transform = "translate3d(0px, 0px, 0px)";
               }
+              this._runtime.currentQuestionShownAt = Date.now();
             }
           } catch (_) { /* silent */ }
 
@@ -4598,6 +5431,7 @@ void function () {
 
       // Fallback: no flash configured, immediate render
       this._runtime.answerLocked = false;
+      this._runtime.currentQuestionShownAt = Date.now();
       this.render();
 
       try {
@@ -4746,6 +5580,7 @@ void function () {
       return;
     }
 
+    this._runtime.currentQuestionShownAt = Date.now();
     this.render();
   };
 
@@ -4853,6 +5688,7 @@ void function () {
   UI.prototype._finishRun = function () {
     // Idempotent: if we're already in END, do nothing (prevents "double END screen" from late timers)
     if (this.state === STATES.END) return;
+    if (this._runtime?.finishingRun === true) return;
 
     // Block storage-triggered renders during _finishRun (recordRunComplete + markPostCompletion
     // both call _save() → _emit() → onStorageUpdated() → render() while still in PLAYING).
@@ -4869,7 +5705,14 @@ void function () {
     const chancesLeft = (gameState.chancesLeft != null) ? Number(gameState.chancesLeft) : null;
 
     const mode = String(this._runtime?.runMode || "").trim();
-    if (!mode) throw new Error("UI runtime runMode missing in _finishRun");
+    const finalMaxStreak = clampInt(
+      Math.max(
+        Number(this._runtime?.microPics?.maxCorrectStreakDisplayed || 0),
+        Number(this._runtime?.microPics?.maxCorrectStreak || 0)
+      ),
+      0,
+      9999
+    );
 
 
     // Single source of truth: storage.js (V2)
@@ -4877,14 +5720,20 @@ void function () {
 
     let newBest = false;
     let bestScoreFP = 0;
+    let dailyChallengeCompleted = false;
+    let dailyTicketAwarded = false;
+    let dailyTicketAtCap = false;
+    let dailyTicketBalance = getRapidFireTicketBalance(this.storage);
+    let dailyTicketDayKey = "";
+    let dailyTargetScore = 0;
     let levelProgress = { previousLevel: 0, currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
 
     if (mode === "RUN" && this.storage && typeof this.storage.recordRunComplete === "function") {
-      const prevRunNumber = (typeof this.storage.getRunNumber === "function")
-        ? Number(this.storage.getRunNumber() || 0)
+      const nextRunNumber = clampInt(this._runtime?.currentRunNumber, 0, 999999999);
+      const priorBestScoreFP = (this.storage && typeof this.storage.getPersonalBest === "function")
+        ? clampInt(this.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
         : 0;
-
-      const nextRunNumber = Math.max(0, Math.floor(prevRunNumber)) + 1;
+      const priorDailyModel = getDailyChallengeModel(this.config || {}, this.wording || {}, priorBestScoreFP, this.storage);
 
       let newSeenCount = 0;
       try {
@@ -4913,11 +5762,40 @@ void function () {
         maxChances: Number(maxChances || 0),
         chancesLeft: (chancesLeft == null) ? null : Number(chancesLeft),
         newSeenCount: clampInt(newSeenCount, 0, 99999),
+        maxCorrectStreak: finalMaxStreak,
         endedFrom: "ui"
       });
 
       newBest = !!(res && res.newBest);
       bestScoreFP = Number(res && res.bestScoreFP || 0);
+
+      try {
+        const isPrem = isPremiumNow(this.storage);
+        const isLastFreeRun = String(this._runtime?.runType || "").trim() === "LAST_FREE";
+        dailyTargetScore = clampInt(priorDailyModel?.targetScore, 0, 99999);
+        dailyChallengeCompleted = (scoreFP >= Math.max(1, dailyTargetScore));
+        dailyTicketDayKey = String(priorDailyModel?.dayKey || "").trim();
+
+        if (
+          dailyChallengeCompleted &&
+          dailyTicketDayKey &&
+          getDailyTicketEarnedDayKey(this.storage) !== dailyTicketDayKey &&
+          (isPrem || isLastFreeRun)
+        ) {
+          const rewardRes = grantDailyRapidFireTicket(this.storage, dailyTicketDayKey);
+          dailyTicketAwarded = !!rewardRes?.granted;
+          dailyTicketAtCap = !!rewardRes?.atCap;
+          dailyTicketBalance = clampInt(rewardRes?.balance, 0, 999);
+        } else {
+          dailyTicketBalance = getRapidFireTicketBalance(this.storage);
+        }
+      } catch (_) {
+        dailyChallengeCompleted = false;
+        dailyTicketAwarded = false;
+        dailyTicketAtCap = false;
+        dailyTicketBalance = getRapidFireTicketBalance(this.storage);
+        dailyTicketDayKey = "";
+      }
     } else if (mode === "BONUS" && this.storage && typeof this.storage.recordBonusComplete === "function") {
       const res = this.storage.recordBonusComplete(scoreFP, {
         mode: "BONUS",
@@ -4950,16 +5828,49 @@ void function () {
     // Store for END screen
     this._runtime.lastRun = {
       mode,
+      runType: String(this._runtime?.runType || "").trim(),
+      runId: String(this._runtime?.currentRunId || "").trim(),
+      runNumber: clampInt(this._runtime?.currentRunNumber, 0, 999999999),
+      durationMs: clampInt(Date.now() - Number(this._runtime?.runStartedAt || Date.now()), 0, 24 * 60 * 60 * 1000),
       scoreFP,
       maxChances,
       chancesLeft,
       newBest,
       bestScoreFP,
+      maxCorrectStreak: finalMaxStreak,
       mistakeIds: Array.isArray(this._runtime.runMistakeIds) ? this._runtime.runMistakeIds.slice() : [],
       runItemIds: Array.isArray(this._runtime.runItemIds) ? this._runtime.runItemIds.slice() : [],
+      dailyChallengeCompleted,
+      dailyTargetScore,
+      dailyTicketAwarded,
+      dailyTicketAtCap,
+      dailyTicketBalance,
+      dailyTicketDayKey,
+      answerLog: Array.isArray(this._runtime.runAnswerLog) ? this._runtime.runAnswerLog.slice() : [],
       poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending,
       levelProgress
     };
+
+    try {
+      void this.submitLeaderboardRun(this._runtime.lastRun).then((res) => {
+        const lbW = this.wording?.leaderboard || {};
+        if (!res || res.skipped === true) return;
+        if (res.ok === true) {
+          const weeklyRank = clampInt(res?.data?.weekly_rank, 0, 999999);
+          if (weeklyRank > 0) {
+            const toastTpl = String(lbW.rankToastWeekly || "").trim();
+            if (toastTpl) {
+              toastNow(this.config, fillTemplate(toastTpl, { rank: String(weeklyRank) }), { variant: "info" });
+            }
+          }
+          return;
+        }
+        const rejectedToast = String(lbW.scoreRejectedToast || "").trim();
+        if (rejectedToast) {
+          toastNow(this.config, rejectedToast, { variant: "info" });
+        }
+      });
+    } catch (_) { /* silent */ }
 
 
     // Consume one-shot runtime flag
@@ -5059,252 +5970,58 @@ void function () {
   // ============================================
 
   UI.prototype._startPaywallTicker = function () {
-    // No fallback: ticker runs only if explicitly configured (prevents hidden defaults).
-    const ms = Number(this.config?.ui?.paywallTickerMs);
-    if (!Number.isFinite(ms) || ms < 200 || ms > 2000) return;
-
-    // Ensure single ticker
-    this._stopPaywallTicker();
-
-    const delay = Math.floor(ms);
-    const tick = () => {
-      // Only tick while on PAYWALL or LANDING (LANDING shows the timer only after PAYWALL)
-      if (this.state !== STATES.PAYWALL && this.state !== STATES.LANDING) {
-        this._stopPaywallTicker();
-        return;
-      }
-
-      // Stop ticking once EARLY is over (render one last time to show STANDARD state)
-      let ep = null;
-      if (this.storage && typeof this.storage.getEarlyPriceState === "function") {
-        try { ep = this.storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
-      }
-
-      const isEarly =
-        !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
-
-      this.render();
-
-      if (!isEarly) {
-        this._stopPaywallTicker();
-        return;
-      }
-
-      this._paywallTickerId = setUiTimer("paywall.ticker", tick, delay, "paywall");
-    };
-
-    this._paywallTickerId = setUiTimer("paywall.ticker", tick, delay, "paywall");
+    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.startPaywallTicker !== "function") {
+      throw new Error("WT_UI_Checkout.startPaywallTicker missing");
+    }
+    return window.WT_UI_Checkout.startPaywallTicker(this, {
+      syncScopedRenderTicker,
+      shouldRefreshPaywallTimer,
+      isEarlyPriceWindowActive,
+      clearUiTimer
+    });
   };
 
 
 
   UI.prototype._stopPaywallTicker = function () {
-    clearUiTimer("paywall.ticker");
-    this._paywallTickerId = null;
+    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.stopPaywallTicker !== "function") {
+      throw new Error("WT_UI_Checkout.stopPaywallTicker missing");
+    }
+    return window.WT_UI_Checkout.stopPaywallTicker(this, { clearUiTimer });
   };
 
   UI.prototype.checkout = function (priceKey, event) {
-    if (!isOnline()) {
-      const msg = String(this.wording?.system?.offlinePayment || "").trim();
-      if (msg) toastNow(this.config, msg);
-      return;
+    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.checkout !== "function") {
+      throw new Error("WT_UI_Checkout.checkout missing");
     }
-
-    if (this.storage && typeof this.storage.markCheckoutStarted === "function") {
-      this.storage.markCheckoutStarted(priceKey);
-    }
-
-    const cfg = this.config || {};
-    const key = String(priceKey || "").toUpperCase();
-
-    const url = (key === "EARLY")
-      ? String(cfg.stripeEarlyPaymentUrl || "").trim()
-      : String(cfg.stripeStandardPaymentUrl || "").trim();
-
-    const sourceBtn = (event && event.target && event.target.closest)
-      ? event.target.closest("button[data-action], a[data-action]")
-      : null;
-
-    const redirectLabel = String(this.wording?.paywall?.checkoutRedirecting || "").trim();
-    const previousLabel = sourceBtn ? String(sourceBtn.textContent || "").trim() : "";
-
-    const resetCheckoutButton = () => {
-      if (!sourceBtn) return;
-      sourceBtn.disabled = false;
-      sourceBtn.removeAttribute("aria-busy");
-      if (previousLabel) sourceBtn.textContent = previousLabel;
-    };
-
-    if (!url) {
-      resetCheckoutButton();
-      return;
-    }
-
-    // Security: validate Stripe domain before redirect
-    try {
-      const urlObj = new URL(url);
-      const allowedHosts = ["buy.stripe.com", "checkout.stripe.com"];
-      if (!allowedHosts.includes(urlObj.hostname)) {
-        console.error("[WT Security] Invalid Stripe URL hostname:", urlObj.hostname);
-        resetCheckoutButton();
-        return;
-      }
-    } catch (_) {
-      console.error("[WT Security] Invalid Stripe URL:", url);
-      resetCheckoutButton();
-      return;
-    }
-
-    if (sourceBtn) {
-      sourceBtn.disabled = true;
-      sourceBtn.setAttribute("aria-busy", "true");
-      if (redirectLabel) sourceBtn.textContent = redirectLabel;
-    }
-
-    window.location.href = url;
-
+    return window.WT_UI_Checkout.checkout(this, priceKey, event, {
+      isOnline,
+      toastNow
+    });
   };
 
   // (deleted) legacy share-clicked event removed per spec
 
   // Single source of truth for share text (used by preview + copy)
   UI.prototype._getShareText = function () {
-    const cfg = this.config || {};
-    const shareCfg = cfg.share || {};
-    if (!shareCfg.enabled) return "";
-
-    const w = this.wording || {};
-    const share = w.share || {};
-
-    const identity = cfg.identity || {};
-    const appName = String(identity.appName || "").trim();
-    const url = String(identity.appUrl || "").trim();
-
-    const poolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
-    const maxChances = clampInt(cfg?.game?.maxChances, 1, 99);
-
-    const lastRun = (this._runtime && this._runtime.lastRun) ? this._runtime.lastRun : {};
-
-    const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
-    const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
-    const scoreChallengeTpl = (bestScoreFP > 10)
-      ? String(share.scoreChallengeWithBest || "").trim()
-      : String(share.scoreChallengeWithoutBest || "").trim();
-    const scoreChallenge = scoreChallengeTpl
-      .replaceAll("{score}", String(scoreFP))
-      .replaceAll("{bestScore}", String(bestScoreFP));
-
-    // Curiosity-gap share: "Can you guess?" framing (nudge psychology).
-    // Priority: pick a surprising question for maximum curiosity.
-    // Fallback: pick another seen question if needed.
-    // Source of truth: lastRun.mistakeIds + lastRun.runItemIds (stored in _finishRun()).
-    let funFact = "";
-    try {
-      const items = Array.isArray(this._runtime?.contentItems) ? this._runtime.contentItems : [];
-      const allIds = Array.isArray(lastRun.runItemIds) ? lastRun.runItemIds : [];
-
-      if (items.length > 0 && allIds.length > 0) {
-        // Pick the best item for a "Can you guess?" teaser:
-        // 1) Last mistake (trap the player fell for → most surprising)
-        // 2) Any trap from the run (even if answered correctly)
-        // 3) Any item from the run (true friend fallback)
-        const mistakeIds = Array.isArray(lastRun.mistakeIds) ? lastRun.mistakeIds : [];
-        const findItem = (id) => items.find(x => Number(x?.id) === Number(id)) || null;
-
-        let pick = null;
-
-        // Strategy 1: last mistake
-        if (mistakeIds.length > 0) {
-          pick = findItem(mistakeIds[mistakeIds.length - 1]);
-        }
-
-        // Strategy 2: any trap from the run
-        if (!pick) {
-          for (let i = allIds.length - 1; i >= 0; i--) {
-            const it = findItem(allIds[i]);
-            if (it && it.correctAnswer === false) { pick = it; break; }
-          }
-        }
-
-        // Strategy 3: any item (true friend)
-        if (!pick) {
-          pick = findItem(allIds[allIds.length - 1]);
-        }
-
-        if (pick) {
-          const questionText = String(pick.question || "").trim();
-          const isTrap = (pick.correctAnswer === false);
-
-          if (questionText) {
-            const tpls = isTrap
-              ? (Array.isArray(share.funFactTemplatesTrap) ? share.funFactTemplatesTrap : [])
-              : (Array.isArray(share.funFactTemplatesTrue) ? share.funFactTemplatesTrue : []);
-            const tpl = (tpls.length > 0) ? String(tpls[0] || "").trim() : "";
-
-            if (tpl) {
-              funFact = tpl
-                .replaceAll("{question}", questionText);
-            }
-          }
-        }
-      }
-    } catch (_) {
-      funFact = "";
+    if (!window.WT_UI_Share || typeof window.WT_UI_Share.getShareText !== "function") {
+      throw new Error("WT_UI_Share.getShareText missing");
     }
-
-
-    const template = String(share.template || "").trim();
-    if (!template) return "";
-
-    const text = template
-      .replaceAll("{appName}", appName)
-      .replaceAll("{url}", url)
-      .replaceAll("{poolSize}", String(poolSize))
-      .replaceAll("{maxChances}", String(maxChances))
-      .replaceAll("{score}", String(scoreFP))
-      .replaceAll("{bestScore}", String(bestScoreFP))
-      .replaceAll("{scoreChallenge}", scoreChallenge)
-      .replaceAll("{funFact}", funFact);
-
-    this._runtime = this._runtime || {};
-    this._runtime.lastShareText = text;
-
-    return text;
+    return window.WT_UI_Share.getShareText(this, { clampInt });
   };
 
   UI.prototype.copyShareText = async function () {
-    const text = String(this._getShareText() || "").trim();
-    if (!text) return;
-
-    const w = this.wording || {};
-    const share = w.share || {};
-
-    try {
-      await navigator.clipboard.writeText(text);
-      if (this.storage && typeof this.storage.markShareClicked === "function") {
-        this.storage.markShareClicked();
-      }
-      const okMsg = String(share.toastCopied || "").trim();
-      if (okMsg) toastNow(this.config, okMsg);      // no legacy event
-    } catch (_) {
-      toastNow(this.config, String(w.system?.copyFailed || "").trim());
+    if (!window.WT_UI_Share || typeof window.WT_UI_Share.copy !== "function") {
+      throw new Error("WT_UI_Share.copy missing");
     }
+    return window.WT_UI_Share.copy(this, { clampInt, toastNow });
   };
 
   UI.prototype.sendShareViaEmail = function () {
-    const w = this.wording || {};
-    const share = w.share || {};
-
-    const subjectRaw = String(share.emailSubject || "").trim();
-    if (!subjectRaw) return;
-
-    const text = String(this._getShareText() || "").trim();
-    if (!text) return;
-
-    const subject = encodeURIComponent(subjectRaw);
-    const body = encodeURIComponent(text);
-
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    if (!window.WT_UI_Share || typeof window.WT_UI_Share.sendEmail !== "function") {
+      throw new Error("WT_UI_Share.sendEmail missing");
+    }
+    return window.WT_UI_Share.sendEmail(this, { clampInt });
   };
 
 
@@ -5336,128 +6053,40 @@ void function () {
   // Support modal
   // ============================================
   UI.prototype.openSupportModal = function () {
-    const w = this.wording || {};
-    const support = w.support || {};
-
-    // Source of truth: email.js decodes the obfuscated email safely.
-    const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
-    if (!email) {
-      const msg = String(this.wording?.system?.copyFailed || "").trim();
-      if (msg) toastNow(this.config, msg);
-      return;
+    if (!window.WT_UI_Support || typeof window.WT_UI_Support.openSupport !== "function") {
+      throw new Error("WT_UI_Support.openSupport missing");
     }
-
-    const html = `
-    <p>${escapeHtml(String(support.modalBodyLine1 || "").trim())}</p>
-    <p class="wt-muted">${escapeHtml(String(support.modalBodyLine2 || "").trim())}</p>
-
-    <div class="wt-divider"></div>
-
-    <div class="wt-actions wt-actions--compact">
-      <button class="wt-btn wt-btn--secondary" data-action="open-support-email-bug">${escapeHtml(String(support.ctaBug || "").trim())}</button>
-      <button class="wt-btn wt-btn--secondary" data-action="open-support-email-question">${escapeHtml(String(support.ctaQuestion || "").trim())}</button>
-      <button class="wt-btn wt-btn--secondary" data-action="open-support-email-idea">${escapeHtml(String(support.ctaIdea || "").trim())}</button>
-    </div>
-
-    <div class="wt-divider"></div>
-
-      <div class="wt-actions">
-      <button class="wt-btn wt-btn--secondary" data-action="copy-support-email">${escapeHtml(String(support.ctaCopy || "").trim())}</button>
-      <button class="wt-btn wt-btn--primary" data-action="open-support-email">${escapeHtml(String(support.ctaOpen || "").trim())}</button>
-    </div>
-
-  `;
-
-    this.openModal(html, String(support.modalTitle || "").trim());
+    return window.WT_UI_Support.openSupport(this, { escapeHtml, toastNow });
   };
 
 
   UI.prototype.copySupportEmail = async function () {
-    const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
-    if (!email) return;
-
-    try {
-      await navigator.clipboard.writeText(email);
-      toastNow(this.config, String(this.wording?.system?.copied || "").trim());
-    } catch (_) {
-      toastNow(this.config, String(this.wording?.system?.copyFailed || "").trim());
+    if (!window.WT_UI_Support || typeof window.WT_UI_Support.copySupportEmail !== "function") {
+      throw new Error("WT_UI_Support.copySupportEmail missing");
     }
+    return window.WT_UI_Support.copySupportEmail(this, { toastNow });
   };
 
 
   UI.prototype.openSupportEmailApp = function (kind) {
-    const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
-    if (!email) return;
-
-    const cfg = this.config || {};
-    const prefix = String(cfg?.support?.subjectPrefix || "").trim();
-
-    const w = this.wording || {};
-    const support = w.support || {};
-    const mode = String(kind || "").trim().toLowerCase();
-    let suffix = String(support.emailSubjectSuffix || "").trim();
-    let bodyTemplate = String(support.emailBodyTemplate || "").trim();
-
-    if (mode === "bug") {
-      suffix = String(support.bugSubjectSuffix || suffix).trim();
-      bodyTemplate = String(support.bugBodyTemplate || bodyTemplate).trim();
-    } else if (mode === "question") {
-      suffix = String(support.questionSubjectSuffix || suffix).trim();
-      bodyTemplate = String(support.questionBodyTemplate || bodyTemplate).trim();
-    } else if (mode === "idea") {
-      suffix = String(support.ideaSubjectSuffix || suffix).trim();
-      bodyTemplate = String(support.ideaBodyTemplate || bodyTemplate).trim();
+    if (!window.WT_UI_Support || typeof window.WT_UI_Support.openSupportEmail !== "function") {
+      throw new Error("WT_UI_Support.openSupportEmail missing");
     }
-
-    if (window.WT_Email && typeof window.WT_Email.openSupportEmail === "function") {
-      window.WT_Email.openSupportEmail({
-        subjectPrefix: prefix,
-        subjectSuffix: suffix,
-        bodyTemplate
-      });
-    }
-
-    this.closeModal();
+    return window.WT_UI_Support.openSupportEmail(this, kind);
   };
 
   // ============================================
   // Pool complete (one-shot modal on END entry)
   // ============================================
   UI.prototype.openPoolCompleteModal = function () {
-    const w = this.wording || {};
-    const end = w.end || {};
-    const sys = w.system || {};
-    const lastRun = (this._runtime && this._runtime.lastRun) ? this._runtime.lastRun : {};
-
-    const title = String(end.poolCompleteTitle || "").trim();
-    const line1 = String(end.poolCompleteLine1 || "").trim();
-    const line2 = String(end.poolCompleteLine2 || "").trim();
-    const scoreLineTpl = String(end.poolCompleteScoreLine || "").trim();
-    const cta = String(sys.continue || "").trim();
-
-    // Fail-closed: if required copy is missing, do nothing.
-    if (!title || !cta) return;
-
-    const scoreLine = scoreLineTpl
-      ? fillTemplate(scoreLineTpl, {
-        score: String(clampInt(Number(lastRun.scoreFP), 0, 99999)),
-        fpShort: ""
-      })
-      : "";
-
-    const html = `
-      ${scoreLine ? `<p class="wt-hero-kpi--modal">${escapeHtml(scoreLine)}</p>` : ``}
-      ${line1 ? `<p>${escapeHtml(line1)}</p>` : ``}
-      ${line2 ? `<p class="wt-muted">${escapeHtml(line2)}</p>` : ``}
-
-      <div class="wt-divider"></div>
-
-      <div class="wt-actions wt-modal-actions">
-        <button class="wt-btn wt-btn--primary" data-action="close-modal">${escapeHtml(cta)}</button>
-      </div>
-    `;
-
-    this.openModal(html, title);
+    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.openPoolComplete !== "function") {
+      throw new Error("WT_UI_Growth.openPoolComplete missing");
+    }
+    return window.WT_UI_Growth.openPoolComplete(this, {
+      escapeHtml,
+      fillTemplate,
+      clampInt
+    });
   };
 
 
@@ -5465,47 +6094,10 @@ void function () {
   // Milestone modal (one-shot on END entry)
   // ============================================
   UI.prototype.openMilestoneModal = function (milestoneKey) {
-    const w = this.wording || {};
-    const ms = w.milestones || {};
-    const block = (milestoneKey && typeof ms === "object") ? (ms[milestoneKey] || {}) : {};
-
-    const title = String(block.title || "").trim();
-    const lines = Array.isArray(block.bodyLines) ? block.bodyLines : [];
-    const cta = String(block.cta || "").trim();
-
-    // Fail-closed: if required copy is missing, do nothing.
-    if (!title || !cta) return;
-
-    // Mark one-shot only if we can actually show the modal.
-    try {
-      const markByKey = {
-        quarter: "markQuarterMilestoneShown",
-        halfway: "markHalfwayMilestoneShown",
-        threeQuarters: "markThreeQuartersMilestoneShown"
-      };
-      const fnName = markByKey[String(milestoneKey || "").trim()] || "";
-      if (fnName && this.storage && typeof this.storage[fnName] === "function") {
-        this.storage[fnName]();
-      }
-    } catch (_) { /* silent */ }
-
-    const bodyHtml = lines
-      .map((s) => String(s || "").trim())
-      .filter(Boolean)
-      .map((line) => `<p>${escapeHtml(line)}</p>`)
-      .join("");
-
-    const html = `
-      ${bodyHtml}
-
-      <div class="wt-divider"></div>
-
-      <div class="wt-actions wt-modal-actions">
-        <button class="wt-btn wt-btn--primary" data-action="close-modal">${escapeHtml(cta)}</button>
-      </div>
-    `;
-
-    this.openModal(html, title);
+    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.openMilestone !== "function") {
+      throw new Error("WT_UI_Growth.openMilestone missing");
+    }
+    return window.WT_UI_Growth.openMilestone(this, milestoneKey, { escapeHtml });
   };
 
 
@@ -5513,108 +6105,17 @@ void function () {
   // Waitlist (mailto, no backend)
   // ============================================
   UI.prototype.openWaitlistModal = function () {
-    const cfg = this.config || {};
-    const wlCfg = cfg.waitlist || {};
-    if (wlCfg.enabled !== true) return;
-
-    const w = this.wording || {};
-    const wl = w.waitlist || {};
-
-    const title = String(wl.title || "").trim();
-    const body1 = String(wl.bodyLine1 || "").trim();
-    const body2 = String(wl.bodyLine2 || "").trim();
-    const label = String(wl.inputLabel || wl.inputPlaceholder || "").trim();
-    const placeholder = String(wl.inputPlaceholder || "").trim();
-    const cta = String(wl.cta || "").trim();
-
-    // No fallback: requires configured recipient
-    const toEmail = String(window.WT_Email?.getWaitlistEmailDecoded?.() || "").trim();
-    if (!toEmail) return;
-
-    // Persist "seen" (used by one-shot modal + future UX gating)
-    try {
-      if (this.storage && typeof this.storage.getWaitlistStatus === "function" && typeof this.storage.setWaitlistStatus === "function") {
-        const st = String(this.storage.getWaitlistStatus() || "").trim();
-        if (st === "not_seen") this.storage.setWaitlistStatus("seen");
-      }
-    } catch (_) { /* silent */ }
-
-    const phAttr = placeholder ? ` placeholder="${escapeHtml(placeholder)}"` : "";
-
-    const html = `
-      ${body1 ? `<p>${escapeHtml(body1)}</p>` : ``}
-      ${body2 ? `<p class="wt-muted">${escapeHtml(body2)}</p>` : ``}
-
-      <div class="wt-divider"></div>
-
-      <label class="wt-label" for="wt-waitlist-idea">${escapeHtml(label)}</label>
-      <textarea id="wt-waitlist-idea" class="wt-input" rows="3"${phAttr}></textarea>
-
-      <div class="wt-actions wt-modal-actions">
-        <button class="wt-btn wt-btn--primary" data-action="send-waitlist-email">${escapeHtml(cta)}</button>
-        <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(String(this.wording?.system?.close || "").trim())}</button>
-      </div>
-    `;
-
-    this.openModal(html, title);
-
-    // Restore + persist draft while typing (device-local)
-    try {
-      const input = this.modalContentEl ? this.modalContentEl.querySelector("#wt-waitlist-idea") : null;
-
-      if (input && this.storage && typeof this.storage.getWaitlistDraftIdea === "function") {
-        const draft = String(this.storage.getWaitlistDraftIdea() || "").trim();
-        if (draft) input.value = draft;
-      }
-
-      if (input && this.storage && typeof this.storage.setWaitlistDraftIdea === "function") {
-        input.addEventListener("input", () => {
-          try { this.storage.setWaitlistDraftIdea(String(input.value || "")); } catch (_) { /* silent */ }
-        });
-      }
-    } catch (_) { /* silent */ }
+    if (!window.WT_UI_Support || typeof window.WT_UI_Support.openWaitlist !== "function") {
+      throw new Error("WT_UI_Support.openWaitlist missing");
+    }
+    return window.WT_UI_Support.openWaitlist(this, { escapeHtml });
   };
 
   UI.prototype.sendWaitlistViaEmail = function () {
-    const cfg = this.config || {};
-    const wlCfg = cfg.waitlist || {};
-    if (wlCfg.enabled !== true) return;
-
-    const toEmail = String(window.WT_Email?.getWaitlistEmailDecoded?.() || "").trim();
-    if (!toEmail) return;
-
-    // Prefix comes from config; suffix comes from wording (no hardcoded "Waitlist")
-    const prefix = String(wlCfg.subjectPrefix || "").trim();
-    if (!prefix) return;
-
-    const w = this.wording || {};
-    const wl = w.waitlist || {};
-    const suffix = String(wl.emailSubjectSuffix || "").trim();
-
-    const subjectText = suffix ? `${prefix} ${suffix}`.trim() : prefix;
-    const subject = encodeURIComponent(subjectText);
-
-    const input = this.modalContentEl ? this.modalContentEl.querySelector("#wt-waitlist-idea") : null;
-    const idea = String(input && input.value ? input.value : "").trim();
-
-    const tpl = String(wl.emailBodyTemplate || "").trim();
-    const bodyText = tpl ? tpl.replaceAll("{idea}", idea) : idea;
-    const body = encodeURIComponent(bodyText ? bodyText : "");
-
-    // Persist "joined" on explicit user intent (clicked Send)
-    try {
-      if (this.storage && typeof this.storage.setWaitlistStatus === "function") {
-        this.storage.setWaitlistStatus("joined");
-      }
-      if (this.storage && typeof this.storage.setWaitlistDraftIdea === "function") {
-        this.storage.setWaitlistDraftIdea("");
-      }
-    } catch (_) { /* silent */ }
-
-    window.location.href = `mailto:${toEmail}?subject=${subject}&body=${body}`;
-
-    // Close modal (no claim about email being sent)
-    this.closeModal();
+    if (!window.WT_UI_Support || typeof window.WT_UI_Support.sendWaitlist !== "function") {
+      throw new Error("WT_UI_Support.sendWaitlist missing");
+    }
+    return window.WT_UI_Support.sendWaitlist(this, { toastNow });
   };
 
 
@@ -5624,74 +6125,18 @@ void function () {
 
 
   UI.prototype._getStatsPayloadWithTerms = function () {
-    const storage = this.storage;
-    if (!storage || typeof storage.getAnonymousStatsPayload !== "function") return null;
-
-    let base = null;
-    try { base = storage.getAnonymousStatsPayload(); } catch (_) { base = null; }
-    if (!base || typeof base !== "object") return null;
-
-    // Defensive copy (avoid mutating StorageManager payload)
-    let payload = null;
-    try { payload = JSON.parse(JSON.stringify(base)); } catch (_) { payload = null; }
-    if (!payload || typeof payload !== "object") return null;
-
-    const byId = (this._runtime && this._runtime.contentById) ? this._runtime.contentById : Object.create(null);
-
-    if (Array.isArray(payload.topMistakes)) {
-      payload.topMistakes = payload.topMistakes.map((m) => {
-        const idNum = Number(m && m.id);
-        const idKey = String(Number.isFinite(idNum) ? idNum : (m && m.id != null ? m.id : "")).trim();
-
-        const it = idKey ? byId[idKey] : null;
-        const questionText = String(it && it.question || "").trim();
-
-        return {
-          id: Number.isFinite(idNum) ? idNum : m && m.id,
-          wrongCount: m && m.wrongCount,
-          question: questionText
-        };
-      });
+    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.getPayload !== "function") {
+      throw new Error("WT_UI_StatsSharing.getPayload missing");
     }
-
-    return payload;
+    return window.WT_UI_StatsSharing.getPayload(this);
   };
 
 
   UI.prototype.openStatsSharingModal = function () {
-    const w = this.wording || {};
-    const ss = w.statsSharing || {};
-    const cfg = this.config || {};
-
-    if (!cfg.statsSharing?.enabled) return;
-
-    const payload = this._getStatsPayloadWithTerms();
-    if (!payload) {
-      const msg = String(ss.noStatsToast || "").trim();
-      if (msg) toastNow(this.config, msg);
-      return;
+    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.openModal !== "function") {
+      throw new Error("WT_UI_StatsSharing.openModal missing");
     }
-
-
-    const jsonStr = JSON.stringify(payload, null, 2);
-
-    const html = `
-      <p class="wt-text-preline">${escapeHtml(String(ss.modalDescription || "").trim())}</p>
-
-      <div class="wt-divider"></div>
-
-      <strong class="wt-meta">${escapeHtml(String(ss.previewLabel || "").trim())}</strong>
-      <pre class="wt-code wt-code--modal">${escapeHtml(jsonStr)}</pre>
-
-      <div class="wt-actions wt-actions--feedback wt-modal-actions wt-modal-actions--lg">
-        <button class="wt-btn wt-btn--primary" data-action="send-stats-email">${escapeHtml(String(ss.ctaSend || "").trim())}</button>
-        <button class="wt-btn wt-btn--secondary" data-action="copy-stats">${escapeHtml(String(ss.ctaCopy || "").trim())}</button>
-        <button class="wt-btn wt-btn--ghost" data-action="snooze-stats">${escapeHtml(String(ss.ctaLater || "").trim())}</button>
-        <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(String(ss.ctaCancel || "").trim())}</button>
-      </div>
-    `;
-
-    this.openModal(html, String(ss.modalTitle || "").trim());
+    return window.WT_UI_StatsSharing.openModal(this, { escapeHtml, toastNow });
   };
 
 
@@ -5700,226 +6145,68 @@ void function () {
 
 
   UI.prototype.sendStatsViaEmail = function () {
-    const cfg = this.config || {};
-    const w = this.wording || {};
-    const ss = w.statsSharing || {};
-
-    const email = String(window.WT_Email?.getSupportEmailDecoded?.() || "").trim();
-    if (!email) return;
-
-    const subject = encodeURIComponent(String(cfg?.statsSharing?.emailSubject || "").trim());
-
-    const payload = this._getStatsPayloadWithTerms();
-    if (!payload) return;
-
-    const body = encodeURIComponent(JSON.stringify(payload, null, 2));
-
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-
-
-    // No semantic overclaim: mailto opens a draft; it does not guarantee sending.
-    this.closeModal();
-
+    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.sendEmail !== "function") {
+      throw new Error("WT_UI_StatsSharing.sendEmail missing");
+    }
+    return window.WT_UI_StatsSharing.sendEmail(this, { toastNow });
   };
 
 
   UI.prototype.copyStatsToClipboard = async function () {
-    const w = this.wording || {};
-    const ss = w.statsSharing || {};
-
-    const payload = this._getStatsPayloadWithTerms();
-    if (!payload) return;
-
-    const jsonStr = JSON.stringify(payload, null, 2);
-
-    try {
-      await navigator.clipboard.writeText(jsonStr);
-      toastNow(this.config, String(ss.copyToast || "").trim());
-    } catch (_) {
-      toastNow(this.config, String(w.system?.copyFailed || "").trim());
+    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.copy !== "function") {
+      throw new Error("WT_UI_StatsSharing.copy missing");
     }
+    return window.WT_UI_StatsSharing.copy(this, { toastNow });
   };
 
 
   UI.prototype._maybePromptStatsSharingMilestone = function () {
-    const cfg = this.config || {};
-    const ssCfg = cfg.statsSharing || {};
-    if (ssCfg.enabled !== true) return;
-
-    const storage = this.storage;
-    if (!storage) return;
-
-    // Snooze gate ("Show me later"): do not prompt until at least next END (after 1 more completed run)
-    let stats = null;
-    try {
-      stats = (typeof storage.getAnonymousStatsPayload === "function") ? storage.getAnonymousStatsPayload() : null;
-    } catch (_) {
-      stats = null;
+    if (!window.WT_UI_StatsSharing || typeof window.WT_UI_StatsSharing.maybePrompt !== "function") {
+      throw new Error("WT_UI_StatsSharing.maybePrompt missing");
     }
-    if (!stats) return;
-
-    const runCompletes = clampInt(Number(stats.runs), 0, 999999);
-
-    try {
-      const snoozeUntil = getStatsSharingSnoozeUntilRunCompletes(storage);
-      if (Number.isFinite(snoozeUntil) && snoozeUntil > runCompletes) return;
-    } catch (_) { /* silent */ }
-
-    // Optional gate: only after pool exhaustion
-    if (ssCfg.afterPoolExhaustedOnly === true) {
-      if (typeof storage.hasSeenAllWordTraps !== "function" || storage.hasSeenAllWordTraps() !== true) return;
-    }
-
-    // Triggers (bitmask)
-    const BIT_30 = 1;
-    const BIT_50 = 2;
-    const BIT_LAST_FREE = 4;
-    const BIT_POWER = 8;
-
-    const thresholds = Array.isArray(ssCfg.promptThresholdsPct) ? ssCfg.promptThresholdsPct.slice() : [];
-    const pct30 = Number(thresholds[0]);
-    const pct50 = Number(thresholds[1]);
-
-    const poolProgress = Number(stats.poolProgress); // 0..1 unique coverage
-    if (!Number.isFinite(poolProgress)) return;
-
-    const uniquePct = Math.floor(poolProgress * 100);
-
-    const uniqueSeen = Number(stats.uniqueSeen);
-    const isPremium = isPremiumNow(storage);
-
-    const runsBalance = (typeof storage.getRunsBalance === "function") ? clampInt(storage.getRunsBalance(), 0, 999999) : 0;
-
-    const powerUnique = Number(ssCfg.powerUserUniqueSeen);
-    const powerRuns = Number(ssCfg.powerUserRunCompletes);
-    const powerEligible =
-      (Number.isFinite(uniqueSeen) && Number.isFinite(powerUnique) && uniqueSeen >= powerUnique) ||
-      (Number.isFinite(powerRuns) && runCompletes >= powerRuns);
-
-    const lastFreeEligible =
-      (ssCfg.promptOnFreeRunsExhausted === true) &&
-      (isPremium !== true) &&
-      (runsBalance === 0);
-
-    const flags = clampInt(getStatsSharingPromptFlags(storage), 0, 2147483647);
-
-    // Priority: last free run > 50% > 30% > power user
-    let chosenBit = 0;
-
-    if (lastFreeEligible && (flags & BIT_LAST_FREE) === 0) {
-      chosenBit = BIT_LAST_FREE;
-    } else if (Number.isFinite(pct50) && uniquePct >= pct50 && (flags & BIT_50) === 0) {
-      chosenBit = BIT_50;
-    } else if (Number.isFinite(pct30) && uniquePct >= pct30 && (flags & BIT_30) === 0) {
-      chosenBit = BIT_30;
-    } else if (powerEligible && (flags & BIT_POWER) === 0) {
-      chosenBit = BIT_POWER;
-    }
-
-    if (!chosenBit) return;
-
-    // Mark as "presented" (but "Show me later" will undo this bit)
-    markStatsSharingPromptFlag(storage, chosenBit);
-    try {
-      if (this._runtime) this._runtime._statsSharingLastPromptFlagBit = chosenBit;
-    } catch (_) { /* silent */ }
-
-    this.openStatsSharingModal();
+    return window.WT_UI_StatsSharing.maybePrompt(this, {
+      clampInt,
+      escapeHtml,
+      toastNow,
+      isPremiumNow,
+      getStatsSharingPromptFlags,
+      getStatsSharingSnoozeUntilRunCompletes,
+      markStatsSharingPromptFlag
+    });
   };
 
 
   UI.prototype.openInstallPromptModal = function () {
-    const ip = this.wording?.installPrompt || {};
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
-    const title = String(ip.title || "").trim();
-    const body = String((isIOS ? ip.bodyIOS : ip.body) || "").trim();
-    const ctaPrimary = String((isIOS ? ip.ctaPrimaryIOS : ip.ctaPrimary) || "").trim();
-    const ctaSecondary = String(ip.ctaSecondary || this.wording?.system?.close || "").trim();
-    const primaryAction = isIOS ? "dismiss-install-prompt" : "install-app-now";
-
-    if (!title || !body || !ctaPrimary) return false;
-
-    const html = `
-      <p class="wt-text-preline">${escapeHtml(body)}</p>
-      <div class="wt-actions wt-modal-actions">
-        <button class="wt-btn wt-btn--primary" data-action="${primaryAction}">${escapeHtml(ctaPrimary)}</button>
-        <button class="wt-btn wt-btn--ghost" data-action="close-modal">${escapeHtml(ctaSecondary)}</button>
-      </div>
-    `;
-
-    this.openModal(html, title);
-
-    try {
-      if (this.storage && typeof this.storage.markInstallPromptShown === "function") {
-        this.storage.markInstallPromptShown();
-      }
-    } catch (_) { /* silent */ }
-
-    return true;
+    if (!window.WT_UI_Install || typeof window.WT_UI_Install.openModal !== "function") {
+      throw new Error("WT_UI_Install.openModal missing");
+    }
+    return window.WT_UI_Install.openModal(this, { escapeHtml });
   };
 
-  UI.prototype._maybePromptInstallOnEnd = function () {
-    const cfg = this.config || {};
-    const storage = this.storage;
-    const pwa = window.WT_PWA || null;
-
-    if (!storage || !pwa || typeof pwa.canPrompt !== "function") return false;
-
-    const counters = (typeof storage.getCounters === "function") ? (storage.getCounters() || {}) : {};
-    const shown = Number(counters.installPromptShown || 0);
-    if (Number.isFinite(shown) && shown > 0) return false;
-
-    const modalOpen = !!(this.modalEl && !this.modalEl.classList.contains("wt-hidden"));
-    if (modalOpen) return false;
-
-    if (pwa.canPrompt(cfg, storage) !== true) return false;
-
-    return this.openInstallPromptModal() === true;
+  UI.prototype._canShowInstallPrompt = function () {
+    if (!window.WT_UI_Install || typeof window.WT_UI_Install.canShow !== "function") {
+      throw new Error("WT_UI_Install.canShow missing");
+    }
+    return window.WT_UI_Install.canShow(this);
   };
 
   // ============================================
   // Install prompt (minimal)
   // ============================================
   UI.prototype.promptInstall = function () {
-    const pwa = window.WT_PWA || null;
-    if (!pwa || typeof pwa.promptInstall !== "function") return;
-
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || "");
-    if (isIOS) {
-      this.openInstallPromptModal();
-      return;
+    if (!window.WT_UI_Install || typeof window.WT_UI_Install.prompt !== "function") {
+      throw new Error("WT_UI_Install.prompt missing");
     }
-
-    pwa.promptInstall(this.storage);
+    return window.WT_UI_Install.prompt(this, { escapeHtml });
   };
 
 
 
   UI.prototype.applyUpdateToast = function () {
-    const node = el("update-toast");
-    try {
-      if (window.Logger && typeof window.Logger.log === "function") {
-        window.Logger.log("[UPDATE] applyUpdateToast", {
-          hasNode: !!node,
-          ready: window.__WT_SW_UPDATE_READY__ === true,
-          inFlight: window.__WT_SW_UPDATE_IN_FLIGHT__ === true
-        });
-      }
-    } catch (_) { }
-    if (!node) return;
-
-    // If an update is ready, user intent = apply it now.
-    if (window.__WT_SW_UPDATE_READY__ === true) {
-      if (typeof window.__WT_APPLY_SW_UPDATE__ === "function") {
-        window.__WT_APPLY_SW_UPDATE__();
-      } else {
-        location.reload();
-      }
-      return;
+    if (!window.WT_UI_Checkout || typeof window.WT_UI_Checkout.applyUpdateToast !== "function") {
+      throw new Error("WT_UI_Checkout.applyUpdateToast missing");
     }
-
-    // Otherwise just hide it.
-    node.classList.remove("wt-toast--visible");
+    return window.WT_UI_Checkout.applyUpdateToast(this, { el });
   };
 
 
@@ -5930,25 +6217,18 @@ void function () {
   // House ad (optional)
   // ============================================
   UI.prototype.remindHouseAdLater = function () {
-    // KISS: single mechanism = hide window (WT_CONFIG.houseAd.hideMs)
-    if (!this.storage || typeof this.storage.hideHouseAdUsingConfig !== "function") return;
-
-    this.storage.hideHouseAdUsingConfig();
-    this.render();
+    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.remindHouseAdLater !== "function") {
+      throw new Error("WT_UI_Growth.remindHouseAdLater missing");
+    }
+    return window.WT_UI_Growth.remindHouseAdLater(this);
   };
 
 
   UI.prototype.openHouseAd = function () {
-    const cfg = this.config || {};
-    const ha = cfg.houseAd || {};
-    const url = String(ha.url || "").trim();
-    if (!url) return;
-
-    if (this.storage && typeof this.storage.markHouseAdClicked === "function") {
-      this.storage.markHouseAdClicked();
+    if (!window.WT_UI_Growth || typeof window.WT_UI_Growth.openHouseAd !== "function") {
+      throw new Error("WT_UI_Growth.openHouseAd missing");
     }
-
-    window.open(url, "_blank", "noopener");
+    return window.WT_UI_Growth.openHouseAd(this);
   };
 
 
@@ -6605,6 +6885,10 @@ void function () {
     try {
       this._handleEndEntryModals(prevRenderedState, premium);
     } catch (_) { /* silent */ }
+
+    try {
+      syncDailyCountdownTicker(this);
+    } catch (_) { /* silent */ }
   };
 
 
@@ -6703,13 +6987,6 @@ void function () {
         // Free limit reached must be intentional:
         // gate on CTA click via startRun()/startRun(true), never auto-open on END.
 
-        // Install prompt: END-only, one-shot, only when the platform prompt is actually available.
-        try {
-          if (typeof this._maybePromptInstallOnEnd === "function" && this._maybePromptInstallOnEnd() === true) {
-            return;
-          }
-        } catch (_) { /* silent */ }
-
         // Waitlist is now a stable LANDING block, not an END auto-modal.
       } catch (_) { /* silent */ }
     }, delayMs);
@@ -6746,581 +7023,30 @@ void function () {
     return `<p class="${cls}">${escapeHtml(value)}</p>`;
   }
 
-  function renderPaywallSection(title, bodyHtml, extraClass) {
-    if (!title && !bodyHtml) return "";
-    return `
-      <section class="${String(extraClass || "").trim()}">
-        ${title ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(title)}</div>` : ``}
-        ${bodyHtml || ``}
-      </section>
-    `;
-  }
-
-  function renderPaywallQuoteCard(title, quotes) {
-    const safeTitle = String(title || "").trim();
-    const safeQuotes = Array.isArray(quotes) ? quotes : [];
-    if (!safeTitle && !safeQuotes.length) return "";
-
-    const quotesHtml = safeQuotes
-      .map((q) => {
-        const qt = String(q?.quote || "").trim();
-        const au = String(q?.author || "").trim();
-        if (!qt) return "";
-        const parts = qt.split(/\n+/).map((part) => String(part || "").trim()).filter(Boolean);
-        const maybeStars = parts.length > 1 && /^[★☆\s]+$/.test(parts[0]) ? parts.shift() : "";
-        const body = parts.join(" ").trim();
-        if (!body && !maybeStars) return "";
-        return `
-          <div class="wt-quote wt-paywall-quote">
-            ${maybeStars ? `<div class="wt-quote__stars wt-paywall-stars" aria-hidden="true">${escapeHtml(maybeStars)}</div>` : ``}
-            ${body ? `<div class="wt-copy-quote">&ldquo;${escapeHtml(body)}&rdquo;</div>` : ``}
-            ${au ? `<div class="wt-muted wt-quote__author wt-paywall-quote-author">${escapeHtml(au)}</div>` : ``}
-          </div>
-        `;
-      })
-      .filter(Boolean)
-      .join("");
-
-    return `
-      <div class="wt-box">
-        ${safeTitle ? `<div class="wt-meta">${escapeHtml(safeTitle)}</div>` : ``}
-        ${quotesHtml}
-      </div>
-    `;
-  }
-
   UI.prototype._renderLanding = function () {
-    const w = this.wording || {};
-    const landing = w.landing || {};
-    const cfg = this.config || {};
-    const poolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
-    const maxChances = clampInt(cfg?.game?.maxChances, 1, 99);
-    const subtitleRaw = fillTemplate(String(landing.subtitle || "").trim(), { poolSize, maxChances });
-
-    const subtitleNormalized = subtitleRaw.includes("\n")
-      ? subtitleRaw
-      : subtitleRaw
-        .replace(/\?\s+/g, "?\n")
-        .replace(/\. +/g, ".\n");
-
-    const subtitleHtml = subtitleNormalized
-      .split(/\r?\n/)
-      .map(s => String(s || "").trim())
-      .filter(Boolean)
-      .map(s => escapeHtml(s))
-      .join("<br>");
-
-    const microTrust = String(landing.microTrust || "").trim();
-    const tagline = String(landing.tagline || "").trim();
-
-    const premium = isPremiumNow(this.storage);
-
-    // Post-paywall reassurance block (LANDING only, one-shot variant)
-    // Clear the variant immediately (KISS): snapshot the intent, then reset so it cannot leak across future renders.
-    const isPostPaywallVariant = !premium && (this._nav && this._nav.landingVariant === "POST_PAYWALL");
-    if (isPostPaywallVariant && this._nav) this._nav.landingVariant = null;
-
-    const postTitle = String(landing.postPaywallTitle || "").trim();
-    const postBody = String(landing.postPaywallBody || "").trim();
-    const postCta = String(landing.postPaywallCta || "").trim();
-
-    // postBlock: computed after canShowChest (see below)
-    let postBlock = "";
-
-    // Landing-only secondary offers:
-    // - Waitlist from its unique-seen threshold until joined
-    // - House ad only after the full pool is exhausted
-    let postCompletionHtml = "";
-    try {
-      const exhausted =
-        !!(this.storage && typeof this.storage.hasSeenAllWordTraps === "function" && this.storage.hasSeenAllWordTraps() === true);
-
-      const pcCfg = cfg?.postCompletion || {};
-      const pcW = w?.postCompletion || {};
-      const wlCfg = cfg?.waitlist || {};
-      const wlW = w?.waitlist || {};
-      const haW = w?.houseAd || {};
-
-      const waitlistEligible =
-        !!(wlCfg.enabled === true && this.storage && typeof this.storage.shouldShowWaitlistNow === "function" && this.storage.shouldShowWaitlistNow({ inRun: false }) === true);
-      const houseAdEligible =
-        !!(pcCfg?.houseAdEnabled === true && this.storage && typeof this.storage.shouldShowHouseAdNow === "function" && this.storage.shouldShowHouseAdNow({ inRun: false }) === true);
-
-      if (waitlistEligible || houseAdEligible) {
-        const pcPoolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
-
-        const title = exhausted && pcCfg?.enabled === true
-          ? fillTemplate(String(pcW.title || "").trim(), { poolSize: pcPoolSize })
-          : String(wlW.title || "").trim();
-
-        const body1 = exhausted && pcCfg?.enabled === true
-          ? fillTemplate(String(pcW.body || "").trim(), { poolSize: pcPoolSize })
-          : String(wlW.bodyLine1 || "").trim();
-
-        const body2 = exhausted
-          ? String(pcW.waitlistBody1 || wlW.bodyLine1 || "").trim()
-          : String(wlW.bodyLine2 || "").trim();
-
-        const body3 = exhausted
-          ? String(pcW.waitlistBody2 || wlW.bodyLine2 || "").trim()
-          : "";
-
-        const waitlistCta = exhausted
-          ? String(pcW.waitlistCta || wlW.ctaLabel || "").trim()
-          : String(wlW.ctaLabel || "").trim();
-
-        const waitlistDisclaimer = exhausted
-          ? String(pcW.waitlistDisclaimer || wlW.disclaimer || "").trim()
-          : String(wlW.disclaimer || "").trim();
-
-        const houseAdCta = String(pcW.houseAdCta || haW.ctaPrimary || "").trim();
-
-        postCompletionHtml = `
-          <div class="wt-divider"></div>
-          ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
-          <div class="wt-stack wt-stack--xs wt-postcompletion-copy">
-            ${body1 ? `<p class="wt-muted">${escapeHtml(body1)}</p>` : ``}
-            ${waitlistEligible && body2 ? `<p class="wt-muted">${escapeHtml(body2)}</p>` : ``}
-            ${waitlistEligible && body3 ? `<p class="wt-muted">${escapeHtml(body3)}</p>` : ``}
-          </div>
-
-          <div class="wt-actions wt-postcompletion-actions">
-            ${waitlistEligible && waitlistCta ? `
-              <button class="wt-btn ${houseAdEligible ? `wt-btn--secondary` : `wt-btn--primary`}" data-action="open-waitlist">${escapeHtml(waitlistCta)}</button>
-            ` : ``}
-
-            ${houseAdEligible && houseAdCta ? `
-              <button class="wt-btn ${waitlistEligible ? `wt-btn--ghost` : `wt-btn--primary`}" data-action="open-house-ad">${escapeHtml(houseAdCta)}</button>
-            ` : ``}
-          </div>
-
-          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
-        `;
-      }
-    } catch (_) { postCompletionHtml = ""; }
-
-    const levelModel = getAppLevelModel(this.storage, cfg, w);
-    const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
-    const landingLevelBadgeHtml = (levelModel.state.currentLevel > 0 && levelModel.current && levelModel.current.label)
-      ? `
-          <div class="wt-landing-stat__badge">
-            <button type="button" class="wt-badge" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
-              ${escapeHtml(levelModel.current.label)}
-            </button>
-          </div>
-        `
-      : "";
-
-    // Welcome back removed intentionally (UX simplification)
-    let welcomeBackHtml = "";
-
-
-
-
-
-    // Build landing header row HTML outside the main template string
-    const windowMs = Number(cfg?.secretBonus?.tapWindowMs);
-    const tapsRequired = Number(cfg?.secretBonus?.tapsRequired);
-
-    const landingAfterRunsRaw = Number(cfg?.secretBonus?.gates?.landingAfterRuns);
-    const landingAfterRuns = (Number.isFinite(landingAfterRunsRaw) && landingAfterRunsRaw >= 0)
-      ? Math.floor(landingAfterRunsRaw)
-      : null;
-
-
-    let rn = null;
-    let rc = null;
-
-    if (this.storage && typeof this.storage.getRunNumber === "function") {
-      try {
-        const v = Number(this.storage.getRunNumber());
-        rn = Number.isFinite(v) ? v : null;
-      } catch (_) { rn = null; }
+    if (!window.WT_UI_Landing || typeof window.WT_UI_Landing.render !== "function") {
+      throw new Error("WT_UI_Landing.render missing");
     }
-
-    if (this.storage && typeof this.storage.getCounters === "function") {
-      try {
-        const c = this.storage.getCounters() || {};
-        const v = Number(c.runCompletes);
-        rc = Number.isFinite(v) ? v : null;
-      } catch (_) { rc = null; }
-    }
-    const a = (rn == null) ? null : Math.max(0, Math.floor(rn));
-    const b = (rc == null) ? null : Math.max(0, Math.floor(rc));
-
-    let rs = null;
-
-    if (this.storage && typeof this.storage.getRunsUsed === "function") {
-      try {
-        const v = Number(this.storage.getRunsUsed());
-        rs = Number.isFinite(v) ? v : null;
-      } catch (_) { rs = null; }
-    }
-
-    if (rs == null && this.storage && typeof this.storage.getCounters === "function") {
-      try {
-        const c = this.storage.getCounters() || {};
-        const v = Number(c.runStarts);
-        rs = Number.isFinite(v) ? v : null;
-      } catch (_) { rs = null; }
-    }
-
-    const c = (rs == null) ? null : Math.max(0, Math.floor(rs));
-
-    const runCompletes =
-      (a == null && b == null) ? 0 :
-        (a == null) ? b :
-          (b == null) ? a :
-            Math.max(a, b);
-
-    // LANDING stats are shown only after enough completed runs to make the dashboard meaningful.
-    const runPlays = Math.max(runCompletes, (c == null ? 0 : c));
-
-
-    // Returning-user LANDING stats (no greeting; purely contextual)
-    // No fallback: requires WT_CONFIG.landingStats + WT_WORDING.phaseJourney.* strings.
-    // Preview is UI-only: it simulates visible stats without writing to storage.
-    try {
-      const statsCfg = cfg?.landingStats || {};
-      const enabled = (statsCfg?.enabled === true);
-      const poolSizeSafe = clampInt(cfg?.game?.poolSize, 1, 9999);
-      const phasePreview = getLandingStatsPreviewState(cfg, poolSizeSafe);
-
-      const minRunsRaw = Number(statsCfg?.minCompletedRuns);
-      const minRunsToShow = (Number.isFinite(minRunsRaw) && minRunsRaw >= 1 && minRunsRaw <= 999) ? Math.floor(minRunsRaw) : null;
-      const shouldShowStats = !!(
-        enabled &&
-        (
-          phasePreview ||
-          (minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= minRunsToShow)
-        )
-      );
-
-      if (shouldShowStats) {
-
-        // Unique seen count
-        let seen = 0;
-        try {
-          if (this.storage && typeof this.storage.getSeenItemIds === "function") {
-            const ids = this.storage.getSeenItemIds() || [];
-            seen = Array.isArray(ids) ? ids.length : 0;
-          }
-        } catch (_) { seen = 0; }
-
-        seen = clampInt(seen, 0, poolSizeSafe);
-
-        // Mistakes to fix: source of truth = StorageManager.getActiveMistakesCount()
-        let mistakes = 0;
-        try {
-          if (this.storage && typeof this.storage.getActiveMistakesCount === "function") {
-            mistakes = Number(this.storage.getActiveMistakesCount() || 0);
-          }
-        } catch (_) {
-          mistakes = 0;
-        }
-
-        mistakes = clampInt(mistakes, 0, poolSizeSafe);
-
-        // Hide mistakes stat only when Mistakes mode is really unavailable for this user
-        let practiceAvailable = true;
-        try {
-          if (!premium) {
-            if (this.storage && typeof this.storage.getPracticeRunsRemaining === "function") {
-              const remaining = Number(this.storage.getPracticeRunsRemaining());
-              practiceAvailable = Number.isFinite(remaining) && remaining > 0;
-            } else {
-              practiceAvailable = false; // fail-closed for free users only
-            }
-          }
-        } catch (_) {
-          practiceAvailable = premium ? true : false;
-        }
-
-        if (!practiceAvailable) {
-          mistakes = 0;
-        }
-
-        if (phasePreview) {
-          seen = clampInt(phasePreview.seen, 0, poolSizeSafe);
-          mistakes = clampInt(phasePreview.mistakes, 0, poolSizeSafe);
-        }
-
-        const phase = getRuleKnowledgePhaseContext({
-          cfg,
-          w,
-          storage: this.storage,
-          poolSize: poolSizeSafe,
-          seen,
-          mistakes
-        });
-
-        const remaining = clampInt(poolSizeSafe - phase.seen, 0, poolSizeSafe);
-        const vars = {
-          seen: phase.seen,
-          poolSize: poolSizeSafe,
-          remaining,
-          mistakes: phase.mistakes,
-          mastered: phase.mastered
-        };
-
-        const progressValue = phase.isComplete ? phase.mastered : phase.seen;
-        const pct = poolSizeSafe > 0
-          ? Math.max(0, Math.min(100, Math.round((progressValue / poolSizeSafe) * 100)))
-          : 0;
-        const progressClass = phase.isComplete ? " wt-progress--mastery" : "";
-
-        const label = phase.badge;
-        const title = fillTemplate(phase.landingSummaryTemplate, vars);
-        const subTemplate = phase.landingDetailTemplate || phase.landingDetail;
-        const sub = fillTemplate(subTemplate, vars);
-
-        welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass });
+    return window.WT_UI_Landing.render(this, {
+      escapeHtml,
+      fillTemplate,
+      clampInt,
+      isPremiumNow,
+      getRunTierInfo,
+      getDailyChallengeModel,
+      getAppLevelModel,
+      getLandingStatsPreviewState,
+      getRuleKnowledgePhaseContext,
+      renderBrandingRow,
+      renderTextWithStrong,
+      renderIcon,
+      hasSolvedSecretChestHint,
+      mmss,
+      renderLeaderboardLandingCard: function (ui) {
+        if (!window.WT_UI_Leaderboard || typeof window.WT_UI_Leaderboard.renderLandingCard !== "function") return "";
+        return window.WT_UI_Leaderboard.renderLandingCard(ui, { escapeHtml });
       }
-    } catch (_) { /* silent */ }
-
-    const playLabelFirst = String(landing.ctaPlay || "").trim();
-    const playLabelAfterFirstRun = String(landing.ctaPlayAfterFirstRun || "").trim();
-    const playLabel =
-      (Number.isFinite(runPlays) && runPlays >= 1)
-        ? playLabelAfterFirstRun
-        : playLabelFirst;
-
-    const meetsRunGate = (landingAfterRuns == null)
-      ? false
-      : (Number.isFinite(runPlays) && runPlays >= landingAfterRuns);
-
-    const canShowChest =
-      Number.isFinite(windowMs) && windowMs > 0 &&
-      meetsRunGate;
-
-
-    let sbFreeRunsUsedLanding = 0;
-    if (this.storage && typeof this.storage.getSecretBonusFreeRunsUsed === "function") {
-      try { sbFreeRunsUsedLanding = Number(this.storage.getSecretBonusFreeRunsUsed()); } catch (_) { sbFreeRunsUsedLanding = 0; }
-    }
-
-    const chestHintTextLanding = (canShowChest && sbFreeRunsUsedLanding === 0)
-      ? String(this.wording?.secretBonus?.chestHint || "").trim()
-      : "";
-
-    const chestAria = String(this.wording?.secretBonus?.chestAria || "").trim();
-    const chestTeaseClass = (!hasSolvedSecretChestHint(this.storage)) ? " wt-btn-icon--tease" : "";
-    // Early price timer (LANDING): show only after the PAYWALL has started the EARLY window.
-    // No fallback: relies on StorageManager.getEarlyPriceState() + config ui.paywallUrgency + paywall.timerLabel.
-    let landingUrgencyHtml = "";
-    try {
-      const pay = w.paywall || {};
-
-      let ep = null;
-      if (this.storage && typeof this.storage.getEarlyPriceState === "function") {
-        try { ep = this.storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
-      }
-
-      const isEarly = !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
-      const remainingMs = isEarly ? Number(ep?.remainingMs || 0) : 0;
-      const timer = (isEarly && Number.isFinite(remainingMs)) ? mmss(remainingMs) : "";
-
-      const urgencyCfg = (cfg?.ui?.paywallUrgency && typeof cfg.ui.paywallUrgency === "object") ? cfg.ui.paywallUrgency : null;
-      const urgencyEnabled = (urgencyCfg && urgencyCfg.enabled === true);
-      const pulseBelowMs = urgencyCfg ? Number(urgencyCfg.pulseBelowMs) : NaN;
-
-      const urgencyPulse =
-        urgencyEnabled &&
-        isEarly &&
-        Number.isFinite(pulseBelowMs) &&
-        pulseBelowMs > 0 &&
-        Number.isFinite(remainingMs) &&
-        remainingMs > 0 &&
-        remainingMs <= pulseBelowMs;
-
-      const label = String(pay.timerLabel || "").trim();
-
-      if (!premium && isEarly && urgencyEnabled && label) {
-        const cls = `wt-box wt-box--tinted`;
-        landingUrgencyHtml = `
-        <div class="${cls}" role="status" aria-live="polite">
-        <div class="wt-meta">${escapeHtml(label)}</div>
-          <div class="wt-h2 wt-paywall-timer${urgencyPulse ? ' wt-pulse' : ''}">${escapeHtml(timer)}</div>
-        </div>
-      `;
-      }
-    } catch (_) { landingUrgencyHtml = ""; }
-
-
-    // Post-paywall reassurance block (deferred: needs canShowChest)
-    postBlock = (() => {
-      if (!isPostPaywallVariant) return ``;
-
-      let sbUsedPost = 0;
-      if (this.storage && typeof this.storage.getSecretBonusFreeRunsUsed === "function") {
-        try { sbUsedPost = Number(this.storage.getSecretBonusFreeRunsUsed()); } catch (_) { sbUsedPost = 0; }
-      }
-
-      const postSbTitle = String(landing.postPaywallSbTitle || "").trim();
-      const postSbBody = String(landing.postPaywallSbBody || "").trim();
-
-      if (canShowChest && sbUsedPost === 0 && (postSbTitle || postSbBody)) {
-        return `
-          <div class="wt-divider"></div>
-          ${postSbTitle ? `<strong class="wt-meta">${escapeHtml(postSbTitle)}</strong>` : ``}
-          ${postSbBody ? `<p class="wt-muted wt-postpaywall-body">${escapeHtml(postSbBody)}</p>` : ``}
-        `;
-      }
-
-      if (postTitle || postBody || postCta) {
-        return `
-          <div class="wt-divider"></div>
-          ${postTitle ? `<strong class="wt-meta">${escapeHtml(postTitle)}</strong>` : ``}
-          ${postBody ? `<p class="wt-muted wt-postpaywall-body">${escapeHtml(postBody)}</p>` : ``}
-          ${postCta ? `
-                       <div class="wt-actions wt-actions--postpaywall">
-              <button class="wt-btn wt-btn--secondary" data-action="open-paywall">
-                ${escapeHtml(postCta)}
-              </button>
-            </div>
-          ` : ``}
-        `;
-      }
-
-      return ``;
-    })();
-
-    const landingHeaderRowHtml = `
-  <div class="wt-landing-hero">
-    <div class="wt-landing-header">
-      <div class="wt-landing-header__brand">
-        ${renderBrandingRow(cfg, true)}
-      </div>
-     <div class="wt-landing-top-right">
-        ${chestHintTextLanding ? `<div class="wt-chest-hint-inline">${escapeHtml(chestHintTextLanding)}</div>` : ``}
-        ${canShowChest ? `
-          <button
-            type="button"
-            data-wt-secret="chest"
-            class="wt-btn-icon${chestTeaseClass}"
-            aria-label="${escapeHtml(chestAria)}"
-            title="${escapeHtml(chestAria)}"
-          >${renderIcon("zap")}</button>
-        ` : ``}
-      </div>
-    </div>
-  </div>
-`;
-
-    return `
-  <div class="wt-card wt-card--landing">
-
-
-${landingHeaderRowHtml}
-  ${landingUrgencyHtml}
-  ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
-  <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
-  ${(() => {
-        // L1: limit stacked muted lines (avoid grey wall)
-        const hasHeavyBlock = Boolean(
-          (postBlock && String(postBlock).trim()) ||
-          (postCompletionHtml && String(postCompletionHtml).trim())
-        );
-
-        let mutedBudget = hasHeavyBlock ? 0 : 2;
-
-
-        const runsInfoHtml = ``;
-
-        return `${runsInfoHtml}`;
-      })()}
-
-<div class="wt-actions">
-
-      ${(() => {
-        let bal = null;
-        if (!premium && this.storage && typeof this.storage.getRunsBalance === "function") {
-          try { bal = Number(this.storage.getRunsBalance()); } catch (_) { bal = null; }
-        }
-        const runsExhausted = (!premium && Number.isFinite(bal) && bal <= 0);
-
-        if (runsExhausted) {
-          const label = String(landing.postPaywallCta || "").trim();
-          if (!label) return ``;
-          return `
-            <button class="wt-btn wt-btn--primary" data-action="open-paywall">
-              ${escapeHtml(label)}
-            </button>
-          `;
-        }
-
-
-        return `
-          <button class="wt-btn wt-btn--primary" data-action="start-run"
-            aria-label="${escapeHtml(playLabel)}"
-            ${((this._runtime && Number(this._runtime.contentTotal) > 0) ? "" : "disabled")}>
-             ${escapeHtml(playLabel)}
-          </button>
-        `;
-      })()}
-
-${(() => {
-        // Only show after at least one completed RUN.
-        if (!Number.isFinite(runCompletes) || runCompletes < 1) return ``;
-
-        // Only show when the user has mistakes to practice.
-        const minWrong = clampInt(Number(cfg?.mistakesOnly?.minWrongItemsToShowToggle), 1, 9999);
-
-        let mistakesCount = 0;
-        if (this.storage && typeof this.storage.getActiveMistakesCount === "function") {
-          try { mistakesCount = Number(this.storage.getActiveMistakesCount()); } catch (_) { mistakesCount = 0; }
-        }
-
-        if (!Number.isFinite(mistakesCount) || mistakesCount < minWrong) return ``;
-
-        const tpl = String(landing.practiceCtaTemplate || "").trim();
-        const label = tpl
-          ? fillTemplate(tpl, { count: String(mistakesCount), pluralS: mistakesCount > 1 ? "s" : "" })
-          : "";
-
-        if (!label) {
-          return ``;
-        }
-
-        // Hide Practice CTA if free practice runs are exhausted (fail-closed)
-        if (!premium && this.storage && typeof this.storage.getPracticeRunsRemaining === "function") {
-          let remaining = 0;
-          try { remaining = Number(this.storage.getPracticeRunsRemaining()); } catch (_) { remaining = 0; }
-          if (!Number.isFinite(remaining) || remaining <= 0) return ``;
-        }
-
-        const action = "start-practice";
-        return `
-    <button class="wt-btn wt-btn--secondary" data-action="${action}">
-      ${escapeHtml(label)}
-    </button>
-  `;
-      })()}
-
-     ${"" /* F4: secondary paywall CTA removed (primary handles exhausted state) */}
-
-      ${((this._runtime && this._runtime.contentLoading === true)
-        ? (() => {
-          const msg = String(this.getContentLoadingCopy() || "").trim();
-          return msg ? `<p class="wt-muted wt-loading-copy">${escapeHtml(msg)}</p>` : ``;
-        })()
-        : ``)}
-    </div>
-
-    ${welcomeBackHtml}
-
-    ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted wt-landing-followup">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
-
-    ${postBlock}
-
-    ${postCompletionHtml}
-
-    ${(!isPostPaywallVariant && microTrust) ? `<p class="wt-sub wt-muted wt-landing-trust">${escapeHtml(microTrust)}</p>` : ``}
-
-</div>
-`;
-
-
+    });
   };
 
   function buildEndModeCopy(ctx) {
@@ -7611,12 +7337,30 @@ ${(() => {
   function buildEndMicroLines(ctx) {
     const {
       isRun, premium, end, runtime, pbLine, poolCompleteCelebration,
-      runIdentityTpl, vars, pbPremiumHint, freeRunMessage, lastRun
+      runIdentityTpl, vars, pbPremiumHint, freeRunMessage, lastRun, wording,
+      streakLine, tierLine, tierNextLine, dailyChallengeLine, beatBestLine
     } = ctx;
 
     const microLines = [];
 
     if (isRun) {
+      // Product choice:
+      // for RUN, the top 3 micro-lines are intentionally a tight motivation stack
+      // (beat your best, best streak, daily challenge). If none of these are available,
+      // we deliberately fall back to category insights, then older PB/tier/support lines
+      // instead of leaving the END summary empty.
+      if (beatBestLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`);
+      if (streakLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`);
+      if (dailyChallengeLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`);
+
+      if (microLines.length) {
+        return `
+    <div class="wt-end-table">
+      ${microLines.slice(0, 3).map((line) => `<div class="wt-end-table__row">${line}</div>`).join("")}
+    </div>
+  `;
+      }
+
       const strongestTagTpl = String(end?.strongestTagLine || "").trim();
       const weakestTagTpl = String(end?.weakestTagLine || "").trim();
       const copyByTag = (end && typeof end.endTagHighlights === "object") ? end.endTagHighlights : null;
@@ -7631,16 +7375,12 @@ ${(() => {
       const formatEndTag = (tag) => {
         const raw = String(tag || "").trim();
         if (!raw) return "";
-        if (raw === "2026_changes") return "2026 rule changes";
-        if (raw === "The Net") return "net play";
-        if (raw === "Score & Readiness") return "scoring and readiness";
-        if (raw === "Serving Rules") return "serving rules";
-        if (raw === "Line Calls") return "line calls";
-        if (raw === "Faults & Dead Ball") return "faults and dead balls";
-        if (raw === "Non-Volley Zone") return "the kitchen";
-        if (raw === "Player Conduct & Apparel") return "player conduct";
-        if (raw === "Rally Situations") return "rally situations";
-        if (raw === "Court & Equipment") return "court and equipment";
+        const tagLabels = (wording && wording.common && typeof wording.common.tagLabels === "object")
+          ? wording.common.tagLabels
+          : null;
+        if (tagLabels && typeof tagLabels[raw] === "string" && tagLabels[raw].trim()) {
+          return tagLabels[raw].trim();
+        }
         return raw.replace(/_/g, " ");
       };
 
@@ -7741,11 +7481,16 @@ ${(() => {
 
     if (pbLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbLine)}</p>`);
     if (pbPremiumHint) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(pbPremiumHint)}</p>`);
+    if (streakLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(streakLine)}</p>`);
+    if (tierLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(tierLine)}</p>`);
+    if (tierNextLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(tierNextLine)}</p>`);
+    if (dailyChallengeLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(dailyChallengeLine)}</p>`);
+    if (beatBestLine) microLines.push(`<p class="wt-meta wt-truncate">${escapeHtml(beatBestLine)}</p>`);
 
     return microLines.length
       ? `
     <div class="wt-end-table">
-      ${microLines.map((line) => `<div class="wt-end-table__row">${line}</div>`).join("")}
+      ${microLines.slice(0, 3).map((line) => `<div class="wt-end-table__row">${line}</div>`).join("")}
     </div>
   `
       : "";
@@ -7950,7 +7695,8 @@ ${(() => {
       storage, w, cfg, vars, premium, end, postW, isRun, isPractice, isBonus,
       runShouldPromotePractice, practiceCta, runsExhausted, upgradeCta, runPlayAgain,
       runShouldPromoteBonus, runBonusPrimaryLabel, canPractice, practiceAgain, bonusW,
-      bonusDeckTier, bonusAgain, poolCompleteCelebration, seen, poolSize
+      bonusDeckTier, bonusAgain, poolCompleteCelebration, seen, poolSize,
+      dailyChallengeIncomplete, dailyChallengeNeedsReplayReward, dailyChallengeCta
     } = ctx;
 
     const exhausted =
@@ -8036,6 +7782,30 @@ ${(() => {
       }
     }
 
+    if (
+      isRun &&
+      !runsExhausted &&
+      dailyChallengeNeedsReplayReward === true &&
+      dailyChallengeCta &&
+      primaryAction === "start-run"
+    ) {
+      primaryAction = "start-daily-challenge";
+      primaryLabel = String(dailyChallengeCta || "").trim();
+    }
+
+    if (
+      isRun &&
+      !runsExhausted &&
+      dailyChallengeIncomplete === true &&
+      dailyChallengeCta &&
+      primaryAction !== "start-run" &&
+      !secondaryAction &&
+      !secondaryLabel
+    ) {
+      secondaryAction = "start-daily-challenge";
+      secondaryLabel = String(dailyChallengeCta || "").trim();
+    }
+
     if (!primaryLabel || !primaryAction) return masteredHtml || ``;
 
     const secondaryBtn =
@@ -8059,566 +7829,28 @@ ${(() => {
 
 
   UI.prototype._renderEnd = function () {
-    const w = this.wording || {};
-    const ui = w.ui || {};
-    const end = w.end || {};
-    const practiceW = w.practice || {};
-    const bonusW = w.secretBonus || {};
-    const cfg = this.config || {};
-    const premium = isPremiumNow(this.storage);
-
-    const lastRun = this._runtime?.lastRun || {};
-    const mode = String(lastRun.mode || this._runtime?.runMode || "").trim();
-    if (!mode) throw new Error("END render mode missing");
-    const isRun = (mode === MODES.RUN);
-    const isPractice = (mode === MODES.PRACTICE);
-    const isBonus = (mode === MODES.BONUS);
-
-    const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
-    const maxChances = clampInt(lastRun.maxChances || cfg?.game?.maxChances, 0, 99);
-    const chancesLeft = (lastRun.chancesLeft == null) ? null : clampInt(lastRun.chancesLeft, 0, 99);
-    const newBest = (isRun || isBonus) && !!lastRun.newBest;
-
-    const totalPresented = Array.isArray(this._runtime?.runItemIds) ? this._runtime.runItemIds.length : 0;
-
-    const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
-
-    let seen = null;
-    if (this.storage && typeof this.storage.getSeenItemIds === "function") {
-      try {
-        const ids = this.storage.getSeenItemIds();
-        if (Array.isArray(ids)) seen = clampInt(ids.length, 0, 99999);
-      } catch (_) { /* silent */ }
+    if (!window.WT_UI_End || typeof window.WT_UI_End.render !== "function") {
+      throw new Error("WT_UI_End.render missing");
     }
-
-    const vars = {
-      score: scoreFP,
-      total: clampInt(totalPresented, 0, 99999),
-      best: clampInt(lastRun.bestScoreFP, 0, 99999),
-      // UI choice: do not show FP unit on END (keep templates, remove unit)
-      fpLong: "",
-      fpShort: "",
-
-      maxChances,
-      poolSize,
-      seen: (seen == null) ? "" : seen
-    };
-
-    const scoreLineTpl =
-      isBonus ? String(bonusW.scoreLine || "").trim()
-        : isPractice ? (String(end.scoreLine || "").trim() || String(practiceW.scoreLine || "").trim())
-          : (isRun && !!lastRun.poolCompleteCelebration) ? String(end.poolCompleteScoreLine || "").trim()
-            : String(end.scoreLine || "").trim();
-
-    const newBestTpl = isBonus
-      ? String(bonusW.newBest || "").trim()
-      : String(end.newBest || "").trim();
-
-    const bonusDeckSizeLine = (() => {
-      if (!isBonus) return "";
-      if (seen == null || seen <= 0) return "";
-
-      if (seen === 1) {
-        return String(bonusW.endDeckSizeLineOne || "").trim();
-      }
-
-      const tpl = String(bonusW.endDeckSizeLine || "").trim();
-      if (!tpl) return "";
-
-      return fillTemplate(tpl, { count: String(seen) });
-    })();
-
-    const bonusPoolProgressLine = (() => {
-      if (!isBonus) return "";
-
-      const tpl = String(bonusW.endPoolProgressTemplate || "").trim();
-      if (!tpl) return "";
-
-      const shown = clampInt(totalPresented, 0, 99999);
-      if (shown <= 0) return "";
-
-      const cleared = clampInt(scoreFP, 0, shown);
-
-      return fillTemplate(tpl, {
-        cleared: String(cleared),
-        shown: String(shown)
-      });
-    })();
-    const bonusStatsLine = (() => {
-      if (!isBonus) return "";
-
-      const shown = clampInt(totalPresented, 0, 99999);
-      if (shown <= 0) return "";
-
-      const cleared = clampInt(scoreFP, 0, shown);
-      const count = clampInt(seen, 0, 99999);
-      const oneTpl = String(bonusW.endStatsLineOne || "").trim();
-      const manyTpl = String(bonusW.endStatsLine || "").trim();
-      const tpl = (count === 1 && oneTpl) ? oneTpl : manyTpl;
-      if (!tpl) return "";
-
-      return fillTemplate(tpl, {
-        cleared: String(cleared),
-        shown: String(shown),
-        count: String(count)
-      });
-    })();
-
-    const modeCopy = buildEndModeCopy({
-      isRun,
-      isPractice,
-      isBonus,
-      cfg,
-      bonusW,
-      practiceW,
-      end,
-      scoreFP,
-      totalPresented,
-      seen,
-      lastRun,
-      vars,
-      storage: this.storage,
-      runtime: this._runtime
+    return window.WT_UI_End.render(this, {
+      buildEndModeCopy,
+      buildEndCopyHtml,
+      buildEndMistakesRecap,
+      buildEndMicroLines,
+      buildEndShareBlock,
+      buildEndActionsHtml,
+      getRunTierInfo,
+      getDailyChallengeModel,
+      getAppLevelModel,
+      renderBrandingRow,
+      renderIcon,
+      hasSolvedSecretChestHint,
+      isPremiumNow,
+      clampInt,
+      fillTemplate,
+      escapeHtml,
+      MODES
     });
-
-    const {
-      endLineTpl,
-      bonusLevel,
-      bonusIdentityTpl,
-      bonusLensTpl,
-      practiceRepeatTierKey,
-      practiceStatsLineTpl,
-      practiceRepeatNoteTpl,
-      runVerdictKey,
-      runIdentityTpl,
-      runPoolCompleteLine2Tpl,
-      bonusDeckTier,
-      bonusRecoLine
-    } = modeCopy;
-
-    // Backlog (active mistakes): source of truth = StorageManager.getActiveMistakesCount()
-    let backlog = 0;
-    try {
-      if (this.storage && typeof this.storage.getActiveMistakesCount === "function") {
-        backlog = Number(this.storage.getActiveMistakesCount() || 0);
-      }
-    } catch (_) { backlog = 0; }
-
-    vars.backlog = clampInt(backlog, 0, 99999);
-
-    let canPractice = isRun && !!(cfg.mistakesOnly && cfg.mistakesOnly.enabled);
-    if (canPractice) {
-      const minWrong = clampInt(Number(cfg?.mistakesOnly?.minWrongItemsToShowToggle), 1, 9999);
-      const hasEnoughMistakes = clampInt(vars.backlog, 0, 99999) >= minWrong;
-
-      let practiceRunsAvailable = true;
-      if (!premium && this.storage && typeof this.storage.getPracticeRunsRemaining === "function") {
-        try {
-          practiceRunsAvailable = Number(this.storage.getPracticeRunsRemaining()) > 0;
-        } catch (_) {
-          practiceRunsAvailable = false;
-        }
-      }
-
-      canPractice = hasEnoughMistakes && practiceRunsAvailable;
-    }
-
-    const runPracticePrimaryMinRaw = Number(cfg?.routing?.practicePrimaryMinWrong);
-    const runPracticePrimaryMin =
-      (Number.isFinite(runPracticePrimaryMinRaw) && runPracticePrimaryMinRaw >= 1)
-        ? Math.floor(runPracticePrimaryMinRaw)
-        : null;
-    const runShouldPromotePractice =
-      isRun &&
-      runPracticePrimaryMin != null &&
-      canPractice &&
-      vars.backlog >= runPracticePrimaryMin;
-    const runBonusEnabled = (cfg?.secretBonus?.enabled === true);
-    const runEliteOrMore = (runVerdictKey === "elite" || runVerdictKey === "legendary");
-    const runBonusPrimaryLabel = String(end.bonusCtaPrimary || "").trim();
-    const runBonusBacklogOk = (runPracticePrimaryMin != null) ? (vars.backlog < runPracticePrimaryMin) : true;
-    const runShouldPromoteBonus =
-      isRun &&
-      !runShouldPromotePractice &&
-      !!runBonusEnabled &&
-      runEliteOrMore &&
-      runBonusBacklogOk &&
-      !!runBonusPrimaryLabel;
-
-    // Pool remaining (RUN context only)
-    if (isRun && !Number.isFinite(Number(vars.remaining))) {
-      vars.remaining = clampInt(poolSize - totalPresented, 0, poolSize);
-    }
-    const scoreLine = scoreLineTpl ? fillTemplate(scoreLineTpl, vars) : "";
-    const scoreHeading = String(ui.scoreLabel || "").trim();
-    const newBestLine = newBestTpl ? fillTemplate(newBestTpl, vars) : "";
-    const endLine = endLineTpl ? fillTemplate(endLineTpl, vars) : "";
-    const practiceCelebrateLine = String(practiceW.celebrationAllCleared || practiceW.endLineAllFixed || "").trim();
-    const bonusCelebrateLine = String(bonusW.celebrationPerfect || "").trim();
-    const runStatsLine = (() => {
-      if (!isRun || !!lastRun.poolCompleteCelebration) return "";
-
-      const tpl = String(end.endStatsLine || "").trim();
-      if (!tpl) return "";
-
-      return fillTemplate(tpl, vars);
-    })();
-
-    // bonusDecisionLine replaced by bonusRecoLine (computed in bonus tier block above)
-    const bonusDecisionLine = isBonus ? bonusRecoLine : "";
-
-    // END "Record moment" display (visual only): keep score line, but show burst/spark briefly.
-    const recordUntil = Number(this._runtime?.endRecordMomentUntil || 0);
-    const practiceAllCleared = isPractice && clampInt(vars.remaining, 0, 99999) === 0;
-    const bonusPerfect = isBonus && bonusLevel === "perfect";
-    const celebrationLabel =
-      newBest ? newBestLine
-        : practiceAllCleared ? practiceCelebrateLine
-          : bonusPerfect ? bonusCelebrateLine
-            : "";
-    const recordActive = (!!celebrationLabel) ? (Date.now() < recordUntil) : false;
-    const levelModel = getAppLevelModel(this.storage, cfg, w);
-    const levelProgress = (lastRun && typeof lastRun.levelProgress === "object") ? lastRun.levelProgress : null;
-    const levelPreview = levelModel.preview || { unlockedLevel: 0, justUnlocked: false };
-    const unlockedLevel = levelPreview.justUnlocked
-      ? clampInt(levelPreview.unlockedLevel, 0, 4)
-      : clampInt(levelProgress?.unlockedLevel, 0, 4);
-    const unlockDef = levelModel.defs.find((item) => item.level === unlockedLevel) || null;
-    const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
-    const levelUnlockHtml = ((levelPreview.justUnlocked || levelProgress?.justUnlocked) && unlockDef)
-      ? `
-        <div class="wt-level-unlock">
-          <p class="wt-level-unlock__kicker">${escapeHtml(String(levelModel.levelsW?.unlockKicker || "").trim())}</p>
-          <div class="wt-level-unlock__card">
-            <button type="button" class="wt-level-chip" data-action="open-level-progress" aria-label="${escapeHtml(levelDetailsAria)}">
-              <span class="wt-level-chip__dot" aria-hidden="true"></span>
-              <span>${escapeHtml(unlockDef.label)}</span>
-            </button>
-            <p class="wt-level-unlock__line">${escapeHtml(fillTemplate(String(levelModel.levelsW?.reachedTemplate || "").trim(), { label: unlockDef.label }))}</p>
-          </div>
-        </div>
-      `
-      : "";
-
-    // Always show the score (requested), never replace it.
-    const displayScoreLine = scoreLine;
-    const displayScoreHeading = (scoreHeading && scoreFP >= 0) ? scoreHeading : "";
-    const displayScoreValue = (scoreHeading && scoreFP >= 0) ? String(scoreFP) : "";
-
-    const pbLineTpl = String(end.personalBestLine || "").trim();
-    const nearBestTpl = String(end.nearBestLine || "").trim();
-    const pbPremiumHintTpl = String(end.personalBestPremiumHint || "").trim();
-
-    // Personal best is RUN-only.
-    // - Premium: show actual best score line OR (if not a new best) the near-best delta line (replacement, not addition).
-    // - Free: show a clear teaser line.
-    let pbLine = "";
-    if (isRun && premium) {
-      const best = clampInt(lastRun.bestScoreFP, 0, 99999);
-      const delta = clampInt(best - scoreFP, 0, 99999);
-
-      // Always prefer the delta line when the player finished below their best.
-      // The emotional message is stronger than the static "best score" reminder.
-      if (!newBest && nearBestTpl && delta > 0) {
-        pbLine = fillTemplate(nearBestTpl, { delta: String(delta), fpLong: String(vars.fpLong || "").trim() });
-      } else if (!newBest && pbLineTpl) {
-        pbLine = fillTemplate(pbLineTpl, vars);
-      }
-    }
-
-    const pbPremiumHint = (isRun && !premium && pbPremiumHintTpl) ? String(pbPremiumHintTpl).trim() : "";
-
-
-
-    // Free runs hint: meaningful only on RUN end
-    let freeRunMessage = "";
-
-    const msgTpl = isRun ? String(w.end?.freeRunLeft || "").trim() : "";
-
-    const remainingRaw = (this.storage && typeof this.storage.getRunsBalance === "function")
-      ? this.storage.getRunsBalance()
-      : null;
-
-    const remaining = Number(remainingRaw);
-
-    if (isRun && msgTpl && Number.isFinite(remaining) && remaining > 0) {
-      freeRunMessage = fillTemplate(msgTpl, {
-        remaining: String(clampInt(remaining, 0, 999)),
-        pluralS: remaining > 1 ? "s" : ""
-      });
-    }
-
-
-    const mistakesRecapHtml = buildEndMistakesRecap({
-      isRun,
-      isPractice,
-      isBonus,
-      lastRun,
-      maxChances,
-      bonusW,
-      practiceW,
-      end,
-      runtime: this._runtime,
-      ui,
-      cfg,
-      vars
-    });
-
-    const shareEnabled = !!(cfg.share && cfg.share.enabled);
-
-    const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
-
-    const homeLabel = String(w.system?.home || "").trim();
-    const homeBtnHtml = homeLabel
-      ? `
-      <button
-        type="button"
-        class="wt-btn-icon"
-        data-action="go-home"
-        aria-label="${escapeHtml(homeLabel)}"
-        title="${escapeHtml(homeLabel)}"
-      >${renderIcon("home")}</button>
-    `
-      : ``;
-
-    const poolCompleteCelebration = isRun && !!lastRun.poolCompleteCelebration;
-
-    const endTitle =
-      isBonus ? String(bonusW.endTitle || "").trim()
-        : isPractice ? String(practiceW.endTitle || "").trim()
-          : poolCompleteCelebration ? String(end.poolCompleteTitle || "").trim()
-            : String(end.title || "").trim();
-
-
-    // Primary CTA by mode (single END, N intentions)
-    const runPlayAgain =
-      poolCompleteCelebration
-        ? String(w.end?.poolCompleteCtaPrimary || "").trim()
-        : (isRun && runVerdictKey)
-          ? String(w.end?.ctaByVerdict?.[runVerdictKey] || "").trim()
-          : String(w.end?.playAgain || "").trim();
-
-
-    let practiceAgain = String(practiceW.ctaPracticeAgain || "").trim();
-
-    // Optional CTA override (END PRACTICE) based on remaining tier (fail-closed)
-    if (isPractice && practiceRepeatTierKey) {
-      const tierCta = String(practiceW?.ctaRepeatByTier?.[practiceRepeatTierKey] || "").trim();
-      if (tierCta) practiceAgain = tierCta;
-    }
-
-
-    const bonusAgain =
-      (isBonus && bonusLevel)
-        ? String(bonusW?.ctaByTier?.[bonusLevel] || "").trim()
-        : "";
-
-
-    const practiceCtaRaw = poolCompleteCelebration
-      ? String(end.poolCompleteCtaPractice || "").trim()
-      : premium
-        ? String(end.practiceCtaPremium || "").trim()
-        : String(end.practiceCta || "").trim();
-
-    const practiceCtaTpl = String(end.practiceCtaTemplate || "").trim();
-    const practiceCta = (practiceCtaTpl && vars.backlog > 0)
-      ? fillTemplate(practiceCtaTpl, { count: String(vars.backlog), pluralS: vars.backlog > 1 ? "s" : "" })
-      : practiceCtaRaw;
-
-
-    // End -> Paywall bridge (copy must come from WT_WORDING; no hardcoded fallback)
-    const paywallBridgeTitle = String(w.paywall?.bridgeTitle || "").trim();
-    const paywallBridgeBody = String(w.paywall?.bridgeBody || "").trim();
-
-    // Single source of truth for upgrade CTA (all contexts)
-    const upgradeCta = String(w.paywall?.cta || "").trim();
-
-    const shareTitle = String(end.shareTitle || "").trim();
-
-    // Secret chest visibility gate:
-    const windowMs = Number(cfg?.secretBonus?.tapWindowMs);
-
-    const endAfterRunsRaw = Number(cfg?.secretBonus?.gates?.endAfterRuns);
-    const endAfterRuns = (Number.isFinite(endAfterRunsRaw) && endAfterRunsRaw >= 0) ? Math.floor(endAfterRunsRaw) : null;
-
-    let runNumber = 0;
-    if (this.storage && typeof this.storage.getRunNumber === "function") {
-      try { runNumber = Number(this.storage.getRunNumber() || 0); } catch (_) { runNumber = 0; }
-    }
-
-    const meetsRunGate = (endAfterRuns == null) ? true : (Number.isFinite(runNumber) && runNumber >= endAfterRuns);
-
-    const canShowChest =
-      Number.isFinite(windowMs) && windowMs > 0 &&
-      meetsRunGate;
-
-    let sbFreeRunsUsed = 0;
-    if (this.storage && typeof this.storage.getSecretBonusFreeRunsUsed === "function") {
-      try { sbFreeRunsUsed = Number(this.storage.getSecretBonusFreeRunsUsed()); } catch (_) { sbFreeRunsUsed = 0; }
-    }
-
-    const chestHintText = (canShowChest && sbFreeRunsUsed === 0)
-      ? String(this.wording?.secretBonus?.chestHint || "").trim()
-      : "";
-
-    const chestAria = String(this.wording?.secretBonus?.chestAria || "").trim();
-    const chestTeaseClass = (!hasSolvedSecretChestHint(this.storage)) ? " wt-btn-icon--tease" : "";
-
-    const endActionsClass = `wt-actions wt-actions--stack${isPractice ? " wt-actions--grid" : ""}`;
-    const endHeaderRowHtml = `
-  <div class="wt-end-hero">
-    <div class="wt-row wt-row--spaced wt-end-header">
-      <div class="wt-end-header__brand">
-        ${renderBrandingRow(cfg, true)}
-      </div>
-
-      <div class="wt-row wt-row--tight wt-end-header__actions">
-        ${homeBtnHtml}
-
-        ${canShowChest ? `
-          <button
-            type="button"
-            data-wt-secret="chest"
-            class="wt-btn-icon${chestTeaseClass}"
-            aria-label="${escapeHtml(chestAria)}"
-            title="${escapeHtml(chestAria)}"
-          >${renderIcon("zap")}</button>
-        ` : ``}
-      </div>
-    </div>
-  </div>
-`;
-
-    const microLinesHtml = buildEndMicroLines({
-      isRun,
-      premium,
-      end,
-      runtime: this._runtime,
-      lastRun,
-      pbLine,
-      poolCompleteCelebration,
-      runIdentityTpl,
-      vars,
-      pbPremiumHint,
-      freeRunMessage
-    });
-    // Paywall bridge block (FREE exhausted): make it visible, not buried
-    const paywallBridgeHtml =
-      (runsExhausted && (paywallBridgeTitle || paywallBridgeBody))
-        ? `
-          <div class="wt-divider"></div>
-          <div>
-            ${paywallBridgeTitle ? `<strong class="wt-meta">${escapeHtml(paywallBridgeTitle)}</strong>` : ``}
-            ${paywallBridgeBody ? `<p class="wt-muted">${escapeHtml(paywallBridgeBody)}</p>` : ``}
-          </div>
-        `
-        : "";
-
-    const shareHtml = buildEndShareBlock({
-      shareEnabled,
-      w,
-      shareTitle,
-      getShareText: this._getShareText ? this._getShareText.bind(this) : null
-    });
-
-    const shouldPromoteShare = true;
-
-    const shareBeforeRecapHtml = shouldPromoteShare ? shareHtml : "";
-    const shareAfterRecapHtml = shouldPromoteShare ? "" : shareHtml;
-    const endCopyHtml = buildEndCopyHtml({
-      isRun,
-      isPractice,
-      isBonus,
-      practiceStatsLineTpl,
-      bonusStatsLine,
-      runStatsLine,
-      endLine,
-      practiceRepeatNoteTpl,
-      bonusDecisionLine,
-      runIdentityTpl,
-      freeRunMessage,
-      premium,
-      poolCompleteCelebration,
-      runPoolCompleteLine2Tpl,
-      end,
-      vars
-    });
-
-    return `
-<div class="wt-card wt-card--end">
-  ${endHeaderRowHtml}
-
-  ${endTitle ? `<p class="wt-h1">${escapeHtml(endTitle)}</p>` : ``}
-
-  ${displayScoreLine ? `
-    <div class="wt-end-score${newBest ? " wt-end-score--newbest" : ""}" role="group" aria-label="${escapeHtml(displayScoreLine)}">
-      <div class="wt-end-score__headline">
-        ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
-        <span class="wt-end-score__value">
-          ${escapeHtml(displayScoreValue || displayScoreLine)}
-        </span>
-      </div>
-
-      ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
-
-      ${recordActive ? `
-        <span class="wt-end-score__burst" aria-hidden="true"></span>
-        <svg class="wt-end-score__spark" viewBox="0 0 36 14" width="36" height="14" aria-hidden="true" focusable="false">
-          <path d="M6 1 L7.6 5.2 L12 6.2 L7.6 7.2 L6 11.4 L4.4 7.2 L0 6.2 L4.4 5.2 Z" fill="currentColor" opacity="0.85"></path>
-          <path d="M18 2.2 L19.2 5.4 L22.6 6.4 L19.2 7.4 L18 10.6 L16.8 7.4 L13.4 6.4 L16.8 5.4 Z" fill="currentColor" opacity="0.6"></path>
-          <path d="M30 1 L31.4 4.6 L35 5.8 L31.4 7 L30 10.6 L28.6 7 L25 5.8 L28.6 4.6 Z" fill="currentColor" opacity="0.75"></path>
-        </svg>
-      ` : ``}
-    </div>
-  ` : ``}
-
-  ${levelUnlockHtml}
-
-  <div class="wt-end-summary">
-    ${microLinesHtml}
-    <div class="wt-end-copy">${endCopyHtml}</div>
-  </div>
-
-  <div class="${endActionsClass}">
-    ${buildEndActionsHtml({
-        storage: this.storage,
-        w,
-        cfg,
-        vars,
-        premium,
-        end,
-        postW: w.postCompletion || {},
-        isRun,
-        isPractice,
-        isBonus,
-        runShouldPromotePractice,
-        practiceCta,
-        runsExhausted,
-        upgradeCta,
-        runPlayAgain,
-        runShouldPromoteBonus,
-        runBonusPrimaryLabel,
-        canPractice,
-        practiceAgain,
-        bonusW,
-        bonusDeckTier,
-        bonusAgain,
-        poolCompleteCelebration,
-        seen,
-        poolSize
-      })}
-  </div>
-
-  ${paywallBridgeHtml}
-
-  ${shareBeforeRecapHtml}
-
-  ${mistakesRecapHtml}
-
-  ${shareAfterRecapHtml}
-
-</div>
-`;
   };
 
 
@@ -8799,13 +8031,14 @@ ${(() => {
       : "";
 
     const correctStreak = clampInt(this._runtime?.microPics?.correctStreak, 0, 9999);
-    const momentumLevel = clampInt(this._runtime?.microPics?.momentumLevel, 0, 6);
+    const momentumMax = getMomentumSegments(cfg) || 6;
+    const momentumLevel = clampInt(this._runtime?.microPics?.momentumLevel, 0, momentumMax);
     const momentumState = getMomentumMeterState(cfg, correctStreak, modeNow, momentumLevel);
 
     const momentumHtml = momentumState
       ? `
         <div class="wt-momentum-wrap">
-          <div class="wt-momentum" aria-label="Momentum ${momentumState.filled}/${momentumState.segments}">
+          <div class="wt-momentum" aria-label="${escapeHtml(fillTemplate(String(wording?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
             ${Array(momentumState.segments).fill(null).map((_, i) => `
               <span class="wt-momentum__seg${i < momentumState.filled ? " wt-momentum__seg--on" : ""}${momentumState.filled === momentumState.segments && i === momentumState.segments - 1 ? " wt-momentum__seg--max" : ""}" aria-hidden="true"></span>
             `).join("")}
@@ -8933,6 +8166,37 @@ ${(() => {
     }
 
     const questionText = String(item.question || "").trim();
+    const speechSupported = supportsQuestionSpeech();
+    const speechLocale = getQuestionSpeechLocale();
+    const speechKey = `${speechLocale}:${Number(item?.id || 0)}:${questionText}`;
+    const isQuestionSpeaking =
+      speechSupported &&
+      this._runtime?.questionSpeechActive === true &&
+      this._runtime?.questionSpeechKey === speechKey;
+    const autoReadEnabled = isAutoReadQuestionsEnabled(this.storage);
+    const speakLabel = String(wAll.system?.speakQuestion || "").trim();
+    const replayLabel = String(wAll.system?.replayQuestion || speakLabel).trim();
+    const stopLabel = String(wAll.system?.stopQuestion || "").trim();
+    const speakAria = String(wAll.system?.speakQuestionAria || speakLabel).trim();
+    const replayAria = String(wAll.system?.replayQuestionAria || replayLabel || speakAria).trim();
+    const stopAria = String(wAll.system?.stopQuestionAria || stopLabel).trim();
+    const questionAudioHtml =
+      speechSupported && !this._runtime.feedbackPending && (speakLabel || stopLabel)
+        ? `
+  <div class="wt-question-tools">
+    <button
+      type="button"
+      class="wt-text-action wt-question-audio${isQuestionSpeaking ? " wt-pulse" : ""}"
+      data-action="toggle-question-audio"
+      aria-pressed="${isQuestionSpeaking ? "true" : "false"}"
+      aria-label="${escapeHtml(isQuestionSpeaking ? stopAria : (autoReadEnabled ? replayAria : speakAria))}"
+    >
+      ${renderIcon("volume-2")}
+      <span>${escapeHtml(isQuestionSpeaking ? (stopLabel || replayLabel || speakLabel) : (autoReadEnabled ? (replayLabel || speakLabel) : speakLabel))}</span>
+    </button>
+  </div>
+`
+        : "";
 
     const bonusPrompt = String(this.wording?.secretBonus?.questionPrompt || "").trim();
 
@@ -8958,12 +8222,15 @@ ${questionPrompt ? `
     ${escapeHtml(questionPrompt)}
   </p>
 ` : ``}
+${questionAudioHtml}
 <div class="wt-terms-box">
   <div class="wt-term-row">
     <span class="wt-term-word">${escapeHtml(questionText)}</span>
   </div>
 </div>
 `;
+
+    syncAutoReadCurrentQuestion(this);
 
 
     // If feedback is pending but temporarily hidden (chance lost focus), show frozen item only (no choices).
@@ -9113,333 +8380,20 @@ ${questionPrompt ? `
 
 
   UI.prototype._renderPaywall = function () {
-    const w = this.wording || {};
-    const pay = w.paywall || {};
-    const cfg = this.config || {};
-    const premium = isPremiumNow(this.storage);
-
-    if (premium) {
-      const playLabel = String(w.landing?.ctaPlay || "").trim();
-      const premiumHeadline = String(pay.headline || "").trim();
-
-      return `
-      ${renderBrandingRow(cfg, true)}
-          <div class="wt-card wt-card--hero">
-      <h1 class="wt-h1">${escapeHtml(premiumHeadline)}</h1>
-        <p class="wt-muted">${escapeHtml(String(w.howto?.alreadyPremium || "").trim())}</p>
-        <div class="wt-actions">
-          <button class="wt-btn wt-btn--primary" data-action="start-run" aria-label="${escapeHtml(playLabel)}">
-            ${escapeHtml(playLabel)}
-          </button>
-          <button class="wt-btn wt-btn--secondary" data-action="go-home">${escapeHtml(String(w.system?.home || "").trim())}</button>
-        </div>
-      </div>
-    `;
+    const mod = window.WT_UI_Paywall;
+    if (!mod || typeof mod.render !== "function") {
+      throw new Error("WT_UI_Paywall.render missing");
     }
-
-
-
-    // Early price timer (no UI fallback: storage must provide the state)
-    let ep = null;
-    if (this.storage && typeof this.storage.getEarlyPriceState === "function") {
-      try { ep = this.storage.getEarlyPriceState() || null; } catch (_) { ep = null; }
-    }
-
-    const currency = String(cfg.currency || "").trim();
-    const early = formatCents(cfg.earlyPriceCents, currency);
-    const standard = formatCents(cfg.standardPriceCents, currency);
-
-    const isEarly = !!(ep && String(ep.phase || "").toUpperCase() === "EARLY" && Number(ep.remainingMs || 0) > 0);
-    const remainingMs = isEarly ? Number(ep?.remainingMs || 0) : 0;
-    const timer = (isEarly && Number.isFinite(remainingMs)) ? mmss(remainingMs) : "";
-
-    const urgencyCfg = (cfg?.ui?.paywallUrgency && typeof cfg.ui.paywallUrgency === "object") ? cfg.ui.paywallUrgency : null;
-    const urgencyEnabled = (urgencyCfg && urgencyCfg.enabled === true);
-    const pulseBelowMs = urgencyCfg ? Number(urgencyCfg.pulseBelowMs) : NaN;
-
-    const urgencyPulse =
-      urgencyEnabled &&
-      isEarly &&
-      Number.isFinite(pulseBelowMs) &&
-      pulseBelowMs > 0 &&
-      Number.isFinite(remainingMs) &&
-      remainingMs > 0 &&
-      remainingMs <= pulseBelowMs;
-
-    // Headline (LAST FREE RUN override)
-    // Use storage-first runsBalance because PAYWALL can render before startRun assigns runType.
-    let runsBalance = NaN;
-    try {
-      if (this.storage && typeof this.storage.getRunsBalance === "function") {
-        runsBalance = Number(this.storage.getRunsBalance());
-      }
-    } catch (_) { runsBalance = NaN; }
-
-    const isLastFree =
-      (Number.isFinite(runsBalance) && runsBalance <= 0) ||
-      (this._runtime && this._runtime.runType === "LAST_FREE");
-
-    const headline =
-      isLastFree && pay.headlineLastFree
-        ? String(pay.headlineLastFree).trim()
-        : String(pay.headline || "").trim();
-
-
-
-    const valueTitle = String(pay.valueTitle || "").trim();
-    const trustTitle = String(pay.trustTitle || "").trim();
-    const compactTitle = String(pay.compactTitle || valueTitle || "").trim();
-    const payOnceLine = String(pay.payOnceLine || "").trim();
-
-    const valueBullets = Array.isArray(pay.valueBullets) ? pay.valueBullets : [];
-    const trustLine = String(pay.trustLine || "").trim();
-    const trustBullets = Array.isArray(pay.trustBullets) ? pay.trustBullets : [];
-    const compactBullets = Array.isArray(pay.compactBullets) ? pay.compactBullets : [];
-    const notNowLabel = String(w.system?.notNow || "").trim();
-    const redeemLabel = String(pay.alreadyHaveCode || "").trim();
-
-    // Progress projection (storage-first â†’ paywall)
-    // Progress projection (storage-first â†’ paywall)
-    // Source of truth: StorageManager.getSeenItemIds() (counts unique items ever seen).
-    let seen = NaN;
-
-    try {
-      if (this.storage && typeof this.storage.getSeenItemIds === "function") {
-        const ids = this.storage.getSeenItemIds();
-        if (Array.isArray(ids)) seen = Number(ids.length);
-      }
-    } catch (_) { /* ignore */ }
-
-    const poolSize = Number(cfg?.game?.poolSize);
-    const remaining =
-      (Number.isFinite(seen) && Number.isFinite(poolSize))
-        ? Math.max(0, poolSize - seen)
-        : NaN;
-
-    const progressLine1Tpl = String(pay.progressLine1 || "").trim();
-    const progressLine2Tpl = String(pay.progressLine2 || "").trim();
-    const lastRunScore = clampInt(Number(this._runtime?.lastRun?.scoreFP), 0, 99999);
-    let payRunCount = 0;
-
-    try {
-      let starts = 0;
-      let completes = 0;
-
-      // Primary: how many runs were started (economy truth)
-      if (this.storage && typeof this.storage.getRunsUsed === "function") {
-        starts = clampInt(Number(this.storage.getRunsUsed()), 0, 999);
-      }
-      // Secondary: how many runs were completed (more reliable than starts if something drifted)
-      if (this.storage && typeof this.storage.getCounters === "function") {
-        const c = this.storage.getCounters() || {};
-        completes = clampInt(Number(c.runCompletes), 0, 999);
-      }
-
-      payRunCount = Math.max(starts, completes);
-    } catch (_) { payRunCount = 0; }
-
-    const progressLine1 =
-      (progressLine1Tpl && Number.isFinite(payRunCount))
-        ? fillTemplate(progressLine1Tpl, { seen, poolSize, remaining, score: lastRunScore, runs: payRunCount })
-        : "";
-
-    const progressLine2Raw =
-      (progressLine2Tpl && Number.isFinite(remaining))
-        ? fillTemplate(progressLine2Tpl, { remaining })
-        : "";
-
-    // Defensive de-duplication (handles accidental repeated sentence separated by blank lines / newlines)
-    const progressLine2 = (() => {
-      const t = String(progressLine2Raw || "").trim();
-      if (!t) return "";
-      const parts = t.split(/\n+/).map(s => s.trim()).filter(Boolean);
-      if (parts.length >= 2 && parts.every(p => p === parts[0])) return parts[0];
-      return t;
-    })();
-
-
-    const ctaEarly = String(pay.ctaEarly || "").trim();
-    const ctaStandard = String(pay.ctaStandard || "").trim();
-    const primaryCta = isEarly ? ctaEarly : ctaStandard;
-
-    // EARLY savings bump (no fallback: requires template + valid cents)
-    const savingsTpl = String(pay.savingsLineTemplate || "").trim();
-    const earlyCents = Number(cfg.earlyPriceCents);
-    const standardCents = Number(cfg.standardPriceCents);
-    const saveCents =
-      (Number.isFinite(earlyCents) && Number.isFinite(standardCents))
-        ? Math.round(standardCents - earlyCents)
-        : NaN;
-
-    const saveAmount =
-      (Number.isFinite(saveCents) && saveCents > 0)
-        ? formatCents(saveCents, currency)
-        : "";
-
-    const savingsLine =
-      (isEarly && savingsTpl && saveAmount)
-        ? fillTemplate(savingsTpl, { saveAmount, earlyPrice: early, standardPrice: standard })
-        : "";
-
-    const checkoutNote = String(pay.checkoutNote || "").trim();
-    const deviceNote = String(pay.deviceNote || "").trim();
-
-    // Bullets: use existing .wt-list (better rhythm + less "pavé"
-
-    const renderBullets = (arr, muted) => {
-      if (!arr.length) return "";
-      const cls = `wt-list${muted ? " wt-muted" : ""}`;
-      const items = arr
-        .map(x => String(x || "").trim())
-        .filter(Boolean)
-        .map(x => `<li>${renderTextWithStrong(x)}</li>`)
-        .join("");
-      return `<ul class="${cls}">${items}</ul>`;
-    };
-
-    // PW1: Social proof (optional - no invented claims)
-    const socialProofTitle = String(pay.socialProofTitle || "").trim();
-    const socialProofQuotes = Array.isArray(pay.socialProofQuotes) ? pay.socialProofQuotes : [];
-
-    const renderUrgencyBanner = () => {
-      if (!isEarly) return "";
-      if (!urgencyEnabled) return "";
-
-      const label = String(pay.timerLabel || "").trim();
-      if (!label) return "";
-
-      const cls = `wt-box wt-box--tinted wt-inline-stat`;
-
-      return `
-        <div class="${cls} wt-paywall-urgency" role="status" aria-live="polite">
-          <div class="wt-paywall-urgency__label wt-inline-stat__label">${escapeHtml(label)}</div>
-          <div class="wt-paywall-urgency__timer wt-inline-stat__value${urgencyPulse ? ' wt-pulse' : ''}">${escapeHtml(timer)}</div>
-        </div>
-      `;
-    };
-
-    // PW2: Make EARLY price visually stand out (wrapper + optional badge)
-    const earlyBadge = String(pay.earlyBadgeLabel || "").trim();
-
-    const renderPriceBlock = () => {
-      const wrapClass = `wt-box${isEarly ? " wt-box--strike" : ""}`;
-
-      const post1Tpl = String(pay.postEarlyLine1 || "").trim();
-      const post2Tpl = String(pay.postEarlyLine2 || "").trim();
-
-      const post1 = post1Tpl ? fillTemplate(post1Tpl, { standardPrice: standard }) : "";
-      const post2 = post2Tpl ? fillTemplate(post2Tpl, { standardPrice: standard }) : "";
-
-      if (isEarly) {
-        return `
-      <div class="${wrapClass}">
-        <div class="wt-row wt-row--spaced wt-row--top">
-          <div>
-            <p class="wt-meta wt-paywall-price-value">
-              ${escapeHtml(earlyBadge || String(pay.earlyLabel || "").trim())}
-            </p>
-          </div>
-          <div class="wt-paywall-price-side">
-            <p class="wt-h2 wt-paywall-price-value">${escapeHtml(early)}</p>
-            <p class="wt-muted wt-paywall-price-note">${escapeHtml(standard)}</p>
-          </div>
-        </div>
-      </div>
-    `;
-      }
-
-      return `
-      <div class="${wrapClass}">
-        <div class="wt-row wt-row--spaced wt-row--top">
-          <div>
-            <p class="wt-meta wt-paywall-price-value">${escapeHtml(String(pay.standardLabel || "").trim())}</p>
-            ${post1 ? `<p class="wt-muted wt-paywall-price-note">${escapeHtml(post1)}</p>` : ``}
-            ${post2 ? `<p class="wt-muted wt-paywall-price-note">${escapeHtml(post2)}</p>` : ``}
-          </div>
-          <div class="wt-paywall-price-side">
-            <p class="wt-h2 wt-paywall-price-value">${escapeHtml(standard)}</p>
-          </div>
-        </div>
-      </div>
-    `;
-    };
-
-
-
-
-    const hasCompactSection = (compactTitle || compactBullets.length);
-    const hasValueSection = (valueTitle || valueBullets.length);
-    const hasTrustSection = (trustTitle || trustLine || trustBullets.length);
-    const compactSectionHtml = hasCompactSection
-      ? renderPaywallSection(
-        compactTitle,
-        compactBullets.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(compactBullets, false)}</div>` : ``,
-        "wt-paywall-section"
-      )
-      : "";
-    const valueSectionHtml = (!hasCompactSection && hasValueSection)
-      ? renderPaywallSection(
-        valueTitle,
-        valueBullets.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(valueBullets, false)}</div>` : ``,
-        "wt-paywall-section"
-      )
-      : "";
-    const trustSectionHtml = (!hasCompactSection && hasTrustSection)
-      ? renderPaywallSection(
-        trustLine ? "" : trustTitle,
-        `
-          ${trustLine ? `<div class="wt-meta wt-meta--strong wt-paywall-trust-line wt-note">${renderTextWithStrong(trustLine)}</div>` : ``}
-          ${trustBullets.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(trustBullets, true)}</div>` : ``}
-        `,
-        "wt-paywall-section"
-      )
-      : "";
-    const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes);
-
-    return `
-    <div class="wt-card wt-card--hero wt-card--paywall">
-      <div class="wt-paywall-hero${isLastFree ? " wt-paywall-hero--lastfree" : ""}">
-        ${renderBrandingRow(cfg, true)}
-        <h1 class="wt-h1">${escapeHtml(headline)}</h1>
-        ${progressLine1 ? `<p class="wt-muted wt-copy-lead">${escapeHtml(progressLine1)}</p>` : ``}
-        ${progressLine2 ? `<p class="wt-muted wt-copy-follow">${escapeHtml(progressLine2)}</p>` : ``}
-      </div>
-
-      ${payOnceLine ? `<div class="wt-meta wt-meta--strong wt-copy-emphasis">${escapeHtml(payOnceLine)}</div>` : ``}
-
-      ${renderUrgencyBanner()}
-
-      ${renderPriceBlock()}
-
-      ${savingsLine ? `<p class="wt-muted wt-paywall-savings">${escapeHtml(savingsLine)}</p>` : ``}
-
-      <div class="wt-actions wt-actions--single">
-        ${primaryCta ? `<button
-          class="wt-btn wt-btn--primary"
-          data-action="${isEarly ? "checkout-early" : "checkout-standard"}"
-        >${escapeHtml(primaryCta)}</button>` : ``}
-      </div>
-
-      ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
-
-      ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
-
-      ${checkoutNote ? `<p class="wt-muted wt-note wt-note--checkout">${escapeHtml(checkoutNote)}</p>` : ``}
-      ${deviceNote ? `<p class="wt-muted wt-note wt-note--device">${escapeHtml(deviceNote)}</p>` : ``}
-
-      ${compactSectionHtml}
-
-      ${valueSectionHtml}
-
-      ${(!hasCompactSection && hasValueSection && hasTrustSection) ? `<div class="wt-divider"></div>` : ``}
-
-      ${trustSectionHtml}
-
-      ${socialProofHtml}
-    </div>
-    `;
-
-
+    return mod.render(this, {
+      escapeHtml,
+      fillTemplate,
+      formatCents,
+      mmss,
+      renderTextWithStrong,
+      renderBrandingRow,
+      clampInt,
+      isPremiumNow
+    });
   };
 
 

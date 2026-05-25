@@ -1,0 +1,116 @@
+/* i18n-toggle.css — Fixed top-right locale swap button
+ *
+ * Pattern: single button showing the OTHER language (click = swap).
+ * Placement: fixed top-right, respects mobile safe-area.
+ * Hidden: during gameplay (body.wt-state--playing).
+ *
+ * Append this file's content to styles/components.css (or style.css).
+ */
+
+/* === Floating host (default placement, fixed top-right) === */
+.wt-locale-toggle-host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.wt-locale-toggle-host--floating {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 12px));
+  right: max(12px, env(safe-area-inset-right, 12px));
+  z-index: 50;
+  /* Sits above page content but below modals (which use ~1000+). */
+  pointer-events: auto;
+}
+
+.wt-locale-toggle-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* === Single-click swap button (the OTHER language label) === */
+.wt-locale-swap {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--wt-surface, #ffffff);
+  color: var(--wt-text, #0f172a);
+  border: 1px solid var(--wt-border, rgba(15, 23, 42, 0.12));
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  min-width: 40px;
+  height: 32px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wt-locale-swap__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wt-locale-swap__label {
+  display: inline-block;
+}
+
+.wt-locale-swap:hover {
+  background: var(--wt-surface-subtle, rgba(15, 23, 42, 0.04));
+  border-color: var(--wt-border-strong, rgba(15, 23, 42, 0.18));
+}
+
+.wt-locale-swap:active {
+  transform: scale(0.96);
+}
+
+.wt-locale-swap:focus-visible {
+  outline: 2px solid var(--wt-accent, #38bdf8);
+  outline-offset: 2px;
+}
+
+/* === Dropdown variant (3+ locales — future-proof) === */
+.wt-locale-dropdown {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--wt-surface, #ffffff);
+  color: var(--wt-text, #0f172a);
+  border: 1px solid var(--wt-border, rgba(15, 23, 42, 0.12));
+  border-radius: 999px;
+  padding: 6px 28px 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  height: 32px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='currentColor' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.wt-locale-dropdown:focus-visible {
+  outline: 2px solid var(--wt-accent, #38bdf8);
+  outline-offset: 2px;
+}
+
+/* === Hide during gameplay === */
+/* ui.js sets body.wt-state--playing during the active game screen.
+ * The swap button is hidden then to avoid mid-game accidental switches. */
+body.wt-state--playing .wt-locale-toggle-host {
+  display: none;
+}
+
+/* NOTE: no dark mode override here. The rest of the app is forced-light
+ * via tokens.css (color-scheme: light + fixed surface/text tokens), so a
+ * partial dark mode on this single component would break visual cohesion
+ * for users with OS dark mode enabled. If a real dark mode is implemented
+ * project-wide, re-add it here against the same token system. */

@@ -1,0 +1,302 @@
+'use strict';
+
+const LeaderboardLogic = require('../logic/leaderboard-logic.js');
+const {
+  createWindowLike,
+  createDocumentLike,
+  loadBrowserScript
+} = require('./helpers/browser-loader');
+
+function loadLeaderboardModule(overrides) {
+  const windowLike = createWindowLike(
+    Object.assign(
+      {
+        WT_LeaderboardLogic: LeaderboardLogic
+      },
+      overrides && overrides.window ? overrides.window : {}
+    )
+  );
+  const documentLike = createDocumentLike(
+    overrides && overrides.document ? overrides.document : {}
+  );
+  const context = loadBrowserScript('ui-leaderboard.js', {
+    window: windowLike,
+    document: documentLike
+  });
+  return context.window.WT_UI_Leaderboard;
+}
+
+function createFakeClassList(initial) {
+  const set = new Set(initial || []);
+  return {
+    add(name) {
+      set.add(String(name));
+    },
+    remove(name) {
+      set.delete(String(name));
+    },
+    toggle(name, force) {
+      const key = String(name);
+      if (force === true) {
+        set.add(key);
+        return true;
+      }
+      if (force === false) {
+        set.delete(key);
+        return false;
+      }
+      if (set.has(key)) {
+        set.delete(key);
+        return false;
+      }
+      set.add(key);
+      return true;
+    },
+    contains(name) {
+      return set.has(String(name));
+    }
+  };
+}
+
+function createFakeNode(tab) {
+  const attrs = new Map();
+  if (tab) attrs.set('data-wt-leaderboard-tab', tab);
+  return {
+    classList: createFakeClassList(['wt-btn', 'wt-btn--secondary']),
+    setAttribute(name, value) {
+      attrs.set(String(name), String(value));
+    },
+    getAttribute(name) {
+      return attrs.has(String(name)) ? attrs.get(String(name)) : null;
+    }
+  };
+}
+
+function createFakePanel(tab, hidden) {
+  const attrs = new Map([['data-wt-leaderboard-panel', tab]]);
+  let hiddenState = !!hidden;
+  return {
+    toggleAttribute(name, force) {
+      if (String(name) !== 'hidden') return;
+      hiddenState = !!force;
+    },
+    getAttribute(name) {
+      return attrs.has(String(name)) ? attrs.get(String(name)) : null;
+    },
+    get hidden() {
+      return hiddenState;
+    }
+  };
+}
+
+test('leaderboard modal opens on profile tab for users who have not joined yet', () => {
+  const leaderboard = loadLeaderboardModule();
+  let opened = null;
+  const ui = {
+    _runtime: {
+      leaderboard: {
+        loading: false,
+        lastFetchedAt: Date.now(),
+        error: '',
+        source: 'empty',
+        weekly: [],
+        all: []
+      }
+    },
+    config: {
+      leaderboard: {
+        enabled: true,
+        cacheTtlMs: 60000,
+        topN: 10
+      }
+    },
+    wording: {
+      leaderboard: {
+        modalTitle: 'Leaderboard',
+        modalBodyDefault: 'Join the board',
+        weeklyTitle: 'This week',
+        allTitle: 'All-time',
+        nicknameLabel: 'Public nickname',
+        nicknamePlaceholder: 'Pick one',
+        joinCta: 'Join',
+        rankingTab: 'Ranking',
+        profileTab: 'My nickname'
+      }
+    },
+    storage: {
+      getLeaderboardProfile() {
+        return { nickname: '', optIn: false };
+      }
+    },
+    openModal(html, title) {
+      opened = { html, title };
+    }
+  };
+
+  leaderboard.openModal(ui, {
+    escapeHtml: (s) => String(s)
+  });
+
+  expect(opened.title).toBe('Leaderboard');
+  expect(opened.html).toContain('data-wt-leaderboard-panel="ranking" hidden');
+  expect(opened.html).toContain('data-wt-leaderboard-panel="profile"');
+  expect(opened.html).toContain('Public nickname');
+});
+
+test('leaderboard tab switching toggles button state and panel visibility', () => {
+  const leaderboard = loadLeaderboardModule();
+  const rankingBtn = createFakeNode('ranking');
+  const profileBtn = createFakeNode('profile');
+  const rankingPanel = createFakePanel('ranking', false);
+  const profilePanel = createFakePanel('profile', true);
+  const ui = {
+    modalContentEl: {
+      querySelectorAll(selector) {
+        if (selector === '[data-wt-leaderboard-tab]') {
+          return [rankingBtn, profileBtn];
+        }
+        if (selector === '[data-wt-leaderboard-panel]') {
+          return [rankingPanel, profilePanel];
+        }
+        return [];
+      }
+    }
+  };
+
+  leaderboard.switchModalTab(ui, 'profile');
+
+  expect(profileBtn.classList.contains('wt-btn--primary')).toBe(true);
+  expect(profileBtn.getAttribute('aria-pressed')).toBe('true');
+  expect(rankingBtn.classList.contains('wt-btn--secondary')).toBe(true);
+  expect(rankingPanel.hidden).toBe(true);
+  expect(profilePanel.hidden).toBe(false);
+});
+
+test('leaderboard submitRun posts normalized payload and returns json data', async () => {
+  let fetchArgs = null;
+  const leaderboard = loadLeaderboardModule({
+    window: {
+      fetch: async (url, init) => {
+        fetchArgs = { url, init };
+        return {
+          ok: true,
+          async json() {
+            return { weekly_rank: 3, all_time_rank: 7 };
+          }
+        };
+      }
+    }
+  });
+
+  const ui = {
+    _runtime: {
+      leaderboard: {
+        loading: false,
+        lastFetchedAt: 123,
+        error: '',
+        source: 'remote',
+        weekly: [],
+        all: []
+      }
+    },
+    config: {
+      leaderboard: {
+        enabled: true,
+        submitScores: true,
+        apiBaseUrl: 'https://example.test',
+        topN: 10
+      }
+    },
+    storage: {
+      getLeaderboardProfile() {
+        return { deviceUuid: 'dev-1', nickname: 'Ace', optIn: true };
+      }
+    }
+  };
+
+  const result = await leaderboard.submitRun(
+    ui,
+    {
+      mode: 'RUN',
+      runId: 'run-1',
+      runNumber: 5,
+      durationMs: 8123,
+      answerLog: [
+        { id: 1, answer: false, ms: 1200.9 },
+        { id: 2, answer: true, ms: 800 }
+      ]
+    },
+    {
+      getLeaderboardContentVersion() {
+        return '2026-05-23';
+      }
+    }
+  );
+
+  expect(result).toEqual({
+    ok: true,
+    data: { weekly_rank: 3, all_time_rank: 7 }
+  });
+  expect(fetchArgs.url).toBe('https://example.test/score');
+  expect(JSON.parse(fetchArgs.init.body)).toEqual({
+    device_uuid: 'dev-1',
+    run_id: 'run-1',
+    run_number: 5,
+    content_version: '2026-05-23',
+    run_mode: 'RUN',
+    duration_ms: 8123,
+    answers: [
+      { id: 1, answer: false, ms: 1200 },
+      { id: 2, answer: true, ms: 800 }
+    ]
+  });
+  expect(ui._runtime.leaderboard.lastFetchedAt).toBe(0);
+});
+
+test('leaderboard submitRun surfaces HTTP rejection as non-skipped failure', async () => {
+  const leaderboard = loadLeaderboardModule({
+    window: {
+      fetch: async () => ({
+        ok: false,
+        status: 409
+      })
+    }
+  });
+
+  const ui = {
+    config: {
+      leaderboard: {
+        enabled: true,
+        submitScores: true,
+        apiBaseUrl: 'https://example.test'
+      }
+    },
+    storage: {
+      getLeaderboardProfile() {
+        return { deviceUuid: 'dev-1', nickname: 'Ace', optIn: true };
+      }
+    }
+  };
+
+  const result = await leaderboard.submitRun(
+    ui,
+    {
+      mode: 'RUN',
+      runId: 'run-2',
+      runNumber: 6,
+      durationMs: 7000,
+      answerLog: [{ id: 1, answer: false, ms: 400 }]
+    },
+    {
+      getLeaderboardContentVersion() {
+        return '2026-05-23';
+      }
+    }
+  );
+
+  expect(result).toEqual({
+    ok: false,
+    skipped: false,
+    reason: 'http_409'
+  });
+});

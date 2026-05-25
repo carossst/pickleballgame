@@ -14,19 +14,83 @@ Built with plain HTML, CSS, and JavaScript, this mobile-first pickleball rules q
 - Local-first progress and device unlock code activation
 - Installable PWA with service worker caching
 
+## Locked Product Decisions
+
+These are current product decisions, not implementation accidents.
+
+- `RUN` is the hero mode.
+- Free users get exactly `2` lifetime `RUN`s on-device.
+- Free users start with `1` Rapid Fire ticket.
+- Premium sells the full game:
+  - unlimited `RUN`
+  - full question pool
+  - unlimited `Mistakes Mode`
+- Rapid Fire is ticket-based for everyone, including premium.
+- Daily is a layer on top of normal `RUN`, not a separate mode.
+- Leaderboard is landing-only, shown at the bottom of landing, never during `PLAYING`.
+
+## Daily Contract
+
+The Daily system is intentionally simple and intentionally a bit hard.
+
+- Daily is `score-only`.
+- Daily target is frozen for the local `dayKey`:
+  - stable for 24h
+  - derived from the player's current level/best score
+- Daily is not a universal shared challenge:
+  - different players can have different targets on the same day
+- A free user can clear the Daily on `RUN 1`,
+  - but only earns the ticket on `LAST_FREE`
+  - this is deliberately stricter than a generous free loop
+- Premium can keep earning Daily tickets over time,
+  - but Rapid Fire still consumes tickets for premium too
+- The day reset is device-local:
+  - simple and backend-free
+  - but manipulable if the user changes device time
+
+## Daily Compromises
+
+These are known tradeoffs we are keeping on purpose.
+
+- Device-local day key:
+  - simpler than backend time
+  - weaker against clock manipulation
+- Hard free reward gate:
+  - more cognitive load
+  - stronger monetization funnel
+- Frozen target derived from player level:
+  - more stable than "beat your PB live"
+  - less universal than a single challenge for everyone
+- Rapid Fire tickets for all players:
+  - keeps Daily relevant for premium
+  - means premium does not sell "Rapid Fire unlimited"
+- Score-only Daily:
+  - clearer and easier to teach
+  - less rich than a score/streak composite
+
 ## Main Files
 
-- [index.html](./index.html): main app shell
-- [config.js](./config.js): single source of truth for product config, wording, routing, limits, and identity
-- [wording.js](./wording.js): shared wording hydrator for `data-wt-wording`, `data-wt-aria-label`, and static brand text
-- [content.json](./content.json): question bank
+- [index.html](./index.html): English app entry
+- [fr.html](./fr.html): French app entry with French social preview metadata
+- [config.js](./config.js): single source of truth for product config, routing, limits, identity, and locale support
+- [wording-en.js](./wording-en.js): English wording bank
+- [wording-fr.js](./wording-fr.js): French wording bank
+- [wording-bootstrap.js](./wording-bootstrap.js): bootstraps default wording before locale resolution
+- [wording.js](./wording.js): shared wording hydrator for `data-wt-wording`, `data-wt-aria-label`, `data-wt-href`, and static brand text
+- [i18n.js](./i18n.js): locale resolution, persistence, manifest swap, and static-page locale switching
+- [i18n-toggle.js](./i18n-toggle.js): language toggle UI
+- [content-adapter.js](./content-adapter.js): applies locale-specific content fields from `content.json`
+- [content.json](./content.json): bilingual question bank
 - [ui.js](./ui.js): rendering, screen routing, CTA logic, modals
+- [ui-checkout.js](./ui-checkout.js): checkout redirect, paywall ticker, update toast bridge
+- [ui-growth.js](./ui-growth.js): pool-complete modal, milestone modal, and house-ad helpers
 - [game.js](./game.js): game mechanics
 - [storage.js](./storage.js): local storage, counters, progression, analytics payload
 - [main.js](./main.js): bootstrap, content loading, service worker registration
 - [style.css](./style.css): CSS entrypoint that imports the modular UI styles from [`styles/`](./styles)
 - [sw.js](./sw.js): service worker
 - [manifest.json](./manifest.json): PWA manifest
+- [manifest.fr.json](./manifest.fr.json): French PWA manifest
 - [success.html](./success.html): post-checkout success / unlock page
 
 ## CSS Guardrails
@@ -82,10 +146,18 @@ Each item uses this shape:
 ```json
 {
   "id": 1,
-  "question": "Question text",
   "correctAnswer": true,
-  "explanationShort": "Short explanation in 3 lines max.",
-  "tags": ["Category", "Easy"]
+  "tags": ["Serving Rules", "Easy"],
+  "i18n": {
+    "en": {
+      "question": "Question text",
+      "explanationShort": "Short explanation in 3 lines max."
+    },
+    "fr": {
+      "question": "Texte de la question",
+      "explanationShort": "Explication courte en 3 lignes max."
+    }
+  }
 }
 ```
 
@@ -94,7 +166,9 @@ Guidelines:
 - keep statements clear and answerable as true/false
 - avoid time-sensitive or shop-specific facts unless clearly framed
 - keep `explanationShort` short, direct, and readable on mobile
-- keep tags consistent with existing categories
+- keep tags consistent with existing internal categories
+- keep `tags` in English as internal identifiers; translate visible labels in the wording banks
+- preserve the same template variables and rule references in every locale
 
 ## Product Configuration
 
@@ -102,7 +176,8 @@ Most product behavior lives in [config.js](./config.js):
 
 - app identity and URLs
 - limits and monetization
-- wording and UI copy
+- wording-independent runtime behavior
+- locale configuration and app URLs
 - verdict thresholds
 - mode routing and CTA promotion
 - paywall messaging
@@ -113,7 +188,30 @@ Important values:
 - `WT_CONFIG.version`: cache/version identifier used by the service worker
 - `WT_CONFIG.storageSchemaVersion`: local storage schema version
 - `WT_CONFIG.limits.freeRuns`: number of free main games
-- `WT_CONFIG.game.poolSize`: runtime question pool size; it is synced to the loaded content length to avoid manual count drift
+- `WT_CONFIG.game.poolSize`: legacy runtime pool hint; if it ever falls below the loaded content length, the game keeps the full content pool and logs a warning instead of silently excluding cards
+
+## Leaderboard Content Contract
+
+The public leaderboard depends on a strict content contract between frontend and Worker.
+
+- `config.leaderboard.contentVersion` is the frontend version sent with `POST /score`
+- `leaderboard-worker/src/content-key.js` is the Worker-side answer key and accepted content version
+
+When `content.json` or `config.leaderboard.contentVersion` changes:
+
+1. run:
+```bash
+npm run generate:leaderboard-key
+```
+2. run:
+```bash
+npm test
+```
+
+The test suite now fails closed if:
+
+- frontend `contentVersion` does not match the Worker version
+- Worker answer keys do not match `content.json`
 
 ## Level System
 
@@ -181,7 +279,19 @@ There is no required account system in the core game flow.
 ## Notes
 
 - this repo has no build step
-- this repo currently has no automated test suite
+- this repo now has a minimal `Vitest` suite for storage and leaderboard logic
+- run it with:
+
+```bash
+npm test
+```
+
+- optional formatting tooling is available with:
+
+```bash
+npm run format:check
+```
+
 - syntax checks can be done with commands like:
 
 ```bash

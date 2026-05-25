@@ -35,9 +35,12 @@ const CACHE_PREFIX = APP_SCOPE ? `wt-${APP_SCOPE}` : "";
 const CACHE_NAME = (SW_VERSION && CACHE_PREFIX) ? `${CACHE_PREFIX}-cache-${SW_VERSION}` : "";
 
 // 8.1 Assets to cache (spec section 8.1)
+// Kept as an explicit curated list for this no-build repo.
+// If the shell grows further, generating this list from a build script would reduce drift.
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
+  "./fr.html",
   "./404.html",
   "./success.html",
   "./privacy.html",
@@ -50,10 +53,25 @@ const ASSETS_TO_CACHE = [
   "./styles/screens.css",
   "./config.js",
   "./wording.js",
+  "./wording-en.js",
+  "./wording-fr.js",
+  "./wording-bootstrap.js",
+  "./i18n.js",
+  "./i18n-toggle.js",
+  "./content-adapter.js",
   "./icons.js",
   "./success.js",
   "./storage.js",
   "./game.js",
+  "./ui-screen-paywall.js",
+  "./ui-screen-end.js",
+  "./ui-screen-landing.js",
+  "./ui-share.js",
+  "./ui-install.js",
+  "./ui-support.js",
+  "./ui-stats-sharing.js",
+  "./ui-checkout.js",
+  "./ui-growth.js",
   "./ui.js",
   "./pwa.js",
   "./email.js",
@@ -61,6 +79,8 @@ const ASSETS_TO_CACHE = [
   "./main.js",
   "./content.json",
   "./manifest.json",
+  "./manifest.fr.json",
+  "./styles/i18n-toggle.css",
   "./icons/android-chrome-192x192.png",
   "./icons/icon-192x192-maskable.png",
   "./icons/android-chrome-512x512.png",
@@ -70,7 +90,8 @@ const ASSETS_TO_CACHE = [
   "./icons/favicon-32x32.png",
   "./icons/favicon-16x16.png",
   "./icons/favicon.ico",
-  "./icons/og-image.png"
+  "./icons/og-image.png",
+  "./icons/og-image-fr.png"
 ];
 
 // Critical assets: if any of these fail to pre-cache, do NOT force-activate immediately.
@@ -79,6 +100,7 @@ const ASSETS_TO_CACHE = [
 const CRITICAL_ASSETS = [
   "./",
   "./index.html",
+  "./fr.html",
   "./style.css",
   "./styles/tokens.css",
   "./styles/base.css",
@@ -86,6 +108,11 @@ const CRITICAL_ASSETS = [
   "./styles/screens.css",
   "./config.js",
   "./wording.js",
+  "./wording-en.js",
+  "./wording-fr.js",
+  "./wording-bootstrap.js",
+  "./i18n.js",
+  "./content-adapter.js",
   "./icons.js",
   "./storage.js",
   "./game.js",
@@ -158,6 +185,8 @@ function getOfflineDocumentFallback(pathname) {
     case "/":
     case "/index.html":
       return "./index.html";
+    case "/fr.html":
+      return "./fr.html";
     case "/success.html":
       return "./success.html";
     case "/privacy.html":
@@ -199,6 +228,7 @@ function isNetworkFirstAppShellRequest(req, url) {
   if (
     path === "/" ||
     path === "/index.html" ||
+    path === "/fr.html" ||
     path === "/404.html" ||
     path === "/success.html" ||
     path === "/privacy.html" ||
@@ -213,16 +243,32 @@ function isNetworkFirstAppShellRequest(req, url) {
     path.startsWith("/styles/") ||
     path === "/config.js" ||
     path === "/wording.js" ||
+    path === "/wording-en.js" ||
+    path === "/wording-fr.js" ||
+    path === "/wording-bootstrap.js" ||
+    path === "/i18n.js" ||
+    path === "/i18n-toggle.js" ||
+    path === "/content-adapter.js" ||
     path === "/icons.js" ||
     path === "/success.js" ||
     path === "/storage.js" ||
     path === "/game.js" ||
+    path === "/ui-screen-paywall.js" ||
+    path === "/ui-screen-end.js" ||
+    path === "/ui-screen-landing.js" ||
+    path === "/ui-share.js" ||
+    path === "/ui-install.js" ||
+    path === "/ui-support.js" ||
+    path === "/ui-stats-sharing.js" ||
+    path === "/ui-checkout.js" ||
+    path === "/ui-growth.js" ||
     path === "/ui.js" ||
     path === "/pwa.js" ||
     path === "/email.js" ||
     path === "/footer.js" ||
     path === "/main.js" ||
-    path === "/manifest.json"
+    path === "/manifest.json" ||
+    path === "/manifest.fr.json"
   ) {
     return true;
   }

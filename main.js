@@ -34,6 +34,43 @@
     return list[index] || String(fallback || "").trim();
   }
 
+  function fillTemplateLocal(template, vars) {
+    let out = String(template == null ? "" : template);
+    const map = (vars && typeof vars === "object") ? vars : {};
+    for (const [key, value] of Object.entries(map)) {
+      out = out.replaceAll(`{${key}}`, String(value == null ? "" : value));
+    }
+    return out;
+  }
+
+  function getActiveWording() {
+    try {
+      const direct = window.WT_WORDING;
+      if (direct && typeof direct === "object") return direct;
+
+      const all = window.WT_WORDING_ALL;
+      const loc = window.WT_I18N && typeof window.WT_I18N.getLocale === "function"
+        ? window.WT_I18N.getLocale()
+        : String(window.WT_CONFIG?.i18n?.defaultLocale || "en");
+      if (all && typeof all === "object") {
+        return all[loc] || all[window.WT_CONFIG?.i18n?.defaultLocale] || all.en || {};
+      }
+    } catch (_) { }
+    return {};
+  }
+
+  function getSystemCopy(key, fallback, vars) {
+    try {
+      const wording = getActiveWording();
+      const raw = wording && wording.system && typeof wording.system[key] === "string"
+        ? wording.system[key]
+        : fallback;
+      return fillTemplateLocal(raw, vars);
+    } catch (_) {
+      return fillTemplateLocal(fallback, vars);
+    }
+  }
+
 
   // ============================================
   // Logger (like TYF)
@@ -72,7 +109,7 @@
       <div class="wt-card wt-card--error">
         <h1 class="wt-h1">${appName}</h1>
         <p class="wt-muted">${safeMsg}</p>
-        <button id="wtFatalReloadBtn" class="wt-btn wt-btn--secondary" type="button">Reload</button>
+        <button id="wtFatalReloadBtn" class="wt-btn wt-btn--secondary" type="button">${escapeHtmlSafe(getSystemCopy("fatalReload", "Reload"))}</button>
       </div>
     `;
 
@@ -96,8 +133,8 @@
     const errorMsg = event.message || event.error?.message || "Unknown error";
     showFatal(
       isDev
-        ? `JavaScript Error: ${errorMsg}`
-        : "Unable to load the game. Please refresh the page."
+        ? getSystemCopy("fatalJavascriptPrefix", "JavaScript Error: {message}", { message: errorMsg })
+        : getSystemCopy("fatalLoadFailed", "Unable to load the game. Please refresh the page.")
     );
   });
 
@@ -110,8 +147,8 @@
     const errorMsg = event.reason?.message || "Promise rejection";
     showFatal(
       isDev
-        ? `Promise Error: ${errorMsg}`
-        : "An unexpected issue occurred. Please refresh the page."
+        ? getSystemCopy("fatalPromisePrefix", "Promise Error: {message}", { message: errorMsg })
+        : getSystemCopy("fatalUnexpected", "An unexpected issue occurred. Please refresh the page.")
     );
   });
   // ============================================
@@ -399,7 +436,7 @@
   function validatePrerequisites() {
     if (!window.WT_CONFIG) {
       Logger.error("WT_CONFIG not found");
-      showFatal("Configuration error: Application settings not loaded.");
+      showFatal(getSystemCopy("fatalConfigMissing", "Configuration error: application settings not loaded."));
       return false;
     }
 
@@ -418,14 +455,14 @@
 
     if (!storageOk) {
       Logger.error("localStorage not supported or unavailable");
-      showFatal("Your browser doesn't support local storage. Please use a modern browser.");
+      showFatal(getSystemCopy("fatalStorageUnsupported", "Your browser does not support local storage. Please use a modern browser."));
       return false;
     }
 
     const appContainer = document.getElementById("app");
     if (!appContainer) {
       Logger.error("App container not found");
-      showFatal("Critical error: App container not found.");
+      showFatal(getSystemCopy("fatalAppContainerMissing", "Critical error: app container not found."));
       return false;
     }
 
@@ -441,13 +478,13 @@
 
     if (missing.length > 0) {
       Logger.error(`Missing modules: ${missing.join(", ")}`);
-      showFatal(`Unable to load game components: ${missing.join(", ")}. Please refresh the page.`);
+      showFatal(getSystemCopy("fatalComponentsMissing", "Unable to load game components: {components}. Please refresh the page.", { components: missing.join(", ") }));
       return false;
     }
 
     if (typeof window.WT_ICONS.renderIcon !== "function") {
       Logger.error("WT_ICONS.renderIcon missing");
-      showFatal("Unable to load game components: WT_ICONS.renderIcon. Please refresh the page.");
+      showFatal(getSystemCopy("fatalIconsMissing", "Unable to load game components: WT_ICONS.renderIcon. Please refresh the page."));
       return false;
     }
 
@@ -523,7 +560,7 @@
       if (!config || typeof config !== "object") {
         clearTimeout(slowLoadTimer);
         Logger.error("WT_CONFIG missing or invalid");
-        showFatal("Configuration error: Application settings not loaded.");
+        showFatal(getSystemCopy("fatalConfigMissing", "Configuration error: application settings not loaded."));
         return;
       }
 
@@ -531,7 +568,7 @@
       if (!wording || typeof wording !== "object") {
         clearTimeout(slowLoadTimer);
         Logger.error("WT_WORDING missing or invalid");
-        showFatal("Configuration error: UI wording not loaded.");
+        showFatal(getSystemCopy("fatalWordingMissing", "Configuration error: UI wording not loaded."));
         return;
       }
 
@@ -567,6 +604,49 @@
 
       ui.init();
 
+      try {
+        const onLocaleChange = () => {
+          try {
+            const newLoc = window.WT_I18N && window.WT_I18N.getLocale
+              ? window.WT_I18N.getLocale() : "en";
+            const reopenLeaderboardModal = !!(
+              ui &&
+              ui._runtime &&
+              ui._runtime._modalKey === "leaderboard" &&
+              typeof ui.openLeaderboardModal === "function"
+            );
+
+            if (ui) {
+              if (reopenLeaderboardModal && typeof ui.closeModal === "function") {
+                ui.closeModal();
+              }
+
+              ui.wording = window.WT_WORDING;
+
+              if (window.WT_ContentAdapter && ui._runtime && Array.isArray(ui._runtime.contentItems)) {
+                window.WT_ContentAdapter.applyLocaleToItems(ui._runtime.contentItems, newLoc);
+              }
+
+              if (typeof ui.render === "function") {
+                ui.render();
+              }
+
+              if (reopenLeaderboardModal) {
+                ui.openLeaderboardModal();
+              }
+            }
+          } catch (e) {
+            try { Logger.warn("[main] locale-change handler failed", e); } catch (_) { /* silent */ }
+          }
+        };
+
+        if (window.__WT_ON_LOCALE_CHANGE__) {
+          window.removeEventListener("wt:locale-change", window.__WT_ON_LOCALE_CHANGE__);
+        }
+        window.__WT_ON_LOCALE_CHANGE__ = onLocaleChange;
+        window.addEventListener("wt:locale-change", onLocaleChange);
+      } catch (_) { /* silent */ }
+
       // Boot optimization: if a premium code was saved by success.html, prompt instant activation.
       // Single source of truth: ui.js (promptAutoRedeemIfReady + howto.autoActivate* wording).
       if (ui && typeof ui.promptAutoRedeemIfReady === "function") {
@@ -584,10 +664,15 @@
 
           if (!items.length) {
             if (ui && typeof ui.setContentLoading === "function") ui.setContentLoading(false);
-            showFatal("Content not available. Please check your connection and reload.");
+            showFatal(getSystemCopy("fatalContentUnavailable", "Content not available. Please check your connection and reload."));
             return;
           }
 
+          try {
+            if (window.WT_ContentAdapter && window.WT_I18N) {
+              window.WT_ContentAdapter.applyLocaleToItems(items, window.WT_I18N.getLocale());
+            }
+          } catch (_) { /* silent */ }
           ui.setContent(items);
           if (ui && typeof ui.setContentLoading === "function") ui.setContentLoading(false);
           ui.render();
@@ -599,8 +684,7 @@
           clearTimeout(slowLoadTimer);
           Logger.error("Content load error:", error);
           showFatal(
-            `Unable to load game data. Please check your connection and refresh. ${window.WT_CONFIG?.debug?.enabled ? `Error: ${error.message}` : ""
-            }`
+            `${getSystemCopy("fatalDataLoadFailed", "Unable to load game data. Please check your connection and refresh.")}${window.WT_CONFIG?.debug?.enabled ? ` Error: ${error.message}` : ""}`
           );
         });
 
@@ -645,8 +729,7 @@
       clearTimeout(slowLoadTimer);
       Logger.error("Startup error:", error);
       showFatal(
-        `Unable to load game data. Please check your connection and refresh. ${window.WT_CONFIG?.debug?.enabled ? `Error: ${error.message}` : ""
-        }`
+        `${getSystemCopy("fatalDataLoadFailed", "Unable to load game data. Please check your connection and refresh.")}${window.WT_CONFIG?.debug?.enabled ? ` Error: ${error.message}` : ""}`
       );
     }
   }

@@ -1,4 +1,44 @@
 /* ============================================
+   STATE CLASSES — PATTERN NOTE
+   --------------------------------------------
+   Body-scoped state modifiers (.wt-state--*, .wt-page--*) are used
+   as descendant-selector roots and never need a standalone base
+   class:
+     body.wt-state--playing → triggers playing-mode styles
+     body.wt-state--end     → triggers end-mode styles
+     body.wt-page--doc      → triggers documentation page styles
+   The "missing base" is by design — these classes only carry meaning
+   when combined with `body`. Same for transient modifiers like
+   .wt-hero-kpi--modal (rendered only in modal context).
+   ============================================ */
+
+/* ============================================
+   Z-INDEX SCALE (project-wide contract)
+   --------------------------------------------
+   All z-index values across CSS files must fit one of these tiers.
+   Keep ranges narrow on purpose — if you need a new tier, document
+   it here first.
+
+     0   .. 9    Page chrome (card hero gradients, decorative layers)
+     10  .. 49   In-card overlays (sticky headers inside scroll regions)
+     50  .. 79   Floating UI (locale toggle, hint badges)
+     80  .. 199  Modals / dialogs and their backdrops
+     200 .. 999  Priority overlays (toasts, action banners, drag layer)
+     1000+       Accessibility helpers (skip links) — always on top
+
+   Current usage map:
+     wt-card--hero::before          0   (base.css, decorative)
+     wt-card--landing children      1   (base.css, lift above ::before)
+     wt-landing-top-right           2   (screens.css)
+     wt-locale-toggle-host          50  (i18n-toggle.css)
+     wt-action-toast                60  (components.css)
+     wt-modal__backdrop / wt-modal  80  (components.css)
+     fullscreen overlays            100 (components.css)
+     priority overlay (mistake)     999 (components.css)
+     skip-link                      1000 (components.css)
+   ============================================ */
+
+/* ============================================
    GENERIC UTILITIES
    ============================================ */
 
@@ -155,6 +195,25 @@
 
 .wt-text-action:hover {
   color: rgb(var(--text-strong));
+}
+
+.wt-how-setting__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  width: 100%;
+  padding-inline: 0;
+  text-decoration: none;
+}
+
+.wt-how-setting__status {
+  flex: 0 0 auto;
+  color: rgb(var(--primary-dark));
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .wt-note {
@@ -360,9 +419,10 @@ button.wt-level-chip {
   }
 }
 
-/* Pulse — generic scale animation for emphasis */
+/* Pulse — generic scale animation for emphasis (paywall urgency timer, etc.).
+   Disabled in prefers-reduced-motion via screens.css override. */
 .wt-pulse {
-  animation: none;
+  animation: wtPulse var(--wt-anim-pulse) ease-in-out infinite;
 }
 
 @keyframes wtPulse {
@@ -413,6 +473,31 @@ button.wt-level-chip {
   height: 20px;
 }
 
+.wt-btn-icon--has-counter {
+  position: relative;
+}
+
+.wt-btn-icon__counter {
+  position: absolute;
+  right: -4px;
+  bottom: -3px;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--surface));
+  background: rgb(var(--primary-dark));
+  color: rgb(var(--surface));
+  box-shadow: var(--shadow-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
 .wt-btn-icon:focus-visible {
   outline: 2px solid rgb(var(--primary-dark));
   outline-offset: 3px;
@@ -455,6 +540,27 @@ button.wt-level-chip {
   font-size: clamp(16px, 2.8vw, 17px);
   line-height: 1.35;
   font-weight: 700;
+}
+
+.wt-question-tools {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 var(--space-8);
+}
+
+.wt-question-audio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+  color: rgb(var(--text-muted));
+}
+
+.wt-question-audio .wt-icon {
+  width: 18px;
+  height: 18px;
 }
 
 @media (max-height: 740px) {
@@ -854,7 +960,6 @@ button.wt-level-chip {
 
 .wt-pill--score-flash {
   transform-origin: center;
-  will-change: auto;
   animation: none;
 }
 
@@ -1106,9 +1211,6 @@ button.wt-level-chip {
 .wt-level-sheet__body {
   margin: 0;
   color: rgb(var(--text-strong));
-}
-
-.wt-level-sheet__body {
   font-size: var(--fs-sm);
   line-height: 1.5;
 }
@@ -1637,31 +1739,6 @@ body.wt-state--end .wt-footer {
   text-align: center;
   max-width: 400px;
   padding: var(--gap-4);
-}
-
-/* ============================================
-   ANSWER ZONE - stable question feedback layout
-   ============================================ */
-.wt-answer-zone {
-  margin-top: var(--space-14);
-}
-
-.wt-answer-zone--feedback {
-  display: grid;
-  gap: var(--space-10);
-  align-items: start;
-}
-
-.wt-answer-zone--feedback .wt-feedback,
-.wt-answer-zone--feedback .wt-explanation,
-.wt-answer-zone--feedback .wt-actions,
-.wt-answer-zone--feedback .wt-tap-hint {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.wt-card--question-feedback .wt-feedback:active {
-  transform: none;
 }
 
 /* ============================================

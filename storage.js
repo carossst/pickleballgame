@@ -1,11 +1,15 @@
 /* storage.js - local persistence (V2 RUN) */
 
 (() => {
-  "use strict";
+  'use strict';
 
-  const EVT = "storage-updated";
-  const EVT_SAVE_FAILED = "storage-save-failed";
+  const RapidFireLogic = window.WT_RapidFireLogic;
+  if (!RapidFireLogic || typeof RapidFireLogic !== 'object') {
+    throw new Error('WT_RapidFireLogic is required before storage.js');
+  }
 
+  const EVT = 'storage-updated';
+  const EVT_SAVE_FAILED = 'storage-save-failed';
 
   // ============================================
   // Helpers
@@ -15,7 +19,7 @@
   }
 
   function safeJsonParse(str) {
-    if (!str || typeof str !== "string") return null;
+    if (!str || typeof str !== 'string') return null;
     try {
       return JSON.parse(str);
     } catch (_) {
@@ -29,8 +33,17 @@
     return Math.max(0, Math.floor(x));
   }
 
+  function findRunEntryByNumber(list, runNumber) {
+    const rn = clampNonNegativeInt(runNumber);
+    if (!Array.isArray(list) || rn <= 0) return null;
+    for (const item of list) {
+      if (clampNonNegativeInt(item?.runNumber) === rn) return item;
+    }
+    return null;
+  }
+
   function safeBool(x) {
-    return (x === true || x === false) ? x : null;
+    return x === true || x === false ? x : null;
   }
   function safeIdNum(x) {
     const n = Number(x);
@@ -44,10 +57,29 @@
     // Prefer structuredClone to preserve `undefined` (JSON stringify drops it).
     // Fallback keeps legacy behavior on older browsers.
     try {
-      if (typeof structuredClone === "function") return structuredClone(obj);
-    } catch (_) { /* fall through */ }
+      if (typeof structuredClone === 'function') return structuredClone(obj);
+    } catch (_) {
+      /* fall through */
+    }
 
     return JSON.parse(JSON.stringify(obj));
+  }
+
+  function generateLocalUuid() {
+    try {
+      if (
+        typeof crypto !== 'undefined' &&
+        crypto &&
+        typeof crypto.randomUUID === 'function'
+      ) {
+        return String(crypto.randomUUID());
+      }
+    } catch (_) {
+      /* fall through */
+    }
+
+    const rand = Math.random().toString(36).slice(2, 10);
+    return `local-${now().toString(36)}-${rand}`;
   }
 
   // ============================================
@@ -55,17 +87,19 @@
   // ============================================
 
   function StorageManager(config) {
-    if (!config || typeof config !== "object") {
-      throw new Error("StorageManager: missing or invalid config (no fallback to window.WT_CONFIG)");
+    if (!config || typeof config !== 'object') {
+      throw new Error(
+        'StorageManager: missing or invalid config (no fallback to window.WT_CONFIG)'
+      );
     }
 
     const rawStorageKey = config?.storage?.storageKey;
-    if (typeof rawStorageKey !== "string") {
-      throw new Error("StorageManager: missing config.storage.storageKey");
+    if (typeof rawStorageKey !== 'string') {
+      throw new Error('StorageManager: missing config.storage.storageKey');
     }
     const resolvedStorageKey = rawStorageKey.trim();
     if (!resolvedStorageKey) {
-      throw new Error("StorageManager: empty config.storage.storageKey");
+      throw new Error('StorageManager: empty config.storage.storageKey');
     }
 
     this.config = config;
@@ -82,12 +116,15 @@
     this._premiumCodeRe = undefined;
 
     const rawSchemaVersion = config.storageSchemaVersion;
-    if (typeof rawSchemaVersion !== "string" && typeof rawSchemaVersion !== "number") {
-      throw new Error("StorageManager: missing config.storageSchemaVersion");
+    if (
+      typeof rawSchemaVersion !== 'string' &&
+      typeof rawSchemaVersion !== 'number'
+    ) {
+      throw new Error('StorageManager: missing config.storageSchemaVersion');
     }
     const schemaVersion = String(rawSchemaVersion).trim();
     if (!schemaVersion) {
-      throw new Error("StorageManager: empty config.storageSchemaVersion");
+      throw new Error('StorageManager: empty config.storageSchemaVersion');
     }
     // INVARIANT (intentional):
     // freeRuns is read from WT_CONFIG.limits.freeRuns at initialization time.
@@ -95,9 +132,9 @@
     // Rationale: avoid retroactive entitlement changes and mid-run UX inconsistencies.
     const freeRuns = clampNonNegativeInt(config?.limits?.freeRuns);
 
-
-    const gameId = String(config.identity?.appName || "").trim();
-    if (!gameId) throw new Error("StorageManager: missing config.identity.appName");
+    const gameId = String(config.identity?.appName || '').trim();
+    if (!gameId)
+      throw new Error('StorageManager: missing config.identity.appName');
 
     this.defaultData = {
       version: schemaVersion,
@@ -111,7 +148,7 @@
       // Full access codes (device-local)
       codes: {
         redeemedOnce: false,
-        code: ""
+        code: ''
       },
 
       // Economy gate (config-driven: see WT_CONFIG.limits.freeRuns)
@@ -121,11 +158,26 @@
         limitReachedCount: 0
       },
 
+      rapidFire: {
+        ticketBalance: 0,
+        starterTicketGranted: false,
+        dailyTicketEarnedDayKey: '',
+        dailyChallengeTargetDayKey: '',
+        dailyChallengeTargetScore: 0
+      },
+
+      leaderboard: {
+        deviceUuid: '',
+        nickname: '',
+        optIn: false,
+        updatedAt: 0
+      },
 
       // Settings
       settings: {
         mistakesOnly: false,
         mistakesOnlyCompletedOnce: false,
+        autoReadQuestions: false,
 
         // House Ad hide (timestamp ms). 0 = not hidden.
         houseAdHiddenUntil: 0
@@ -136,19 +188,20 @@
         firstRunFramingSeen: false,
         premiumFirstRunFramingSeen: false,
         secretChestHintSolved: false,
-        secretChestWelcomeShown: false
+        secretChestWelcomeShown: false,
+        dailyChallengeToastDayKey: ''
       },
 
       // House Ad (post-completion) — persisted state
       houseAd: {
         introSeen: false,
-        state: "never_seen" // never_seen | remind_later
+        state: 'never_seen' // never_seen | remind_later
       },
 
       // Waitlist (END screen only) — persisted state
       waitlist: {
-        status: "not_seen", // not_seen | seen | joined
-        draftIdea: ""
+        status: 'not_seen', // not_seen | seen | joined
+        draftIdea: ''
       },
 
       // Counters
@@ -170,6 +223,7 @@
         landingViewed: 0,
         landingPlayClicked: 0,
         landingPracticeClicked: 0,
+        dailyChallengeClicked: 0,
         landingNextRunStarted: 0,
         landingNextRunCompleted: 0,
         landingTimeTotalMs: 0,
@@ -187,9 +241,6 @@
         houseAdClicked: 0,
         premiumUnlockedCount: 0
       },
-
-
-
 
       // Personal best (V2 = best FP in a run) — RUN only
       personalBest: {
@@ -263,8 +314,6 @@
         endgameShownAt: 0
       },
 
-
-
       analytics: {
         firstSeenAt: 0,
         lastSeenAt: 0,
@@ -284,31 +333,273 @@
         statsSharingSnoozeUntilRunCompletes: 0,
 
         // Checkout / premium analytics
-        paywallLastSource: "",
+        paywallLastSource: '',
         checkoutStartedAt: 0,
-        checkoutPriceKey: "",
+        checkoutPriceKey: '',
         premiumUnlockedAt: 0
       }
-
-
     };
   }
 
+  StorageManager.prototype._adoptLoadedData = function (loaded, options) {
+    const cfg = this.config || {};
+    const opts = options && typeof options === 'object' ? options : {};
+    const schemaVersion = String(
+      cfg.storageSchemaVersion != null ? cfg.storageSchemaVersion : ''
+    ).trim();
+
+    if (!schemaVersion) return false;
+    if (!loaded || typeof loaded !== 'object') return false;
+    if (String(loaded.version || '') !== schemaVersion) return false;
+
+    // Use the same hardening pipeline for init and cross-tab storage updates.
+    // This keeps the trust boundary in one place instead of accepting a raw
+    // payload in _addStorageListener that bypasses the init-time normalization.
+    this.data = loaded;
+
+    // Harden required blocks (V2 shapes)
+    if (!this.data.runs) this.data.runs = deepCopy(this.defaultData.runs);
+    if (!this.data.settings)
+      this.data.settings = deepCopy(this.defaultData.settings);
+    if (!this.data.rapidFire)
+      this.data.rapidFire = deepCopy(this.defaultData.rapidFire);
+    if (!this.data.leaderboard)
+      this.data.leaderboard = deepCopy(this.defaultData.leaderboard);
+    if (!this.data.uiDeviceFlags)
+      this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
+    if (!this.data.houseAd)
+      this.data.houseAd = deepCopy(this.defaultData.houseAd);
+    if (!this.data.waitlist)
+      this.data.waitlist = deepCopy(this.defaultData.waitlist);
+    if (!this.data.counters)
+      this.data.counters = deepCopy(this.defaultData.counters);
+    if (!this.data.history)
+      this.data.history = deepCopy(this.defaultData.history);
+    if (!this.data.progression)
+      this.data.progression = deepCopy(this.defaultData.progression);
+    if (!this.data.statsByItem) this.data.statsByItem = {};
+    if (!this.data.personalBest)
+      this.data.personalBest = deepCopy(this.defaultData.personalBest);
+    if (!this.data.bonusBest)
+      this.data.bonusBest = deepCopy(this.defaultData.bonusBest);
+    if (!this.data.earlyPrice)
+      this.data.earlyPrice = deepCopy(this.defaultData.earlyPrice);
+    if (!this.data.postCompletion)
+      this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
+    if (!this.data.endgame)
+      this.data.endgame = deepCopy(this.defaultData.endgame);
+    if (!this.data.analytics)
+      this.data.analytics = deepCopy(this.defaultData.analytics);
+
+    if (!Number.isFinite(Number(this.data.analytics.statsSharingPromptStage))) {
+      this.data.analytics.statsSharingPromptStage = -1;
+    } else {
+      this.data.analytics.statsSharingPromptStage = Math.floor(
+        Number(this.data.analytics.statsSharingPromptStage)
+      );
+    }
+
+    if (!Number.isFinite(Number(this.data.analytics.statsSharingPromptFlags))) {
+      this.data.analytics.statsSharingPromptFlags = 0;
+    } else {
+      this.data.analytics.statsSharingPromptFlags = Math.floor(
+        Number(this.data.analytics.statsSharingPromptFlags)
+      );
+    }
+
+    if (
+      !Number.isFinite(
+        Number(this.data.analytics.statsSharingSnoozeUntilRunCompletes)
+      )
+    ) {
+      this.data.analytics.statsSharingSnoozeUntilRunCompletes = 0;
+    } else {
+      this.data.analytics.statsSharingSnoozeUntilRunCompletes = Math.floor(
+        Number(this.data.analytics.statsSharingSnoozeUntilRunCompletes)
+      );
+    }
+
+    if (!Number.isFinite(Number(this.data.analytics.checkoutStartedAt))) {
+      this.data.analytics.checkoutStartedAt = 0;
+    } else {
+      this.data.analytics.checkoutStartedAt = Math.floor(
+        Number(this.data.analytics.checkoutStartedAt)
+      );
+    }
+
+    if (typeof this.data.analytics.paywallLastSource !== 'string') {
+      this.data.analytics.paywallLastSource = '';
+    }
+
+    if (typeof this.data.analytics.checkoutPriceKey !== 'string') {
+      this.data.analytics.checkoutPriceKey = '';
+    }
+
+    if (!Number.isFinite(Number(this.data.analytics.premiumUnlockedAt))) {
+      this.data.analytics.premiumUnlockedAt = 0;
+    } else {
+      this.data.analytics.premiumUnlockedAt = Math.floor(
+        Number(this.data.analytics.premiumUnlockedAt)
+      );
+    }
+
+    if (!this.data.codes) this.data.codes = deepCopy(this.defaultData.codes);
+
+    // Harden runs (sync with config)
+    const r = this.data.runs;
+    const freeRunsCfg = clampNonNegativeInt(cfg?.limits?.freeRuns);
+    const isPrem = this.data && this.data.isPremium === true;
+
+    // Always sync the configured free runs (single source of truth) AT INIT TIME.
+    // NOTE: This is NOT a reactive binding. If WT_CONFIG changes after init,
+    // storage keeps the previously loaded value until the next init (reload).
+    r.freeRuns = freeRunsCfg;
+
+    // Balance must be a non-negative int
+    r.balance = clampNonNegativeInt(r.balance);
+
+    // Keep economy bounded for non-premium without retroactively re-granting free runs.
+    // If config changes between releases, init may clamp balance downward to the new max,
+    // but it must never increase a user's remaining balance on reload.
+    if (!isPrem) {
+      const used = clampNonNegativeInt(this.data?.counters?.runStarts);
+      const maxAllowedBalance = Math.max(0, freeRunsCfg - used);
+      r.balance = Math.min(r.balance, maxAllowedBalance);
+    }
+
+    if (!Number.isFinite(r.limitReachedCount)) r.limitReachedCount = 0;
+
+    // Harden settings
+    const st = this.data.settings;
+    if (typeof st.mistakesOnly !== 'boolean') st.mistakesOnly = false;
+    if (typeof st.mistakesOnlyCompletedOnce !== 'boolean')
+      st.mistakesOnlyCompletedOnce = false;
+    if (typeof st.autoReadQuestions !== 'boolean') st.autoReadQuestions = false;
+    if (!Number.isFinite(st.houseAdHiddenUntil)) st.houseAdHiddenUntil = 0;
+
+    // Harden Rapid Fire ticket economy
+    const rf = this.data.rapidFire || {};
+    const ticketCap = Math.max(
+      0,
+      clampNonNegativeInt(cfg?.secretBonus?.ticketCap)
+    );
+    rf.ticketBalance = clampNonNegativeInt(rf.ticketBalance);
+    if (ticketCap > 0) rf.ticketBalance = Math.min(rf.ticketBalance, ticketCap);
+    if (typeof rf.starterTicketGranted !== 'boolean')
+      rf.starterTicketGranted = false;
+    if (typeof rf.dailyTicketEarnedDayKey !== 'string')
+      rf.dailyTicketEarnedDayKey = '';
+    if (typeof rf.dailyChallengeTargetDayKey !== 'string')
+      rf.dailyChallengeTargetDayKey = '';
+    rf.dailyChallengeTargetScore = clampNonNegativeInt(
+      rf.dailyChallengeTargetScore
+    );
+    this.data.rapidFire = rf;
+
+    const lb = this.data.leaderboard || {};
+    if (typeof lb.deviceUuid !== 'string') lb.deviceUuid = '';
+    if (typeof lb.nickname !== 'string') lb.nickname = '';
+    if (typeof lb.optIn !== 'boolean') lb.optIn = false;
+    if (!Number.isFinite(lb.updatedAt)) lb.updatedAt = 0;
+    this.data.leaderboard = lb;
+
+    // Harden House Ad state
+    const ha = this.data.houseAd || {};
+    if (typeof ha.introSeen !== 'boolean') ha.introSeen = false;
+    if (typeof ha.state !== 'string') ha.state = 'never_seen';
+    if (ha.state !== 'never_seen' && ha.state !== 'remind_later') {
+      ha.state = 'never_seen';
+    }
+    this.data.houseAd = ha;
+
+    // Harden Waitlist state
+    const wl = this.data.waitlist || {};
+    if (typeof wl.status !== 'string') wl.status = 'not_seen';
+    if (
+      wl.status !== 'not_seen' &&
+      wl.status !== 'seen' &&
+      wl.status !== 'joined'
+    ) {
+      wl.status = 'not_seen';
+    }
+    if (typeof wl.draftIdea !== 'string') wl.draftIdea = '';
+    this.data.waitlist = wl;
+
+    // Harden counters
+    const c = this.data.counters;
+    for (const k in this.defaultData.counters) {
+      if (!Number.isFinite(c[k])) c[k] = 0;
+    }
+    c.premiumUnlockedCount = clampNonNegativeInt(c.premiumUnlockedCount);
+
+    // Harden personal best (RUN)
+    if (!Number.isFinite(this.data.personalBest.bestScoreFP))
+      this.data.personalBest.bestScoreFP = 0;
+    if (!Number.isFinite(this.data.personalBest.achievedAt))
+      this.data.personalBest.achievedAt = 0;
+
+    // Harden bonus best (BONUS)
+    if (!Number.isFinite(this.data.bonusBest.bestScoreFP))
+      this.data.bonusBest.bestScoreFP = 0;
+    if (!Number.isFinite(this.data.bonusBest.achievedAt))
+      this.data.bonusBest.achievedAt = 0;
+
+    // Harden early price (V2+)
+    const ep = this.data.earlyPrice || {};
+    if (!Number.isFinite(ep.startedAt)) ep.startedAt = 0;
+    if (typeof ep.used !== 'boolean') ep.used = false;
+    this.data.earlyPrice = ep;
+
+    // Harden endgame
+    if (typeof this.data.endgame.endgameShown !== 'boolean')
+      this.data.endgame.endgameShown = false;
+    if (!Number.isFinite(this.data.endgame.endgameShownAt))
+      this.data.endgame.endgameShownAt = 0;
+
+    // Harden codes
+    const cd = this.data.codes;
+    if (typeof cd.redeemedOnce !== 'boolean') cd.redeemedOnce = false;
+    if (typeof cd.code !== 'string') cd.code = '';
+
+    if (opts.syncVanityCode === true) {
+      this._syncVanityCodeToCodes();
+    }
+
+    // Analytics timestamps
+    if (
+      !Number.isFinite(this.data.analytics.firstSeenAt) ||
+      this.data.analytics.firstSeenAt <= 0
+    ) {
+      this.data.analytics.firstSeenAt = now();
+    }
+    if (opts.touchLastSeen === true) {
+      this.data.analytics.lastSeenAt = now();
+    }
+
+    this._lastSavedData = deepCopy(this.data);
+    return true;
+  };
 
   StorageManager.prototype.init = function () {
     if (this.initialized) return;
 
     const cfg = this.config || {};
     const schemaVersion = String(
-      cfg.storageSchemaVersion != null ? cfg.storageSchemaVersion : ""
+      cfg.storageSchemaVersion != null ? cfg.storageSchemaVersion : ''
     ).trim();
 
-    if (!schemaVersion) throw new Error("StorageManager: missing config.storageSchemaVersion");
+    if (!schemaVersion)
+      throw new Error('StorageManager: missing config.storageSchemaVersion');
 
     const loaded = this._load();
 
     // No legacy support: mismatch => reset
-    if (!loaded || typeof loaded !== "object" || String(loaded.version || "") !== schemaVersion) {
+    if (
+      !this._adoptLoadedData(loaded, {
+        touchLastSeen: true,
+        syncVanityCode: true
+      })
+    ) {
       this._wipeAndReset();
 
       // If success page already generated a code, keep it across wipes (data alignment only).
@@ -323,154 +614,6 @@
       return;
     }
 
-
-    this.data = loaded;
-    this._lastSavedData = deepCopy(this.data);
-
-    // Harden required blocks (V2 shapes)
-    if (!this.data.runs) this.data.runs = deepCopy(this.defaultData.runs);
-    if (!this.data.settings) this.data.settings = deepCopy(this.defaultData.settings);
-    if (!this.data.uiDeviceFlags) this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
-    if (!this.data.houseAd) this.data.houseAd = deepCopy(this.defaultData.houseAd);
-    if (!this.data.waitlist) this.data.waitlist = deepCopy(this.defaultData.waitlist);
-    if (!this.data.counters) this.data.counters = deepCopy(this.defaultData.counters);
-    if (!this.data.history) this.data.history = deepCopy(this.defaultData.history);
-    if (!this.data.progression) this.data.progression = deepCopy(this.defaultData.progression);
-    if (!this.data.statsByItem) this.data.statsByItem = {};
-    if (!this.data.personalBest) this.data.personalBest = deepCopy(this.defaultData.personalBest);
-    if (!this.data.bonusBest) this.data.bonusBest = deepCopy(this.defaultData.bonusBest);
-    if (!this.data.earlyPrice) this.data.earlyPrice = deepCopy(this.defaultData.earlyPrice);
-    if (!this.data.postCompletion) this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
-    if (!this.data.endgame) this.data.endgame = deepCopy(this.defaultData.endgame);
-    if (!this.data.analytics) this.data.analytics = deepCopy(this.defaultData.analytics);
-
-    if (!Number.isFinite(Number(this.data.analytics.statsSharingPromptStage))) {
-      this.data.analytics.statsSharingPromptStage = -1;
-    } else {
-      this.data.analytics.statsSharingPromptStage = Math.floor(Number(this.data.analytics.statsSharingPromptStage));
-    }
-
-    if (!Number.isFinite(Number(this.data.analytics.statsSharingPromptFlags))) {
-      this.data.analytics.statsSharingPromptFlags = 0;
-    } else {
-      this.data.analytics.statsSharingPromptFlags = Math.floor(Number(this.data.analytics.statsSharingPromptFlags));
-    }
-
-    if (!Number.isFinite(Number(this.data.analytics.statsSharingSnoozeUntilRunCompletes))) {
-      this.data.analytics.statsSharingSnoozeUntilRunCompletes = 0;
-    } else {
-      this.data.analytics.statsSharingSnoozeUntilRunCompletes = Math.floor(Number(this.data.analytics.statsSharingSnoozeUntilRunCompletes));
-    }
-
-    if (!Number.isFinite(Number(this.data.analytics.checkoutStartedAt))) {
-      this.data.analytics.checkoutStartedAt = 0;
-    } else {
-      this.data.analytics.checkoutStartedAt = Math.floor(Number(this.data.analytics.checkoutStartedAt));
-    }
-
-    if (typeof this.data.analytics.paywallLastSource !== "string") {
-      this.data.analytics.paywallLastSource = "";
-    }
-
-    if (typeof this.data.analytics.checkoutPriceKey !== "string") {
-      this.data.analytics.checkoutPriceKey = "";
-    }
-
-    if (!Number.isFinite(Number(this.data.analytics.premiumUnlockedAt))) {
-      this.data.analytics.premiumUnlockedAt = 0;
-    } else {
-      this.data.analytics.premiumUnlockedAt = Math.floor(Number(this.data.analytics.premiumUnlockedAt));
-    }
-
-    if (!this.data.codes) this.data.codes = deepCopy(this.defaultData.codes);
-
-    // Harden runs (sync with config)
-
-    const r = this.data.runs;
-
-    const freeRunsCfg = clampNonNegativeInt(cfg?.limits?.freeRuns);
-    const isPrem = (this.data && this.data.isPremium === true);
-
-    // Always sync the configured free runs (single source of truth) AT INIT TIME.
-    // NOTE: This is NOT a reactive binding. If WT_CONFIG changes after init,
-    // storage keeps the previously loaded value until the next init (reload).
-    r.freeRuns = freeRunsCfg;
-
-
-    // Balance must be a non-negative int
-    r.balance = clampNonNegativeInt(r.balance);
-
-    // Keep economy consistent: for non-premium, balance must equal (freeRuns - runStarts).
-    // This prevents drift and makes config changes (e.g., 3 -> 2 free runs) behave predictably.
-    if (!isPrem) {
-      const used = clampNonNegativeInt(this.data?.counters?.runStarts);
-      r.balance = Math.max(0, freeRunsCfg - used);
-    }
-
-    if (!Number.isFinite(r.limitReachedCount)) r.limitReachedCount = 0;
-
-    // Harden settings
-    const st = this.data.settings;
-    if (typeof st.mistakesOnly !== "boolean") st.mistakesOnly = false;
-    if (typeof st.mistakesOnlyCompletedOnce !== "boolean") st.mistakesOnlyCompletedOnce = false;
-    if (!Number.isFinite(st.houseAdHiddenUntil)) st.houseAdHiddenUntil = 0;
-
-    // Harden House Ad state
-    const ha = this.data.houseAd || {};
-    if (typeof ha.introSeen !== "boolean") ha.introSeen = false;
-    if (typeof ha.state !== "string") ha.state = "never_seen";
-    if (ha.state !== "never_seen" && ha.state !== "remind_later") {
-      ha.state = "never_seen";
-    }
-    this.data.houseAd = ha;
-
-
-    // Harden Waitlist state
-    const wl = this.data.waitlist || {};
-    if (typeof wl.status !== "string") wl.status = "not_seen";
-    if (wl.status !== "not_seen" && wl.status !== "seen" && wl.status !== "joined") {
-      wl.status = "not_seen";
-    }
-    if (typeof wl.draftIdea !== "string") wl.draftIdea = "";
-    this.data.waitlist = wl;
-    // Harden counters
-    const c = this.data.counters;
-    for (const k in this.defaultData.counters) {
-      if (!Number.isFinite(c[k])) c[k] = 0;
-    }
-    c.premiumUnlockedCount = clampNonNegativeInt(c.premiumUnlockedCount);
-    // Harden personal best (RUN)
-    if (!Number.isFinite(this.data.personalBest.bestScoreFP)) this.data.personalBest.bestScoreFP = 0;
-    if (!Number.isFinite(this.data.personalBest.achievedAt)) this.data.personalBest.achievedAt = 0;
-
-    // Harden bonus best (BONUS)
-    if (!Number.isFinite(this.data.bonusBest.bestScoreFP)) this.data.bonusBest.bestScoreFP = 0;
-    if (!Number.isFinite(this.data.bonusBest.achievedAt)) this.data.bonusBest.achievedAt = 0;
-    // Harden early price (V2+)
-    const ep = this.data.earlyPrice || {};
-    if (!Number.isFinite(ep.startedAt)) ep.startedAt = 0;
-    if (typeof ep.used !== "boolean") ep.used = false;
-    this.data.earlyPrice = ep;
-
-    // Harden endgame
-    if (typeof this.data.endgame.endgameShown !== "boolean") this.data.endgame.endgameShown = false;
-    if (!Number.isFinite(this.data.endgame.endgameShownAt)) this.data.endgame.endgameShownAt = 0;
-
-    // Harden codes
-    const cd = this.data.codes;
-    if (typeof cd.redeemedOnce !== "boolean") cd.redeemedOnce = false;
-    if (typeof cd.code !== "string") cd.code = "";
-
-    // If success page already generated a code, align vanity storage with the main storage object.
-    this._syncVanityCodeToCodes();
-
-    // Analytics timestamps
-    if (!Number.isFinite(this.data.analytics.firstSeenAt) || this.data.analytics.firstSeenAt <= 0) {
-      this.data.analytics.firstSeenAt = now();
-    }
-
-    this.data.analytics.lastSeenAt = now();
-
     // Multi-tab sync (read-only listener)
     this._addStorageListener();
 
@@ -481,12 +624,12 @@
   StorageManager.prototype._load = function () {
     // Read-only load. No side effects, no _save(), no events.
     try {
-      if (typeof window.localStorage === "undefined") return null;
+      if (typeof window.localStorage === 'undefined') return null;
 
       const raw = window.localStorage.getItem(this.storageKey);
       const parsed = safeJsonParse(raw);
 
-      return (parsed && typeof parsed === "object") ? parsed : null;
+      return parsed && typeof parsed === 'object' ? parsed : null;
     } catch (_) {
       return null;
     }
@@ -500,31 +643,38 @@
     }
   };
 
-
-
-
   StorageManager.prototype._save = function () {
     if (!this.data) return;
     this.data.updatedAt = now();
 
     try {
-      if (typeof window.localStorage === "undefined") return;
+      if (typeof window.localStorage === 'undefined') return;
 
       try {
         window.localStorage.setItem(this.storageKey, JSON.stringify(this.data));
       } catch (err) {
         // Fail closed: no auto-delete, no recursion, no surprises.
         // One-shot UI signal: persistence is currently broken (quota/private mode/etc).
-        try { console.warn("[WT Storage] Save failed (quota?):", err?.name || err); } catch (_) { }
+        try {
+          console.warn('[WT Storage] Save failed (quota?):', err?.name || err);
+        } catch (_) {}
 
         // Keep runtime state aligned with the last known persisted snapshot.
-        if (this._lastSavedData && typeof this._lastSavedData === "object") {
-          try { this.data = deepCopy(this._lastSavedData); } catch (_) { /* silent */ }
+        if (this._lastSavedData && typeof this._lastSavedData === 'object') {
+          try {
+            this.data = deepCopy(this._lastSavedData);
+          } catch (_) {
+            /* silent */
+          }
         }
 
         if (this._saveFailedOnce !== true) {
           this._saveFailedOnce = true;
-          try { window.dispatchEvent(new CustomEvent(EVT_SAVE_FAILED)); } catch (_) { /* silent */ }
+          try {
+            window.dispatchEvent(new CustomEvent(EVT_SAVE_FAILED));
+          } catch (_) {
+            /* silent */
+          }
         }
 
         return;
@@ -539,35 +689,34 @@
     }
   };
 
-
-
-
-
   StorageManager.prototype._addStorageListener = function () {
     if (this._storageListenerAdded) return;
 
-    window.addEventListener("storage", (event) => {
+    window.addEventListener('storage', (event) => {
       if (!event || event.key !== this.storageKey) return;
 
       if (event.newValue == null) {
-        this.data = deepCopy(this.defaultData);
-        this.data.createdAt = now();
-        this.data.updatedAt = now();
-        this.data.analytics.firstSeenAt = now();
-        this.data.analytics.lastSeenAt = now();
-        this._lastSavedData = deepCopy(this.data);
+        const resetData = deepCopy(this.defaultData);
+        resetData.createdAt = now();
+        resetData.updatedAt = now();
+        this._adoptLoadedData(resetData, {
+          touchLastSeen: true,
+          syncVanityCode: false
+        });
         this._emit();
         return;
       }
 
       const updatedData = safeJsonParse(event.newValue);
-      if (!updatedData || typeof updatedData !== "object") return;
-      if (String(updatedData.version || "") !== String(this.defaultData.version || "")) return;
+      if (
+        !this._adoptLoadedData(updatedData, {
+          touchLastSeen: false,
+          syncVanityCode: false
+        })
+      )
+        return;
 
       // Mise à jour locale uniquement (ne jamais _save() ici)
-      this.data = updatedData;
-      this._lastSavedData = deepCopy(updatedData);
-
       // Notifie l'UI de CET onglet
       this._emit();
     });
@@ -575,22 +724,11 @@
     this._storageListenerAdded = true;
   };
 
-
-
-
-
-
-
   StorageManager.prototype._clearOldData = function () {
     // Disabled: storage must not delete user data silently.
     // Keep method for backward compatibility; no-op by design.
     return;
   };
-
-
-
-
-
 
   StorageManager.prototype._wipeAndReset = function () {
     this.data = deepCopy(this.defaultData);
@@ -627,12 +765,11 @@
     return s;
   };
 
-
   StorageManager.prototype._compileCodeRegex = function () {
     if (this._premiumCodeRe !== undefined) return;
 
     const cfg = this.config || {};
-    const raw = String(cfg?.premiumCodeRegex || "").trim();
+    const raw = String(cfg?.premiumCodeRegex || '').trim();
 
     if (!raw) {
       this._premiumCodeRe = null;
@@ -653,16 +790,16 @@
     if (!this.data) return false;
 
     const cfg = this.config || {};
-    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || "").trim();
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || '').trim();
     if (!vanityKey) return false;
 
     // Ensure codes shape exists
-    if (!this.data.codes || typeof this.data.codes !== "object") {
+    if (!this.data.codes || typeof this.data.codes !== 'object') {
       this.data.codes = deepCopy(this.defaultData.codes);
     }
     const cd = this.data.codes;
-    if (typeof cd.redeemedOnce !== "boolean") cd.redeemedOnce = false;
-    if (typeof cd.code !== "string") cd.code = "";
+    if (typeof cd.redeemedOnce !== 'boolean') cd.redeemedOnce = false;
+    if (typeof cd.code !== 'string') cd.code = '';
 
     // Validate vanity code with config regex
     this._compileCodeRegex();
@@ -670,27 +807,35 @@
     if (!re) return false;
 
     // Defensive: RegExp.test() is stateful with /g or /y
-    try { re.lastIndex = 0; } catch (_) { }
-
-    let vanity = "";
     try {
-      vanity = String(window.localStorage.getItem(vanityKey) || "").trim();
+      re.lastIndex = 0;
+    } catch (_) {}
+
+    let vanity = '';
+    try {
+      vanity = String(window.localStorage.getItem(vanityKey) || '').trim();
     } catch (_) {
-      vanity = "";
+      vanity = '';
     }
 
-    try { re.lastIndex = 0; } catch (_) { }
+    try {
+      re.lastIndex = 0;
+    } catch (_) {}
     if (!vanity || !re.test(vanity)) return false;
 
     // Only write if missing or invalid in storage
-    const current = String(cd.code || "").trim();
-    try { re.lastIndex = 0; } catch (_) { }
+    const current = String(cd.code || '').trim();
+    try {
+      re.lastIndex = 0;
+    } catch (_) {}
     if (current && re.test(current)) return false;
 
     cd.code = vanity;
     this.data.codes = cd;
 
-    try { window.localStorage.removeItem(vanityKey); } catch (_) { }
+    try {
+      window.localStorage.removeItem(vanityKey);
+    } catch (_) {}
 
     return true;
   };
@@ -698,34 +843,42 @@
   StorageManager.prototype.getVanityCode = function () {
     this._compileCodeRegex();
     const re = this._premiumCodeRe;
-    if (!re) return "";
+    if (!re) return '';
 
-    const stored = String(this.data?.codes?.code || "").trim();
-    try { re.lastIndex = 0; } catch (_) { }
+    const stored = String(this.data?.codes?.code || '').trim();
+    try {
+      re.lastIndex = 0;
+    } catch (_) {}
     if (stored && re.test(stored)) return stored;
 
     const cfg = this.config || {};
-    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || "").trim();
-    if (!vanityKey) return "";
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || '').trim();
+    if (!vanityKey) return '';
 
-    let code = "";
+    let code = '';
     try {
-      code = String(window.localStorage.getItem(vanityKey) || "").trim();
+      code = String(window.localStorage.getItem(vanityKey) || '').trim();
     } catch (_) {
-      code = "";
+      code = '';
     }
 
-    try { re.lastIndex = 0; } catch (_) { }
-    if (!code || !re.test(code)) return "";
+    try {
+      re.lastIndex = 0;
+    } catch (_) {}
+    if (!code || !re.test(code)) return '';
 
     return code;
   };
 
   StorageManager.prototype._readUiDeviceFlag = function (suffix) {
-    const s = String(suffix || "").trim();
+    const s = String(suffix || '').trim();
     if (!s) return false;
 
-    if (!this.data || !this.data.uiDeviceFlags || typeof this.data.uiDeviceFlags !== "object") {
+    if (
+      !this.data ||
+      !this.data.uiDeviceFlags ||
+      typeof this.data.uiDeviceFlags !== 'object'
+    ) {
       return false;
     }
 
@@ -733,10 +886,13 @@
   };
 
   StorageManager.prototype._writeUiDeviceFlag = function (suffix) {
-    const s = String(suffix || "").trim();
+    const s = String(suffix || '').trim();
     if (!s || !this.data) return;
 
-    if (!this.data.uiDeviceFlags || typeof this.data.uiDeviceFlags !== "object") {
+    if (
+      !this.data.uiDeviceFlags ||
+      typeof this.data.uiDeviceFlags !== 'object'
+    ) {
       this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
     }
 
@@ -747,35 +903,61 @@
   };
 
   StorageManager.prototype.hasSeenFirstRunFraming = function () {
-    return this._readUiDeviceFlag("firstRunFramingSeen");
+    return this._readUiDeviceFlag('firstRunFramingSeen');
   };
 
   StorageManager.prototype.markSeenFirstRunFraming = function () {
-    this._writeUiDeviceFlag("firstRunFramingSeen");
+    this._writeUiDeviceFlag('firstRunFramingSeen');
   };
 
   StorageManager.prototype.hasSeenPremiumFirstRunFraming = function () {
-    return this._readUiDeviceFlag("premiumFirstRunFramingSeen");
+    return this._readUiDeviceFlag('premiumFirstRunFramingSeen');
   };
 
   StorageManager.prototype.markSeenPremiumFirstRunFraming = function () {
-    this._writeUiDeviceFlag("premiumFirstRunFramingSeen");
+    this._writeUiDeviceFlag('premiumFirstRunFramingSeen');
   };
 
   StorageManager.prototype.hasSolvedSecretChestHint = function () {
-    return this._readUiDeviceFlag("secretChestHintSolved");
+    return this._readUiDeviceFlag('secretChestHintSolved');
   };
 
   StorageManager.prototype.markSolvedSecretChestHint = function () {
-    this._writeUiDeviceFlag("secretChestHintSolved");
+    this._writeUiDeviceFlag('secretChestHintSolved');
   };
 
   StorageManager.prototype.hasShownSecretChestWelcome = function () {
-    return this._readUiDeviceFlag("secretChestWelcomeShown");
+    return this._readUiDeviceFlag('secretChestWelcomeShown');
   };
 
   StorageManager.prototype.markShownSecretChestWelcome = function () {
-    this._writeUiDeviceFlag("secretChestWelcomeShown");
+    this._writeUiDeviceFlag('secretChestWelcomeShown');
+  };
+
+  StorageManager.prototype.getDailyChallengeToastDayKey = function () {
+    if (!this.data) return '';
+    const flags = this.data.uiDeviceFlags || {};
+    return String(flags.dailyChallengeToastDayKey || '').trim();
+  };
+
+  StorageManager.prototype.markDailyChallengeToastShown = function (dayKey) {
+    const key = String(dayKey || '').trim();
+    if (!key || !this.data) return;
+
+    if (
+      !this.data.uiDeviceFlags ||
+      typeof this.data.uiDeviceFlags !== 'object'
+    ) {
+      this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
+    }
+
+    if (
+      String(this.data.uiDeviceFlags.dailyChallengeToastDayKey || '').trim() ===
+      key
+    )
+      return;
+    this.data.uiDeviceFlags.dailyChallengeToastDayKey = key;
+    this._save();
   };
 
   StorageManager.prototype.resetUiDeviceFlags = function () {
@@ -784,7 +966,6 @@
     this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
     this._save();
   };
-
 
   // ============================================
   // Getters
@@ -805,14 +986,13 @@
     const n = Number(stageIndex);
     if (!Number.isFinite(n)) return;
 
-    if (!this.data.analytics || typeof this.data.analytics !== "object") {
+    if (!this.data.analytics || typeof this.data.analytics !== 'object') {
       this.data.analytics = deepCopy(this.defaultData.analytics);
     }
 
     this.data.analytics.statsSharingPromptStage = Math.floor(n);
     this._save();
   };
-
 
   StorageManager.prototype.getStatsSharingPromptFlags = function () {
     const a = this.data?.analytics || {};
@@ -826,7 +1006,7 @@
     const n = Number(flags);
     if (!Number.isFinite(n)) return;
 
-    if (!this.data.analytics || typeof this.data.analytics !== "object") {
+    if (!this.data.analytics || typeof this.data.analytics !== 'object') {
       this.data.analytics = deepCopy(this.defaultData.analytics);
     }
 
@@ -841,25 +1021,28 @@
     if (!Number.isFinite(b) || b <= 0) return;
 
     const cur = this.getStatsSharingPromptFlags();
-    const next = (cur | Math.floor(b));
+    const next = cur | Math.floor(b);
     if (next === cur) return;
 
     this.setStatsSharingPromptFlags(next);
   };
 
-  StorageManager.prototype.getStatsSharingSnoozeUntilRunCompletes = function () {
-    const a = this.data?.analytics || {};
-    const n = Number(a.statsSharingSnoozeUntilRunCompletes);
-    return Number.isFinite(n) ? Math.floor(n) : 0;
-  };
+  StorageManager.prototype.getStatsSharingSnoozeUntilRunCompletes =
+    function () {
+      const a = this.data?.analytics || {};
+      const n = Number(a.statsSharingSnoozeUntilRunCompletes);
+      return Number.isFinite(n) ? Math.floor(n) : 0;
+    };
 
-  StorageManager.prototype.setStatsSharingSnoozeUntilRunCompletes = function (n) {
+  StorageManager.prototype.setStatsSharingSnoozeUntilRunCompletes = function (
+    n
+  ) {
     if (!this.data) return;
 
     const v = Number(n);
     if (!Number.isFinite(v) || v < 0) return;
 
-    if (!this.data.analytics || typeof this.data.analytics !== "object") {
+    if (!this.data.analytics || typeof this.data.analytics !== 'object') {
       this.data.analytics = deepCopy(this.defaultData.analytics);
     }
 
@@ -874,13 +1057,9 @@
     this.setStatsSharingSnoozeUntilRunCompletes(runs + 1);
   };
 
-
   StorageManager.prototype.getRunsBalance = function () {
     return clampNonNegativeInt(this.data?.runs?.balance);
   };
-
-
-
 
   // Runs used in the economy sense: how many runs were actually started (consumeRunOrBlock increments runStarts).
   StorageManager.prototype.getRunsUsed = function () {
@@ -891,6 +1070,19 @@
     return clampNonNegativeInt(this.data?.counters?.runNumber);
   };
 
+  StorageManager.prototype.reserveRunNumber = function () {
+    if (!this.data) return 0;
+
+    if (!this.data.counters || typeof this.data.counters !== 'object') {
+      this.data.counters = deepCopy(this.defaultData.counters);
+    }
+
+    const next = clampNonNegativeInt(this.data.counters.runNumber) + 1;
+    this.data.counters.runNumber = next;
+    this._save();
+    return next;
+  };
+
   StorageManager.prototype.getSecretBonusFreeRunsUsed = function () {
     return clampNonNegativeInt(this.data?.counters?.secretBonusFreeRunsUsed);
   };
@@ -898,7 +1090,7 @@
   StorageManager.prototype.incrementSecretBonusFreeRunsUsed = function () {
     if (!this.data) return;
 
-    if (!this.data.counters || typeof this.data.counters !== "object") {
+    if (!this.data.counters || typeof this.data.counters !== 'object') {
       this.data.counters = deepCopy(this.defaultData.counters);
     }
 
@@ -907,15 +1099,261 @@
     this._save();
   };
 
+  StorageManager.prototype.getRapidFireTicketBalance = function () {
+    return clampNonNegativeInt(this.data?.rapidFire?.ticketBalance);
+  };
+
+  StorageManager.prototype.getLeaderboardProfile = function () {
+    const lb = this.data?.leaderboard || {};
+    return {
+      deviceUuid: String(lb.deviceUuid || '').trim(),
+      nickname: String(lb.nickname || '').trim(),
+      optIn: lb.optIn === true,
+      updatedAt: clampNonNegativeInt(lb.updatedAt)
+    };
+  };
+
+  StorageManager.prototype.ensureLeaderboardDeviceUuid = function () {
+    if (!this.data) return '';
+
+    if (!this.data.leaderboard || typeof this.data.leaderboard !== 'object') {
+      this.data.leaderboard = deepCopy(this.defaultData.leaderboard);
+    }
+
+    const existing = String(this.data.leaderboard.deviceUuid || '').trim();
+    if (existing) return existing;
+
+    const next = generateLocalUuid();
+    this.data.leaderboard.deviceUuid = next;
+    this.data.leaderboard.updatedAt = now();
+    this._save();
+    return next;
+  };
+
+  StorageManager.prototype.saveLeaderboardProfile = function (nickname, optIn) {
+    if (!this.data)
+      return { ok: false, nickname: '', optIn: false, deviceUuid: '' };
+
+    if (!this.data.leaderboard || typeof this.data.leaderboard !== 'object') {
+      this.data.leaderboard = deepCopy(this.defaultData.leaderboard);
+    }
+
+    const nextNickname = String(nickname || '').trim();
+    this.data.leaderboard.deviceUuid = this.ensureLeaderboardDeviceUuid();
+    this.data.leaderboard.nickname = nextNickname;
+    this.data.leaderboard.optIn = optIn === true;
+    this.data.leaderboard.updatedAt = now();
+    this._save();
+
+    return {
+      ok: true,
+      nickname: nextNickname,
+      optIn: this.data.leaderboard.optIn === true,
+      deviceUuid: String(this.data.leaderboard.deviceUuid || '').trim()
+    };
+  };
+
+  StorageManager.prototype.getRapidFireTicketCap = function () {
+    return clampNonNegativeInt(this.config?.secretBonus?.ticketCap);
+  };
+
+  StorageManager.prototype.getRapidFireTicketCost = function () {
+    const cost = clampNonNegativeInt(this.config?.secretBonus?.ticketCost);
+    return cost > 0 ? cost : 1;
+  };
+
+  StorageManager.prototype.getDailyTicketEarnedDayKey = function () {
+    return String(this.data?.rapidFire?.dailyTicketEarnedDayKey || '').trim();
+  };
+
+  StorageManager.prototype.getDailyChallengeTarget = function (dayKey) {
+    const key = String(dayKey || '').trim();
+    if (!key) return 0;
+    const rf = this.data?.rapidFire || {};
+    if (String(rf.dailyChallengeTargetDayKey || '').trim() !== key) return 0;
+    return clampNonNegativeInt(rf.dailyChallengeTargetScore);
+  };
+
+  StorageManager.prototype.ensureDailyChallengeTarget = function (
+    dayKey,
+    fallbackScore
+  ) {
+    const key = String(dayKey || '').trim();
+    const nextScore = RapidFireLogic.computeDailyChallengeTarget(
+      '',
+      0,
+      key,
+      fallbackScore
+    );
+    if (!this.data) return nextScore;
+    if (!key) return nextScore;
+
+    if (!this.data.rapidFire || typeof this.data.rapidFire !== 'object') {
+      this.data.rapidFire = deepCopy(this.defaultData.rapidFire);
+    }
+
+    const existingKey = String(
+      this.data.rapidFire.dailyChallengeTargetDayKey || ''
+    ).trim();
+    const existingScore = clampNonNegativeInt(
+      this.data.rapidFire.dailyChallengeTargetScore
+    );
+    const frozenScore = RapidFireLogic.computeDailyChallengeTarget(
+      existingKey,
+      existingScore,
+      key,
+      fallbackScore
+    );
+    if (existingKey === key && existingScore > 0) return frozenScore;
+
+    this.data.rapidFire.dailyChallengeTargetDayKey = key;
+    this.data.rapidFire.dailyChallengeTargetScore = frozenScore;
+    this._save();
+    return frozenScore;
+  };
+
+  StorageManager.prototype.grantStarterRapidFireTicketIfNeeded = function () {
+    if (!this.data) return { ok: false, granted: false, balance: 0 };
+
+    if (!this.data.rapidFire || typeof this.data.rapidFire !== 'object') {
+      this.data.rapidFire = deepCopy(this.defaultData.rapidFire);
+    }
+
+    if (this.data.rapidFire.starterTicketGranted === true) {
+      return {
+        ok: true,
+        granted: false,
+        balance: this.getRapidFireTicketBalance(),
+        cap: this.getRapidFireTicketCap()
+      };
+    }
+
+    const cap = this.getRapidFireTicketCap();
+    const starterTickets = clampNonNegativeInt(
+      this.config?.secretBonus?.starterTickets
+    );
+    const current = clampNonNegativeInt(this.data.rapidFire.ticketBalance);
+    const grant = RapidFireLogic.computeStarterTicketGrant(
+      current,
+      starterTickets,
+      cap
+    );
+
+    this.data.rapidFire.ticketBalance = grant.nextBalance;
+    this.data.rapidFire.starterTicketGranted = true;
+    this._save();
+
+    return {
+      ok: true,
+      granted: grant.granted,
+      balance: grant.nextBalance,
+      cap
+    };
+  };
+
+  StorageManager.prototype.grantDailyRapidFireTicket = function (dayKey) {
+    if (!this.data)
+      return { ok: false, granted: false, balance: 0, cap: 0, atCap: false };
+
+    const key = String(dayKey || '').trim();
+    if (!key)
+      return {
+        ok: false,
+        granted: false,
+        balance: this.getRapidFireTicketBalance(),
+        cap: this.getRapidFireTicketCap(),
+        atCap: false
+      };
+
+    if (!this.data.rapidFire || typeof this.data.rapidFire !== 'object') {
+      this.data.rapidFire = deepCopy(this.defaultData.rapidFire);
+    }
+
+    const cap = this.getRapidFireTicketCap();
+    const current = clampNonNegativeInt(this.data.rapidFire.ticketBalance);
+    const alreadyEarned =
+      String(this.data.rapidFire.dailyTicketEarnedDayKey || '').trim() === key;
+    const grant = RapidFireLogic.computeDailyTicketGrant(
+      current,
+      cap,
+      alreadyEarned
+    );
+
+    this.data.rapidFire.ticketBalance = grant.nextBalance;
+    this.data.rapidFire.dailyTicketEarnedDayKey = key;
+    this._save();
+
+    return {
+      ok: true,
+      granted: grant.granted,
+      balance: grant.nextBalance,
+      cap,
+      atCap: grant.atCap
+    };
+  };
+
+  StorageManager.prototype.consumeRapidFireTicketOrBlock = function () {
+    if (!this.data)
+      return { ok: false, reason: 'NO_DATA', balance: 0, cost: 0 };
+
+    if (!this.data.rapidFire || typeof this.data.rapidFire !== 'object') {
+      this.data.rapidFire = deepCopy(this.defaultData.rapidFire);
+    }
+
+    const cost = this.getRapidFireTicketCost();
+    const balance = clampNonNegativeInt(this.data.rapidFire.ticketBalance);
+
+    if (balance >= cost) {
+      this.data.rapidFire.ticketBalance = Math.max(0, balance - cost);
+      this._save();
+      return {
+        ok: true,
+        reason: 'CONSUMED',
+        balance: clampNonNegativeInt(this.data.rapidFire.ticketBalance),
+        cost
+      };
+    }
+
+    return {
+      ok: false,
+      reason: 'NO_TICKETS',
+      balance,
+      cost
+    };
+  };
+
+  StorageManager.prototype.refundRapidFireTicket = function (amount) {
+    if (!this.data) return { ok: false, balance: 0, cap: 0 };
+
+    if (!this.data.rapidFire || typeof this.data.rapidFire !== 'object') {
+      this.data.rapidFire = deepCopy(this.defaultData.rapidFire);
+    }
+
+    const add = clampNonNegativeInt(amount);
+    if (add <= 0) {
+      return {
+        ok: true,
+        balance: this.getRapidFireTicketBalance(),
+        cap: this.getRapidFireTicketCap()
+      };
+    }
+
+    const cap = this.getRapidFireTicketCap();
+    const current = clampNonNegativeInt(this.data.rapidFire.ticketBalance);
+    const next = cap > 0 ? Math.min(cap, current + add) : current + add;
+    this.data.rapidFire.ticketBalance = next;
+    this._save();
+
+    return { ok: true, balance: next, cap };
+  };
 
   StorageManager.prototype.getCounters = function () {
     return deepCopy(this.data?.counters || {});
   };
 
   StorageManager.prototype.getStoredPremiumCode = function () {
-    return String(this.data?.codes?.code || "").trim();
+    return String(this.data?.codes?.code || '').trim();
   };
-
 
   StorageManager.prototype.getData = function () {
     return deepCopy(this.data || {});
@@ -924,7 +1362,7 @@
   // Return a defensive copy (prevents accidental mutation outside storage.js)
   StorageManager.prototype.getItemStats = function (id) {
     const s = this.data?.statsByItem?.[String(id)] || null;
-    if (!s || typeof s !== "object") return null;
+    if (!s || typeof s !== 'object') return null;
     return {
       seenCount: clampNonNegativeInt(s.seenCount),
       correctCount: clampNonNegativeInt(s.correctCount),
@@ -939,11 +1377,11 @@
   StorageManager.prototype.getStatsByItem = function () {
     const src = this.data?.statsByItem;
     const out = {};
-    if (!src || typeof src !== "object") return out;
+    if (!src || typeof src !== 'object') return out;
 
     for (const k in src) {
       const s = src[k];
-      if (!s || typeof s !== "object") continue;
+      if (!s || typeof s !== 'object') continue;
       out[String(k)] = {
         seenCount: clampNonNegativeInt(s.seenCount),
         correctCount: clampNonNegativeInt(s.correctCount),
@@ -962,11 +1400,11 @@
   StorageManager.prototype.getSeenItemIds = function () {
     const stats = this.data?.statsByItem;
     const out = [];
-    if (!stats || typeof stats !== "object") return out;
+    if (!stats || typeof stats !== 'object') return out;
 
     for (const k in stats) {
       const s = stats[k];
-      if (!s || typeof s !== "object") continue;
+      if (!s || typeof s !== 'object') continue;
 
       if (clampNonNegativeInt(s.seenCount) > 0) {
         const idNum = safeIdNum(k);
@@ -976,7 +1414,6 @@
 
     return out;
   };
-
 
   StorageManager.prototype.getWrongCountTotal = function () {
     const stats = this.data?.statsByItem || {};
@@ -1009,7 +1446,6 @@
     return seen >= n;
   };
 
-
   // Convenience getter: "pool exhausted" using config as source of truth.
   // UI/game should not invent a number; it comes from WT_CONFIG.game.poolSize.
   StorageManager.prototype.hasSeenAllWordTraps = function () {
@@ -1024,7 +1460,6 @@
     return this.hasSeenAllItems(total);
   };
 
-
   // Active mistakes: items where the last interaction is wrong (lw > lc).
   StorageManager.prototype.getActiveMistakesCount = function () {
     const stats = this.data?.statsByItem || {};
@@ -1032,7 +1467,7 @@
 
     for (const k in stats) {
       const s = stats[k];
-      if (!s || typeof s !== "object") continue;
+      if (!s || typeof s !== 'object') continue;
 
       const lw = Number(s.lastWrongAt || 0);
       const lc = Number(s.lastCorrectAt || 0);
@@ -1043,20 +1478,21 @@
     return count;
   };
 
-
   StorageManager.prototype.isMastered = function () {
     return this.isPoolExhausted() && this.getActiveMistakesCount() === 0;
   };
 
-
   // Persisted "revealed at least once" flag for post-completion UX (END -> LANDING)
   StorageManager.prototype.hasPostCompletionSeenOnce = function () {
-    return !!(this.data?.postCompletion?.postCompletionShown);
+    return !!this.data?.postCompletion?.postCompletionShown;
   };
 
   StorageManager.prototype.markPostCompletionSeenOnce = function () {
     if (!this.data) return;
-    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+    if (
+      !this.data.postCompletion ||
+      typeof this.data.postCompletion !== 'object'
+    ) {
       this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     }
 
@@ -1069,13 +1505,16 @@
 
   // One-shot: halfway milestone (pool midpoint)
   StorageManager.prototype.hasQuarterMilestoneShown = function () {
-    return !!(this.data?.postCompletion?.quarterMilestoneShown);
+    return !!this.data?.postCompletion?.quarterMilestoneShown;
   };
 
   StorageManager.prototype.markQuarterMilestoneShown = function () {
     if (!this.data) return;
 
-    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+    if (
+      !this.data.postCompletion ||
+      typeof this.data.postCompletion !== 'object'
+    ) {
       this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     }
 
@@ -1087,13 +1526,16 @@
   };
 
   StorageManager.prototype.hasHalfwayMilestoneShown = function () {
-    return !!(this.data?.postCompletion?.halfwayMilestoneShown);
+    return !!this.data?.postCompletion?.halfwayMilestoneShown;
   };
 
   StorageManager.prototype.markHalfwayMilestoneShown = function () {
     if (!this.data) return;
 
-    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+    if (
+      !this.data.postCompletion ||
+      typeof this.data.postCompletion !== 'object'
+    ) {
       this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     }
 
@@ -1105,13 +1547,16 @@
   };
 
   StorageManager.prototype.hasThreeQuartersMilestoneShown = function () {
-    return !!(this.data?.postCompletion?.threeQuartersMilestoneShown);
+    return !!this.data?.postCompletion?.threeQuartersMilestoneShown;
   };
 
   StorageManager.prototype.markThreeQuartersMilestoneShown = function () {
     if (!this.data) return;
 
-    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+    if (
+      !this.data.postCompletion ||
+      typeof this.data.postCompletion !== 'object'
+    ) {
       this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     }
 
@@ -1124,13 +1569,16 @@
 
   // One-shot: did we already celebrate "seen all questions"?
   StorageManager.prototype.hasPoolCompleteCelebrated = function () {
-    return !!(this.data?.postCompletion?.poolCompleteCelebrated);
+    return !!this.data?.postCompletion?.poolCompleteCelebrated;
   };
 
   StorageManager.prototype.markPoolCompleteCelebrated = function () {
     if (!this.data) return;
 
-    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+    if (
+      !this.data.postCompletion ||
+      typeof this.data.postCompletion !== 'object'
+    ) {
       this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     }
 
@@ -1141,15 +1589,17 @@
     this._save();
   };
 
-
   StorageManager.prototype.hasMasteredCelebrated = function () {
-    return !!(this.data?.postCompletion?.masteredCelebrated);
+    return !!this.data?.postCompletion?.masteredCelebrated;
   };
 
   StorageManager.prototype.markMasteredCelebrated = function () {
     if (!this.data) return;
 
-    if (!this.data.postCompletion || typeof this.data.postCompletion !== "object") {
+    if (
+      !this.data.postCompletion ||
+      typeof this.data.postCompletion !== 'object'
+    ) {
       this.data.postCompletion = deepCopy(this.defaultData.postCompletion);
     }
 
@@ -1174,32 +1624,35 @@
     const n = clampNonNegativeInt(maxCount);
     if (n <= 0) return [];
 
-    const list = (this.data?.history && Array.isArray(this.data.history.lastRuns))
-      ? this.data.history.lastRuns
-      : [];
+    const list =
+      this.data?.history && Array.isArray(this.data.history.lastRuns)
+        ? this.data.history.lastRuns
+        : [];
 
     return list.slice(0, n).map((e) => {
-      const it = (e && typeof e === "object") ? e : {};
+      const it = e && typeof e === 'object' ? e : {};
       return {
         runNumber: clampNonNegativeInt(it.runNumber),
         endedAt: clampNonNegativeInt(it.endedAt),
         scoreFP: clampNonNegativeInt(it.scoreFP),
-        meta: (it.meta && typeof it.meta === "object") ? it.meta : {}
+        meta: it.meta && typeof it.meta === 'object' ? it.meta : {}
       };
     });
   };
 
   StorageManager.prototype.getRunPaceTotals = function () {
-    const rp = (this.data?.history && this.data.history.runPaceTotals && typeof this.data.history.runPaceTotals === "object")
-      ? this.data.history.runPaceTotals
-      : {};
+    const rp =
+      this.data?.history &&
+      this.data.history.runPaceTotals &&
+      typeof this.data.history.runPaceTotals === 'object'
+        ? this.data.history.runPaceTotals
+        : {};
 
     return {
       runCount: clampNonNegativeInt(rp.runCount),
       totalNewSeen: clampNonNegativeInt(rp.totalNewSeen)
     };
   };
-
 
   StorageManager.prototype.getEarlyPriceState = function () {
     const ep = this.data?.earlyPrice || {};
@@ -1208,17 +1661,15 @@
     // Window length is config-driven (single source of truth for mechanics)
     const windowMs = clampNonNegativeInt(this.config?.earlyPriceWindowMs);
 
-
     if (!startedAt || windowMs <= 0) {
-      return { phase: "STANDARD", remainingMs: 0, startedAt };
+      return { phase: 'STANDARD', remainingMs: 0, startedAt };
     }
 
     const elapsed = now() - startedAt;
     const remainingMs = Math.max(0, windowMs - elapsed);
-    const phase = remainingMs > 0 ? "EARLY" : "STANDARD";
+    const phase = remainingMs > 0 ? 'EARLY' : 'STANDARD';
     return { phase, remainingMs, startedAt };
   };
-
 
   // ============================================
   // Economy (Runs)
@@ -1228,13 +1679,14 @@
   // - after freeRuns: paywall
   // - no daily reset
   StorageManager.prototype.consumeRunOrBlock = function () {
-    if (!this.data) return { ok: false, reason: "NO_DATA", balance: 0 };
+    if (!this.data) return { ok: false, reason: 'NO_DATA', balance: 0 };
 
     if (this.isPremium()) {
       // Runs used metric should reflect actual starts, even for premium.
-      this.data.counters.runStarts = clampNonNegativeInt(this.data.counters.runStarts) + 1;
+      this.data.counters.runStarts =
+        clampNonNegativeInt(this.data.counters.runStarts) + 1;
       this._save();
-      return { ok: true, reason: "PREMIUM", balance: this.getRunsBalance() };
+      return { ok: true, reason: 'PREMIUM', balance: this.getRunsBalance() };
     }
 
     const r = this.data.runs || {};
@@ -1243,19 +1695,20 @@
     // Normal consumption (free runs)
     if (bal > 0) {
       r.balance = Math.max(0, bal - 1);
-      this.data.counters.runStarts = clampNonNegativeInt(this.data.counters.runStarts) + 1;
+      this.data.counters.runStarts =
+        clampNonNegativeInt(this.data.counters.runStarts) + 1;
       this._save();
-      return { ok: true, reason: "CONSUMED", balance: this.getRunsBalance() };
+      return { ok: true, reason: 'CONSUMED', balance: this.getRunsBalance() };
     }
 
     r.limitReachedCount = clampNonNegativeInt(r.limitReachedCount) + 1;
     this._save();
-    return { ok: false, reason: "NO_RUNS", balance: 0 };
+    return { ok: false, reason: 'NO_RUNS', balance: 0 };
   };
 
   // PRACTICE (Mistakes only) economy gate (separate from RUN economy)
   StorageManager.prototype.consumePracticeOrBlock = function () {
-    if (!this.data) return { ok: false, reason: "NO_DATA", used: 0, limit: 0 };
+    if (!this.data) return { ok: false, reason: 'NO_DATA', used: 0, limit: 0 };
 
     const limit = clampNonNegativeInt(this.config?.mistakesOnly?.freeRunsLimit);
     const used = clampNonNegativeInt(this.data.counters.practiceFreeRunsUsed);
@@ -1263,17 +1716,17 @@
     if (this.isPremium()) {
       this.data.counters.practiceFreeRunsUsed = used + 1;
       this._save();
-      return { ok: true, reason: "PREMIUM", used: used + 1, limit };
+      return { ok: true, reason: 'PREMIUM', used: used + 1, limit };
     }
 
     if (limit > 0 && used < limit) {
       this.data.counters.practiceFreeRunsUsed = used + 1;
       this._save();
-      return { ok: true, reason: "CONSUMED", used: used + 1, limit };
+      return { ok: true, reason: 'CONSUMED', used: used + 1, limit };
     }
 
     this._save();
-    return { ok: false, reason: "NO_RUNS", used, limit };
+    return { ok: false, reason: 'NO_RUNS', used, limit };
   };
 
   StorageManager.prototype.getPracticeRunsRemaining = function () {
@@ -1289,19 +1742,18 @@
     return clampNonNegativeInt(this.data?.counters?.practiceFreeRunsUsed);
   };
 
-
   // ============================================
   // Settings
   // ============================================
 
   StorageManager.prototype.setMistakesOnly = function (on) {
     if (!this.data) return;
-    this.data.settings.mistakesOnly = (on === true);
+    this.data.settings.mistakesOnly = on === true;
     this._save();
   };
 
   StorageManager.prototype.getMistakesOnly = function () {
-    return !!(this.data?.settings?.mistakesOnly);
+    return !!this.data?.settings?.mistakesOnly;
   };
 
   StorageManager.prototype.markMistakesOnlyCompletedOnce = function () {
@@ -1311,7 +1763,17 @@
   };
 
   StorageManager.prototype.hasUsedMistakesOnly = function () {
-    return !!(this.data?.settings?.mistakesOnlyCompletedOnce);
+    return !!this.data?.settings?.mistakesOnlyCompletedOnce;
+  };
+
+  StorageManager.prototype.setAutoReadQuestions = function (on) {
+    if (!this.data) return;
+    this.data.settings.autoReadQuestions = on === true;
+    this._save();
+  };
+
+  StorageManager.prototype.getAutoReadQuestions = function () {
+    return !!this.data?.settings?.autoReadQuestions;
   };
 
   // ============================================
@@ -1319,12 +1781,12 @@
   // ============================================
 
   StorageManager.prototype.hasSeenHouseAdIntro = function () {
-    return !!(this.data?.houseAd?.introSeen);
+    return !!this.data?.houseAd?.introSeen;
   };
 
   StorageManager.prototype.markSeenHouseAdIntro = function () {
     if (!this.data) return;
-    if (!this.data.houseAd || typeof this.data.houseAd !== "object") {
+    if (!this.data.houseAd || typeof this.data.houseAd !== 'object') {
       this.data.houseAd = deepCopy(this.defaultData.houseAd);
     }
     this.data.houseAd.introSeen = true;
@@ -1332,47 +1794,48 @@
   };
 
   StorageManager.prototype.getHouseAdState = function () {
-    const s = String(this.data?.houseAd?.state || "").trim();
+    const s = String(this.data?.houseAd?.state || '').trim();
 
     // Migration KISS: legacy "dismissed" => treated as "remind_later"
-    if (s === "dismissed") {
+    if (s === 'dismissed') {
       try {
-        if (!this.data.houseAd || typeof this.data.houseAd !== "object") {
+        if (!this.data.houseAd || typeof this.data.houseAd !== 'object') {
           this.data.houseAd = deepCopy(this.defaultData.houseAd);
         }
-        this.data.houseAd.state = "remind_later";
+        this.data.houseAd.state = 'remind_later';
         this._save();
-      } catch (_) { /* silent */ }
-      return "remind_later";
+      } catch (_) {
+        /* silent */
+      }
+      return 'remind_later';
     }
 
-    return (s === "never_seen" || s === "remind_later") ? s : "never_seen";
+    return s === 'never_seen' || s === 'remind_later' ? s : 'never_seen';
   };
 
   StorageManager.prototype.setHouseAdState = function (state) {
     if (!this.data) return;
-    const s = String(state || "").trim();
-    if (s !== "never_seen" && s !== "remind_later") return;
+    const s = String(state || '').trim();
+    if (s !== 'never_seen' && s !== 'remind_later') return;
 
-    if (!this.data.houseAd || typeof this.data.houseAd !== "object") {
+    if (!this.data.houseAd || typeof this.data.houseAd !== 'object') {
       this.data.houseAd = deepCopy(this.defaultData.houseAd);
     }
     this.data.houseAd.state = s;
     this._save();
   };
 
-
   StorageManager.prototype.getWaitlistStatus = function () {
-    const s = String(this.data?.waitlist?.status || "").trim();
-    return (s === "not_seen" || s === "seen" || s === "joined") ? s : "not_seen";
+    const s = String(this.data?.waitlist?.status || '').trim();
+    return s === 'not_seen' || s === 'seen' || s === 'joined' ? s : 'not_seen';
   };
 
   StorageManager.prototype.setWaitlistStatus = function (status) {
     if (!this.data) return;
-    const s = String(status || "").trim();
-    if (s !== "not_seen" && s !== "seen" && s !== "joined") return;
+    const s = String(status || '').trim();
+    if (s !== 'not_seen' && s !== 'seen' && s !== 'joined') return;
 
-    if (!this.data.waitlist || typeof this.data.waitlist !== "object") {
+    if (!this.data.waitlist || typeof this.data.waitlist !== 'object') {
       this.data.waitlist = deepCopy(this.defaultData.waitlist);
     }
     this.data.waitlist.status = s;
@@ -1380,24 +1843,20 @@
   };
 
   StorageManager.prototype.getWaitlistDraftIdea = function () {
-    const s = String(this.data?.waitlist?.draftIdea || "").trim();
+    const s = String(this.data?.waitlist?.draftIdea || '').trim();
     return s;
   };
 
   StorageManager.prototype.setWaitlistDraftIdea = function (idea) {
     if (!this.data) return;
 
-    if (!this.data.waitlist || typeof this.data.waitlist !== "object") {
+    if (!this.data.waitlist || typeof this.data.waitlist !== 'object') {
       this.data.waitlist = deepCopy(this.defaultData.waitlist);
     }
 
-    this.data.waitlist.draftIdea = String(idea || "").trim();
+    this.data.waitlist.draftIdea = String(idea || '').trim();
     this._save();
   };
-
-
-
-
 
   StorageManager.prototype.getHouseAdHiddenUntil = function () {
     return clampNonNegativeInt(this.data?.settings?.houseAdHiddenUntil);
@@ -1406,13 +1865,13 @@
   // True if House Ad is currently hidden by timestamp.
   StorageManager.prototype.isHouseAdHiddenNow = function () {
     const until = this.getHouseAdHiddenUntil();
-    return (until > 0 && now() < until);
+    return until > 0 && now() < until;
   };
 
   // Set an absolute hide-until timestamp (ms).
   StorageManager.prototype.setHouseAdHiddenUntil = function (untilMs) {
     if (!this.data) return;
-    if (!this.data.settings || typeof this.data.settings !== "object") {
+    if (!this.data.settings || typeof this.data.settings !== 'object') {
       this.data.settings = deepCopy(this.defaultData.settings);
     }
 
@@ -1430,15 +1889,15 @@
     const until = now() + hideMs;
 
     // Ensure shapes exist (defensive)
-    if (!this.data.houseAd || typeof this.data.houseAd !== "object") {
+    if (!this.data.houseAd || typeof this.data.houseAd !== 'object') {
       this.data.houseAd = deepCopy(this.defaultData.houseAd);
     }
-    if (!this.data.settings || typeof this.data.settings !== "object") {
+    if (!this.data.settings || typeof this.data.settings !== 'object') {
       this.data.settings = deepCopy(this.defaultData.settings);
     }
 
     // Single write: state + hide-until, then one _save() / one EVT.
-    this.data.houseAd.state = "remind_later";
+    this.data.houseAd.state = 'remind_later';
     this.data.settings.houseAdHiddenUntil = clampNonNegativeInt(until);
 
     this._save();
@@ -1498,11 +1957,15 @@
     const haCfg = cfg.houseAd || {};
 
     if (haCfg.enabled !== true) return false;
-    if (!String(haCfg.url || "").trim()) return false;
+    if (!String(haCfg.url || '').trim()) return false;
 
     // Unlock based on unique seen threshold, but only after the full pool is exhausted.
     if (this.hasReachedHouseAdThreshold() !== true) return false;
-    if (typeof this.hasSeenAllWordTraps !== "function" || this.hasSeenAllWordTraps() !== true) return false;
+    if (
+      typeof this.hasSeenAllWordTraps !== 'function' ||
+      this.hasSeenAllWordTraps() !== true
+    )
+      return false;
 
     // Never show during a run.
     if (ctx && ctx.inRun === true) return false;
@@ -1530,14 +1993,11 @@
     if (ctx && ctx.inRun === true) return false;
 
     // Optional: if already joined, never show again (fail-closed).
-    const st = String(this.data?.waitlist?.status || "").trim();
-    if (st === "joined") return false;
+    const st = String(this.data?.waitlist?.status || '').trim();
+    if (st === 'joined') return false;
 
     return true;
   };
-
-
-
 
   // ============================================
   // Per-answer stats writing (V2)
@@ -1589,25 +2049,43 @@
 
   StorageManager.prototype.updateLevelProgression = function (meta) {
     if (!this.data) {
-      return { previousLevel: 0, currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
+      return {
+        previousLevel: 0,
+        currentLevel: 0,
+        unlockedLevel: 0,
+        justUnlocked: false
+      };
     }
 
-    if (!this.data.progression || typeof this.data.progression !== "object") {
+    if (!this.data.progression || typeof this.data.progression !== 'object') {
       this.data.progression = deepCopy(this.defaultData.progression);
     }
-    if (!this.data.progression.unlockedAtByLevel || typeof this.data.progression.unlockedAtByLevel !== "object") {
-      this.data.progression.unlockedAtByLevel = deepCopy(this.defaultData.progression.unlockedAtByLevel);
+    if (
+      !this.data.progression.unlockedAtByLevel ||
+      typeof this.data.progression.unlockedAtByLevel !== 'object'
+    ) {
+      this.data.progression.unlockedAtByLevel = deepCopy(
+        this.defaultData.progression.unlockedAtByLevel
+      );
     }
 
-    const prevLevel = Math.min(4, clampNonNegativeInt(this.data.progression.currentLevel));
+    const prevLevel = Math.min(
+      4,
+      clampNonNegativeInt(this.data.progression.currentLevel)
+    );
     let nextLevel = prevLevel;
 
-    const mode = String(meta?.mode || "").trim().toUpperCase();
+    const mode = String(meta?.mode || '')
+      .trim()
+      .toUpperCase();
     const totalPresented = clampNonNegativeInt(meta?.totalPresented);
     const scoreFP = clampNonNegativeInt(meta?.scoreFP);
-    const accuracy = totalPresented > 0 ? (scoreFP / totalPresented) : 0;
+    const accuracy = totalPresented > 0 ? scoreFP / totalPresented : 0;
 
-    const levelsCfg = (this.config?.levels && typeof this.config.levels === "object") ? this.config.levels : {};
+    const levelsCfg =
+      this.config?.levels && typeof this.config.levels === 'object'
+        ? this.config.levels
+        : {};
     const level3MinSeen = clampNonNegativeInt(levelsCfg.level3MinSeen);
     const level4MinSeen = clampNonNegativeInt(levelsCfg.level4MinSeen);
     const level3MinAccuracy = Number(levelsCfg.level3MinAccuracy);
@@ -1623,7 +2101,7 @@
       nextLevel = 2;
     } else if (
       prevLevel === 2 &&
-      mode === "BONUS" &&
+      mode === 'BONUS' &&
       mastered &&
       seenPool >= level3MinSeen &&
       Number.isFinite(level3MinAccuracy) &&
@@ -1632,7 +2110,7 @@
       nextLevel = 3;
     } else if (
       prevLevel === 3 &&
-      mode === "BONUS" &&
+      mode === 'BONUS' &&
       mastered &&
       seenPool >= level4MinSeen &&
       Number.isFinite(level4MinAccuracy) &&
@@ -1659,14 +2137,34 @@
   // ============================================
   // Run completion (V2)
   // ============================================
-  StorageManager.prototype.recordRunComplete = function (runNumber, scoreFP, meta) {
+  StorageManager.prototype.recordRunComplete = function (
+    runNumber,
+    scoreFP,
+    meta
+  ) {
     if (!this.data) return { ok: false, newBest: false };
 
     const score = clampNonNegativeInt(scoreFP);
     const rn = clampNonNegativeInt(runNumber);
+    const list =
+      this.data.history && Array.isArray(this.data.history.lastRuns)
+        ? this.data.history.lastRuns
+        : [];
+
+    // Idempotence guard: a runNumber must never be recorded twice.
+    // Double-calls would otherwise inflate runCompletes, daily history, and best-score side effects.
+    if (rn > 0 && findRunEntryByNumber(list, rn)) {
+      return {
+        ok: true,
+        newBest: false,
+        bestScoreFP: clampNonNegativeInt(this.data.personalBest?.bestScoreFP)
+      };
+    }
 
     // Capture completes BEFORE increment (source of truth)
-    const prevCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
+    const prevCompletes = clampNonNegativeInt(
+      this.data?.counters?.runCompletes
+    );
 
     // Counters
     this.data.counters.runNumber = Math.max(this.data.counters.runNumber, rn);
@@ -1676,8 +2174,10 @@
     const pb = this.data.personalBest || { bestScoreFP: 0, achievedAt: 0 };
     const prevBest = clampNonNegativeInt(pb.bestScoreFP);
 
-    const mode = String(meta && meta.mode || "").trim().toUpperCase();
-    const isRun = (mode === "RUN");
+    const mode = String((meta && meta.mode) || '')
+      .trim()
+      .toUpperCase();
+    const isRun = mode === 'RUN';
 
     let newBest = false;
 
@@ -1688,20 +2188,15 @@
 
       // Do NOT celebrate the very first completion on device
       // Celebrate only if user had already completed at least 1 run before
-      newBest = (prevCompletes >= 1);
+      newBest = prevCompletes >= 1;
     }
 
-
     // Run history
-    const list = (this.data.history && Array.isArray(this.data.history.lastRuns))
-      ? this.data.history.lastRuns
-      : [];
-
     const entry = {
       runNumber: rn,
       endedAt: now(),
       scoreFP: score,
-      meta: (meta && typeof meta === "object") ? meta : {}
+      meta: meta && typeof meta === 'object' ? meta : {}
     };
 
     list.unshift(entry);
@@ -1710,21 +2205,33 @@
     this.data.history = this.data.history || {};
     this.data.history.lastRuns = list;
 
-    const runMode = String(entry?.meta?.mode || "").trim().toUpperCase();
+    const runMode = String(entry?.meta?.mode || '')
+      .trim()
+      .toUpperCase();
     const newSeenCount = clampNonNegativeInt(entry?.meta?.newSeenCount);
 
-    const prevPaceTotals = (this.data.history.runPaceTotals && typeof this.data.history.runPaceTotals === "object")
-      ? this.data.history.runPaceTotals
-      : { runCount: 0, totalNewSeen: 0 };
+    const prevPaceTotals =
+      this.data.history.runPaceTotals &&
+      typeof this.data.history.runPaceTotals === 'object'
+        ? this.data.history.runPaceTotals
+        : { runCount: 0, totalNewSeen: 0 };
 
     this.data.history.runPaceTotals = {
-      runCount: clampNonNegativeInt(prevPaceTotals.runCount) + (runMode === "RUN" ? 1 : 0),
-      totalNewSeen: clampNonNegativeInt(prevPaceTotals.totalNewSeen) + (runMode === "RUN" ? newSeenCount : 0)
+      runCount:
+        clampNonNegativeInt(prevPaceTotals.runCount) +
+        (runMode === 'RUN' ? 1 : 0),
+      totalNewSeen:
+        clampNonNegativeInt(prevPaceTotals.totalNewSeen) +
+        (runMode === 'RUN' ? newSeenCount : 0)
     };
 
     this._save();
 
-    return { ok: true, newBest, bestScoreFP: clampNonNegativeInt(this.data.personalBest.bestScoreFP) };
+    return {
+      ok: true,
+      newBest,
+      bestScoreFP: clampNonNegativeInt(this.data.personalBest.bestScoreFP)
+    };
   };
 
   // ============================================
@@ -1736,7 +2243,9 @@
     const score = clampNonNegativeInt(scoreFP);
 
     // Capture completes BEFORE increment (source of truth)
-    const prevCompletes = clampNonNegativeInt(this.data?.counters?.bonusCompletes);
+    const prevCompletes = clampNonNegativeInt(
+      this.data?.counters?.bonusCompletes
+    );
 
     // Counters
     this.data.counters.bonusCompletes = prevCompletes + 1;
@@ -1745,8 +2254,10 @@
     const bb = this.data.bonusBest || { bestScoreFP: 0, achievedAt: 0 };
     const prevBest = clampNonNegativeInt(bb.bestScoreFP);
 
-    const mode = String(meta && meta.mode || "").trim().toUpperCase();
-    const isBonus = (mode === "BONUS");
+    const mode = String((meta && meta.mode) || '')
+      .trim()
+      .toUpperCase();
+    const isBonus = mode === 'BONUS';
 
     let newBest = false;
 
@@ -1756,45 +2267,60 @@
       this.data.bonusBest = bb;
 
       // Do NOT celebrate the very first completion on device
-      newBest = (prevCompletes >= 1);
+      newBest = prevCompletes >= 1;
     }
 
     this._save();
 
-    return { ok: true, newBest, bestScoreFP: clampNonNegativeInt(this.data.bonusBest.bestScoreFP) };
+    return {
+      ok: true,
+      newBest,
+      bestScoreFP: clampNonNegativeInt(this.data.bonusBest.bestScoreFP)
+    };
   };
-
 
   // ============================================
   // Paywall / Checkout counters
   // ============================================
   StorageManager.prototype.markLandingViewed = function () {
     if (!this.data) return;
-    this.data.counters.landingViewed = clampNonNegativeInt(this.data.counters.landingViewed) + 1;
+    this.data.counters.landingViewed =
+      clampNonNegativeInt(this.data.counters.landingViewed) + 1;
     this._save();
   };
 
   StorageManager.prototype.markLandingPlayClicked = function () {
     if (!this.data) return;
-    this.data.counters.landingPlayClicked = clampNonNegativeInt(this.data.counters.landingPlayClicked) + 1;
+    this.data.counters.landingPlayClicked =
+      clampNonNegativeInt(this.data.counters.landingPlayClicked) + 1;
     this._save();
   };
 
   StorageManager.prototype.markLandingPracticeClicked = function () {
     if (!this.data) return;
-    this.data.counters.landingPracticeClicked = clampNonNegativeInt(this.data.counters.landingPracticeClicked) + 1;
+    this.data.counters.landingPracticeClicked =
+      clampNonNegativeInt(this.data.counters.landingPracticeClicked) + 1;
+    this._save();
+  };
+
+  StorageManager.prototype.markDailyChallengeClicked = function () {
+    if (!this.data) return;
+    this.data.counters.dailyChallengeClicked =
+      clampNonNegativeInt(this.data.counters.dailyChallengeClicked) + 1;
     this._save();
   };
 
   StorageManager.prototype.markLandingNextRunStarted = function () {
     if (!this.data) return;
-    this.data.counters.landingNextRunStarted = clampNonNegativeInt(this.data.counters.landingNextRunStarted) + 1;
+    this.data.counters.landingNextRunStarted =
+      clampNonNegativeInt(this.data.counters.landingNextRunStarted) + 1;
     this._save();
   };
 
   StorageManager.prototype.markLandingNextRunCompleted = function () {
     if (!this.data) return;
-    this.data.counters.landingNextRunCompleted = clampNonNegativeInt(this.data.counters.landingNextRunCompleted) + 1;
+    this.data.counters.landingNextRunCompleted =
+      clampNonNegativeInt(this.data.counters.landingNextRunCompleted) + 1;
     this._save();
   };
 
@@ -1802,32 +2328,39 @@
     if (!this.data) return;
     const delta = clampNonNegativeInt(ms);
     if (delta <= 0) return;
-    this.data.counters.landingTimeTotalMs = clampNonNegativeInt(this.data.counters.landingTimeTotalMs) + delta;
+    this.data.counters.landingTimeTotalMs =
+      clampNonNegativeInt(this.data.counters.landingTimeTotalMs) + delta;
     this._save();
   };
 
   StorageManager.prototype.markPaywallShown = function (source) {
     if (!this.data) return;
-    this.data.counters.paywallShown = clampNonNegativeInt(this.data.counters.paywallShown) + 1;
+    this.data.counters.paywallShown =
+      clampNonNegativeInt(this.data.counters.paywallShown) + 1;
 
-    const src = String(source || "").trim().toUpperCase();
-    if (src === "LANDING") {
-      this.data.counters.paywallShownFromLanding = clampNonNegativeInt(this.data.counters.paywallShownFromLanding) + 1;
-      this.data.analytics.paywallLastSource = "landing";
-    } else if (src === "END") {
-      this.data.counters.paywallShownFromEnd = clampNonNegativeInt(this.data.counters.paywallShownFromEnd) + 1;
-      this.data.analytics.paywallLastSource = "end";
-    } else if (src === "PLAYING") {
-      this.data.counters.paywallShownFromPlaying = clampNonNegativeInt(this.data.counters.paywallShownFromPlaying) + 1;
-      this.data.analytics.paywallLastSource = "playing";
+    const src = String(source || '')
+      .trim()
+      .toUpperCase();
+    if (src === 'LANDING') {
+      this.data.counters.paywallShownFromLanding =
+        clampNonNegativeInt(this.data.counters.paywallShownFromLanding) + 1;
+      this.data.analytics.paywallLastSource = 'landing';
+    } else if (src === 'END') {
+      this.data.counters.paywallShownFromEnd =
+        clampNonNegativeInt(this.data.counters.paywallShownFromEnd) + 1;
+      this.data.analytics.paywallLastSource = 'end';
+    } else if (src === 'PLAYING') {
+      this.data.counters.paywallShownFromPlaying =
+        clampNonNegativeInt(this.data.counters.paywallShownFromPlaying) + 1;
+      this.data.analytics.paywallLastSource = 'playing';
     } else {
-      this.data.counters.paywallShownFromOther = clampNonNegativeInt(this.data.counters.paywallShownFromOther) + 1;
-      this.data.analytics.paywallLastSource = "other";
+      this.data.counters.paywallShownFromOther =
+        clampNonNegativeInt(this.data.counters.paywallShownFromOther) + 1;
+      this.data.analytics.paywallLastSource = 'other';
     }
 
     // Early price window starts once, at the first PAYWALL view (persisted).
     const ep = this.data.earlyPrice || {};
-
 
     if (!clampNonNegativeInt(ep.startedAt)) {
       ep.startedAt = now();
@@ -1837,22 +2370,21 @@
     this._save();
   };
 
-
-
   StorageManager.prototype.markCheckoutStarted = function (priceKey) {
     if (!this.data) return;
 
-    const k = String(priceKey || "").trim();
+    const k = String(priceKey || '').trim();
     if (!k) return;
 
-    if (!this.data.counters || typeof this.data.counters !== "object") {
+    if (!this.data.counters || typeof this.data.counters !== 'object') {
       this.data.counters = deepCopy(this.defaultData.counters);
     }
-    if (!this.data.analytics || typeof this.data.analytics !== "object") {
+    if (!this.data.analytics || typeof this.data.analytics !== 'object') {
       this.data.analytics = deepCopy(this.defaultData.analytics);
     }
 
-    this.data.counters.checkoutStarted = clampNonNegativeInt(this.data.counters.checkoutStarted) + 1;
+    this.data.counters.checkoutStarted =
+      clampNonNegativeInt(this.data.counters.checkoutStarted) + 1;
     this.data.analytics.checkoutStartedAt = now();
     this.data.analytics.checkoutPriceKey = k;
 
@@ -1861,25 +2393,29 @@
 
   StorageManager.prototype.markShareClicked = function () {
     if (!this.data) return;
-    this.data.counters.shareClicked = clampNonNegativeInt(this.data.counters.shareClicked) + 1;
+    this.data.counters.shareClicked =
+      clampNonNegativeInt(this.data.counters.shareClicked) + 1;
     this._save();
   };
 
   StorageManager.prototype.markInstallPromptShown = function () {
     if (!this.data) return;
-    this.data.counters.installPromptShown = clampNonNegativeInt(this.data.counters.installPromptShown) + 1;
+    this.data.counters.installPromptShown =
+      clampNonNegativeInt(this.data.counters.installPromptShown) + 1;
     this._save();
   };
 
   StorageManager.prototype.markHouseAdShown = function () {
     if (!this.data) return;
-    this.data.counters.houseAdShown = clampNonNegativeInt(this.data.counters.houseAdShown) + 1;
+    this.data.counters.houseAdShown =
+      clampNonNegativeInt(this.data.counters.houseAdShown) + 1;
     this._save();
   };
 
   StorageManager.prototype.markHouseAdClicked = function () {
     if (!this.data) return;
-    this.data.counters.houseAdClicked = clampNonNegativeInt(this.data.counters.houseAdClicked) + 1;
+    this.data.counters.houseAdClicked =
+      clampNonNegativeInt(this.data.counters.houseAdClicked) + 1;
     this._save();
   };
 
@@ -1890,61 +2426,66 @@
     if (!this.data) return { ok: false, already: false };
     if (this.data.isPremium) return { ok: true, already: true };
 
-    if (!this.data.counters || typeof this.data.counters !== "object") {
+    if (!this.data.counters || typeof this.data.counters !== 'object') {
       this.data.counters = deepCopy(this.defaultData.counters);
     }
-    if (!this.data.analytics || typeof this.data.analytics !== "object") {
+    if (!this.data.analytics || typeof this.data.analytics !== 'object') {
       this.data.analytics = deepCopy(this.defaultData.analytics);
     }
 
     this.data.isPremium = true;
 
     this.data.analytics.premiumUnlockedAt = now();
-    this.data.counters.premiumUnlockedCount = clampNonNegativeInt(this.data.counters.premiumUnlockedCount) + 1;
+    this.data.counters.premiumUnlockedCount =
+      clampNonNegativeInt(this.data.counters.premiumUnlockedCount) + 1;
 
     this._save();
     return { ok: true, already: false };
   };
 
-
   StorageManager.prototype.clearVanityCode = function () {
     const cfg = this.config || {};
-    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || "").trim();
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || '').trim();
     if (!vanityKey) return;
 
-    try { window.localStorage.removeItem(vanityKey); } catch (_) { }
+    try {
+      window.localStorage.removeItem(vanityKey);
+    } catch (_) {}
   };
 
   StorageManager.prototype.tryRedeemPremiumCode = function (codeInput) {
-    if (!this.data) return { ok: false, reason: "NO_DATA" };
+    if (!this.data) return { ok: false, reason: 'NO_DATA' };
 
     // If already premium, treat as no-op
-    if (this.isPremium()) return { ok: true, reason: "ALREADY" };
+    if (this.isPremium()) return { ok: true, reason: 'ALREADY' };
 
     const cfg = this.config || {};
 
-    const code = String(codeInput || "").trim();
-    if (!code) return { ok: false, reason: "EMPTY" };
+    const code = String(codeInput || '').trim();
+    if (!code) return { ok: false, reason: 'EMPTY' };
 
     this._compileCodeRegex();
     const re = this._premiumCodeRe;
-    if (!re) return { ok: false, reason: "DISABLED" };
+    if (!re) return { ok: false, reason: 'DISABLED' };
 
     // Defensive: RegExp.test() is stateful with /g or /y
-    try { re.lastIndex = 0; } catch (_) { }
-    if (!re.test(code)) return { ok: false, reason: "INVALID" };
+    try {
+      re.lastIndex = 0;
+    } catch (_) {}
+    if (!re.test(code)) return { ok: false, reason: 'INVALID' };
 
     // Ensure codes block exists (defensive)
-    if (!this.data.codes || typeof this.data.codes !== "object") {
-      this.data.codes = { redeemedOnce: false, code: "" };
+    if (!this.data.codes || typeof this.data.codes !== 'object') {
+      this.data.codes = { redeemedOnce: false, code: '' };
     }
-    if (typeof this.data.codes.redeemedOnce !== "boolean") this.data.codes.redeemedOnce = false;
-    if (typeof this.data.codes.code !== "string") this.data.codes.code = "";
+    if (typeof this.data.codes.redeemedOnce !== 'boolean')
+      this.data.codes.redeemedOnce = false;
+    if (typeof this.data.codes.code !== 'string') this.data.codes.code = '';
 
     // Enforce "one code per device" if enabled
-    const acceptOnce = (cfg.acceptCodeOncePerDevice === true);
+    const acceptOnce = cfg.acceptCodeOncePerDevice === true;
     if (acceptOnce && this.data.codes.redeemedOnce === true) {
-      return { ok: false, reason: "USED" };
+      return { ok: false, reason: 'USED' };
     }
 
     // Persist code locally in storage data (single source of truth)
@@ -1954,7 +2495,7 @@
     this.data.codes.code = code;
 
     // Optional vanity/last code in separate localStorage key (UI convenience)
-    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || "").trim();
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || '').trim();
     if (vanityKey) {
       try {
         window.localStorage.setItem(vanityKey, code);
@@ -1963,27 +2504,27 @@
       }
     }
 
-
     // Counters
     if (this.data.counters) {
-      this.data.counters.codeRedeemed = clampNonNegativeInt(this.data.counters.codeRedeemed) + 1;
+      this.data.counters.codeRedeemed =
+        clampNonNegativeInt(this.data.counters.codeRedeemed) + 1;
     }
 
     // Unlock premium
     // unlockPremium() already persists + emits exactly once.
     const res = this.unlockPremium();
     if (res && res.ok) {
-      return { ok: true, reason: "UNLOCKED" };
+      return { ok: true, reason: 'UNLOCKED' };
     }
 
     // If unlock failed, revert "redeemedOnce" only if we just set it
     if (acceptOnce) {
       this.data.codes.redeemedOnce = false;
     }
-    this.data.codes.code = "";
+    this.data.codes.code = '';
     this._save();
 
-    return { ok: false, reason: "FAILED" };
+    return { ok: false, reason: 'FAILED' };
   };
 
   // ============================================
@@ -1993,7 +2534,9 @@
     if (!this.data) return null;
     const cfg = this.config || {};
     const schemaVersion = String(
-      cfg?.statsSharing?.schemaVersion != null ? cfg.statsSharing.schemaVersion : ""
+      cfg?.statsSharing?.schemaVersion != null
+        ? cfg.statsSharing.schemaVersion
+        : ''
     ).trim();
 
     // Gather top mistakes
@@ -2029,25 +2572,29 @@
     }
 
     const poolSize = clampNonNegativeInt(cfg?.game?.poolSize);
-    const poolProgress = poolSize > 0 ? Math.round((uniqueSeenCount / poolSize) * 100) / 100 : 0;
-    const poolExposure = poolSize > 0 ? Math.round((totalSeenEvents / poolSize) * 100) / 100 : 0;
+    const poolProgress =
+      poolSize > 0 ? Math.round((uniqueSeenCount / poolSize) * 100) / 100 : 0;
+    const poolExposure =
+      poolSize > 0 ? Math.round((totalSeenEvents / poolSize) * 100) / 100 : 0;
 
     // Device type (simple, no fingerprinting)
-    let device = "desktop";
+    let device = 'desktop';
     try {
-      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) {
-        device = "mobile";
+      if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+        device = 'mobile';
       }
-    } catch (_) { }
+    } catch (_) {}
 
     // Runs
     const runs = clampNonNegativeInt(this.data.counters?.runCompletes);
 
     // Premium
-    const isPremium = !!(this.data.isPremium);
+    const isPremium = !!this.data.isPremium;
 
     // Personal best
-    const personalBest = clampNonNegativeInt(this.data.personalBest?.bestScoreFP);
+    const personalBest = clampNonNegativeInt(
+      this.data.personalBest?.bestScoreFP
+    );
 
     return {
       v: schemaVersion,
@@ -2063,41 +2610,65 @@
       poolProgress: poolProgress,
       poolExposure: poolExposure,
 
-
       topMistakes: topMistakes,
       totalMistakes: totalMistakes,
       device: device,
 
       milestones: {
-        quarterShown: !!(this.data.analytics?.quarterMilestoneShownAt),
-        halfwayShown: !!(this.data.analytics?.halfwayMilestoneShownAt),
-        threeQuartersShown: !!(this.data.analytics?.threeQuartersMilestoneShownAt)
+        quarterShown: !!this.data.postCompletion?.quarterMilestoneShownAt,
+        halfwayShown: !!this.data.postCompletion?.halfwayMilestoneShownAt,
+        threeQuartersShown:
+          !!this.data.postCompletion?.threeQuartersMilestoneShownAt
       },
 
       // Funnel (aggregated, local-only)
       funnel: {
         landingViewed: clampNonNegativeInt(this.data.counters?.landingViewed),
-        landingPlayClicked: clampNonNegativeInt(this.data.counters?.landingPlayClicked),
-        landingPracticeClicked: clampNonNegativeInt(this.data.counters?.landingPracticeClicked),
-        landingNextRunStarted: clampNonNegativeInt(this.data.counters?.landingNextRunStarted),
-        landingNextRunCompleted: clampNonNegativeInt(this.data.counters?.landingNextRunCompleted),
-        landingTimeTotalMs: clampNonNegativeInt(this.data.counters?.landingTimeTotalMs),
+        landingPlayClicked: clampNonNegativeInt(
+          this.data.counters?.landingPlayClicked
+        ),
+        landingPracticeClicked: clampNonNegativeInt(
+          this.data.counters?.landingPracticeClicked
+        ),
+        dailyChallengeClicked: clampNonNegativeInt(
+          this.data.counters?.dailyChallengeClicked
+        ),
+        landingNextRunStarted: clampNonNegativeInt(
+          this.data.counters?.landingNextRunStarted
+        ),
+        landingNextRunCompleted: clampNonNegativeInt(
+          this.data.counters?.landingNextRunCompleted
+        ),
+        landingTimeTotalMs: clampNonNegativeInt(
+          this.data.counters?.landingTimeTotalMs
+        ),
         paywallShown: clampNonNegativeInt(this.data.counters?.paywallShown),
-        paywallShownFromLanding: clampNonNegativeInt(this.data.counters?.paywallShownFromLanding),
-        paywallShownFromEnd: clampNonNegativeInt(this.data.counters?.paywallShownFromEnd),
-        paywallShownFromPlaying: clampNonNegativeInt(this.data.counters?.paywallShownFromPlaying),
-        paywallShownFromOther: clampNonNegativeInt(this.data.counters?.paywallShownFromOther),
-        checkoutStarted: clampNonNegativeInt(this.data.counters?.checkoutStarted),
+        paywallShownFromLanding: clampNonNegativeInt(
+          this.data.counters?.paywallShownFromLanding
+        ),
+        paywallShownFromEnd: clampNonNegativeInt(
+          this.data.counters?.paywallShownFromEnd
+        ),
+        paywallShownFromPlaying: clampNonNegativeInt(
+          this.data.counters?.paywallShownFromPlaying
+        ),
+        paywallShownFromOther: clampNonNegativeInt(
+          this.data.counters?.paywallShownFromOther
+        ),
+        checkoutStarted: clampNonNegativeInt(
+          this.data.counters?.checkoutStarted
+        ),
         runStarts: clampNonNegativeInt(this.data.counters?.runStarts),
         runCompletes: clampNonNegativeInt(this.data.counters?.runCompletes),
         bonusCompletes: clampNonNegativeInt(this.data.counters?.bonusCompletes),
         shareClicked: clampNonNegativeInt(this.data.counters?.shareClicked),
-        installPromptShown: clampNonNegativeInt(this.data.counters?.installPromptShown),
+        installPromptShown: clampNonNegativeInt(
+          this.data.counters?.installPromptShown
+        ),
         codeRedeemed: clampNonNegativeInt(this.data.counters?.codeRedeemed)
       }
     };
   };
-
 
   // ============================================
   // Export

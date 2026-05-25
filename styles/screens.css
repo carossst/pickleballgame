@@ -324,6 +324,11 @@ body.wt-state--end .wt-card--end {
       linear-gradient(180deg, rgb(var(--primary) / calc(var(--hero-glow) * 0.48)), transparent 48%);
   }
 }
+/* IMPORTANT: position: relative here is also the positioning context
+   anchor for .wt-landing-top-right (position: absolute). If you
+   change this, make sure the top-right cluster (locale toggle +
+   chest icon + hint) still positions against the card, not against
+   the viewport or .wt-main. */
 .wt-card--landing {
   position: relative;
   min-height: clamp(360px, 52vh, 660px);
@@ -394,8 +399,153 @@ body.wt-state--end .wt-card--end {
   display: flex;
   align-items: center;
   gap: var(--space-10);
+  flex-wrap: nowrap;
   flex-shrink: 0;
   z-index: 2;
+}
+
+.wt-landing-top-right .wt-locale-toggle-host,
+.wt-end-header__actions .wt-locale-toggle-host {
+  position: static;
+}
+
+.wt-landing-stat__actions {
+  margin-top: var(--space-12);
+}
+
+.wt-landing-stat--daily {
+  position: relative;
+  overflow: hidden;
+  border-color: rgb(var(--primary) / var(--wt-a-32));
+  background:
+    radial-gradient(180px 90px at 100% 0%, rgb(var(--accent) / 0.14), transparent 72%),
+    linear-gradient(180deg, rgb(var(--surface) / 0.98), rgb(var(--surface) / 0.94));
+  box-shadow: 0 0 0 1px rgb(var(--primary) / var(--wt-a-10)), var(--shadow-1);
+}
+
+.wt-landing-stat--daily::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgb(var(--accent)), rgb(var(--primary)));
+  opacity: 0.9;
+}
+
+.wt-landing-stat--daily .wt-landing-stat__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgb(var(--accent) / 0.12);
+  color: rgb(var(--primary-dark));
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: var(--ls-ui-wide);
+  text-transform: uppercase;
+}
+
+.wt-landing-stat--daily .wt-landing-stat__title {
+  max-width: 26ch;
+}
+
+.wt-landing-stat--daily .wt-landing-stat__actions .wt-btn {
+  border-color: rgb(var(--primary) / var(--wt-a-30));
+  box-shadow: 0 1px 0 rgb(var(--surface)), 0 8px 18px rgb(var(--primary) / 0.08);
+}
+
+.wt-landing-stat--daily-complete {
+  border-color: rgb(var(--success) / 0.35);
+  background:
+    radial-gradient(190px 100px at 100% 0%, rgb(var(--success) / 0.14), transparent 72%),
+    linear-gradient(180deg, rgb(var(--surface) / 0.98), rgb(var(--surface) / 0.94));
+}
+
+.wt-landing-stat--daily-complete::after {
+  background: linear-gradient(180deg, rgb(var(--success)), rgb(var(--accent)));
+}
+
+.wt-landing-stat--daily-complete .wt-landing-stat__label {
+  background: rgb(var(--success) / 0.12);
+}
+
+.wt-leaderboard-card {
+  margin-top: var(--space-18);
+}
+
+.wt-leaderboard-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-10);
+}
+
+.wt-leaderboard-card__live {
+  flex: 0 0 auto;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: var(--ls-ui-wide);
+  color: rgb(var(--success-dark));
+}
+
+.wt-leaderboard-card__sub {
+  margin: var(--space-8) 0 0;
+  font-size: var(--fs-md);
+  line-height: 1.4;
+  color: rgb(var(--text));
+}
+
+.wt-leaderboard-list,
+.wt-leaderboard-modal__list {
+  list-style: none;
+  margin: var(--space-12) 0 0;
+  padding: 0;
+}
+
+.wt-leaderboard-list__item,
+.wt-leaderboard-modal__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-12);
+  padding: 10px 0;
+  border-top: 1px solid rgb(var(--border) / var(--wt-a-45));
+}
+
+.wt-leaderboard-list__item:first-child,
+.wt-leaderboard-modal__item:first-child {
+  border-top: 0;
+}
+
+.wt-leaderboard-list__item--player,
+.wt-leaderboard-modal__item--player {
+  color: rgb(var(--primary-dark));
+  font-weight: 700;
+}
+
+.wt-leaderboard-list__rank,
+.wt-leaderboard-modal__rank {
+  min-width: 32px;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+  color: rgb(var(--text-muted));
+}
+
+.wt-leaderboard-list__name,
+.wt-leaderboard-modal__name {
+  min-width: 0;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wt-leaderboard-list__score,
+.wt-leaderboard-modal__score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  color: rgb(var(--primary-dark));
 }
 
 @media (max-width: 360px) {
@@ -406,20 +556,25 @@ body.wt-state--end .wt-card--end {
   .wt-landing-top-right {
     gap: var(--gap-1);
   }
+
+  .wt-landing-top-right .wt-locale-swap {
+    min-width: 0;
+    padding-inline: 10px;
+  }
 }
 
 /* ======================
    LANDING STATS
+   ----------------------
+   Visual style is composed from two rules:
+   - This block: margin-top + padding only (positional).
+   - The shared rule with .wt-level-unlock__card later in the file:
+     borders, background, box-shadow, border-radius (muted card look
+     with a primary-dark left accent).
    ====================== */
 .wt-landing-stats {
   margin-top: var(--space-18);
   padding: var(--space-14);
-  border: 1px solid rgb(var(--primary) / var(--wt-a-25));
-  border-radius: var(--r-card);
-  background:
-    radial-gradient(340px 140px at 0% 0%, rgb(var(--primary) / var(--wt-a-10)), transparent 72%),
-    rgb(var(--surface));
-  box-shadow: var(--shadow-1);
 }
 
 .wt-landing-stat__badge {
@@ -910,44 +1065,6 @@ arcade" feel; deviation from --fs-* scale is expected. */
   }
 }
 
-
-@keyframes wtChipFlashOk {
-  0% {
-    border-color: rgb(var(--border));
-    box-shadow: var(--shadow-2);
-  }
-
-  35% {
-    border-color: rgb(var(--success) / var(--wt-a-85));
-    box-shadow: 0 0 22px rgb(var(--success) / var(--wt-a-28));
-    filter: contrast(1.03);
-  }
-
-  100% {
-    border-color: rgb(var(--border));
-    box-shadow: var(--shadow-2);
-    filter: none;
-  }
-}
-
-@keyframes wtChipFlashBad {
-  0% {
-    border-color: rgb(var(--border));
-    box-shadow: var(--shadow-2);
-  }
-
-  35% {
-    border-color: rgb(var(--danger) / var(--wt-a-85));
-    box-shadow: 0 0 22px rgb(var(--danger) / var(--wt-a-28));
-    filter: contrast(1.03);
-  }
-
-  100% {
-    border-color: rgb(var(--border));
-    box-shadow: var(--shadow-2);
-    filter: none;
-  }
-}
 
 .wt-bonus-fail-line {
   position: absolute;
@@ -1654,6 +1771,33 @@ arcade" feel; deviation from --fs-* scale is expected. */
   display: none;
 }
 
+.wt-end-score--celebrate .wt-end-score__burst {
+  display: block;
+  position: absolute;
+  inset: -10px;
+  border-radius: 999px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(var(--primary) / var(--wt-a-18)), transparent 46%),
+    radial-gradient(circle at 16% 34%, rgb(var(--accent) / var(--wt-a-18)), transparent 20%),
+    radial-gradient(circle at 84% 26%, rgb(var(--primary-depth) / var(--wt-a-20)), transparent 22%),
+    radial-gradient(circle at 22% 78%, rgb(var(--success) / var(--wt-a-18)), transparent 20%),
+    radial-gradient(circle at 78% 76%, rgb(var(--primary) / var(--wt-a-16)), transparent 18%);
+  animation: wtEndBurst 900ms ease-out both;
+}
+
+.wt-end-score--celebrate .wt-end-score__spark {
+  display: block;
+  position: absolute;
+  top: -6px;
+  right: calc(50% - 102px);
+  color: rgb(var(--accent-dark));
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: center;
+  animation: wtEndSpark 1000ms ease-out 90ms both;
+}
+
 @keyframes wtLoadingPulse {
 
   0%,
@@ -1669,6 +1813,40 @@ arcade" feel; deviation from --fs-* scale is expected. */
 @keyframes wtSpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes wtEndBurst {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+
+  30% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes wtEndSpark {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.86) rotate(-10deg);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1.04) rotate(0deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(1.1) rotate(8deg);
   }
 }
 
@@ -1763,40 +1941,14 @@ arcade" feel; deviation from --fs-* scale is expected. */
     opacity: 1 !important;
   }
 
+  .wt-end-score__burst,
+  .wt-end-score__spark {
+    display: none !important;
+    animation: none !important;
+  }
+
   .wt-chance-overlay__content {
     transition: none !important;
-  }
-}
-
-/* PLAYING: keep answer controls and feedback in the same visual slot.
-   This avoids the old "blocks dropping under the question" effect. */
-.wt-container[data-wt-state="playing"] .wt-answer-zone {
-  margin-top: var(--space-14);
-}
-
-.wt-container[data-wt-state="playing"] .wt-answer-zone .wt-choices {
-  margin-top: 0;
-}
-
-.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback {
-  margin-top: var(--space-10);
-}
-
-.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-feedback,
-.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-explanation,
-.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-actions,
-.wt-container[data-wt-state="playing"] .wt-answer-zone--feedback .wt-tap-hint {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-@media (max-height: 740px) {
-  .wt-container[data-wt-state="playing"] .wt-answer-zone {
-    margin-top: var(--space-10);
-  }
-
-  .wt-container[data-wt-state="playing"] .wt-answer-zone--feedback {
-    margin-top: var(--space-8);
   }
 }
 

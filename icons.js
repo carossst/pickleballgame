@@ -16,6 +16,11 @@
     zap: `
       <path d="M10.7 2.8L5.9 10h3.5l-0.7 7.2 5.4-7.8h-3.5l0.1-6.6z"></path>
     `,
+    "volume-2": `
+      <path d="M4.5 12.5H2.8V7.5h1.7L8.8 4.4v11.2z"></path>
+      <path d="M12.2 7.2a4 4 0 0 1 0 5.6"></path>
+      <path d="M14.8 4.8a7.4 7.4 0 0 1 0 10.4"></path>
+    `,
     "chevron-right": `
       <path d="M7 5l6 5-6 5"></path>
     `,

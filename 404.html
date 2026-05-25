@@ -11,9 +11,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Pickleball Rules Quiz">
-    <meta name="description" content="Page not found. Return to Pickleball Rules Quiz.">
+    <meta name="description" content="Page not found. Return to Pickleball Rules Quiz." data-wt-meta-description="meta.notFoundDescription">
 
-    <title>Page not found - Pickleball Rules Quiz</title>
+    <title data-wt-wording="meta.notFoundTitle">Page not found - Pickleball Rules Quiz</title>
+    <link rel="canonical" href="https://pickleballrulesquiz.com/404.html">
+    <link rel="alternate" hreflang="en" href="https://pickleballrulesquiz.com/404.html?lang=en">
+    <link rel="alternate" hreflang="fr" href="https://pickleballrulesquiz.com/404.html?lang=fr">
+    <link rel="alternate" hreflang="x-default" href="https://pickleballrulesquiz.com/404.html">
 
     <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
@@ -23,7 +27,7 @@
 </head>
 
 <body class="wt-page--doc">
-    <a href="#main-content" class="wt-skip-link">Skip to main content</a>
+    <a href="#main-content" class="wt-skip-link" data-wt-wording="common.skipToMain">Skip to main content</a>
     <div class="wt-app">
         <main id="main-content" class="wt-main">
             <div class="wt-container">
@@ -43,7 +47,7 @@
                     </p>
 
                     <div class="wt-actions">
-                        <a href="./index.html" class="wt-btn wt-btn--primary" data-wt-wording="notFound.cta">
+                        <a href="./" class="wt-btn wt-btn--primary" data-wt-wording="notFound.cta" data-wt-href="common.homeHref">
                             Back to the court
                         </a>
                     </div>
@@ -57,11 +61,17 @@
         <footer id="wt-footer-root" class="wt-footer" role="contentinfo"></footer>
     </div>
 
-    <!-- Config for wording + brand -->
+    <!-- Config + i18n + wording + email + footer + toggle -->
+    <!-- ORDER MATTERS: i18n.js must run BEFORE wording.js (it sets WT_WORDING from WT_WORDING_ALL[activeLocale]) -->
     <script src="./config.js"></script>
+    <script src="./wording-en.js"></script>
+    <script src="./wording-fr.js"></script>
+    <script src="./wording-bootstrap.js"></script>
+    <script src="./i18n.js"></script>
     <script src="./wording.js"></script>
     <script src="./email.js"></script>
     <script src="./footer.js"></script>
+    <script src="./i18n-toggle.js"></script>
 </body>
 
 </html>

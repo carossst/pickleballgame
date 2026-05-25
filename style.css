@@ -24,4 +24,5 @@
 @import url("./styles/tokens.css");
 @import url("./styles/base.css");
 @import url("./styles/components.css");
+@import url("./styles/i18n-toggle.css");
 @import url("./styles/screens.css");

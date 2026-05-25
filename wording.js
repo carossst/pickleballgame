@@ -1,4 +1,6 @@
 // wording.js - shared DOM wording hydration for static pages and partial roots
+// Locale-reactive: re-hydrates on "wt:locale-change" event.
+// Loads AFTER i18n.js (which sets window.WT_WORDING to the active locale tree).
 (() => {
   "use strict";
 
@@ -62,10 +64,45 @@
     } catch (_) { /* silent */ }
   }
 
+  function hydrateHref(root = document) {
+    // Locale-aware hrefs. Pattern: <a data-wt-href="footer.links.bonjourPickleball.href">
+    // Companion to data-wt-wording for cases where the link destination differs by locale.
+    const wording = window.WT_WORDING;
+    if (!root || !wording || typeof wording !== "object") return;
+
+    try {
+      const nodes = root.querySelectorAll("[data-wt-href]");
+      nodes.forEach((el) => {
+        const href = getByPath(wording, el.getAttribute("data-wt-href"));
+        if (typeof href === "string" && href) el.setAttribute("href", href);
+      });
+    } catch (_) { /* silent */ }
+  }
+
+  function hydrateMeta(root = document) {
+    // Locale-aware <title> and <meta name="description">.
+    // Pattern in <head>:
+    //   <title data-wt-wording="meta.indexTitle">...</title>
+    //   <meta name="description" data-wt-meta-description="meta.indexDescription">
+    if (!root) return;
+    const wording = window.WT_WORDING;
+    if (!wording || typeof wording !== "object") return;
+
+    try {
+      const metas = root.querySelectorAll("meta[data-wt-meta-description]");
+      metas.forEach((m) => {
+        const text = getByPath(wording, m.getAttribute("data-wt-meta-description"));
+        if (typeof text === "string") m.setAttribute("content", text);
+      });
+    } catch (_) { /* silent */ }
+  }
+
   function hydrate(root = document) {
     hydrateText(root);
     hydrateAria(root);
     hydrateBrand(root);
+    hydrateHref(root);
+    hydrateMeta(root);
   }
 
   window.WT_Wording = {
@@ -73,7 +110,9 @@
     hydrate,
     hydrateText,
     hydrateAria,
-    hydrateBrand
+    hydrateBrand,
+    hydrateHref,
+    hydrateMeta
   };
 
   function onReady() {
@@ -85,4 +124,13 @@
   } else {
     onReady();
   }
+
+  // Locale reactivity: when the user changes language, re-hydrate everything.
+  // For static pages (no ui.js), this is enough to fully retranslate the visible DOM.
+  // For the game shell (index.html), main.js additionally triggers a UI re-render.
+  try {
+    window.addEventListener("wt:locale-change", () => {
+      hydrate(document);
+    });
+  } catch (_) { /* silent */ }
 })();

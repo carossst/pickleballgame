@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr" data-wt-locale-hint="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title data-wt-wording="meta.indexTitle">Quiz Pickleball</title>
+
+  <!-- SEO -->
+  <meta name="description"
+    content="Vous croyez connaître le pickleball ? Prouvez-le. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne, changements de règles."
+    data-wt-meta-description="meta.indexDescription">
+  <meta name="author" content="Bonjour Pickleball">
+
+  <!-- Canonical Link -->
+  <link rel="canonical" href="https://pickleballrulesquiz.com/fr.html">
+  <link rel="alternate" hreflang="en" href="https://pickleballrulesquiz.com/">
+  <link rel="alternate" hreflang="fr" href="https://pickleballrulesquiz.com/fr.html">
+  <link rel="alternate" hreflang="x-default" href="https://pickleballrulesquiz.com/">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://pickleballrulesquiz.com/icons/og-image-fr.png">
+  <meta name="twitter:image:alt" content="Logo Quiz Pickleball">
+  <meta name="twitter:url" content="https://pickleballrulesquiz.com/fr.html">
+  <meta name="twitter:title" content="Quiz Pickleball">
+  <meta name="twitter:description"
+    content="Vous croyez connaître le pickleball ? Prouvez-le. Un jeu rapide sur les règles : service, fautes, score, annonces de ligne et changements de règles.">
+
+  <!-- PWA & UI -->
+  <meta name="theme-color" content="#38bdf8" media="(prefers-color-scheme: light)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Quiz Pickleball">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://pickleballrulesquiz.com/icons/og-image-fr.png">
+  <meta property="og:image:secure_url" content="https://pickleballrulesquiz.com/icons/og-image-fr.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Logo Quiz Pickleball">
+  <meta property="og:url" content="https://pickleballrulesquiz.com/fr.html">
+  <meta property="og:title" content="Quiz Pickleball">
+  <meta property="og:description"
+    content="Vous croyez connaître le pickleball ? Prouvez-le. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne et changements de règles.">
+  <meta property="og:site_name" content="Quiz Pickleball">
+
+  <!-- Icons & manifest -->
+  <link rel="manifest" href="./manifest.fr.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+  <link rel="icon" href="./icons/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+
+  <!-- Preconnect pour Stripe -->
+  <link rel="preconnect" href="https://buy.stripe.com" crossorigin>
+  <link rel="preconnect" href="https://checkout.stripe.com" crossorigin>
+  <link rel="preconnect" href="https://js.stripe.com" crossorigin>
+
+  <!-- Styles -->
+  <link rel="preload" href="./style.css" as="style">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Privacy-friendly analytics -->
+  <script data-goatcounter="https://caroles.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</head>
+
+<body>
+  <noscript>
+    <div class="wt-noscript">
+      <div class="wt-noscript-content">
+        <div class="wt-noscript-icon">⚠️</div>
+
+        <h2>JavaScript requis</h2>
+        <p>Quiz Pickleball a besoin de JavaScript pour fonctionner. Activez JavaScript dans votre navigateur puis rechargez la page.</p>
+      </div>
+    </div>
+  </noscript>
+
+  <a href="#main-content" class="wt-skip-link" data-wt-wording="common.skipToMain">Aller au contenu principal</a>
+
+  <div class="wt-app">
+    <main id="main-content" class="wt-main">
+      <div class="wt-container">
+        <div id="app" tabindex="-1" aria-live="off" aria-label="Contenu du jeu Quiz Pickleball" data-wt-aria-label="common.gameContentAria"></div>
+      </div>
+    </main>
+
+    <footer class="wt-footer" id="wt-footer-root" role="contentinfo"></footer>
+
+    <div id="modal" class="wt-backdrop wt-hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="wt-modal-title"
+      data-action="close-modal">
+      <div id="modal-content" class="wt-modal wt-anim-in" role="document"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="wt-toast" role="status" aria-live="polite"></div>
+  <div id="answer-feedback" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
+  <div id="update-toast" class="wt-toast" role="status" aria-live="polite">
+    <div class="wt-row wt-row--spaced wt-row--tight">
+      <span data-wt-update-text data-wt-wording="system.updateAvailable"></span>
+      <button class="wt-btn wt-btn--secondary" data-action="apply-update" data-wt-aria-label="system.updateNow"
+        data-wt-wording="system.updateNow"></button>
+    </div>
+  </div>
+
+  <script defer src="./config.js"></script>
+  <script defer src="./wording-en.js"></script>
+  <script defer src="./wording-fr.js"></script>
+  <script defer src="./wording-bootstrap.js"></script>
+  <script defer src="./i18n.js"></script>
+  <script defer src="./wording.js"></script>
+  <script defer src="./icons.js"></script>
+  <script defer src="./logic/rapidfire-logic.js"></script>
+  <script defer src="./logic/leaderboard-logic.js"></script>
+  <script defer src="./storage.js"></script>
+  <script defer src="./game.js"></script>
+  <script defer src="./ui-screen-paywall.js"></script>
+  <script defer src="./ui-screen-end.js"></script>
+  <script defer src="./ui-screen-landing.js"></script>
+  <script defer src="./ui-share.js"></script>
+  <script defer src="./ui-install.js"></script>
+  <script defer src="./ui-support.js"></script>
+  <script defer src="./ui-stats-sharing.js"></script>
+  <script defer src="./ui-checkout.js"></script>
+  <script defer src="./ui-growth.js"></script>
+  <script defer src="./ui-leaderboard.js"></script>
+  <script defer src="./ui.js"></script>
+  <script defer src="./pwa.js"></script>
+  <script defer src="./email.js"></script>
+  <script defer src="./footer.js"></script>
+  <script defer src="./i18n-toggle.js"></script>
+  <script defer src="./content-adapter.js"></script>
+  <script defer src="./main.js"></script>
+</body>
+
+</html>

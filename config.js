@@ -44,7 +44,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "3.9",
+    version: "4.0",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -65,6 +65,10 @@
     identity: {
       appName: "Pickleball Rules Quiz",
       appUrl: "https://pickleballrulesquiz.com",
+      appUrlsByLocale: {
+        en: "https://pickleballrulesquiz.com/",
+        fr: "https://pickleballrulesquiz.com/fr.html"
+      },
       // Intentionally empty: Pickleball Rules Quiz has no parent site link in the footer.
       parentUrl: "",
 
@@ -76,6 +80,13 @@
     storage: {
       storageKey: WT_STORAGE_KEY,
       vanityCodeStorageKey: WT_VANITY_CODE_STORAGE_KEY
+    },
+
+    i18n: {
+      supportedLocales: ["en", "fr"],
+      defaultLocale: "en",
+      localeStorageKey: "pickleball-rules-quiz:locale",
+      warnMissingKeys: false
     },
 
     // Content
@@ -105,7 +116,7 @@
       runCount: 2,
       cardIdsByRun: {
         1: [33, 44, 49, 107, 140, 155, 157, 182, 196, 28],
-        2: [22, 29, 46, 60, 61, 64, 125, 133, 158, 161, 118, 174]
+        2: [22, 29, 60, 156, 180, 194, 62, 104, 123, 141, 172, 174]
       }
     },
 
@@ -240,6 +251,21 @@
         legendary: 20
       },
 
+      // END-only highlight arbitration.
+      // Higher wins when multiple candidate highlights exist in the same run.
+      endHighlightPriorities: {
+        survival: 40,
+        repeatMistake: 50,
+        nearMiss: 55,
+        runEndedAllChancesUsed: 60,
+        streakStart: 65,
+        recovery: 70,
+        streakBuilding: 70,
+        streakStrong: 80,
+        streakElite: 90,
+        streakLegendary: 100
+      },
+
       // Near-miss (mécanique, non visible) - déclenchement 1 fois par RUN via endHighlight.
       nearMissEnabled: true,
 
@@ -307,7 +333,12 @@
           s4: 4,
           s5: 5,
           s6: 6
-        }
+        },
+        dropTiers: [
+          { minLevel: 6, dropTo: 3 },
+          { minLevel: 4, dropTo: 2 },
+          { minLevel: 0, dropTo: 0 }
+        ]
       },
 
       // Choice buttons: short selected-answer feedback before moving on.
@@ -366,12 +397,65 @@
       }
     },
 
+    leaderboard: {
+      enabled: true,
+      showAfterRunCompletes: 1,
+      topN: 10,
+      cardPreviewCount: 3,
+      cacheTtlMs: 60 * 1000,
+      requestTimeoutMs: 4000,
+      submitScores: true,
+      contentVersion: "2026-05-23",
+      nicknameMinLen: 3,
+      nicknameMaxLen: 24,
+      nicknameRegexSource: "^[\\p{L}\\p{N}][\\p{L}\\p{N} _-]{2,23}$",
+      nicknameRegexFlags: "u",
+
+      // Set this to your deployed Worker URL later, for example:
+      // "https://prq-leaderboard.<subdomain>.workers.dev"
+      apiBaseUrl: "https://prq-leaderboard.carolestromboni.workers.dev",
+
+      // Local-only UI test rows.
+      // Remove these before go-live if you want the honest empty state again.
+      // Includes varied nickname lengths to judge wrapping/truncation visually.
+      seedScores: {
+        weekly: [
+          { nickname: "Ace", scoreFP: 21 },
+          { nickname: "Lob", scoreFP: 19 },
+          { nickname: "NetFox", scoreFP: 18 },
+          { nickname: "Two Word Alias", scoreFP: 17 },
+          { nickname: "DinkDoctor", scoreFP: 16 },
+          { nickname: "KitchenBoss24", scoreFP: 15 },
+          { nickname: "BaselineBanditPro", scoreFP: 14 },
+          { nickname: "UnreturnableServe77", scoreFP: 13 },
+          { nickname: "ThirdShotArchitect", scoreFP: 12 },
+          { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 11 }
+        ],
+        all: [
+          { nickname: "Ace", scoreFP: 28 },
+          { nickname: "Lob", scoreFP: 26 },
+          { nickname: "NetFox", scoreFP: 24 },
+          { nickname: "Two Word Alias", scoreFP: 23 },
+          { nickname: "DinkDoctor", scoreFP: 22 },
+          { nickname: "KitchenBoss24", scoreFP: 21 },
+          { nickname: "BaselineBanditPro", scoreFP: 20 },
+          { nickname: "UnreturnableServe77", scoreFP: 19 },
+          { nickname: "ThirdShotArchitect", scoreFP: 18 },
+          { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 17 }
+        ]
+      }
+    },
+
     // Secret bonus mode
     secretBonus: {
       minDeckSize: 1,
       enabled: true,
+      ticketCost: 1,
+      ticketCap: 3,
+      starterTickets: 1,
 
-      // Teaser premium: free users can start only N bonus runs (lifetime, device-local)
+      // Legacy free-run teaser counter (kept for analytics / backward compatibility).
+      // Rapid Fire access is now ticket-based for all players.
       freeRunsLimit: 2,
 
       // Entry points (canonical gates)
@@ -574,982 +658,8 @@
   // Validation rule for new copy:
   // If it reinforces rule knowledge -> valid.
   // If it sounds aggressive, ego-heavy, too abstract, or too performance-driven for the context -> reject.
-  window.WT_WORDING = {
-    brand: {
-      creatorLine: "An indie game by Carole",
-      creatorLineHtml: "An indie game by <a href=\"./press.html\">Carole</a><br><a href=\"https://www.bonjourpickleball.fr/pickleball-france-trip/\" target=\"_blank\" rel=\"noopener\">Bonjour Pickleball</a>"
-    },
-
-    system: {
-      close: "Close",
-      home: "Home",
-      versionPrefix: "",
-
-      loadingTitle: "Loading Pickleball Rules Quiz...",
-      loadingIcon: "",
-      loadingHint: "Preparing your pickleball rules quiz",
-      loadingSlowHint: "Still loading... Check your connection if this takes too long.",
-      loadingSlowHints: [
-        "Arguing politely about the kitchen...",
-        "Reviewing highly suspicious line calls...",
-        "Preparing an unnecessary Erne..."
-      ],
-      updateAvailable: "New version available.",
-      updateNow: "Refresh app",
-
-      offlinePayment: "Payment requires an internet connection.",
-      copied: "Copied",
-      copyFailed: "Copy failed",
-      downloaded: "Downloaded",
-      more: "How to play",
-      open: "Open",
-      notNow: "Not now",
-      continue: "Next",
-      tapToContinue: "",
-
-      youChosePrefix: "You chose:",
-
-      playAria: "Play a new game",
-      shareAria: "Share the game",
-      resultGridAria: "Result grid",
-      scoreAria: "Score",
-      endActionsAria: "End screen actions",
-      shareCardAria: "Share the game",
-      premiumUnlockedToast: "Full access unlocked",
-      storageSaveFailedToast: "Saving is disabled in this browser mode. Your progress may be lost if you refresh.",
-      confirmLeaveRun: "Leave the current game? Your progress will be lost."
-    },
-
-    footer: {
-      rulebookNote: "USA Pickleball rulebook",
-      contact: "Contact",
-      privacy: "Privacy",
-      terms: "Terms",
-      press: "Press"
-    },
-
-    success: {
-      title: "Payment successful",
-      subtitle: "Your device unlock code is ready. Use it in the game to enable full access here in a few seconds.",
-      deviceBadge: "ONE DEVICE",
-
-      codeLabel: "Your device unlock code",
-      clearDataWarning: "This unlock is saved on this device. Keep the code if you may clear browser data or switch device later.",
-
-      howToActivateTitle: "How to activate",
-      howToActivateStep1: "Return to the game.",
-      howToActivateStep2Prefix: "Tap",
-      howToPlayLabel: "How to play",
-      activateWithCodeLabel: "Use a device unlock code",
-      howToActivateStep3Prefix: "Paste your code and tap",
-      activateLabel: "Activate",
-
-      whatYouGetTitle: "What full access includes",
-      benefitFullAccessPrefix: "Full access to all",
-      benefitFullAccessStrongSuffix: " questions",
-      benefitFullAccessSuffix: " in this game.",
-      benefitUnlimited: "Unlimited play on this device after activation.",
-
-      ctaBackToGame: "Open the game",
-      ctaDownload: "Download code (.txt)",
-      shortcutHint: "In the game: How to play -> Use a device unlock code.",
-
-      thankYouLine: "Thank you for supporting Pickleball Rules Quiz. Your code is ready when you are.",
-      supportLabel: "Need help?",
-
-      copyCta: "Copy code",
-      copyAgainCta: "Copy code again",
-      tipNoRecover: "Tip: keep this code somewhere safe as a backup for this device unlock.",
-      txtTitle: "Your Pickleball Rules Quiz device unlock code",
-      txtSaveLine: "Tip: keep this code somewhere safe if you want a backup.",
-      txtNoRecoverLine: "You only need it again if you clear browser data or move to another device.",
-
-      cheatSheetTitle: "",
-      cheatSheetBody: "",
-
-    },
-    landing: {
-      title: "Pickleball Rules Quiz",
-      tagline: "**Think you know pickleball? Prove it.**",
-      subtitle: "A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.",
-      microFun: "Quick games · No signup · Free to try",
-      microTrust: "Two quick games will tell you what you actually know.",
-
-      runsLabel: "",
-      runsFreeMode: "",
-
-      ctaPlay: "Start playing",
-      ctaPlayAfterFirstRun: "Play again",
-      ctaHow: "How to play",
-      // Required for LANDING stat to render
-      statsSeenLabel: "Questions seen",
-
-      // Before completion (goal gradient) 
-      statsSeenSummaryTemplate: "Seen: {seen} questions",
-      statsPhaseBadgeDiscovery: "Phase 1/3: First pass",
-      statsPhaseBadgeCorrection: "Phase 2/3: Fix mistakes",
-      statsPhaseBadgeConsolidation: "Phase 3/3: Pressure test",
-
-      // After completion (fail-closed: required for the post-200 line)
-      statsSeenCompleteLabel: "Quiz progress",
-      statsMistakesLabel: "Mistakes",
-      statsMistakesSummaryTemplate: "{mistakes}",
-      statsMasterySummaryTemplate: "{mastered} questions answered correctly",
-
-      postPaywallTitle: "Free games completed.",
-      postPaywallBody: "Unlock the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode.",
-      practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
-      postPaywallCta: "Unlock full access",
-
-      postPaywallSbTitle: "Before you decide...",
-      postPaywallSbBody: "Rapid Fire Mode tests how quickly the rules come back to you — tap the ⚡ to try it."
-    },
-    firstRun: {
-      titleRun1: "How to play",
-      titleRun2: "Quick reminder",
-      titleRun3: "Last tip before you play",
-
-      run1Lines: [
-        "You'll see pickleball rules one by one.\nDecide whether each one is true or false.",
-        "Correct answer: +1 point.",
-        "Wrong answer: +1 mistake.",
-        "After {maxChances} mistakes, the game ends.",
-        "Think You Know Pickleball? Prove It."
-      ],
-
-      run2Lines: [
-        "Correct answer: +1 point.",
-        "Wrong answer: +1 mistake.",
-        "After {maxChances} mistakes, the game ends.",
-        "Read carefully.",
-        "Think You Know Pickleball? Prove It."
-      ],
-
-      run3Lines: [
-        "Game ends after {maxChances} mistakes.",
-        "Read carefully.",
-        "Go with what you know.",
-        "Think You Know Pickleball? Prove It."
-      ],
-
-      ctaLabel: "Play"
-    },
-
-    milestones: {
-      quarter: {
-        title: "First quarter complete.",
-        bodyLines: [
-          "You've seen the first quarter of the question set.",
-          "This is still phase 1: discovery.",
-          "Keep going. You're building your first pass through the rules."
-        ],
-        cta: "Next"
-      },
-
-      halfway: {
-        title: "Halfway there.",
-        bodyLines: [
-          "You've seen half of the question set.",
-          "You're still in the discovery phase.",
-          "Finish the full set first. Then you'll fix what still catches you."
-        ],
-        cta: "Next"
-      },
-
-      threeQuarters: {
-        title: "Three quarters complete.",
-        bodyLines: [
-          "You've seen three quarters of the question set.",
-          "You're close to finishing phase 1.",
-          "One more push, then you'll know exactly what still needs work."
-        ],
-        cta: "Next"
-      }
-    },
-
-    phaseJourney: {
-      discovery: {
-        badge: "Phase 1/3: First pass",
-        landingSummaryTemplate: "{seen} questions played.",
-        landingDetailTemplate: "{remaining} still to go in your first pass.",
-        endLens: "You're still on your first pass. Right now the goal is to cover more of the set.",
-        micropics: {
-          streakStart: "3 in a row. Good read.",
-          streakBuilding: "6 in a row. Good read.",
-          streakStrong: "10 in a row. Clear rules.",
-          streakElite: "15 in a row. You know these.",
-          streakLegendary: "20 in a row. Strong run.",
-          streakAgainTemplate: "{streak} again.",
-          recovery: "There you go."
-        }
-      },
-      correction: {
-        badge: "Phase 2/3: Fix mistakes",
-        landingSummaryTemplate: "Mistakes left: {mistakes}",
-        landingDetail: "You've seen the full set. Now clear the rules that still catch you.",
-        endLens: "You've seen the full set. Now clear the rules that still catch you.",
-        micropics: {
-          streakStart: "3 in a row. Better.",
-          streakBuilding: "6 in a row. Clearing up.",
-          streakStrong: "10 in a row. Better now.",
-          streakElite: "15 in a row. Mistakes fading.",
-          streakLegendary: "20 in a row. Strong correction.",
-          streakAgainTemplate: "{streak} again.",
-          recovery: "Back on it."
-        }
-      },
-      consolidation: {
-        badge: "Phase 3/3: Pressure test",
-        landingSummaryTemplate: "No active mistakes",
-        landingDetail: "Your mistakes are clear. Build your Rapid Fire score.",
-        endLens: "Your mistakes are clear. Build your Rapid Fire score.",
-        micropics: {
-          streakStart: "3 in a row. Still clear.",
-          streakBuilding: "6 in a row. Still clear.",
-          streakStrong: "10 in a row. Holding up.",
-          streakElite: "15 in a row. Very clear.",
-          streakLegendary: "20 in a row. Rules clear.",
-          streakAgainTemplate: "{streak} again.",
-          recovery: "Back on it."
-        }
-      }
-    },
-
-    levels: {
-      modalTitle: "Levels",
-      placeholder: "",
-      openDetailsAria: "Open level details",
-      unlockKicker: "New level",
-      reachedTemplate: "You reached {label}.",
-      currentLabel: "Current level",
-      unlockedByLabel: "What it means",
-      nextLabel: "Next level",
-      reachItLabel: "How to unlock",
-      progressionLabel: "Full path",
-      noLevelTitle: "Locked",
-      noLevelBody: "Finish your first full pass.",
-      maxLevelBody: "You reached the top level.",
-      currentPill: "You are here",
-      unlockedPill: "Unlocked",
-      lockedPill: "Locked",
-      byLevel: {
-        1: {
-          label: "COURT-READY",
-          unlock: "Finish your first full pass.",
-          sheetBody: "You finished your first full pass. Now make the rules stick."
-        },
-        2: {
-          label: "CLUB-LEVEL",
-          unlock: "Clear all active mistakes.",
-          sheetBody: "You cleared your active mistakes. Your rule knowledge is becoming reliable."
-        },
-        3: {
-          label: "TOURNAMENT-LEVEL",
-          unlock: "Build a Rapid Fire pool of 16+ and post a 70%+ run.",
-          sheetBody: "You proved your rules under Rapid Fire pressure."
-        },
-        4: {
-          label: "PRO-LEVEL",
-          unlock: "Build a Rapid Fire pool of 50+ and post an 85%+ run.",
-          sheetBody: "You reached the top level. Keep the rules sharp."
-        }
-      }
-    },
-
-    ui: {
-      chancesLabel: "Mistakes",
-      mistakesLabel: "Mistakes",
-      scoreLabel: "Score",
-      scoreAriaTemplate: "Score: {score} {fpShort}",
-      fpShort: "",
-      fpLong: "",
-      trueLabel: "True",
-      falseLabel: "False",
-      gameOverTitle: "Game over",
-
-      // Content loading (LANDING guard)
-      contentLoadingToast: "Loading questions...",
-
-      // Pool loop announcement (RUN)
-      poolReshuffledToast: "All questions reshuffled. New order.",
-
-      // Pool progress (END micro-line, RUN only)
-      seenProgressTemplate: "You saw {seen}/{poolSize} questions.",
-
-      // Start-of-run overlay (economy)
-      // Visible uniquement pour FREE et LAST_FREE
-      startRunTypeFree: "Your first free game",
-      startRunTypeLastFree: "Last free game. Make it count",
-      startRunTypeUnlimited: "",
-      startRunTypePractice: "Mistakes Mode",
-
-      // Start-of-run overlay (education)
-      // Court et scannable, avant le premier tap
-      startRunChancesOverlay: "Correct: +1 point.\nWrong: +1 mistake.\nGame ends after {maxChances} mistakes.",
-      startOverlayTapAnywhere: "Tap anywhere to start",
-
-      // Chance state overlays (no \"-1\" text)
-      lastChanceOverlay: "One mistake left.",
-      gameOverOverlay: "Game over.",
-
-      // HUD deltas (PLAYING)
-      chanceLostDeltaText: "-1",
-      mistakeGainedDeltaText: "+1",
-      scoreGainedDeltaText: "+1",
-
-      // HUD anchor (PLAYING) — Personal Best (Premium only)
-      bestScoreLabel: "Best",
-      bestScoreAriaTemplate: "Best: {best}",
-
-
-    },
-
-
-
-
-
-
-    secretBonus: {
-      chestAria: "Rapid Fire Mode",
-      chestHint: "",
-      noSeenWordsToast: "Rapid Fire is empty for now. Play a few games first and build your pool.",
-      badge: "RAPID FIRE",
-
-      // END screen (BONUS)
-      endTitle: "",
-      scoreLine: "Score: {score}",
-      endStatsLine: "You got {cleared} out of {shown} right.",
-      endStatsLineOne: "You got {cleared} out of {shown} right.",
-      endDeckSizeLine: "Rapid Fire pool: {count} questions.",
-      endDeckSizeLineOne: "Rapid Fire pool: 1 question.",
-      endPoolProgressTemplate: "{cleared} out of {shown} correct this round.",
-      endDeckExhaustedToast: "All available questions played.",
-      mistakesTitle: "Questions to revisit",
-      mistakesToggle: "{count} mistakes",
-      mistakesNone: "No mistakes.",
-
-      // BONUS new best label (END)
-      newBest: "NEW BEST SCORE.",
-      celebrationPerfect: "PERFECT RUN",
-      labelByTier: {
-        perfect: "FAST AND CLEAN",
-        high: "QUICK HANDS",
-        medium: "FINDING PACE",
-        low: "PACE CHECK"
-      },
-
-      // END BONUS — cognitive mirror by accuracy tier
-      // Contract: arrays MUST contain exactly 2 sentences each. No fallback in UI.
-      endByTier: {
-        perfect: [
-          "You proved it under pressure.",
-          "You answered those questions instantly."
-        ],
-        high: [
-          "You held up under pressure.",
-          "Your rule knowledge held up well."
-        ],
-        medium: [
-          "You settled in.",
-          "This mode rewards solid rule recall."
-        ],
-        low: [
-          "The pace got ahead of you.",
-          "You need both recall and control here."
-        ]
-      },
-      endLineZero: "The pace got ahead of you this time.",
-
-      // END BONUS — personalized recommendation (accuracy × deck size)
-      // Keys: "{accuracyTier}_{deckTier}" — must cover all combinations
-      endRecoByTier: {
-        perfect_small: "Expand your deck to unlock more Rapid Fire questions.",
-        perfect_medium: "Replay to keep that edge.",
-        perfect_large: "Your Rapid Fire pool is deep: keep going.",
-
-        high_small: "Expand your deck to unlock more Rapid Fire questions.",
-        high_medium: "Try again to lock in the ones you missed.",
-        high_large: "Stay in Rapid Fire: that was a strong game.",
-
-        medium_small: "Expand your deck first. More seen questions will make Rapid Fire stronger.",
-        medium_medium: "Try another Rapid Fire game to build your recall.",
-        medium_large: "Keep going. Recall gets stronger with repetition.",
-
-        low_small: "Expand your deck first. More seen questions will make Rapid Fire stronger.",
-        low_medium: "Try another Rapid Fire game to rebuild confidence.",
-        low_large: "Try again: recall comes with practice."
-      },
-
-      // BONUS END — emotionally congruent CTA label by accuracy tier
-      ctaByTier: {
-        perfect: "Keep proving it",
-        high: "Stay in Rapid Fire",
-        medium: "Try Rapid Fire again",
-        low: "Try Rapid Fire again"
-      },
-
-      ctaExpandDeck: "Expand your deck",
-
-      // Start overlay (same component as FREE runs)
-      startOverlayLine1: "Rapid Fire Mode.",
-      startOverlayLine2: "Only questions you've already seen.",
-      startOverlayLine3: "Play more games to grow your pool.",
-
-      // Teaser premium (filled by ui.js): {remaining}, {limit}
-      startOverlayFreeRunsLimitLine: "",
-
-      // Block modal when free limit reached
-      freeLimitReachedTitle: "That was intense. Time to towel off.",
-      freeLimitReachedBody: "You've used your {limit} free Rapid Fire games.\n\nFull access unlocks unlimited Rapid Fire Mode.\nSame pace.\nNo limits.",
-      freeLimitReachedCta: "Keep playing",
-      freeLimitReachedClose: "Not now",
-      startOverlayTapAnywhere: "Tap anywhere to start",
-
-      // Minimal entry (autoporteur)
-      title: "Pickleball Rules Quiz",
-      subtitle: "Rapid Fire",
-      questionPrompt: "True or false?",
-      dangerLineLabel: "TIMEOUT LINE",
-      dangerLineAria: "Timeout line. If the card reaches this line, the item is lost.",
-      seenOnlyLine: "{count} pickleball rules in your Rapid Fire pool.",
-
-      // End toasts (BONUS ends by returning to END screen)
-      // Keep existing (even if you later stop using the modal)
-      modalTitle: "Rapid Fire Mode",
-      modalBody: "Rapid Fire Mode is faster and more demanding.\nIt uses only questions you've already seen in the game.\nTest your rule recall under pressure.",
-      modalCta: "Play Rapid Fire Mode"
-    },
-
-
-    practice: {
-      title: "Mistakes Mode",
-      on: "On",
-      off: "Off",
-
-      premiumOnly: "Full access only",
-      descLocked: "Replay the questions that still need work.",
-      valueLine: "Focus on the questions that still need work.",
-      descUnlocked: "Only the questions you previously got wrong.",
-
-      freeLimitReachedTitle: "That helped.",
-      freeLimitReachedBody: "You've used your {limit} free mistakes games.\n\nFull access unlocks unlimited Mistakes Mode.\nKeep fixing what you missed.\nNo limits.",
-      freeLimitReachedCta: "Keep playing",
-      freeLimitReachedClose: "Not now",
-
-      // END screen (PRACTICE)
-      endTitle: "",
-      endLine: "Keep going.",
-      allFixedLine: "You closed it out.",
-      celebrationAllCleared: "STRONG FINISH",
-      labelByTier: {
-        last: "LAST ONE",
-        light: "GOOD RECOVERY",
-        firm: "WORKING BACK",
-        direct: "STAY WITH IT"
-      },
-      endLineAllFixed: "You closed it out.",
-      endLineZero: "Those questions still need another pass.",
-      endStatsLineAllFixed: "You fixed {fixed}.",
-      // Tier-aware override (keyed on practiceRepeatTierKey). Fallback: endLine.
-      endLineByTier: {
-        last: "Nice recovery.",
-        light: "Good recovery.",
-        firm: "That's progress.",
-        direct: "You're making progress."
-      },
-      endStatsLine: "You fixed {fixed}. You still have {remaining} left.",
-
-      // Repeat guidance by tier (selected via WT_CONFIG.routing.practiceRepeatTiers)
-      // Fail-closed: missing tier key => no note
-      endRepeatNoteByTier: {
-        last: "One question left. Clear it now.",
-        light: "",
-        firm: "A few questions still need another pass.",
-        direct: "Stay in Mistakes Mode. These are the questions that need the work."
-      },
-
-      scoreLine: "Score: {score}",
-
-      // PLAYING: calm progress line (replaces assertion in PRACTICE)
-      playingProgressLine: "{current}/{total}",
-
-      // Start overlay (PRACTICE): explain the mode (2 lines shown via typeLine + msg)
-      startRunChancesOverlayPractice: "Only questions you missed.\nUp to 10 per game.\nFix it and it drops out. Miss it and it comes back.",
-      startOverlayTapAnywhere: "Tap anywhere to start",
-      // Fallback CTA when no repeat tier is selected
-      ctaPracticeAgain: "Practice again",
-
-      // Optional CTA override (END PRACTICE) based on remaining tier
-      // Fail-closed: missing tier key => keep ctaPracticeAgain
-      ctaRepeatByTier: {
-        last: "Clear the last question",
-        light: "Fix your mistakes one more time",
-        firm: "Play Mistakes Mode again",
-        direct: "Stay in Mistakes Mode"
-      },
-
-
-      playing: {
-        questionLabel: "Question",
-        assertion: "Is this statement true or false?",
-        answersAria: "Answer choices",
-        questionHeadingTemplate: "",
-        feedbackTitleOk: "",
-        feedbackTitleBad: "",
-
-        // New best score (PLAYING)
-        newBestScore: "New best score.",
-
-        // Feedback truth line (used inline after Correct/Incorrect):
-        // "Correct - {question}"
-        // "Incorrect - {question}"
-        feedbackRelationSameTemplate: "{question}",
-        feedbackRelationDifferentTemplate: "{question}"
-      }
-    },
-
-    micropics: {
-      runContinues: "You got it. Keep going.",
-
-
-      // Near-miss (END-only highlight)
-      nearMiss: "Close call. That one was waiting for you.",
-
-
-      // Repeated mistakes (END-only highlight)
-      repeatMistake: "This one keeps pulling you in. Slow down and read it again.",
-
-
-      // First time reaching the tier in this game
-      streakStart: "3 in a row. Good start.",
-      streakBuilding: "6 in a row. You know these.",
-      streakStrong: "10 in a row. You know these.",
-      streakElite: "15 in a row. Strong run.",
-      streakLegendary: "20 in a row. Rules locked in.",
-
-
-      // Reaching a tier again in the same game (after a mistake)
-      // {streak} = current streak at display time, {n} = threshold value (3/6/10/15/20)
-      streakAgainTemplate: "{streak} in a row again.",
-
-      // First non-chiffré micro-pic after a mistake (one-shot)
-      recovery: "There you go.",
-
-      runEndedAllChancesUsed: ""
-    },
-
-    end: {
-      title: "",
-
-
-      // Pool complete (one-shot celebration when 200/200 reached)
-      poolCompleteTitle: "All questions complete.",
-      poolCompleteLine1: "You made it through the full set. Now replay, fix mistakes, and know the rules better.",
-      poolCompleteLine2: "Come back later and see what you still remember.",
-      directToConsolidationLine: "You finished the full set with no active mistakes, so you move straight to phase 3.",
-      poolCompleteScoreLine: "This game: {score} {fpShort}",
-      poolCompleteCtaPrimary: "Replay in a new order",
-      poolCompleteCtaPractice: "Fix your mistakes",
-
-      freeLimitReachedTitle: "Nice game.",
-      freeLimitReachedBody: "You've used your {limit} free games.\n\nFull access unlocks the full pickleball rules question set, unlimited play, explanations after every answer, Mistakes Mode, and Rapid Fire Mode.",
-      freeLimitReachedCta: "Keep playing",
-      freeLimitReachedClose: "Not now",
-
-      // No redundancy: do not mention chances on END (player already knows).
-      endLine: "",
-      endStatsLine: "You got {score} out of {total} right.",
-
-
-      // (verdict grid removed — identityByVerdict is now the primary END signal)
-
-      // RUN END — identity + lens + CTA by verdict tier
-      // Keys must match UI mapping: none/start/building/strong/elite/legendary
-      identityByVerdict: {
-        none: "A few questions are still slipping past you.",
-        start: "You're getting your bearings.",
-        building: "You're starting to get the feel for these rules.",
-        strong: "You know more of these rules now.",
-        elite: "You know these rules well.",
-        legendary: "You really know these rules."
-      },
-      identityZero: "Those rules still need another pass.",
-
-      ctaByVerdict: {
-        none: "Play again",
-        start: "Play again: aim for 6+",
-        building: "Play again: aim for 10+",
-        strong: "Play again: push your score higher",
-        elite: "Play again: master the remaining questions",
-        legendary: "Play again"
-      },
-
-      strongestTagLine: "Category you handled best: {tag}.",
-      weakestTagLine: "Category that gave you the most trouble: {tag}.",
-
-      endTagHighlights: {
-        "2026_changes": "The 2026 rule changes were the toughest part of this game."
-      },
-
-      scoreLine: "Score: {score} {fpLong}",
-
-      // Best score surfacing (rendered by ui.js using {best})
-      personalBestLine: "Best score: {best} {fpLong}",
-      nearBestLine: "{delta} {fpLong} away from your best score.",
-      // Free runs hint (RUN-only; shown only when remaining > 0)
-      freeRunLeft: "{remaining} free game{pluralS} left.",
-
-      // RUN END - mistakes recap (free + premium)
-      mistakesTitle: "Questions to revisit",
-      mistakesNone: "No mistakes.",
-      mistakesToggle: "{count} mistakes",
-
-      newBest: "NEW PERSONAL BEST",
-      labelByVerdict: {
-        none: "EARLY RALLY",
-        start: "FIRST PASS",
-        building: "GETTING A READ",
-        strong: "SOLID GAME",
-        elite: "RULES READY",
-        legendary: "LOCKED IN"
-      },
-      houseAdSummaryLabel: "Keep going with another game",
-      playAgain: "Play again",
-
-      practiceCta: "Fix what you missed",
-      practiceCtaTemplate: "Fix your {count} mistake{pluralS}",
-
-      // RUN routing: when score reaches the "strong" tier, END can promote BONUS as primary CTA.
-      bonusCtaPrimary: "Try Rapid Fire Mode",
-
-      // Post-completion routing (pool exhausted + mistakes)
-      // Vars: {backlog}
-      practiceCtaCountPremium: "Fix what you missed",
-      shareTitle: "Challenge a friend"
-    },
-
-    paywall: {
-      // Default headline
-      headline: "Walk onto the court knowing every call.",
-
-      // LAST FREE RUN - stronger but factual
-      headlineLastFree: "You've got the feel for it. Now finish the set.",
-
-      // Projection personnalisée (PAYWALL only)
-      // Vars: {seen} {poolSize} {remaining}
-      progressLine1: "You've seen {seen} questions. {remaining} more are waiting in the full set.",
-      progressLine2: "",
-
-      payOnceLine: "Pay once. No subscription.",
-
-      // Section headers (anti “mur de mots”)
-      valueTitle: "What you get",
-      trustTitle: "Simple unlock",
-      compactTitle: "What unlocks",
-      compactBullets: [
-        "**The full pickleball rules question set**",
-        "**Explanations after every answer**",
-        "**Mistakes Mode** and **Rapid Fire**",
-        "**Works offline** after first load"
-      ],
-
-      valueBullets: [
-        "**The full pickleball rules question set**",
-        "**A mix of easy, intermediate, and hard questions**",
-        "**Explanations after every answer**",
-        "**Mistakes Mode** to fix what you missed",
-        "**Rapid Fire Mode** and unlimited replays"
-      ],
-
-      // Shared bridge copy (LANDING post-paywall + END runs exhausted)
-      bridgeTitle: "Know the pickleball rules better.",
-      bridgeBody: "Unlock the full question set, fix what you missed, and keep playing with every mode open.",
-
-      trustLine: "**One-time unlock**",
-      trustBullets: [
-        "**Pay once**, no subscription",
-        "**No account** or email needed",
-        "**Keep your code** as a backup if you switch device or clear browser data",
-        "**Works offline** after first load",
-        "**Secure payment** through Stripe"
-      ],
-
-
-      // PW1: Social proof (optional - do not invent numbers/claims)
-      // If all are empty, nothing is rendered.
-      socialProofTitle: "What players say",
-      socialProofQuotes: [
-        { quote: "★★★★★\nI was sure I'd ace it. Caught three rules I've been getting wrong at the club. The explanations actually help.", author: "Maya, tournament player" },
-        { quote: "★★★★★\nTwo games in and I realized I'd been calling some things wrong for months.", author: "Jon, doubles regular" }
-      ],
-
-      // EARLY-only conversion bump (no fallback; shown only if template is provided)
-      // Vars: {saveAmount} {earlyPrice} {standardPrice}
-      savingsLineTemplate: "Save {saveAmount} with the early price.",
-      // Micro reassurance under CTA (optional, no fallback)
-      checkoutNote: "Payment handled securely by Stripe. Usually about 30 seconds.",
-      checkoutRedirecting: "Redirecting to secure checkout...",
-
-      // Primary CTA changes with price phase (EARLY vs STANDARD)
-      ctaEarly: "Unlock full access for $4.99",
-      ctaStandard: "Unlock full access for $6.99",
-
-      // Backward compat (still used in a few places)
-      cta: "Get full access",
-
-      alreadyHaveCode: "Already have a device unlock code? Use it here.",
-      deviceNote: "Instant unlock. No account needed. Keep your code as a backup.",
-
-      // PW2: EARLY visual badge (copy visible)
-      earlyBadgeLabel: "Early bird",
-
-      earlyLabel: "Early price",
-      standardLabel: "Standard price",
-
-      // Loss-oriented urgency label (stronger conversion driver)
-      timerLabel: "Price increases in:",
-
-      postEarlyLine1: "The early price has ended.",
-      postEarlyLine2: "{standardPrice}. Pay once. Keep your code as a backup."
-    },
-
-
-    howto: {
-      title: "How to play",
-      howToPlayLine1: "You see a statement about pickleball rules.",
-      howToPlayLine2: "Decide whether it is true or false.",
-      howToPlayLine3: "Choose True or False.",
-
-      modesTitle: "Game modes",
-      modesBullets: [
-        "The game: discover the full set and learn the rules.",
-        "Rapid Fire Mode: faster and more demanding. Uses only questions you've already seen.",
-        "Mistakes Mode: replay what you missed (up to 10 questions)."
-      ],
-
-      ruleTitle: "Rule",
-      ruleSentence: "Each correct answer adds 1 point. A wrong answer adds 1 mistake. After {maxChances} mistakes, the game ends.",
-      premiumTitle: "Full access",
-      alreadyPremium: "Full access is already enabled on this device.",
-      activateTitle: "Use a device unlock code",
-      activateLine1: "Already have a device unlock code? Use it here.",
-      activateLine2: "No account needed. This unlock stays on this device.",
-      activationCodeLabel: "Device unlock code",
-      activationCodePlaceholder: "PRQ-0000-0000",
-      enterCode: "Enter a code.",
-      codeRejected: "Code rejected.",
-      activateCta: "Activate",
-      codeInvalid: "Invalid code format.",
-      codeUsed: "This device already used a code.",
-      codeOk: "Full access enabled on this device.",
-
-
-      autoActivateTitle: "Unlock code ready",
-      autoActivateLine1: "Your device unlock code is already saved here.",
-      autoActivateLine2: "Enable full access on this device now?",
-      autoActivateCta: "Unlock now",
-      autoActivateLater: "Not now"
-    },
-
-    postCompletion: {
-      title: "You've seen everything.",
-      body: "Now keep improving. Practice your mistakes, explore Rapid Fire Mode, or replay full games.",
-
-      // Mastered (pool exhausted + 0 active mistakes)
-      masteredTitle: "Bravo ! You answered the full question set correctly.",
-      masteredLine1: "Zero mistakes left. Every question answered correctly.",
-      masteredLine2: "Now put your rule knowledge under pressure. Then come back in a few weeks and see if it still holds.",
-      masteredCtaBonus: "Challenge yourself in Rapid Fire Mode",
-      masteredCtaReplay: "Replay in a new order",
-
-      waitlistTitle: "Stay in the loop",
-      waitlistBody1: "Get notified when we add new questions or features.",
-      waitlistBody2: "No spam. No account. Leave anytime.",
-      waitlistCta: "Get notified",
-      waitlistDisclaimer: "Email only. Unsubscribe anytime.",
-      houseAdCta: "Explore Bonjour Pickleball"
-    },
-
-    houseAd: {
-      eyebrow: "After {poolSize} questions",
-      title: "You know the rules. Next stop: France.",
-      bodyLine1: "Carole, the creator of Pickleball Rules Quiz, splits her time between the U.S. and France.",
-      bodyLine2: "Join the Bonjour Pickleball list for future pickleball trips, camps, and small-group experiences in France.",
-      ctaPrimary: "See France trips",
-      ctaRemindLater: "Remind later",
-
-      // Landing presence (same meaning, same tone)
-      landingTitle: "You know the rules. Next stop: France.",
-      landingBodyLine1: "Carole, the creator of Pickleball Rules Quiz, splits her time between the U.S. and France.",
-      landingBodyLine2: "Join the Bonjour Pickleball list for future pickleball trips, camps, and small-group experiences in France.",
-      landingCtaPrimary: "See France trips",
-      landingCtaRemindLater: "Remind later"
-    },
-
-
-
-
-    waitlist: {
-      ctaLabel: "Get notified about future products or features.",
-      disclaimer: "No spam. No account. You can leave anytime.",
-      title: "Get notified about future products or features.",
-      bodyLine1: "No spam. No account. Leave anytime.",
-      bodyLine2: "Optional: reply with one idea if you want.",
-      inputPlaceholder: "Optional: share an idea.",
-      cta: "Send email",
-
-      // Email compose (for inbox filtering + prefill)
-      emailSubjectSuffix: "Waitlist",
-      emailBodyTemplate: `Hi!
-
-I'd like to join the Pickleball Rules Quiz waitlist.
-
-Optional idea:
-{idea}
-
-Thanks!`
-    },
-
-
-
-
-    share: {
-      ctaLabel: "Copy challenge",
-      emailLabel: "Email challenge",
-      emailSubject: "Pickleball Rules Quiz",
-      previewLabel: "Challenge preview",
-      toastCopied: "Copied.",
-      template: `Think you know pickleball?
-Try this one:
-{funFact}
-
-{scoreChallenge}
-{url}`,
-      scoreChallengeWithBest: "My best score so far is {bestScore}. What's yours?",
-      scoreChallengeWithoutBest: "What's your best score so far?",
-
-      teaserTrap: "Looks obvious... until it isn't.",
-      teaserTrue: "Sometimes the obvious answer is right.",
-      funFactTemplatesTrap: [
-        `"{question}" True or false? 🤔`
-      ],
-      funFactTemplatesTrue: [
-        `"{question}" True or false? 🤔`
-      ],
-
-
-    },
-
-
-
-    installPrompt: {
-      title: "Keep the game handy",
-      body: "Add Pickleball Rules Quiz to your home screen.\nCome back in one tap.",
-      bodyIOS: "This will not install automatically on iPhone.\nTap Share, then Add to Home Screen.",
-      ctaPrimary: "Add to home screen",
-      ctaPrimaryIOS: "Got it",
-      ctaSecondary: "Later"
-    },
-
-
-    statsSharing: {
-      sectionTitle: "Anonymous stats (optional)",
-      buttonLabel: "Share anonymous stats",
-
-      // Lightweight prompt (shown at milestones)
-      promptTitle: "Help improve Pickleball Rules Quiz",
-      promptBodyTemplate: "You have reached {thresholdPct}% of the pool (unique questions). Share anonymous stats to help improve the game. You can review everything before sending.",
-      promptBodyLastFree: "That was your last free game. Share anonymous stats to help improve the game. You can review everything before sending.",
-      promptBodyPowerUser: "You're clearly a power player. Share anonymous stats to help improve the game. You can review everything before sending.",
-      promptCtaPrimary: "Preview & share",
-      promptCtaSecondary: "Not now",
-
-      // Full modal (manual access + prompt primary)
-      modalTitle: "Help improve the game",
-      modalDescription: "Share your anonymous gameplay stats with the creator.\nNo personal data is collected.\nYou can see exactly what will be sent below.",
-      previewLabel: "Data to be shared:",
-      ctaSend: "Send via email",
-      ctaCancel: "Cancel",
-      ctaLater: "Show me later",
-      ctaCopy: "Copy to clipboard",
-      noStatsToast: "No stats to share yet.",
-      successToast: "Email app opened. Send to share your stats.",
-      copyToast: "Stats copied to clipboard."
-    },
-
-
-
-    support: {
-      label: "Contact",
-      modalTitle: "Write us",
-      modalBodyLine1: "Email is the fastest way to reach us.",
-      modalBodyLine2: "Pick a reason below or copy the address.",
-      emailSubjectSuffix: "Feedback",
-      ctaCopy: "Copy email",
-      ctaOpen: "Open email app",
-      ctaBug: "Bug report",
-      ctaQuestion: "Question",
-      ctaIdea: "Idea",
-      bugSubjectSuffix: "Bug report",
-      questionSubjectSuffix: "Question",
-      ideaSubjectSuffix: "Idea",
-
-      // Email compose (prefill)
-      emailBodyTemplate: `Hi!
-
-I'm writing about Pickleball Rules Quiz.
-
-Message:
-
-
-
-
-Thanks!`,
-      bugBodyTemplate: `Hi!
-
-I'm writing about Pickleball Rules Quiz.
-
-Bug report:
-
-What happened:
-
-What I expected:
-
-Device / browser:
-
-
-Thanks!`,
-      questionBodyTemplate: `Hi!
-
-I'm writing about Pickleball Rules Quiz.
-
-Question:
-
-
-
-Thanks!`,
-      ideaBodyTemplate: `Hi!
-
-I'm writing about Pickleball Rules Quiz.
-
-Idea:
-
-
-
-Thanks!`
-    },
-
-
-    notFound: {
-      title: "Out of bounds.",
-      line1: "This page landed outside the court.",
-      line2: "The good news: Pickleball Rules Quiz is still ready to play.",
-      cta: "Back to the court"
-    },
-
-  };
-
-
+  // Legacy inline wording removed.
+  // Active wording now loads from wording-<locale>.js via wording-bootstrap.js + i18n.js.
 
   // 9.6 Soft validation (debug only)
   function validateConfigSoft() {

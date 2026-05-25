@@ -1,6 +1,8 @@
 // footer.js — shared footer injection (uses email.js)
 // Responsibility: inject footer markup into #wt-footer-root when needed.
-// Branding, version, labels and parent link are hydrated here. Contact is handled by email.js.
+// Branding, version, labels and locale-aware links are hydrated here. Contact is handled by email.js.
+// Locale: locale-aware hrefs come from WT_WORDING.footer.links.* via data-wt-href (hydrated by wording.js).
+//         Re-runs hydration on "wt:locale-change".
 (() => {
     "use strict";
 
@@ -37,7 +39,10 @@
           <div class="wt-footer-row wt-footer-row--links">
             <a id="wt-contact-link" class="wt-footer-link" href="#" data-wt-wording="footer.contact"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
-            <a id="wt-tyf-link" class="wt-footer-link" href="#" target="_blank" rel="noopener"></a>
+            <a id="wt-tyf-link" class="wt-footer-link" href="#"
+              data-wt-wording="footer.links.bonjourPickleball.label"
+              data-wt-href="footer.links.bonjourPickleball.href"
+              target="_blank" rel="noopener"></a>
             <!-- wt-footer-sep--tyf is a marker class for JS targeting only. Styling comes from wt-footer-sep. -->
             <span class="wt-footer-sep wt-footer-sep--tyf" aria-hidden="true">·</span>
             <a id="wt-privacy-link" class="wt-footer-link" href="./privacy.html" target="_blank" rel="noopener"
@@ -57,29 +62,24 @@
     function hydrateFooter(root) {
         if (!root) return;
 
-        const cfg = window.WT_CONFIG;
         const wording = window.WT_Wording;
-        if (!cfg || typeof cfg !== "object" || !wording || typeof wording.hydrate !== "function") return;
+        if (!wording || typeof wording.hydrate !== "function") return;
 
         wording.hydrate(root);
 
-        // Parent app/site link (optional segment)
+        // Locale-aware Bonjour Pickleball link
         try {
             const appUrlEl = root.querySelector("#wt-tyf-link");
             const appUrlSep = root.querySelector(".wt-footer-sep--tyf");
-            const url = String(cfg.identity?.parentUrl || "").trim();
 
             if (appUrlEl) {
-                if (url) {
-                    appUrlEl.setAttribute("href", url);
+                const url = String(appUrlEl.getAttribute("href") || "").trim();
+                const label = String(appUrlEl.textContent || "").trim();
+                const shouldShow = !!url && url !== "#" && !!label;
+
+                if (shouldShow) {
                     appUrlEl.setAttribute("target", "_blank");
                     appUrlEl.setAttribute("rel", "noopener");
-
-                    try {
-                        appUrlEl.textContent = new URL(url).hostname.replace(/^www\./, "");
-                    } catch (_) {
-                        appUrlEl.textContent = url;
-                    }
 
                     appUrlEl.style.display = "";
                     if (appUrlSep) appUrlSep.style.display = "";
@@ -131,4 +131,13 @@
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", tryInject);
     }
+
+    // Locale reactivity: re-hydrate footer labels on locale change.
+    // Footer DOM stays in place; only text content (and any data-wt-href) is refreshed.
+    try {
+        window.addEventListener("wt:locale-change", () => {
+            const root = document.getElementById("wt-footer-root");
+            if (root) hydrateFooter(root);
+        });
+    } catch (_) { /* silent */ }
 })();

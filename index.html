@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-wt-locale-hint="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Pickleball Rules Quiz</title>
+  <title data-wt-wording="meta.indexTitle">Pickleball Rules Quiz</title>
 
   <!-- SEO -->
   <meta name="description"
-    content="Think you know pickleball? Prove it. A fast true-or-false pickleball rules game about serving, faults, scoring, line calls, and rule changes.">
+    content="Think you know pickleball? Prove it. A fast true-or-false pickleball rules game about serving, faults, scoring, line calls, and rule changes."
+    data-wt-meta-description="meta.indexDescription">
   <meta name="author" content="Bonjour Pickleball">
 
   <!-- Canonical Link -->
   <link rel="canonical" href="https://pickleballrulesquiz.com/">
+  <!-- hreflang alternates -->
+  <link rel="alternate" hreflang="en" href="https://pickleballrulesquiz.com/">
+  <link rel="alternate" hreflang="fr" href="https://pickleballrulesquiz.com/fr.html">
+  <link rel="alternate" hreflang="x-default" href="https://pickleballrulesquiz.com/">
+
 
 
   <!-- Twitter Card -->
@@ -80,12 +86,12 @@
   </noscript>
 
   <!-- Skip link for accessibility -->
-  <a href="#app" class="wt-skip-link">Skip to main content</a>
+  <a href="#main-content" class="wt-skip-link" data-wt-wording="common.skipToMain">Skip to main content</a>
   <!-- App shell -->
   <div class="wt-app">
-    <main class="wt-main">
+    <main id="main-content" class="wt-main">
       <div class="wt-container">
-        <div id="app" tabindex="-1" aria-live="off" aria-label="Pickleball Rules Quiz game content"></div>
+        <div id="app" tabindex="-1" aria-live="off" aria-label="Pickleball Rules Quiz game content" data-wt-aria-label="common.gameContentAria"></div>
       </div>
 
     </main>
@@ -117,15 +123,34 @@
 
 
   <!-- Scripts (defer pour performance - spec section 11.1) -->
+  <!-- ORDER: config -> i18n -> wording -> rest. i18n.js MUST run before wording.js -->
   <script defer src="./config.js"></script>
+  <script defer src="./wording-en.js"></script>
+  <script defer src="./wording-fr.js"></script>
+  <script defer src="./wording-bootstrap.js"></script>
+  <script defer src="./i18n.js"></script>
   <script defer src="./wording.js"></script>
   <script defer src="./icons.js"></script>
+  <script defer src="./logic/rapidfire-logic.js"></script>
+  <script defer src="./logic/leaderboard-logic.js"></script>
   <script defer src="./storage.js"></script>
   <script defer src="./game.js"></script>
+  <script defer src="./ui-screen-paywall.js"></script>
+  <script defer src="./ui-screen-end.js"></script>
+  <script defer src="./ui-screen-landing.js"></script>
+  <script defer src="./ui-share.js"></script>
+  <script defer src="./ui-install.js"></script>
+  <script defer src="./ui-support.js"></script>
+  <script defer src="./ui-stats-sharing.js"></script>
+  <script defer src="./ui-checkout.js"></script>
+  <script defer src="./ui-growth.js"></script>
+  <script defer src="./ui-leaderboard.js"></script>
   <script defer src="./ui.js"></script>
   <script defer src="./pwa.js"></script>
   <script defer src="./email.js"></script>
   <script defer src="./footer.js"></script>
+  <script defer src="./i18n-toggle.js"></script>
+  <script defer src="./content-adapter.js"></script>
   <script defer src="./main.js"></script>
 </body>
 
