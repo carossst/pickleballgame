@@ -2608,7 +2608,8 @@ void (function () {
     // Navigation state (stable, not runtime)
     this._nav = {
       paywallFromState: null,
-      landingVariant: null
+      landingVariant: null,
+      ignorePopstateUntil: 0
     };
 
     this._bindEvents();
@@ -3202,6 +3203,11 @@ void (function () {
       // Robustness: some mobile/PWA contexts emit popstate with a null/partial state,
       // so we also fall back to the internal hashes we control (#home / #app).
       window.addEventListener('popstate', (e) => {
+        const ignoreUntil = Number(self._nav?.ignorePopstateUntil || 0);
+        if (ignoreUntil > 0 && Date.now() <= ignoreUntil) {
+          return;
+        }
+
         const st = e && e.state ? e.state : null;
         const hash = String(window.location.hash || '').trim();
         const hasInternalState = !!(st && st.wt === true);
@@ -3820,6 +3826,9 @@ void (function () {
     try {
       const baseUrl = location.pathname + location.search;
       const hash = next === STATES.LANDING ? '#home' : '#app';
+      if (this._nav) {
+        this._nav.ignorePopstateUntil = Date.now() + 600;
+      }
 
       if (next !== STATES.LANDING && prev === STATES.LANDING) {
         history.pushState({ wt: true, screen: next }, '', baseUrl + hash);
