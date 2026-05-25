@@ -2618,6 +2618,7 @@ void (function () {
     // We keep one shared timestamp across modal/app surfaces so that
     // phantom click is dropped even when it lands on a different surface.
     this._lastActionDispatchTs = 0;
+    this._ignoreAppActionsUntil = 0;
 
     this._bindEvents();
   }
@@ -2722,6 +2723,13 @@ void (function () {
           const startedFromModal = !!(
             self.modalEl && !self.modalEl.classList.contains('wt-hidden')
           );
+
+          // Extra safety for modal -> app transitions:
+          // after the modal CTA starts a run, ignore app-surface actions briefly
+          // so no stray event can hit the freshly rendered PLAYING screen.
+          if (startedFromModal) {
+            self._ignoreAppActionsUntil = Date.now() + 900;
+          }
 
           // First-run framing must open only from the LANDING screen itself.
           // If the click already comes from the first-run modal CTA, we must start the run.
@@ -3054,6 +3062,11 @@ void (function () {
       const appActionHandler = (e) => {
         const t = e && e.target ? e.target : null;
         if (!t) return false;
+
+        const ignoreUntil = Number(self._ignoreAppActionsUntil || 0);
+        if (ignoreUntil > 0 && Date.now() <= ignoreUntil) {
+          return false;
+        }
 
         // KISS: if user toggles the Share <details> near the bottom of the viewport,
         // keep the summary visible to avoid the "opens upward" feel caused by layout jump.
