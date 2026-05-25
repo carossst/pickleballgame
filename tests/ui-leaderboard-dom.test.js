@@ -116,7 +116,7 @@ test('leaderboard modal opens on profile tab for users who have not joined yet',
         modalBodyDefault: 'Join the board',
         weeklyTitle: 'This week',
         allTitle: 'All-time',
-        nicknameLabel: 'Public nickname',
+        nicknameLabel: 'Nickname',
         nicknamePlaceholder: 'Pick one',
         joinCta: 'Join',
         rankingTab: 'Ranking',
@@ -140,7 +140,7 @@ test('leaderboard modal opens on profile tab for users who have not joined yet',
   expect(opened.title).toBe('Leaderboard');
   expect(opened.html).toContain('data-wt-leaderboard-panel="ranking" hidden');
   expect(opened.html).toContain('data-wt-leaderboard-panel="profile"');
-  expect(opened.html).toContain('Public nickname');
+  expect(opened.html).toContain('Nickname');
 });
 
 test('leaderboard modal shows top rows then detached local rank when outside top 10', () => {
@@ -175,10 +175,10 @@ test('leaderboard modal shows top rows then detached local rank when outside top
     wording: {
       leaderboard: {
         modalTitle: 'Leaderboard',
-        modalBodyJoined: 'Your public nickname is saved.',
+        modalBodyJoined: 'Your nickname is saved.',
         weeklyTitle: 'This week',
         allTitle: 'All-time',
-        nicknameLabel: 'Public nickname',
+        nicknameLabel: 'Nickname',
         nicknamePlaceholder: 'Pick one',
         updateCta: 'Update',
         editProfileCta: 'Edit my nickname',
@@ -240,7 +240,7 @@ test('leaderboard landing card shows local best score when available', () => {
         cardTitle: 'THIS WEEK',
         cardSubDefault: 'Top scores this week.',
         cardBestScoreLine: 'Your best: {score}',
-        cardCtaJoin: 'Choose public nickname',
+        cardCtaJoin: 'Choose nickname',
         cardWeeklyResetLine: 'Weekly reset: {localTime}, your time.',
         loading: 'Loading',
         empty: 'Be the first'

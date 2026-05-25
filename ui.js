@@ -4479,50 +4479,6 @@ ${audioSettingsHtml}
     const unlockedPill = String(levelsW.unlockedPill || '').trim();
     const lockedPill = String(levelsW.lockedPill || '').trim();
 
-    const currentBlockHtml = (() => {
-      if (!current) {
-        return `
-          <div class="wt-level-sheet__section">
-            ${noLevelTitle ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(noLevelTitle)}</p>` : ``}
-            ${noLevelBody ? `<p class="wt-level-sheet__body">${escapeHtml(noLevelBody)}</p>` : ``}
-          </div>
-        `;
-      }
-      return `
-        <div class="wt-level-sheet__section">
-          ${currentLabel ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(currentLabel)}</p>` : ``}
-          <div class="wt-level-chip wt-level-chip--static">
-            <span class="wt-level-chip__dot" aria-hidden="true"></span>
-            <span>${escapeHtml(current.label)}</span>
-          </div>
-          ${unlockedByLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(unlockedByLabel)}</p>` : ``}
-          ${current.sheetBody || current.unlock ? `<p class="wt-level-sheet__body">${escapeHtml(current.sheetBody || current.unlock)}</p>` : ``}
-        </div>
-      `;
-    })();
-
-    const nextBlockHtml = (() => {
-      if (currentLevel >= (model.maxLevel || 0)) {
-        return `
-          <div class="wt-level-sheet__section wt-level-sheet__section--soft">
-            ${maxLevelBody ? `<p class="wt-level-sheet__body">${escapeHtml(maxLevelBody)}</p>` : ``}
-          </div>
-        `;
-      }
-      if (!next) return ``;
-      return `
-        <div class="wt-level-sheet__section wt-level-sheet__section--soft">
-          ${nextLabel ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(nextLabel)}</p>` : ``}
-          <div class="wt-level-chip wt-level-chip--static wt-level-chip--muted">
-            <span class="wt-level-chip__dot" aria-hidden="true"></span>
-            <span>${escapeHtml(next.label)}</span>
-          </div>
-          ${reachItLabel ? `<p class="wt-level-sheet__eyebrow wt-level-sheet__eyebrow--tight">${escapeHtml(reachItLabel)}</p>` : ``}
-          ${next.unlock ? `<p class="wt-level-sheet__body">${escapeHtml(next.unlock)}</p>` : ``}
-        </div>
-      `;
-    })();
-
     const progressionHtml = model.defs
       .map((item) => {
         const pill = item.current
@@ -4551,8 +4507,6 @@ ${audioSettingsHtml}
       .join('');
 
     const html = `
-      ${currentBlockHtml}
-      ${nextBlockHtml}
       <div class="wt-level-sheet__section wt-level-sheet__section--progress">
         ${progressionLabel ? `<p class="wt-level-sheet__eyebrow">${escapeHtml(progressionLabel)}</p>` : ``}
         <ul class="wt-level-strip" role="list">

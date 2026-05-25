@@ -235,11 +235,11 @@
       levelProgressSeenOrScoreTemplate: '{seen}/{seenTarget} questions seen · Best score {best}/{scoreTarget}',
       levelNextTemplate: 'Next: {label}',
       dailyChallengeBadge: "DAILY CHALLENGE",
-      dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
+      dailyChallengeTitleTemplate: 'Target: {targetScore}+',
       dailyChallengeProgressTemplate:
-        'Today: {score}/{targetScore}. Come back at {resetTime} if you miss it.',
+        'Today: {score}/{targetScore}.',
       dailyChallengeResetTemplate:
-        'Come back at {resetTime} for today\'s target.',
+        'Next challenge at {resetTime}.',
       dailyChallengeCompletedTemplate:
         'Daily challenge cleared. Next challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
@@ -266,7 +266,7 @@
       cardSubDefault:
         'Top scores this week. Add your nickname after your first completed game.',
       cardSubJoined:
-        'Your score will appear here in the next few minutes. Weekly reset every Monday. View the leaderboard or edit My nickname.',
+        'Weekly reset every Monday. View the leaderboard or edit My nickname.',
       cardBestScoreLine: 'Your best: {score}',
       cardCtaJoin: 'Choose nickname',
       cardCtaView: 'View leaderboard',
@@ -274,16 +274,16 @@
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       cardWeeklyResetLine:
-        'Weekly reset: {localTime}, your time.',
+        'Weekly reset: {localTime}.',
       weeklyResetLine:
-        'Weekly reset: {localTime}, your time (Monday 00:00 UTC).',
+        'Weekly reset: {localTime} (Monday 00:00 UTC).',
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
       modalBodyDefault:
-        'Choose a nickname. Your score will appear in the leaderboard in the next few minutes. Weekly reset every Monday.',
+        'Choose a nickname. Weekly reset every Monday.',
       modalBodyJoined:
-        'Your score will appear in the leaderboard in the next few minutes. Weekly reset every Monday.',
+        'Weekly reset every Monday.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
@@ -299,7 +299,7 @@
       nicknameInvalidCharsToast:
         'Use letters, numbers, spaces, hyphens, or underscores only.',
       saveOkToast:
-        'Nickname saved. Your score will appear in the leaderboard in the next few minutes.',
+        'Nickname saved.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
         'Nickname saved on this device. Remote sync can be connected later.',

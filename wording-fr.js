@@ -238,11 +238,11 @@
       levelProgressSeenOrScoreTemplate: '{seen}/{seenTarget} questions vues · meilleur score {best}/{scoreTarget}',
       levelNextTemplate: 'Prochain niveau : {label}',
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Atteignez {targetScore}+ aujourd\'hui',
+      dailyChallengeTitleTemplate: 'Objectif : {targetScore}+',
       dailyChallengeProgressTemplate:
-        "Aujourd'hui : {score}/{targetScore}. Revenez à {resetTime} si vous le manquez.",
+        "Aujourd'hui : {score}/{targetScore}.",
       dailyChallengeResetTemplate:
-        "Revenez à {resetTime} pour l'objectif du jour.",
+        'Prochain défi à {resetTime}.',
       dailyChallengeCompletedTemplate:
         'Défi du jour réussi. Prochain défi à {resetTime}.',
       dailyChallengeRewardTemplate:
@@ -269,7 +269,7 @@
       cardSubDefault:
         'Meilleurs scores de la semaine. Ajoutez votre pseudo après votre première partie terminée.',
       cardSubJoined:
-        'Votre score apparaîtra ici dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi. Voir le classement ou modifier Mon pseudo.',
+        'Le classement de la semaine est réinitialisé chaque lundi. Voir le classement ou modifier Mon pseudo.',
       cardBestScoreLine: 'Votre meilleur score : {score}',
       cardCtaJoin: 'Choisir un pseudo',
       cardCtaView: 'Voir le classement',
@@ -277,16 +277,16 @@
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       cardWeeklyResetLine:
-        'Remise à zéro hebdomadaire : {localTime}, votre heure locale.',
+        'Remise à zéro hebdomadaire : {localTime}.',
       weeklyResetLine:
-        'Remise à zéro hebdomadaire : {localTime}, votre heure locale (lundi 00:00 UTC).',
+        'Remise à zéro hebdomadaire : {localTime} (lundi 00:00 UTC).',
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
       modalBodyDefault:
-        'Choisissez un pseudo. Votre score apparaîtra dans le classement dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi.',
+        'Choisissez un pseudo. Le classement de la semaine est réinitialisé chaque lundi.',
       modalBodyJoined:
-        'Votre score apparaîtra dans le classement dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi.',
+        'Le classement de la semaine est réinitialisé chaque lundi.',
       rankingTab: 'Classement',
       profileTab: 'Mon pseudo',
       weeklyTitle: 'Cette semaine',
@@ -302,7 +302,7 @@
       nicknameInvalidCharsToast:
         'Utilisez seulement des lettres, chiffres, espaces, tirets ou traits de soulignement.',
       saveOkToast:
-        'Pseudo enregistré. Votre score apparaîtra dans le classement dans quelques minutes.',
+        'Pseudo enregistré.',
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
         'Pseudo enregistré sur cet appareil. La synchronisation en ligne pourra être ajoutée plus tard.',

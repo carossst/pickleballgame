@@ -181,12 +181,12 @@ function createUi(runCompletes, options = {}) {
         personalBestLockedSub:
           'Unlock full access to record your score and keep building your best.',
         dailyChallengeBadge: "TODAY'S TARGET",
-        dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
+        dailyChallengeTitleTemplate: 'Target: {targetScore}+',
         dailyChallengeProgressTemplate:
-          'Today: {score}/{targetScore}. Best: {best}.',
-        dailyChallengeResetTemplate: 'Next target at {resetTime}. Best: {best}.',
+          'Today: {score}/{targetScore}.',
+        dailyChallengeResetTemplate: 'Next challenge at {resetTime}.',
         dailyChallengeCompletedTemplate:
-          'Completed today. Next target at {resetTime}. Best: {best}.',
+          'Completed today. Next challenge at {resetTime}.',
         dailyChallengeRewardTemplate: 'Win 1 Rapid Fire ticket',
         dailyChallengeCta: "Try today's challenge"
       },
@@ -194,7 +194,7 @@ function createUi(runCompletes, options = {}) {
       leaderboard: {
         cardTitle: 'THIS WEEK',
         cardSubDefault: 'Top scores this week.',
-        cardCtaJoin: 'Choose public nickname',
+        cardCtaJoin: 'Choose nickname',
         loading: 'Loading',
         empty: 'Be the first',
         liveBadge: 'LIVE'

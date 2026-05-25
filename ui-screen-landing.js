@@ -561,7 +561,7 @@
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
         const dailyRewardPendingTpl = String(landing.dailyChallengeRewardPendingTemplate || "").trim();
         const dailyCta = String(landing.dailyChallengeCta || "").trim();
-        const dailyTitle = dailyTitleTpl
+        const dailyGoalLine = dailyTitleTpl
           ? fillTemplate(dailyTitleTpl, {
             targetScore: String(dailyModel.targetScore)
           })
@@ -607,6 +607,10 @@
           });
         }
 
+        if (!dailyModel.completedToday && dailyGoalLine) {
+          dailySub = dailySub ? `${dailyGoalLine} ${dailySub}` : dailyGoalLine;
+        }
+
         if (rewardLine) {
           dailySub = dailySub ? `${dailySub} ${rewardLine}` : rewardLine;
         }
@@ -617,10 +621,10 @@
             ? "start-daily-challenge"
             : "";
         dailyChallengeCardAria = dailyChallengeCardAction ? dailyCta : "";
-        if (dailyBadge || dailyTitle || dailySub) {
+        if (dailyBadge || dailySub) {
           dailyChallengeCardHtml = renderLandingStatsCard({
             label: dailyBadge,
-            title: dailyTitle,
+            title: "",
             sub: dailySub,
             pct: dailyModel.progressPct,
             showProgress: dailyModel.completedToday || dailyModel.progressPct > 0,
