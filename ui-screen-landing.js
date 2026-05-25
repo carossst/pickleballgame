@@ -25,6 +25,15 @@
 
     if (!label && !title && !sub) return "";
 
+    const subHtml = sub
+      ? sub
+        .split(/\r?\n+/)
+        .map((line) => String(line || "").trim())
+        .filter(Boolean)
+        .map((line) => escapeHtml(line))
+        .join("<br>")
+      : "";
+
     return `
       <section class="wt-box wt-box--tinted wt-landing-stat${interactiveClass}${cardClass ? ` ${cardClass}` : ``}" aria-label="${escapeHtml(label || title || sub)}"${interactiveAttrs}${cardAttrs ? ` ${cardAttrs}` : ``}>
         <div class="wt-landing-stat__header">
@@ -32,7 +41,7 @@
           ${label ? `<span class="wt-landing-stat__label">${escapeHtml(label)}</span>` : ``}
         </div>
         ${title ? `<p class="wt-landing-stat__title">${escapeHtml(title)}</p>` : ``}
-        ${sub ? `<p class="wt-landing-stat__sub">${escapeHtml(sub)}</p>` : ``}
+        ${subHtml ? `<p class="wt-landing-stat__sub">${subHtml}</p>` : ``}
         ${showProgress ? `
           <div class="wt-progress${progressClass}" role="img" aria-label="${escapeHtml(`${pct}%`)}">
             <span class="wt-progress__fill" style="width:${pct}%"></span>
@@ -561,7 +570,7 @@
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
         const dailyRewardPendingTpl = String(landing.dailyChallengeRewardPendingTemplate || "").trim();
         const dailyCta = String(landing.dailyChallengeCta || "").trim();
-        const dailyGoalLine = dailyTitleTpl
+        const dailyTitle = dailyTitleTpl
           ? fillTemplate(dailyTitleTpl, {
             targetScore: String(dailyModel.targetScore)
           })
@@ -607,12 +616,8 @@
           });
         }
 
-        if (!dailyModel.completedToday && dailyGoalLine) {
-          dailySub = dailySub ? `${dailyGoalLine} ${dailySub}` : dailyGoalLine;
-        }
-
         if (rewardLine) {
-          dailySub = dailySub ? `${dailySub} ${rewardLine}` : rewardLine;
+          dailySub = dailySub ? `${dailySub}\n${rewardLine}` : rewardLine;
         }
 
         dailyChallengeIncomplete = !dailyModel.completedToday || !!dailyModel.rewardPendingReplay;
@@ -621,10 +626,10 @@
             ? "start-daily-challenge"
             : "";
         dailyChallengeCardAria = dailyChallengeCardAction ? dailyCta : "";
-        if (dailyBadge || dailySub) {
+        if (dailyBadge || dailyTitle || dailySub) {
           dailyChallengeCardHtml = renderLandingStatsCard({
             label: dailyBadge,
-            title: "",
+            title: dailyTitle,
             sub: dailySub,
             pct: dailyModel.progressPct,
             showProgress: dailyModel.completedToday || dailyModel.progressPct > 0,

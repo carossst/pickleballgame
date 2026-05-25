@@ -235,15 +235,15 @@
       levelProgressSeenOrScoreTemplate: '{seen}/{seenTarget} questions seen · Best score {best}/{scoreTarget}',
       levelNextTemplate: 'Next: {label}',
       dailyChallengeBadge: "DAILY CHALLENGE",
-      dailyChallengeTitleTemplate: 'Target: {targetScore}+',
+      dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
       dailyChallengeProgressTemplate:
-        'Today: {score}/{targetScore}.',
+        'Today: {score}/{targetScore}. Come back at {resetTime} if you miss it.',
       dailyChallengeResetTemplate:
-        'Next challenge at {resetTime}.',
+        'Come back at {resetTime} for today\'s target.',
       dailyChallengeCompletedTemplate:
         'Daily challenge cleared. Next challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
-        "Beat today's target to earn 1 Rapid Fire ticket. Rapid Fire costs 1 ticket.",
+        "Beat today's target to earn 1 Rapid Fire ticket.",
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
@@ -266,7 +266,7 @@
       cardSubDefault:
         'Top scores this week. Add your nickname after your first completed game.',
       cardSubJoined:
-        'Weekly reset every Monday. View the leaderboard or edit My nickname.',
+        'Your score will appear here in the next few minutes. View the leaderboard or edit your nickname.',
       cardBestScoreLine: 'Your best: {score}',
       cardCtaJoin: 'Choose nickname',
       cardCtaView: 'View leaderboard',
@@ -274,16 +274,16 @@
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       cardWeeklyResetLine:
-        'Weekly reset: {localTime}.',
+        'Weekly reset: {localTime}, your time.',
       weeklyResetLine:
-        'Weekly reset: {localTime} (Monday 00:00 UTC).',
+        'Weekly reset: {localTime}, your time (Monday 00:00 UTC).',
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
       modalBodyDefault:
-        'Choose a nickname. Weekly reset every Monday.',
+        'Choose a nickname. Your score will appear in the leaderboard in the next few minutes. Weekly reset every Monday.',
       modalBodyJoined:
-        'Weekly reset every Monday.',
+        'Your score will appear in the leaderboard in the next few minutes. Weekly reset every Monday.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
@@ -299,7 +299,7 @@
       nicknameInvalidCharsToast:
         'Use letters, numbers, spaces, hyphens, or underscores only.',
       saveOkToast:
-        'Nickname saved.',
+        'Nickname saved. Your score will appear in the leaderboard in the next few minutes.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
         'Nickname saved on this device. Remote sync can be connected later.',
@@ -765,16 +765,16 @@
       streakLine: '',
       scoreTierLine: 'Current score tier: {tier}.',
       scoreTierNextLine: 'Next tier: {nextTier} at {nextTarget}+.',
-      dailyChallengeCleared: "Daily challenge cleared.",
+      dailyChallengeCleared: "Today's challenge cleared: {targetScore}+ score.",
       dailyChallengeClearedFreeRun:
         "Today's challenge is cleared. The Rapid Fire ticket unlocks on your last free run.",
       dailyChallengeTicketWon:
         "Today's challenge cleared. +1 Rapid Fire ticket.",
       dailyChallengeTicketCapped:
         "Today's challenge cleared. Tickets are capped at {cap}. Spend one to earn more.",
-      dailyChallengeMiss: 'Daily challenge missed.',
+      dailyChallengeMiss: "Today's challenge was {targetScore}+ score.",
       dailyChallengeMissLastFree:
-        'Not this time. Daily challenge missed.',
+        "Not this time. Today's challenge was {targetScore}+ score.",
       dailyChallengeCtaRetry: 'Try the challenge again',
       dailyChallengeToast: "Today's challenge complete. +1 Rapid Fire ticket.",
       modeMissingFallback: 'Your run summary is still available.',

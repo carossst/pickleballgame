@@ -404,6 +404,7 @@
     const ctaLabel = String(
       model.hasProfile ? w.cardCtaView || '' : w.cardCtaJoin || ''
     ).trim();
+    const editProfileLabel = String(w.editProfileCta || '').trim();
     const loadingLabel = String(w.loading || '').trim();
     const emptyLabel = String(w.empty || '').trim();
     const bestScoreLineTemplate = String(w.cardBestScoreLine || '').trim();
@@ -462,12 +463,23 @@
         ${freshnessHtml ? `<p class="wt-leaderboard-card__freshness">${freshnessHtml}</p>` : ``}
         ${rowsHtml}
         ${
-          ctaLabel
+          ctaLabel || (model.hasProfile && editProfileLabel)
             ? `
           <div class="wt-landing-stat__actions">
-            <button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">
-              ${escapeHtml(ctaLabel)}
-            </button>
+            ${ctaLabel ? `
+              <button
+                type="button"
+                class="wt-btn wt-btn--secondary"
+                data-action="${model.hasProfile ? `open-leaderboard` : `open-leaderboard-profile`}"
+              >
+                ${escapeHtml(ctaLabel)}
+              </button>
+            ` : ``}
+            ${model.hasProfile && editProfileLabel ? `
+              <button type="button" class="wt-btn wt-btn--ghost" data-action="open-leaderboard-profile">
+                ${escapeHtml(editProfileLabel)}
+              </button>
+            ` : ``}
           </div>
         `
             : ``

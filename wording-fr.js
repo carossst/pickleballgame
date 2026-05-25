@@ -238,15 +238,15 @@
       levelProgressSeenOrScoreTemplate: '{seen}/{seenTarget} questions vues · meilleur score {best}/{scoreTarget}',
       levelNextTemplate: 'Prochain niveau : {label}',
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Objectif : {targetScore}+',
+      dailyChallengeTitleTemplate: 'Atteignez {targetScore}+ aujourd\'hui',
       dailyChallengeProgressTemplate:
-        "Aujourd'hui : {score}/{targetScore}.",
+        "Aujourd'hui : {score}/{targetScore}. Revenez à {resetTime} si vous le manquez.",
       dailyChallengeResetTemplate:
-        'Prochain défi à {resetTime}.',
+        "Revenez à {resetTime} pour l'objectif du jour.",
       dailyChallengeCompletedTemplate:
         'Défi du jour réussi. Prochain défi à {resetTime}.',
       dailyChallengeRewardTemplate:
-        'Réussissez le défi du jour pour gagner 1 jeton Mode Rapide. Le Mode Rapide coûte 1 jeton.',
+        'Réussissez le défi du jour pour gagner 1 jeton Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -269,7 +269,7 @@
       cardSubDefault:
         'Meilleurs scores de la semaine. Ajoutez votre pseudo après votre première partie terminée.',
       cardSubJoined:
-        'Le classement de la semaine est réinitialisé chaque lundi. Voir le classement ou modifier Mon pseudo.',
+        'Votre score apparaîtra ici dans quelques minutes. Voir le classement ou modifier votre pseudo.',
       cardBestScoreLine: 'Votre meilleur score : {score}',
       cardCtaJoin: 'Choisir un pseudo',
       cardCtaView: 'Voir le classement',
@@ -277,16 +277,16 @@
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       cardWeeklyResetLine:
-        'Remise à zéro hebdomadaire : {localTime}.',
+        'Remise à zéro hebdomadaire : {localTime}, votre heure locale.',
       weeklyResetLine:
-        'Remise à zéro hebdomadaire : {localTime} (lundi 00:00 UTC).',
+        'Remise à zéro hebdomadaire : {localTime}, votre heure locale (lundi 00:00 UTC).',
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
       modalBodyDefault:
-        'Choisissez un pseudo. Le classement de la semaine est réinitialisé chaque lundi.',
+        'Choisissez un pseudo. Votre score apparaîtra dans le classement dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi.',
       modalBodyJoined:
-        'Le classement de la semaine est réinitialisé chaque lundi.',
+        'Votre score apparaîtra dans le classement dans quelques minutes. Le classement de la semaine est réinitialisé chaque lundi.',
       rankingTab: 'Classement',
       profileTab: 'Mon pseudo',
       weeklyTitle: 'Cette semaine',
@@ -302,7 +302,7 @@
       nicknameInvalidCharsToast:
         'Utilisez seulement des lettres, chiffres, espaces, tirets ou traits de soulignement.',
       saveOkToast:
-        'Pseudo enregistré.',
+        'Pseudo enregistré. Votre score apparaîtra dans le classement dans quelques minutes.',
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
         'Pseudo enregistré sur cet appareil. La synchronisation en ligne pourra être ajoutée plus tard.',
@@ -779,15 +779,15 @@
       streakLine: '',
       scoreTierLine: 'Palier actuel : {tier}.',
       scoreTierNextLine: 'Prochain palier : {nextTier} à {nextTarget}+.',
-      dailyChallengeCleared: 'Défi du jour réussi.',
+      dailyChallengeCleared: 'Défi du jour réussi : {targetScore}+.',
       dailyChallengeClearedFreeRun:
         'Défi du jour réussi. Le jeton Mode Rapide se gagne sur votre dernière partie gratuite.',
       dailyChallengeTicketWon: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       dailyChallengeTicketCapped:
         'Défi du jour réussi. Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
-      dailyChallengeMiss: 'Défi du jour manqué.',
+      dailyChallengeMiss: 'Le défi du jour demandait {targetScore}+.',
       dailyChallengeMissLastFree:
-        'Pas cette fois. Défi du jour manqué.',
+        'Pas encore. Le défi du jour demandait {targetScore}+.',
       dailyChallengeCtaRetry: 'Retenter le défi du jour',
       dailyChallengeToast: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       modeMissingFallback: 'Le récapitulatif de votre partie reste disponible.',
