@@ -537,7 +537,7 @@ button.wt-level-chip {
 .wt-question-prompt {
   margin: 0 0 12px;
   text-align: center;
-  font-size: clamp(16px, 2.8vw, 17px);
+  font-size: clamp(15px, 2.5vw, 16px);
   line-height: 1.35;
   font-weight: 700;
 }
@@ -566,7 +566,7 @@ button.wt-level-chip {
 @media (max-height: 740px) {
   .wt-question-prompt {
     margin-bottom: 8px;
-    font-size: clamp(15px, 3.4vw, 17px);
+    font-size: clamp(14px, 3.1vw, 16px);
     line-height: 1.3;
   }
 
