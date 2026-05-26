@@ -54,8 +54,15 @@ Do not create a second "recent audit" document for the same purpose. Keep this f
   - `Next level`
   - `How to unlock`
 - Current level should stay visually distinct in the list.
-- French level 1 label:
-  - `PREMIERS REPÈRES`
+- French levels use a rank/status ladder, not soft pedagogy labels.
+- Keep FR labels:
+  - `BRONZE`
+  - `ARGENT`
+  - `OR`
+  - `PLATINE`
+  - `DIAMANT`
+  - `LÉGENDE`
+- Do not prefix FR level labels with `RANG`.
 
 ## Leaderboard
 
@@ -159,7 +166,8 @@ Do not create a second "recent audit" document for the same purpose. Keep this f
 
 ## French Audio
 
-- If the browser does not expose a usable French speech voice, do not show FR question-audio controls.
+- Hide FR question-audio controls for now.
+- Do not show `Lire la question / Relire la question` in French until the feature is reliably supported in real browsers.
 - EN can keep showing audio controls with generic speech support.
 
 ## French Wording Hygiene

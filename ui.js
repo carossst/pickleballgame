@@ -388,7 +388,7 @@ void (function () {
       .trim()
       .toLowerCase();
     if (target.startsWith('fr')) {
-      return !!getQuestionSpeechVoice(locale);
+      return false;
     }
     return true;
   }

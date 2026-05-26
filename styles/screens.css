@@ -553,6 +553,15 @@ body.wt-state--end .wt-card--end {
   margin: var(--space-8) 0 0;
   font-size: var(--fs-md);
   line-height: 1.4;
+  font-weight: 700;
+  color: rgb(var(--text));
+}
+
+.wt-leaderboard-card__freshness {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-md);
+  line-height: 1.4;
+  font-weight: 400;
   color: rgb(var(--text));
 }
 

@@ -432,34 +432,34 @@
       lockedPill: 'Verrouillé',
       byLevel: {
         1: {
-          label: 'PREMIERS REPÈRES',
+          label: 'BRONZE',
           unlock: 'Terminer une partie.',
-          sheetBody: 'Vous avez terminé votre première partie.'
+          sheetBody: 'Vous avez décroché votre premier rang.'
         },
         2: {
-          label: 'BASES ACQUISES',
+          label: 'ARGENT',
           unlock: 'Voir 25 questions.',
-          sheetBody: 'Vous commencez à construire une vraie base de règles.'
+          sheetBody: 'Votre lecture des règles devient plus solide.'
         },
         3: {
-          label: 'BON RYTHME',
+          label: 'OR',
           unlock: 'Voir 75 questions ou marquer 20+.',
-          sheetBody: 'Vous ne testez plus seulement le jeu. Vous construisez des réflexes de règles.'
+          sheetBody: 'Vous passez du repère au vrai niveau de jeu.'
         },
         4: {
-          label: 'NIVEAU CLUB',
+          label: 'PLATINE',
           unlock: 'Voir les 200 questions une fois.',
           sheetBody: 'Vous avez vu tout le jeu de questions une fois.'
         },
         5: {
-          label: 'NIVEAU COMPÉTITION',
+          label: 'DIAMANT',
           unlock: 'Corriger les erreurs actives et réussir 70%+ en Mode Rapide avec une sélection de 16+ questions.',
-          sheetBody: 'Vous avez prouvé vos règles sous pression en Mode Rapide.'
+          sheetBody: 'Vous avez prouvé vos règles sous pression.'
         },
         6: {
-          label: 'NIVEAU PRO',
+          label: 'LÉGENDE',
           unlock: 'Réussir 85%+ en Mode Rapide avec une sélection de 50+ questions.',
-          sheetBody: 'Vous avez atteint le plus haut niveau. Gardez vos règles à jour.'
+          sheetBody: 'Vous avez atteint le plus haut rang. Gardez vos règles à jour.'
         }
       }
     },
