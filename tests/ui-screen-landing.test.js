@@ -143,6 +143,7 @@ function createUi(runCompletes, options = {}) {
     config: {
       game: { poolSize: 200, maxChances: 3 },
       landingStats: { enabled: false, minCompletedRuns: 1 },
+      shareBonus: { enabled: true, bonusRuns: 1, premiumOnly: false },
       levels: {
         maxLevel: 6,
         level2MinSeen: 25,
@@ -189,7 +190,14 @@ function createUi(runCompletes, options = {}) {
           'Daily challenge cleared.\nNext challenge at {resetTime}.',
         dailyChallengeRewardTemplate:
           'Earn 1 Rapid Fire ticket.',
-        dailyChallengeCta: 'Start challenge'
+        dailyChallengeCta: 'Start challenge',
+        postPaywallCta: 'Unlock full access'
+      },
+      shareBonus: {
+        title: 'One game on the house',
+        body: 'Share Pickleball Rules Quiz with a friend and get one more free game. Just this once.',
+        ctaShare: 'Share & play',
+        ctaLater: 'Not now'
       },
       installPrompt: {},
       leaderboard: {
@@ -225,6 +233,9 @@ function createUi(runCompletes, options = {}) {
       },
       getLeaderboardProfile() {
         return { nickname: '', optIn: false };
+      },
+      hasShareBonusGranted() {
+        return options.shareBonusGranted === true;
       }
     }
   };
@@ -305,6 +316,23 @@ test('landing still shows daily card when challenge is not immediately playable'
 
   expect(html).toContain('DAILY CHALLENGE');
   expect(html).not.toContain('data-action="start-daily-challenge"');
+});
+
+test('landing exhausted state promotes share bonus before paywall', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, { seenCount: 8, bestScoreFP: 0, runsBalance: 0 }),
+    buildHelpers(modules.renderLeaderboardLandingCard, {
+      dailyModel: { challengePlayable: false, completedToday: false }
+    })
+  );
+
+  expect(html).toContain('One game on the house');
+  expect(html).toContain('wt-share-bonus-offer');
+  expect(html).toContain('data-action="claim-share-bonus"');
+  expect(html).toContain('Share & play');
+  expect(html).toContain('data-action="open-paywall"');
+  expect(html).toContain('Unlock full access');
 });
 
 test('landing daily card does not show daily score progress before completion', () => {

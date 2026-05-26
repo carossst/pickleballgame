@@ -23,6 +23,34 @@ function loadWording() {
   return context.window.WT_WORDING_ALL;
 }
 
+function flattenKeys(value, prefix = '', out = []) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => {
+      const path = prefix ? `${prefix}.${index}` : String(index);
+      flattenKeys(item, path, out);
+    });
+    return out;
+  }
+
+  if (value && typeof value === 'object') {
+    Object.keys(value).forEach((key) => {
+      const path = prefix ? `${prefix}.${key}` : key;
+      out.push(path);
+      flattenKeys(value[key], path, out);
+    });
+  }
+
+  return out;
+}
+
+test('English and French wording expose the same key paths', () => {
+  const wording = loadWording();
+  const enKeys = flattenKeys(wording.en);
+  const frKeys = flattenKeys(wording.fr);
+
+  expect(new Set(frKeys)).toEqual(new Set(enKeys));
+});
+
 test('French wording keeps softened share copy and rank-based levels', () => {
   const wording = loadWording();
   const fr = wording.fr;

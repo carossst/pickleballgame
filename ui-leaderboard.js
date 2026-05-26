@@ -492,13 +492,19 @@
 
   function renderTabButton(tabKey, activeTab, label, escapeHtml) {
     const active = String(activeTab || 'ranking') === tabKey;
+    const tabId = `wt-leaderboard-tab-${tabKey}`;
+    const panelId = `wt-leaderboard-panel-${tabKey}`;
     return `
       <button
         type="button"
         class="wt-btn ${active ? `wt-btn--primary` : `wt-btn--secondary`}"
+        id="${tabId}"
+        role="tab"
         data-action="switch-leaderboard-tab"
         data-wt-leaderboard-tab="${tabKey}"
-        aria-pressed="${active ? `true` : `false`}">
+        aria-controls="${panelId}"
+        aria-selected="${active ? `true` : `false`}"
+        tabindex="${active ? `0` : `-1`}">
         ${escapeHtml(label)}
       </button>
     `;
@@ -513,7 +519,8 @@
         String(btn.getAttribute('data-wt-leaderboard-tab') || '') === nextTab;
       btn.classList.toggle('wt-btn--primary', isActive);
       btn.classList.toggle('wt-btn--secondary', !isActive);
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      btn.setAttribute('tabindex', isActive ? '0' : '-1');
     });
     root.querySelectorAll('[data-wt-leaderboard-panel]').forEach((panel) => {
       const isActive =
@@ -579,7 +586,11 @@
         ${renderTabButton('ranking', initialTab, rankingTabLabel, escapeHtml)}
         ${renderTabButton('profile', initialTab, profileTabLabel, escapeHtml)}
       </div>
-      <section data-wt-leaderboard-panel="ranking"${initialTab === 'ranking' ? '' : ' hidden'}>
+      <section
+        id="wt-leaderboard-panel-ranking"
+        role="tabpanel"
+        aria-labelledby="wt-leaderboard-tab-ranking"
+        data-wt-leaderboard-panel="ranking"${initialTab === 'ranking' ? '' : ' hidden'}>
         ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
         ${
           joined && editProfileCta
@@ -602,7 +613,11 @@
         ${allTitle ? `<p class="wt-question-title">${escapeHtml(allTitle)}</p>` : ``}
         ${renderRowsHtml(allRows, escapeHtml, allDetachedRow)}
       </section>
-      <section data-wt-leaderboard-panel="profile"${initialTab === 'profile' ? '' : ' hidden'}>
+      <section
+        id="wt-leaderboard-panel-profile"
+        role="tabpanel"
+        aria-labelledby="wt-leaderboard-tab-profile"
+        data-wt-leaderboard-panel="profile"${initialTab === 'profile' ? '' : ' hidden'}>
         <label class="wt-label" for="wt-leaderboard-nickname">${escapeHtml(nicknameLabel)}</label>
         <input
           id="wt-leaderboard-nickname"
@@ -613,7 +628,7 @@
           placeholder="${escapeHtml(nicknamePlaceholder)}"
         />
         <div class="wt-actions wt-actions--compact">
-          <button type="button" class="wt-btn wt-btn--primary" data-action="save-leaderboard-profile">
+          <button type="button" class="wt-btn wt-btn--primary" data-action="save-leaderboard-profile" aria-busy="false">
             ${escapeHtml(saveLabel)}
           </button>
           ${
@@ -640,6 +655,9 @@
     const toastNow = helpers?.toastNow;
     const w = getWording(ui);
     const cfg = getCfg(ui);
+    const saveBtn = ui?.modalContentEl
+      ? ui.modalContentEl.querySelector('[data-action="save-leaderboard-profile"]')
+      : null;
     const input = ui?.modalContentEl
       ? ui.modalContentEl.querySelector('#wt-leaderboard-nickname')
       : null;
@@ -697,6 +715,14 @@
     const baseUrl = String(cfg?.apiBaseUrl || '')
       .trim()
       .replace(/\/+$/, '');
+    try {
+      if (saveBtn) {
+        saveBtn.setAttribute('aria-busy', 'true');
+        saveBtn.disabled = true;
+      }
+    } catch (_) {
+      /* silent */
+    }
     if (baseUrl) {
       try {
         const profile = ui.storage.getLeaderboardProfile();
@@ -719,6 +745,14 @@
           });
         }
       }
+    }
+    try {
+      if (saveBtn) {
+        saveBtn.setAttribute('aria-busy', 'false');
+        saveBtn.disabled = false;
+      }
+    } catch (_) {
+      /* silent */
     }
 
     const bucket = getRuntimeBucket(ui);

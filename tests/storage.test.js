@@ -12,10 +12,18 @@ const baseConfig = {
   limits: {
     freeRuns: 2
   },
+  shareBonus: {
+    enabled: true,
+    bonusRuns: 1,
+    premiumOnly: false
+  },
   secretBonus: {
     starterTickets: 1,
     ticketCap: 3,
     ticketCost: 1
+  },
+  mistakesOnly: {
+    freeRunsLimit: 2
   },
   game: {
     poolSize: 200
@@ -25,12 +33,44 @@ const baseConfig = {
   }
 };
 
-function createStorageManager() {
+function createStorageManager(configOverrides) {
   const context = loadBrowserScript('logic/rapidfire-logic.js');
   context.window.WT_RapidFireLogic = context.WT_RapidFireLogic;
   loadBrowserScript('storage.js', { window: context.window });
   const StorageManager = context.window.WT_StorageManager;
-  const storage = new StorageManager(baseConfig);
+  const cfg = {
+    ...baseConfig,
+    ...(configOverrides || {}),
+    storage: {
+      ...baseConfig.storage,
+      ...(configOverrides?.storage || {})
+    },
+    limits: {
+      ...baseConfig.limits,
+      ...(configOverrides?.limits || {})
+    },
+    secretBonus: {
+      ...baseConfig.secretBonus,
+      ...(configOverrides?.secretBonus || {})
+    },
+    shareBonus: {
+      ...baseConfig.shareBonus,
+      ...(configOverrides?.shareBonus || {})
+    },
+    mistakesOnly: {
+      ...baseConfig.mistakesOnly,
+      ...(configOverrides?.mistakesOnly || {})
+    },
+    game: {
+      ...baseConfig.game,
+      ...(configOverrides?.game || {})
+    },
+    levels: {
+      ...baseConfig.levels,
+      ...(configOverrides?.levels || {})
+    }
+  };
+  const storage = new StorageManager(cfg);
   storage.init();
   return { context, storage };
 }
@@ -130,4 +170,91 @@ test('premium RUN economy no longer consumes run balance', () => {
   expect(second).toMatchObject({ ok: true, reason: 'PREMIUM', balance: 2 });
   expect(storage.getRunsBalance()).toBe(2);
   expect(storage.getRunsUsed()).toBe(2);
+});
+
+test('premium practice economy does not consume free practice counter', () => {
+  const { storage } = createStorageManager();
+
+  storage.unlockPremium();
+  const first = storage.consumePracticeOrBlock();
+  const second = storage.consumePracticeOrBlock();
+
+  expect(first).toMatchObject({
+    ok: true,
+    reason: 'PREMIUM',
+    used: 0,
+    limit: 2
+  });
+  expect(second).toMatchObject({
+    ok: true,
+    reason: 'PREMIUM',
+    used: 0,
+    limit: 2
+  });
+  expect(storage.getPracticeFreeRunsUsed()).toBe(0);
+});
+
+test('resetAll wipes storage state and vanity code', () => {
+  const { context, storage } = createStorageManager();
+
+  storage.consumeRunOrBlock();
+  storage.saveLeaderboardProfile('Carole', true);
+  context.window.localStorage.setItem('prq-test-vanity', 'PRQ-1234-5678');
+
+  expect(storage.getRunsUsed()).toBe(1);
+  expect(storage.getLeaderboardProfile().nickname).toBe('Carole');
+  expect(context.window.localStorage.getItem('prq-test-vanity')).toBe(
+    'PRQ-1234-5678'
+  );
+
+  storage.resetAll();
+
+  expect(storage.getRunsUsed()).toBe(0);
+  expect(storage.getRunsBalance()).toBe(2);
+  expect(storage.getLeaderboardProfile().nickname).toBe('');
+  expect(storage.isPremium()).toBe(false);
+  expect(context.window.localStorage.getItem('prq-test-vanity')).toBe(null);
+  expect(context.window.localStorage.getItem('prq-test-storage')).toMatch(
+    /\S/
+  );
+});
+
+test('share bonus grants one extra run exactly once', () => {
+  const { storage } = createStorageManager();
+
+  storage.consumeRunOrBlock();
+  storage.consumeRunOrBlock();
+  expect(storage.getRunsBalance()).toBe(0);
+
+  const first = storage.grantShareBonus();
+  const second = storage.grantShareBonus();
+
+  expect(first).toMatchObject({
+    ok: true,
+    reason: 'GRANTED',
+    balance: 1,
+    bonusRuns: 1
+  });
+  expect(storage.hasShareBonusGranted()).toBe(true);
+  expect(storage.getRunsBalance()).toBe(1);
+  expect(second).toMatchObject({
+    ok: false,
+    reason: 'ALREADY',
+    balance: 1
+  });
+});
+
+test('share bonus balance survives reload hardening', () => {
+  const { context, storage } = createStorageManager();
+
+  storage.consumeRunOrBlock();
+  storage.consumeRunOrBlock();
+  storage.grantShareBonus();
+
+  const StorageManager = context.window.WT_StorageManager;
+  const reloaded = new StorageManager(baseConfig);
+  reloaded.init();
+
+  expect(reloaded.hasShareBonusGranted()).toBe(true);
+  expect(reloaded.getRunsBalance()).toBe(1);
 });

@@ -609,6 +609,12 @@
 
     },
 
+    shareBonus: {
+      enabled: true,
+      bonusRuns: 1,
+      premiumOnly: false
+    },
+
     // Debug
     debug: {
       enabled: isLocalhost,

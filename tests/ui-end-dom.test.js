@@ -108,7 +108,8 @@ test('END render flags daily replay reward for free RUN 1 success case', () => {
         game: { maxChances: 3, poolSize: 200 },
         routing: {},
         secretBonus: { tapWindowMs: 900, gates: { endAfterRuns: 0 } },
-        share: { enabled: false }
+        share: { enabled: false },
+        shareBonus: { enabled: true, bonusRuns: 1, premiumOnly: false }
       },
       wording: {
         ui: { scoreLabel: 'Score' },
@@ -186,7 +187,8 @@ test('END render uses last-free daily miss paywall bridge copy when appropriate'
         game: { maxChances: 3, poolSize: 200 },
         routing: {},
         secretBonus: { tapWindowMs: 900, gates: { endAfterRuns: 0 } },
-        share: { enabled: false }
+        share: { enabled: false },
+        shareBonus: { enabled: true, bonusRuns: 1, premiumOnly: false }
       },
       wording: {
         ui: { scoreLabel: 'Score' },
@@ -203,6 +205,12 @@ test('END render uses last-free daily miss paywall bridge copy when appropriate'
           bridgeBody: 'Default bridge',
           bridgeBodyLastFreeMiss: 'Specific last free miss bridge'
         },
+        shareBonus: {
+          title: 'One game on the house',
+          body: 'Share with a friend.',
+          ctaShare: 'Share & play',
+          ctaLater: 'Not now'
+        },
         system: {}
       },
       storage: {
@@ -217,6 +225,9 @@ test('END render uses last-free daily miss paywall bridge copy when appropriate'
         },
         getRunNumber() {
           return 2;
+        },
+        hasShareBonusGranted() {
+          return false;
         }
       },
       _runtime: {
@@ -252,4 +263,62 @@ test('END render uses last-free daily miss paywall bridge copy when appropriate'
 
   expect(html).toContain('Specific last free miss bridge');
   expect(html).toContain('data-daily-line="Last free miss 12"');
+  expect(html).toContain('One game on the house');
+  expect(html).toContain('data-action="claim-share-bonus"');
+  expect(html).toContain('data-action="dismiss-share-bonus"');
+});
+
+test('END render uses a semantic h1 for the main title', () => {
+  const endModule = loadEndModule();
+  const html = endModule.render(
+    {
+      config: {
+        game: { maxChances: 3, poolSize: 200 },
+        routing: {},
+        secretBonus: { tapWindowMs: 900, gates: { endAfterRuns: 0 } },
+        share: { enabled: false }
+      },
+      wording: {
+        ui: { scoreLabel: 'Score' },
+        end: {
+          title: 'Run complete',
+          scoreLine: '{score}'
+        },
+        paywall: {},
+        system: {}
+      },
+      storage: {
+        getSeenItemIds() {
+          return [1];
+        },
+        getRunsBalance() {
+          return 1;
+        },
+        getRapidFireTicketCap() {
+          return 3;
+        },
+        getRunNumber() {
+          return 1;
+        }
+      },
+      _runtime: {
+        runMode: 'RUN',
+        runItemIds: [1],
+        lastRun: {
+          mode: 'RUN',
+          runType: 'FREE',
+          scoreFP: 2,
+          maxChances: 3,
+          chancesLeft: 1,
+          newBest: false,
+          bestScoreFP: 2,
+          poolCompleteCelebration: false
+        }
+      }
+    },
+    buildHelpers()
+  );
+
+  expect(html).toContain('<h1 class="wt-h1">Run complete</h1>');
+  expect(html).not.toContain('<p class="wt-h1">Run complete</p>');
 });

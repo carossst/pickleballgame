@@ -212,6 +212,9 @@ test('leaderboard modal shows top rows then detached local rank when outside top
   expect(opened.html).toContain('#18');
   expect(opened.html).toContain('Edit my nickname');
   expect(opened.html).toContain('data-wt-leaderboard-tab="profile"');
+  expect(opened.html).toContain('role="tab"');
+  expect(opened.html).toContain('aria-selected="true"');
+  expect(opened.html).toContain('role="tabpanel"');
 });
 
 test('leaderboard landing card shows local best score when available', () => {
@@ -290,8 +293,11 @@ test('leaderboard tab switching toggles button state and panel visibility', () =
   leaderboard.switchModalTab(ui, 'profile');
 
   expect(profileBtn.classList.contains('wt-btn--primary')).toBe(true);
-  expect(profileBtn.getAttribute('aria-pressed')).toBe('true');
+  expect(profileBtn.getAttribute('aria-selected')).toBe('true');
+  expect(profileBtn.getAttribute('tabindex')).toBe('0');
   expect(rankingBtn.classList.contains('wt-btn--secondary')).toBe(true);
+  expect(rankingBtn.getAttribute('aria-selected')).toBe('false');
+  expect(rankingBtn.getAttribute('tabindex')).toBe('-1');
   expect(rankingPanel.hidden).toBe(true);
   expect(profilePanel.hidden).toBe(false);
 });

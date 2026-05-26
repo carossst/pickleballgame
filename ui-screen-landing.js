@@ -115,6 +115,14 @@
     const premium = isPremiumNow(ui.storage);
     const isPostPaywallVariant = !premium && (ui._nav && ui._nav.landingVariant === "POST_PAYWALL");
     if (isPostPaywallVariant && ui._nav) ui._nav.landingVariant = null;
+    const shareBonusCfg = cfg?.shareBonus || {};
+    const shareBonusEnabled = shareBonusCfg.enabled === true;
+    const shareBonusPremiumOnly = shareBonusCfg.premiumOnly === true;
+    const shareBonusW = w.shareBonus || {};
+    let shareBonusGranted = false;
+    if (ui.storage && typeof ui.storage.hasShareBonusGranted === "function") {
+      try { shareBonusGranted = ui.storage.hasShareBonusGranted() === true; } catch (_) { shareBonusGranted = false; }
+    }
 
     const tagline = String(landing.tagline || "").trim();
     const microTrust = String(landing.microTrust || "").trim();
@@ -605,13 +613,21 @@ ${landingHeaderRowHtml}
           try { bal = Number(ui.storage.getRunsBalance()); } catch (_) { bal = null; }
         }
         const runsExhausted = (!premium && Number.isFinite(bal) && bal <= 0);
+        const shareBonusEligible = !!(
+          runsExhausted &&
+          shareBonusEnabled &&
+          !shareBonusPremiumOnly &&
+          !shareBonusGranted
+        );
 
         if (runsExhausted) {
-          const label = String(landing.postPaywallCta || "").trim();
-          if (!label) return ``;
+          const shareLabel = String(shareBonusW.ctaShare || "").trim();
+          const upgradeLabel = String(landing.postPaywallCta || "").trim();
+          if (shareBonusEligible) return ``;
+          if (!upgradeLabel) return ``;
           return `
             <button class="wt-btn wt-btn--primary" data-action="open-paywall">
-              ${escapeHtml(label)}
+              ${escapeHtml(upgradeLabel)}
             </button>
           `;
         }
@@ -660,6 +676,45 @@ ${(() => {
     </div>
 
     ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted wt-landing-followup">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
+
+    ${(() => {
+      let bal = null;
+      if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
+        try { bal = Number(ui.storage.getRunsBalance()); } catch (_) { bal = null; }
+      }
+      const runsExhausted = (!premium && Number.isFinite(bal) && bal <= 0);
+      const shareBonusEligible = !!(
+        runsExhausted &&
+        shareBonusEnabled &&
+        !shareBonusPremiumOnly &&
+        !shareBonusGranted
+      );
+      const title = String(shareBonusW.title || "").trim();
+      const body = String(shareBonusW.body || "").trim();
+      const shareLabel = String(shareBonusW.ctaShare || "").trim();
+      const upgradeLabel = String(landing.postPaywallCta || "").trim();
+      if (!shareBonusEligible || (!title && !body && !shareLabel && !upgradeLabel)) return ``;
+      return `
+        <div class="wt-box wt-box--tinted wt-share-bonus-offer">
+          ${title ? `<div class="wt-meta wt-meta--strong">${escapeHtml(title)}</div>` : ``}
+          ${body ? `<p class="wt-muted wt-copy-follow">${escapeHtml(body)}</p>` : ``}
+          ${(shareLabel || upgradeLabel) ? `
+            <div class="wt-actions wt-actions--compact">
+              ${shareLabel ? `
+                <button class="wt-btn wt-btn--primary" data-action="claim-share-bonus">
+                  ${escapeHtml(shareLabel)}
+                </button>
+              ` : ``}
+              ${upgradeLabel ? `
+                <button class="wt-btn wt-btn--ghost" data-action="open-paywall">
+                  ${escapeHtml(upgradeLabel)}
+                </button>
+              ` : ``}
+            </div>
+          ` : ``}
+        </div>
+      `;
+    })()}
 
     ${postBlock}
 

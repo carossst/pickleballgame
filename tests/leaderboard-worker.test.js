@@ -6,6 +6,12 @@ beforeAll(async () => {
   workerModule = await import('../leaderboard-worker/src/index.js');
 });
 
+beforeEach(() => {
+  if (workerModule?.resetRateLimitMemoryForTests) {
+    workerModule.resetRateLimitMemoryForTests();
+  }
+});
+
 function createFakeDb(resolver) {
   return {
     prepare(sql) {
@@ -55,6 +61,54 @@ test('POST /score rejects mismatched content version with 409', async () => {
   });
 });
 
+test('POST /player rejects invalid nickname server-side', async () => {
+  const request = new Request('https://example.test/player', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      device_uuid: 'dev-bad-nick',
+      nickname: '🎾💯',
+      opt_in: true
+    })
+  });
+
+  const response = await workerModule.handlePostPlayer(request, {
+    DB: createFakeDb(() => {
+      throw new Error('DB should not be called for invalid nickname');
+    })
+  });
+
+  expect(response.status).toBe(400);
+  await expect(readJson(response)).resolves.toEqual({
+    ok: false,
+    error: 'Invalid nickname'
+  });
+});
+
+test('POST /player rejects too-long nickname server-side', async () => {
+  const request = new Request('https://example.test/player', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      device_uuid: 'dev-long-nick',
+      nickname: 'A'.repeat(25),
+      opt_in: true
+    })
+  });
+
+  const response = await workerModule.handlePostPlayer(request, {
+    DB: createFakeDb(() => {
+      throw new Error('DB should not be called for too-long nickname');
+    })
+  });
+
+  expect(response.status).toBe(400);
+  await expect(readJson(response)).resolves.toEqual({
+    ok: false,
+    error: 'Nickname too long'
+  });
+});
+
 test('POST /score rejects unknown answer ids fail-closed', async () => {
   const request = new Request('https://example.test/score', {
     method: 'POST',
@@ -95,6 +149,52 @@ test('POST /score rejects unknown answer ids fail-closed', async () => {
     ok: false,
     accepted: false,
     reject_reason: 'UNKNOWN_ITEM_ID'
+  });
+});
+
+test('POST /score rejects duplicate answer ids fail-closed', async () => {
+  const request = new Request('https://example.test/score', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      device_uuid: 'dev-dup-answers',
+      run_id: 'run-dup-answers',
+      run_number: 2,
+      content_version: '2026-05-23',
+      run_mode: 'RUN',
+      duration_ms: 5000,
+      answers: [
+        { id: 1, answer: false, ms: 1000 },
+        { id: 1, answer: false, ms: 1000 }
+      ]
+    })
+  });
+
+  const env = {
+    DB: createFakeDb((sql, _args, op) => {
+      if (
+        sql.includes('SELECT player_id, opt_in FROM players') &&
+        op === 'first'
+      ) {
+        return { player_id: 7, opt_in: 1 };
+      }
+      if (
+        sql.includes('FROM score_submissions') &&
+        sql.includes('WHERE run_id') &&
+        op === 'first'
+      ) {
+        return null;
+      }
+      throw new Error(`Unexpected query: ${op} ${sql}`);
+    })
+  };
+
+  const response = await workerModule.handlePostScore(request, env);
+  expect(response.status).toBe(422);
+  await expect(readJson(response)).resolves.toEqual({
+    ok: false,
+    accepted: false,
+    reject_reason: 'DUPLICATE_ITEM_ID'
   });
 });
 
@@ -275,6 +375,147 @@ test('DELETE /player removes rows when device exists', async () => {
     ['score_submissions', 42],
     ['players', 42]
   ]);
+});
+
+test('Worker rejects write requests from disallowed origins', async () => {
+  const request = new Request('https://example.test/player', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      origin: 'https://evil.example'
+    },
+    body: JSON.stringify({
+      device_uuid: 'dev-evil',
+      nickname: 'ValidNick',
+      opt_in: true
+    })
+  });
+
+  const response = await workerModule.default.fetch(request, {
+    DB: createFakeDb(() => {
+      throw new Error('DB should not be called for disallowed origin');
+    }),
+    ALLOWED_ORIGINS: 'https://pickleballrulesquiz.com'
+  });
+
+  expect(response.status).toBe(403);
+  await expect(readJson(response)).resolves.toEqual({
+    ok: false,
+    error: 'Origin not allowed'
+  });
+});
+
+test('Worker echoes allowed origin in CORS headers', async () => {
+  const request = new Request(
+    'https://example.test/leaderboard?window=weekly',
+    {
+      method: 'GET',
+      headers: {
+        origin: 'https://pickleballrulesquiz.com'
+      }
+    }
+  );
+
+  const response = await workerModule.default.fetch(request, {
+    DB: createFakeDb((sql, _args, op) => {
+      if (sql.includes('SELECT lb.best_score_fp AS score_fp') && op === 'all') {
+        return { results: [] };
+      }
+      throw new Error(`Unexpected query: ${op} ${sql}`);
+    }),
+    ALLOWED_ORIGINS: 'https://pickleballrulesquiz.com'
+  });
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get('access-control-allow-origin')).toBe(
+    'https://pickleballrulesquiz.com'
+  );
+});
+
+test('Worker rate limits repeated player writes per device', async () => {
+  const env = {
+    DB: createFakeDb((sql, args, op) => {
+      if (sql.includes('INSERT INTO players') && op === 'run') {
+        return { success: true };
+      }
+      if (sql.includes('SELECT player_id, nickname, opt_in') && op === 'first') {
+        return {
+          player_id: 1,
+          nickname: String(args[0] || 'ValidNick'),
+          opt_in: true
+        };
+      }
+      throw new Error(`Unexpected query: ${op} ${sql}`);
+    }),
+    ALLOWED_ORIGINS: 'https://pickleballrulesquiz.com'
+  };
+
+  let lastResponse = null;
+  for (let i = 0; i < 6; i += 1) {
+    const request = new Request('https://example.test/player', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        origin: 'https://pickleballrulesquiz.com',
+        'cf-connecting-ip': '203.0.113.10'
+      },
+      body: JSON.stringify({
+        device_uuid: 'dev-rate-limit',
+        nickname: 'ValidNick',
+        opt_in: true
+      })
+    });
+    lastResponse = await workerModule.default.fetch(request, env);
+  }
+
+  expect(lastResponse.status).toBe(429);
+  await expect(readJson(lastResponse)).resolves.toEqual({
+    ok: false,
+    error: 'Too many requests'
+  });
+});
+
+test('POST /score rejects implausibly fast runs', async () => {
+  const request = new Request('https://example.test/score', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      device_uuid: 'dev-fast-run',
+      run_id: 'run-fast-run',
+      run_number: 3,
+      content_version: '2026-05-23',
+      run_mode: 'RUN',
+      duration_ms: 200,
+      answers: [{ id: 1, answer: false, ms: 10 }]
+    })
+  });
+
+  const env = {
+    DB: createFakeDb((sql, _args, op) => {
+      if (
+        sql.includes('SELECT player_id, opt_in FROM players') &&
+        op === 'first'
+      ) {
+        return { player_id: 9, opt_in: 1 };
+      }
+      if (
+        sql.includes('FROM score_submissions') &&
+        sql.includes('WHERE run_id') &&
+        op === 'first'
+      ) {
+        return null;
+      }
+      throw new Error(`Unexpected query: ${op} ${sql}`);
+    })
+  };
+
+  const response = await workerModule.handlePostScore(request, env);
+  expect(response.status).toBe(422);
+  await expect(readJson(response)).resolves.toEqual({
+    ok: false,
+    accepted: false,
+    reject_reason: 'IMPROBABLE_DURATION_MS'
+  });
 });
 
 test('getUtcWeekKey uses ISO weeks starting on Monday UTC', () => {

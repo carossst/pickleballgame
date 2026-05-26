@@ -30,6 +30,7 @@ export function validateSubmittedAnswers(rawAnswers, answerKey) {
   }
 
   const normalized = [];
+  const seenIds = new Set();
   for (const row of rawAnswers) {
     if (!row || typeof row !== "object") {
       return { ok: false, rejectReason: "INVALID_ANSWER_ROW" };
@@ -39,6 +40,10 @@ export function validateSubmittedAnswers(rawAnswers, answerKey) {
     if (id <= 0 || !answerKey.has(id)) {
       return { ok: false, rejectReason: "UNKNOWN_ITEM_ID" };
     }
+    if (seenIds.has(id)) {
+      return { ok: false, rejectReason: "DUPLICATE_ITEM_ID" };
+    }
+    seenIds.add(id);
 
     if (row.answer !== true && row.answer !== false) {
       return { ok: false, rejectReason: "INVALID_ANSWER_VALUE" };

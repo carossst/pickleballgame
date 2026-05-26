@@ -379,6 +379,49 @@
 
     const shareEnabled = !!(cfg.share && cfg.share.enabled);
     const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
+    const shareBonusCfg = cfg?.shareBonus || {};
+    const shareBonusEnabled = shareBonusCfg.enabled === true;
+    const shareBonusPremiumOnly = shareBonusCfg.premiumOnly === true;
+    let shareBonusGranted = false;
+    if (ui.storage && typeof ui.storage.hasShareBonusGranted === "function") {
+      try { shareBonusGranted = ui.storage.hasShareBonusGranted() === true; } catch (_) { shareBonusGranted = false; }
+    }
+    const shareBonusDismissed = !!ui._runtime?.shareBonusDismissed;
+    const shareBonusW = w.shareBonus || {};
+    const shareBonusEligible = !!(
+      isRun &&
+      !premium &&
+      isLastFreeRun &&
+      runsExhausted &&
+      shareBonusEnabled &&
+      !shareBonusPremiumOnly &&
+      !shareBonusGranted &&
+      !shareBonusDismissed
+    );
+    const shareBonusTitle = String(shareBonusW.title || "").trim();
+    const shareBonusBody = String(shareBonusW.body || "").trim();
+    const shareBonusCtaShare = String(shareBonusW.ctaShare || "").trim();
+    const shareBonusCtaLater = String(shareBonusW.ctaLater || "").trim();
+    const shareBonusOfferHtml = shareBonusEligible
+      ? `
+          <div class="wt-box wt-box--tinted wt-share-bonus-offer">
+            ${shareBonusTitle ? `<div class="wt-meta wt-meta--strong">${escapeHtml(shareBonusTitle)}</div>` : ``}
+            ${shareBonusBody ? `<p class="wt-muted wt-copy-follow">${escapeHtml(shareBonusBody)}</p>` : ``}
+            <div class="wt-actions wt-actions--compact">
+              ${shareBonusCtaShare ? `
+                <button type="button" class="wt-btn wt-btn--primary" data-action="claim-share-bonus">
+                  ${escapeHtml(shareBonusCtaShare)}
+                </button>
+              ` : ``}
+              ${shareBonusCtaLater ? `
+                <button type="button" class="wt-btn wt-btn--ghost" data-action="dismiss-share-bonus">
+                  ${escapeHtml(shareBonusCtaLater)}
+                </button>
+              ` : ``}
+            </div>
+          </div>
+        `
+      : "";
 
     const homeLabel = String(w.system?.home || "").trim();
     const homeBtnHtml = homeLabel
@@ -571,7 +614,7 @@
 <div class="wt-card wt-card--end">
   ${endHeaderRowHtml}
 
-  ${endTitle ? `<p class="wt-h1">${escapeHtml(endTitle)}</p>` : ``}
+  ${endTitle ? `<h1 class="wt-h1">${escapeHtml(endTitle)}</h1>` : ``}
   ${missingModeNoticeHtml}
 
   ${displayScoreLine ? `
@@ -636,6 +679,7 @@
     })}
   </div>
 
+  ${runsExhausted ? shareBonusOfferHtml : ``}
   ${runsExhausted ? paywallBridgeHtml : ``}
 
   ${shareHtml}

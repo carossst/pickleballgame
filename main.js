@@ -719,6 +719,33 @@
                 ui.render();
               }
 
+              try {
+                const announcer = document.getElementById('locale-feedback');
+                const wording = window.WT_WORDING || {};
+                const localeW = wording.i18nToggle || {};
+                const systemW = wording.system || {};
+                const localeName = String(
+                  localeW.languageNames?.[newLoc] || newLoc
+                ).trim();
+                const tpl = String(
+                  systemW.localeChangedTemplate || 'Language changed to {locale}'
+                ).trim();
+                if (announcer && localeName) {
+                  announcer.textContent = '';
+                  window.requestAnimationFrame(() => {
+                    try {
+                      announcer.textContent = fillTemplateLocal(tpl, {
+                        locale: localeName
+                      });
+                    } catch (_) {
+                      /* silent */
+                    }
+                  });
+                }
+              } catch (_) {
+                /* silent */
+              }
+
               if (reopenLeaderboardModal) {
                 ui.openLeaderboardModal();
               }

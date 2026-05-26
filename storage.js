@@ -222,7 +222,9 @@
         premiumFirstRunFramingSeen: false,
         secretChestHintSolved: false,
         secretChestWelcomeShown: false,
-        dailyChallengeToastDayKey: ''
+        dailyChallengeToastDayKey: '',
+        shareBonusGranted: false,
+        shareBonusGrantedAt: 0
       },
 
       // House Ad (post-completion) — persisted state
@@ -490,8 +492,14 @@
     // If config changes between releases, init may clamp balance downward to the new max,
     // but it must never increase a user's remaining balance on reload.
     if (!isPrem) {
+      const flags = this.data.uiDeviceFlags || {};
+      const bonusGranted = flags.shareBonusGranted === true;
+      const bonusRuns = bonusGranted
+        ? clampNonNegativeInt(cfg?.shareBonus?.bonusRuns || 1)
+        : 0;
+      const effectiveFreeRuns = freeRunsCfg + bonusRuns;
       const used = clampNonNegativeInt(this.data?.counters?.runStarts);
-      const maxAllowedBalance = Math.max(0, freeRunsCfg - used);
+      const maxAllowedBalance = Math.max(0, effectiveFreeRuns - used);
       r.balance = Math.min(r.balance, maxAllowedBalance);
     }
 
@@ -504,6 +512,26 @@
       st.mistakesOnlyCompletedOnce = false;
     if (typeof st.autoReadQuestions !== 'boolean') st.autoReadQuestions = false;
     if (!Number.isFinite(st.houseAdHiddenUntil)) st.houseAdHiddenUntil = 0;
+
+    const flags = this.data.uiDeviceFlags || {};
+    if (typeof flags.firstRunFramingSeen !== 'boolean')
+      flags.firstRunFramingSeen = false;
+    if (typeof flags.premiumFirstRunFramingSeen !== 'boolean')
+      flags.premiumFirstRunFramingSeen = false;
+    if (typeof flags.secretChestHintSolved !== 'boolean')
+      flags.secretChestHintSolved = false;
+    if (typeof flags.secretChestWelcomeShown !== 'boolean')
+      flags.secretChestWelcomeShown = false;
+    flags.dailyChallengeToastDayKey = String(
+      flags.dailyChallengeToastDayKey || ''
+    ).trim();
+    if (typeof flags.shareBonusGranted !== 'boolean')
+      flags.shareBonusGranted = false;
+    if (!Number.isFinite(Number(flags.shareBonusGrantedAt))) {
+      flags.shareBonusGrantedAt = 0;
+    } else {
+      flags.shareBonusGrantedAt = Math.floor(Number(flags.shareBonusGrantedAt));
+    }
 
     // Harden Rapid Fire ticket economy
     const rf = this.data.rapidFire || {};
@@ -993,6 +1021,59 @@
 
     this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
     this._save();
+  };
+
+  StorageManager.prototype.hasShareBonusGranted = function () {
+    return this._readUiDeviceFlag('shareBonusGranted');
+  };
+
+  StorageManager.prototype.getShareBonusGrantedAt = function () {
+    const flags = this.data?.uiDeviceFlags || {};
+    return clampNonNegativeInt(flags.shareBonusGrantedAt);
+  };
+
+  StorageManager.prototype.grantShareBonus = function () {
+    if (!this.data) return { ok: false, reason: 'NO_DATA', balance: 0 };
+
+    if (
+      !this.data.uiDeviceFlags ||
+      typeof this.data.uiDeviceFlags !== 'object'
+    ) {
+      this.data.uiDeviceFlags = deepCopy(this.defaultData.uiDeviceFlags);
+    }
+
+    if (this.data.uiDeviceFlags.shareBonusGranted === true) {
+      return {
+        ok: false,
+        reason: 'ALREADY',
+        balance: this.getRunsBalance(),
+        grantedAt: this.getShareBonusGrantedAt()
+      };
+    }
+
+    const bonusRuns = Math.max(
+      1,
+      clampNonNegativeInt(this.config?.shareBonus?.bonusRuns || 1)
+    );
+
+    this.data.uiDeviceFlags.shareBonusGranted = true;
+    this.data.uiDeviceFlags.shareBonusGrantedAt = now();
+
+    if (!this.data.runs || typeof this.data.runs !== 'object') {
+      this.data.runs = deepCopy(this.defaultData.runs);
+    }
+
+    this.data.runs.balance =
+      clampNonNegativeInt(this.data.runs.balance) + bonusRuns;
+    this._save();
+
+    return {
+      ok: true,
+      reason: 'GRANTED',
+      balance: this.getRunsBalance(),
+      bonusRuns,
+      grantedAt: this.getShareBonusGrantedAt()
+    };
   };
 
   // ============================================
@@ -1742,9 +1823,8 @@
     const used = clampNonNegativeInt(this.data.counters.practiceFreeRunsUsed);
 
     if (this.isPremium()) {
-      this.data.counters.practiceFreeRunsUsed = used + 1;
       this._save();
-      return { ok: true, reason: 'PREMIUM', used: used + 1, limit };
+      return { ok: true, reason: 'PREMIUM', used, limit };
     }
 
     if (limit > 0 && used < limit) {
@@ -2559,6 +2639,27 @@
     try {
       window.localStorage.removeItem(vanityKey);
     } catch (_) {}
+  };
+
+  StorageManager.prototype.resetAll = function () {
+    const cfg = this.config || {};
+    const vanityKey = String(cfg?.storage?.vanityCodeStorageKey || '').trim();
+
+    try {
+      window.localStorage.removeItem(this.storageKey);
+    } catch (_) {
+      /* silent */
+    }
+
+    if (vanityKey) {
+      try {
+        window.localStorage.removeItem(vanityKey);
+      } catch (_) {
+        /* silent */
+      }
+    }
+
+    this._wipeAndReset();
   };
 
   StorageManager.prototype.tryRedeemPremiumCode = function (codeInput) {

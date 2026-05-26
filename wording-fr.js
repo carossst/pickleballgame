@@ -67,6 +67,7 @@
       close: 'Fermer',
       home: 'Accueil',
       versionPrefix: '',
+      localeChangedTemplate: 'Langue changée en {locale}',
 
       loadingTitle: 'Chargement de Quiz Pickleball...',
       loadingIcon: '',
@@ -256,6 +257,16 @@
       postPaywallSbTitle: 'Le défi du jour est actif',
       postPaywallSbBody:
         "Débloquez l'accès complet pour revenir chaque jour sur le défi du jour et gagner des jetons Mode Rapide."
+    },
+
+    shareBonus: {
+      title: 'Une partie offerte',
+      body: 'Partagez Quiz Pickleball avec un ami et gagnez une partie supplémentaire. Une seule fois.',
+      ctaShare: 'Partager et jouer',
+      ctaLater: 'Plus tard',
+      toastUnlocked: 'Une partie débloquée.',
+      toastAlready: 'Déjà reçue.',
+      toastShareFailed: "Le partage n'a pas abouti. Réessayez."
     },
 
     leaderboard: {

@@ -2894,6 +2894,14 @@ void (function () {
           self.sendShareViaEmail();
           break;
 
+        case 'claim-share-bonus':
+          self.claimShareBonus(event);
+          break;
+
+        case 'dismiss-share-bonus':
+          self.dismissShareBonusOffer();
+          break;
+
         case 'toggle-mistakes-only':
           self.toggleMistakesOnly();
           break;
@@ -4172,6 +4180,13 @@ void (function () {
     } catch (_) {
       /* silent */
     }
+    try {
+      if (this.appEl) this.appEl.setAttribute('aria-hidden', 'true');
+      const footerEl = document.getElementById('wt-footer-root');
+      if (footerEl) footerEl.setAttribute('aria-hidden', 'true');
+    } catch (_) {
+      /* silent */
+    }
 
     this.modalEl.classList.remove('wt-hidden');
     this.modalEl.setAttribute('aria-hidden', 'false');
@@ -4314,6 +4329,13 @@ void (function () {
     try {
       const mainEl = document.querySelector('.wt-main');
       if (mainEl) mainEl.inert = false;
+    } catch (_) {
+      /* silent */
+    }
+    try {
+      if (this.appEl) this.appEl.removeAttribute('aria-hidden');
+      const footerEl = document.getElementById('wt-footer-root');
+      if (footerEl) footerEl.removeAttribute('aria-hidden');
     } catch (_) {
       /* silent */
     }
@@ -7312,6 +7334,103 @@ ${audioSettingsHtml}
     return window.WT_UI_Share.sendEmail(this, { clampInt });
   };
 
+  UI.prototype.dismissShareBonusOffer = function () {
+    this._runtime = this._runtime || {};
+    if (this._runtime.shareBonusDismissed === true) return;
+    this._runtime.shareBonusDismissed = true;
+    this.render();
+  };
+
+  UI.prototype.claimShareBonus = async function (event) {
+    if (!this.storage || typeof this.storage.grantShareBonus !== 'function') {
+      return;
+    }
+
+    this._runtime = this._runtime || {};
+    if (this._runtime.shareBonusClaimInFlight === true) return;
+
+    const shareBonusW = this.wording?.shareBonus || {};
+    const alreadyMsg = String(shareBonusW.toastAlready || '').trim();
+    const failMsg = String(shareBonusW.toastShareFailed || '').trim();
+    const unlockedMsg = String(shareBonusW.toastUnlocked || '').trim();
+
+    if (
+      typeof this.storage.hasShareBonusGranted === 'function' &&
+      this.storage.hasShareBonusGranted() === true
+    ) {
+      if (alreadyMsg) toastNow(this.config, alreadyMsg);
+      return;
+    }
+
+    const trigger = event?.target?.closest
+      ? event.target.closest('[data-action="claim-share-bonus"]')
+      : null;
+    const previousDisabled = !!trigger?.disabled;
+    const previousBusy = trigger?.getAttribute?.('aria-busy');
+
+    this._runtime.shareBonusClaimInFlight = true;
+    if (trigger) {
+      trigger.disabled = true;
+      trigger.setAttribute('aria-busy', 'true');
+    }
+
+    try {
+      const text = String(this._getShareText() || '').trim();
+      if (!text) {
+        if (failMsg) toastNow(this.config, failMsg, { variant: 'danger' });
+        return;
+      }
+
+      let shared = false;
+      if (typeof navigator.share === 'function') {
+        try {
+          await navigator.share({ text });
+          shared = true;
+        } catch (_) {
+          shared = false;
+        }
+      } else if (typeof navigator.clipboard?.writeText === 'function') {
+        try {
+          await navigator.clipboard.writeText(text);
+          shared = true;
+        } catch (_) {
+          shared = false;
+        }
+      }
+
+      if (!shared) {
+        if (failMsg) toastNow(this.config, failMsg, { variant: 'danger' });
+        return;
+      }
+
+      const result = this.storage.grantShareBonus();
+      if (result?.reason === 'ALREADY') {
+        if (alreadyMsg) toastNow(this.config, alreadyMsg);
+        return;
+      }
+      if (!result?.ok) {
+        if (failMsg) toastNow(this.config, failMsg, { variant: 'danger' });
+        return;
+      }
+
+      if (typeof this.storage.markShareClicked === 'function') {
+        this.storage.markShareClicked();
+      }
+
+      this._runtime.shareBonusDismissed = false;
+      if (unlockedMsg) {
+        toastNow(this.config, unlockedMsg, { variant: 'success' });
+      }
+      this.render();
+    } finally {
+      this._runtime.shareBonusClaimInFlight = false;
+      if (trigger) {
+        trigger.disabled = previousDisabled;
+        trigger.setAttribute('aria-busy', previousBusy || 'false');
+      }
+    }
+  };
+
   // ============================================
   // Mistakes only toggle (Landing)
   // ============================================
@@ -9827,7 +9946,10 @@ ${audioSettingsHtml}
         : '';
 
     const mistakeDeltaText = String(ui?.mistakeGainedDeltaText || '').trim();
-    const mistakeDeltaHtml = pulseOn && mistakeDeltaText ? `` : '';
+    const mistakeDeltaHtml =
+      pulseOn && mistakeDeltaText
+        ? `<span class="wt-pill__delta wt-pill__delta--mistake wt-pill__delta--minus" aria-hidden="true">${escapeHtml(mistakeDeltaText)}</span>`
+        : '';
 
     const bonusBadge = String(this.wording?.secretBonus?.badge || '').trim();
     const practiceBadge = String(this.wording?.practice?.title || '').trim();
@@ -10339,11 +10461,11 @@ ${questionAudioHtml}
           ? `
         <div class="wt-choices">
           <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
-            <span class="wt-choice-icon">\u2714</span>
+            <span class="wt-choice-icon" aria-hidden="true">\u2714</span>
             ${escapeHtml(trueLabel)}
           </button>
           <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml(falseLabel)}">
-            <span class="wt-choice-icon">\u2716</span>
+            <span class="wt-choice-icon" aria-hidden="true">\u2716</span>
             ${escapeHtml(falseLabel)}
           </button>
         </div>
@@ -10352,11 +10474,11 @@ ${questionAudioHtml}
         <div class="wt-answer-zone">
           <div class="wt-choices">
             <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
-              <span class="wt-choice-icon">\u2714</span>
+              <span class="wt-choice-icon" aria-hidden="true">\u2714</span>
               ${escapeHtml(trueLabel)}
             </button>
             <button class="wt-choice wt-choice--diff" data-action="answer-false" aria-label="${escapeHtml(falseLabel)}">
-              <span class="wt-choice-icon">\u2716</span>
+              <span class="wt-choice-icon" aria-hidden="true">\u2716</span>
               ${escapeHtml(falseLabel)}
             </button>
           </div>

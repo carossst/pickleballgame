@@ -68,6 +68,7 @@
       close: 'Close',
       home: 'Home',
       versionPrefix: '',
+      localeChangedTemplate: 'Language changed to {locale}',
 
       loadingTitle: 'Loading Pickleball Rules Quiz...',
       loadingIcon: '',
@@ -253,6 +254,16 @@
       postPaywallSbTitle: "Today's challenge is on",
       postPaywallSbBody:
         "Unlock full access to come back for today's challenge and keep earning Rapid Fire tickets."
+    },
+
+    shareBonus: {
+      title: 'One game on the house',
+      body: 'Share Pickleball Rules Quiz with a friend and get one more free game. Just this once.',
+      ctaShare: 'Share & play',
+      ctaLater: 'Not now',
+      toastUnlocked: 'One free game unlocked.',
+      toastAlready: 'Already claimed.',
+      toastShareFailed: "Couldn't share. Try again."
     },
 
     leaderboard: {
