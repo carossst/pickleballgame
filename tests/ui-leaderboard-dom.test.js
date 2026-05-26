@@ -175,7 +175,7 @@ test('leaderboard modal shows top rows then detached local rank when outside top
     wording: {
       leaderboard: {
         modalTitle: 'Leaderboard',
-        modalBodyJoined: 'Your nickname is saved.',
+        modalBodyJoined: 'Weekly reset every Monday.',
         weeklyTitle: 'This week',
         allTitle: 'All-time',
         nicknameLabel: 'Nickname',
@@ -455,7 +455,7 @@ test('leaderboard handleSubmitResult shows weekly rank toast on successful submi
     },
     wording: {
       leaderboard: {
-        rankToastWeekly: 'Public weekly rank: #{rank}.',
+        rankToastWeekly: 'This week: #{rank}.',
         scoreRejectedToast: 'Rejected'
       }
     },
@@ -491,7 +491,7 @@ test('leaderboard handleSubmitResult shows weekly rank toast on successful submi
 
   expect(toasts).toEqual([
     {
-      message: 'Public weekly rank: #12.',
+      message: 'This week: #12.',
       opts: { variant: 'info' }
     }
   ]);
@@ -505,7 +505,7 @@ test('leaderboard handleSubmitResult shows rejection toast for non-skipped failu
     config: {},
     wording: {
       leaderboard: {
-        rankToastWeekly: 'Public weekly rank: #{rank}.',
+        rankToastWeekly: 'This week: #{rank}.',
         scoreRejectedToast: 'This RUN was not added.'
       }
     }

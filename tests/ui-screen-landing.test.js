@@ -180,15 +180,16 @@ function createUi(runCompletes, options = {}) {
         personalBestLockedTitle: 'Record your score',
         personalBestLockedSub:
           'Unlock full access to record your score and keep building your best.',
-        dailyChallengeBadge: "TODAY'S TARGET",
+        dailyChallengeBadge: 'DAILY CHALLENGE',
         dailyChallengeTitleTemplate: 'Target: {targetScore}+',
         dailyChallengeProgressTemplate:
           'Today: {score}/{targetScore}.',
-        dailyChallengeResetTemplate: 'Next challenge at {resetTime}.',
+        dailyChallengeResetTemplate: '',
         dailyChallengeCompletedTemplate:
-          'Completed today. Next challenge at {resetTime}.',
-        dailyChallengeRewardTemplate: 'Win 1 Rapid Fire ticket',
-        dailyChallengeCta: "Try today's challenge"
+          'Daily challenge cleared.\nNext challenge at {resetTime}.',
+        dailyChallengeRewardTemplate:
+          "Beat today's target to earn 1 Rapid Fire ticket.",
+        dailyChallengeCta: 'Start challenge'
       },
       installPrompt: {},
       leaderboard: {
@@ -250,10 +251,8 @@ test('landing after first completed run shows level, daily, and leaderboard bloc
   );
 
   expect(html).toContain('Current level: COURT-READY');
-  expect(html).toContain('Next: RULE-READY');
-  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('DAILY CHALLENGE');
   expect(html).toContain('THIS WEEK');
-  expect(html).toContain('8/25 questions seen');
   expect(html).not.toContain('PERSONAL BEST');
 });
 
@@ -264,7 +263,7 @@ test('landing daily card is clickable when the challenge can be played', () => {
     buildHelpers(modules.renderLeaderboardLandingCard)
   );
 
-  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('DAILY CHALLENGE');
   expect(html).toContain('data-action="start-daily-challenge"');
   expect(html).toContain('wt-landing-stat--clickable');
 });
@@ -278,7 +277,7 @@ test('landing hides phase progress card when no seen questions exist yet', () =>
 
   expect(html).not.toContain("You've seen 0 questions so far.");
   expect(html).toContain('Current level: COURT-READY');
-  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('DAILY CHALLENGE');
   expect(html).not.toContain('PERSONAL BEST');
 });
 
@@ -291,7 +290,7 @@ test('landing does not bring back personal best when free runs are exhausted', (
 
   expect(html).not.toContain('PERSONAL BEST');
   expect(html).not.toContain('Record your score');
-  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('DAILY CHALLENGE');
   expect(html).toContain('data-action="start-daily-challenge"');
 });
 
@@ -304,6 +303,6 @@ test('landing still shows daily card when challenge is not immediately playable'
     })
   );
 
-  expect(html).toContain("TODAY'S TARGET");
+  expect(html).toContain('DAILY CHALLENGE');
   expect(html).not.toContain('data-action="start-daily-challenge"');
 });

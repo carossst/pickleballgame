@@ -382,6 +382,17 @@ void (function () {
     return null;
   }
 
+  function supportsQuestionSpeechForLocale(locale) {
+    if (!supportsQuestionSpeech()) return false;
+    const target = String(locale || '')
+      .trim()
+      .toLowerCase();
+    if (target.startsWith('fr')) {
+      return !!getQuestionSpeechVoice(locale);
+    }
+    return true;
+  }
+
   function warmQuestionSpeechVoices(ui) {
     if (!supportsQuestionSpeech()) return;
     if (ui && ui._speechVoicesWarmed === true) return;
@@ -2630,7 +2641,7 @@ void (function () {
 
     const pointerEvt = 'PointerEvent' in window ? 'pointerup' : 'click';
 
-    function dispatchAction(action, event, trigger) {
+    function dispatchAction(action, event) {
       try {
         self._lastActionDispatchTs =
           event && typeof event.timeStamp === 'number'
@@ -2659,17 +2670,18 @@ void (function () {
           break;
 
         case 'open-leaderboard-profile':
-          self.openLeaderboardModal();
-          self.switchLeaderboardModalTab('profile');
+          self.openLeaderboardModal({ initialTab: 'profile' });
           break;
 
-        case 'switch-leaderboard-tab':
+        case 'switch-leaderboard-tab': {
+          const source = event && event.target && event.target.closest
+            ? event.target.closest('[data-wt-leaderboard-tab]')
+            : null;
           self.switchLeaderboardModalTab(
-            trigger && typeof trigger.getAttribute === 'function'
-              ? trigger.getAttribute('data-wt-leaderboard-tab')
-              : ''
+            source ? source.getAttribute('data-wt-leaderboard-tab') : ''
           );
           break;
+        }
 
         case 'save-leaderboard-profile':
           void self.saveLeaderboardProfileFromModal();
@@ -3044,7 +3056,7 @@ void (function () {
 
         e.preventDefault();
         e.stopImmediatePropagation();
-        dispatchAction(action, e, btn);
+        dispatchAction(action, e);
       };
 
       if (pointerEvt !== 'click') {
@@ -3131,7 +3143,7 @@ void (function () {
         const action = String(btn.getAttribute('data-action') || '').trim();
         if (!action) return false;
         e.preventDefault();
-        dispatchAction(action, e, btn);
+        dispatchAction(action, e);
         return true;
       };
 
@@ -3172,7 +3184,7 @@ void (function () {
           if (!action) return;
 
           e.preventDefault();
-          dispatchAction(action, e, btn);
+          dispatchAction(action, e);
         });
 
         if (pointerEvt !== 'click') {
@@ -3190,7 +3202,7 @@ void (function () {
             if (!action) return;
 
             e.preventDefault();
-            dispatchAction(action, e, btn);
+            dispatchAction(action, e);
           });
         }
       }
@@ -4339,7 +4351,7 @@ void (function () {
         : {};
     const scoreFP = Number(gs.scoreFP);
     const chancesLeft = Number(gs.chancesLeft);
-    const speechSupported = supportsQuestionSpeech();
+    const speechSupported = supportsQuestionSpeechForLocale(getQuestionSpeechLocale());
     const autoReadEnabled = isAutoReadQuestionsEnabled(this.storage);
 
     // No hardcoded fallback: if runtime values are missing, keep placeholders empty.
@@ -4436,7 +4448,6 @@ ${audioSettingsHtml}
     const cfg = this.config || {};
     const levelsW = w.levels && typeof w.levels === 'object' ? w.levels : {};
     const model = getAppLevelModel(this.storage, cfg, w);
-
     const progressionLabel = String(levelsW.progressionLabel || '').trim();
     const currentPill = String(levelsW.currentPill || '').trim();
     const unlockedPill = String(levelsW.unlockedPill || '').trim();
@@ -4483,14 +4494,17 @@ ${audioSettingsHtml}
     });
   };
 
-  UI.prototype.openLeaderboardModal = function () {
+  UI.prototype.openLeaderboardModal = function (opts) {
     if (
       !window.WT_UI_Leaderboard ||
       typeof window.WT_UI_Leaderboard.openModal !== 'function'
     ) {
       return;
     }
-    return window.WT_UI_Leaderboard.openModal(this, { escapeHtml });
+    return window.WT_UI_Leaderboard.openModal(this, {
+      escapeHtml,
+      initialTab: opts && typeof opts === 'object' ? opts.initialTab : ''
+    });
   };
 
   UI.prototype.saveLeaderboardProfileFromModal = async function () {
@@ -9401,12 +9415,19 @@ ${audioSettingsHtml}
     };
   }
 
+  function getConfiguredMaxLevel(cfg) {
+    const raw = Number(cfg?.levels?.maxLevel);
+    if (!Number.isFinite(raw)) return 4;
+    const n = Math.floor(raw);
+    if (n < 1 || n > 20) return 4;
+    return n;
+  }
+
   function getLevelPreviewState(cfg) {
     const previewCfg =
       cfg?.levels?.preview && typeof cfg.levels.preview === 'object'
         ? cfg.levels.preview
         : null;
-    const maxLevel = clampInt(cfg?.levels?.maxLevel, 1, 20);
     if (!previewCfg || previewCfg.enabled !== true)
       return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
 
@@ -9428,13 +9449,15 @@ ${audioSettingsHtml}
     if (!raw)
       return { currentLevel: null, unlockedLevel: 0, justUnlocked: false };
 
+    const maxLevel = getConfiguredMaxLevel(cfg);
+
     if (raw === 'none')
       return { currentLevel: 0, unlockedLevel: 0, justUnlocked: false };
 
     const unlockMatch = raw.match(/^unlock(\d+)$/);
     if (unlockMatch) {
       const lvl = clampInt(unlockMatch[1], 0, maxLevel);
-      return { currentLevel: lvl, unlockedLevel: lvl, justUnlocked: lvl > 0 };
+      return { currentLevel: lvl, unlockedLevel: lvl, justUnlocked: true };
     }
 
     const levelMatch = raw.match(/^level(\d+)$/);
@@ -9449,12 +9472,14 @@ ${audioSettingsHtml}
   function getAppLevelModel(storage, cfg, w) {
     const levelsW =
       w && w.levels && typeof w.levels === 'object' ? w.levels : {};
-    const levelsCfg = cfg?.levels && typeof cfg.levels === 'object' ? cfg.levels : {};
-    const maxLevel = clampInt(levelsCfg.maxLevel, 1, 20);
+    const maxLevel = getConfiguredMaxLevel(cfg);
+    const emptyUnlocked = {};
+    for (let level = 1; level <= maxLevel; level += 1) emptyUnlocked[level] = 0;
+
     const baseState =
       storage && typeof storage.getLevelState === 'function'
         ? storage.getLevelState()
-        : { currentLevel: 0, unlockedAtByLevel: {} };
+        : { currentLevel: 0, unlockedAtByLevel: emptyUnlocked };
     const preview = getLevelPreviewState(cfg);
     const effectiveLevel =
       preview.currentLevel == null
@@ -9484,9 +9509,9 @@ ${audioSettingsHtml}
       defs,
       current: defs.find((item) => item.level === effectiveLevel) || null,
       next: defs.find((item) => item.level === effectiveLevel + 1) || null,
-      maxLevel,
       levelsW,
-      preview
+      preview,
+      maxLevel
     };
   }
 
@@ -10076,8 +10101,8 @@ ${audioSettingsHtml}
     }
 
     const questionText = String(item.question || '').trim();
-    const speechSupported = supportsQuestionSpeech();
     const speechLocale = getQuestionSpeechLocale();
+    const speechSupported = supportsQuestionSpeechForLocale(speechLocale);
     const speechKey = `${speechLocale}:${Number(item?.id || 0)}:${questionText}`;
     const isQuestionSpeaking =
       speechSupported &&

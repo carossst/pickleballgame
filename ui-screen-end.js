@@ -234,7 +234,12 @@
     const unlockDef = levelModel.defs.find((item) => item.level === unlockedLevel) || null;
     const levelDetailsAria = String(levelModel.levelsW?.openDetailsAria || "").trim();
     const levelUnlockHtml = ((levelPreview.justUnlocked || levelProgress?.justUnlocked) && unlockDef)
-      ? `
+      ? (() => {
+        const reachedLine = fillTemplate(
+          String(levelModel.levelsW?.reachedTemplate || "").trim(),
+          { label: unlockDef.label }
+        ).trim();
+        return `
         <div class="wt-level-unlock">
           <p class="wt-level-unlock__kicker">${escapeHtml(String(levelModel.levelsW?.unlockKicker || "").trim())}</p>
           <div class="wt-level-unlock__card">
@@ -242,10 +247,11 @@
               <span class="wt-level-chip__dot" aria-hidden="true"></span>
               <span>${escapeHtml(unlockDef.label)}</span>
             </button>
-            <p class="wt-level-unlock__line">${escapeHtml(fillTemplate(String(levelModel.levelsW?.reachedTemplate || "").trim(), { label: unlockDef.label }))}</p>
+            ${reachedLine ? `<p class="wt-level-unlock__line">${escapeHtml(reachedLine)}</p>` : ``}
           </div>
         </div>
-      `
+      `;
+      })()
       : "";
 
     const displayScoreLine = scoreLine;

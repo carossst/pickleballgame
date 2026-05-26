@@ -40,7 +40,7 @@
     meta: {
       indexTitle: 'Quiz Pickleball',
       indexDescription:
-        'Vous croyez connaître le pickleball ? Prouvez-le. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne, changements de règles.',
+        'Mieux connaître les règles, c’est mieux jouer. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne, changements de règles.',
       successTitle: 'Accès complet activé - Quiz Pickleball',
       successDescription:
         'Paiement réussi. Votre code de déverrouillage Quiz Pickleball est prêt.',
@@ -197,10 +197,10 @@
 
     landing: {
       title: 'Quiz Pickleball',
-      tagline: '**Vous croyez connaître le pickleball ? Prouvez-le.**',
+      tagline: '**Mieux connaître les règles, c’est mieux jouer.**',
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
-      microFun: 'Parties courtes · Sans inscription · Essai gratuit',
+      microFun: 'Parties courtes · Sans inscription · Progression garantie',
       microTrust: 'Installez-la après votre première partie.',
 
       runsLabel: '',
@@ -221,7 +221,7 @@
       statsMistakesSummaryTemplate: '{mistakes}',
       statsMasterySummaryTemplate: 'Bonnes réponses : {mastered}',
       personalBestBadge: 'MEILLEUR SCORE',
-      personalBestTitleTemplate: 'Palier actuel : {tier}',
+      personalBestTitleTemplate: 'Meilleur score',
       personalBestSubTemplate:
         'Meilleur score : {best}. Prochain palier à {nextTarget}+.',
       personalBestTopTierTemplate:
@@ -232,16 +232,13 @@
       personalBestLockedTitle: 'Enregistrez votre score',
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
-      progressSectionTitle: '',
-      progressSectionBody: '',
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: "Atteignez {targetScore}+ aujourd'hui",
+      dailyChallengeTitleTemplate: 'Objectif : {targetScore}+',
       dailyChallengeProgressTemplate:
         "Aujourd'hui : {score}/{targetScore}.",
-      dailyChallengeResetTemplate:
-        "Aujourd'hui : {score}/{targetScore}.",
+      dailyChallengeResetTemplate: '',
       dailyChallengeCompletedTemplate:
-        "Défi du jour réussi.\nNouvel objectif demain.",
+        "Défi du jour réussi.\nProchain défi à {resetTime}.",
       dailyChallengeRewardTemplate:
         'Réussissez le défi du jour pour gagner 1 jeton Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
@@ -252,55 +249,53 @@
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
-        "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu sur les règles du pickleball, aux explications après chaque réponse et au Mode Erreurs illimité.",
+        "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu, aux explications après chaque réponse et au Mode Erreurs illimité.",
       practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
       postPaywallSbTitle: 'Le défi du jour est actif',
       postPaywallSbBody:
-        "Débloquez l'accès complet pour continuer à viser le défi du jour et gagner des tickets Mode Rapide."
+        "Débloquez l'accès complet pour revenir chaque jour sur le défi du jour et gagner des jetons Mode Rapide."
     },
 
     leaderboard: {
       cardTitle: 'CETTE SEMAINE',
-      cardSubDefault:
-        'Meilleurs scores de la semaine. Ajoutez votre pseudo après votre première partie terminée.',
-      cardSubJoined:
-        'Voir le classement ou modifier votre pseudo.',
+      cardSubDefault: 'Meilleurs scores de la semaine.',
+      cardSubJoined: 'Meilleurs scores de la semaine.',
       cardCtaJoin: 'Choisir un pseudo',
       cardCtaView: 'Voir le classement',
-      statusBadge: '',
+      cardCtaEdit: 'Modifier mon pseudo',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
-      cardWeeklyResetLine: 'Remise à zéro hebdomadaire : {localTime}.',
-      weeklyResetLine: 'Remise à zéro hebdomadaire : {localTime} (lundi 00:00 UTC).',
+      weeklyResetLine: 'Remise à zéro : {localTime}.',
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
       modalBodyDefault:
-        'Choisissez un pseudo public. Votre meilleur score en RUN pourra apparaître dans le classement hebdomadaire et all-time.',
+        'Le classement de la semaine est réinitialisé chaque lundi.',
       modalBodyJoined:
-        'Votre meilleur score en RUN peut apparaître dans le classement hebdomadaire et all-time.',
+        'Le classement de la semaine est réinitialisé chaque lundi.',
       rankingTab: 'Classement',
       profileTab: 'Mon pseudo',
       weeklyTitle: 'Cette semaine',
-      allTitle: 'All-time',
+      allTitle: 'Classement général',
       nicknameLabel: 'Pseudo',
       nicknamePlaceholder: 'Choisissez un pseudo',
       joinCta: 'Rejoindre le classement',
       updateCta: 'Mettre à jour le pseudo',
+      editProfileCta: 'Modifier mon pseudo',
       leaveCta: 'Quitter le classement',
       nicknameRequiredToast: "Ajoutez d'abord un pseudo.",
       nicknameTooShortToast: 'Le pseudo doit contenir au moins 3 caractères.',
       nicknameInvalidCharsToast:
-        'Utilisez seulement des lettres, chiffres, espaces, tirets ou underscores.',
-      saveOkToast: 'Pseudo de classement enregistré.',
+        'Utilisez seulement des lettres, chiffres, espaces, tirets ou traits de soulignement.',
+      saveOkToast: 'Pseudo enregistré.',
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
-        'Pseudo enregistré sur cet appareil. La synchro distante pourra être branchée ensuite.',
-      rankToastWeekly: 'Rang public cette semaine : #{rank}.',
+        'Pseudo enregistré sur cet appareil. La synchronisation en ligne pourra être ajoutée plus tard.',
+      rankToastWeekly: 'Cette semaine : #{rank}.',
       scoreRejectedToast:
-        "Cette RUN n'a pas été ajoutée au classement public cette fois."
+        "Cette partie n'a pas été ajoutée au classement public cette fois."
     },
 
     firstRun: {
@@ -317,9 +312,9 @@
       ],
 
       run2Lines: [
-        'Il vous reste 1 dernière run gratuite.',
-        'Le défi du jour est actif sur cette run.',
-        'Réussissez-le pour gagner 1 ticket Mode Rapide.',
+        'Il vous reste 1 dernière partie gratuite.',
+        'Le défi du jour est actif sur cette partie.',
+        'Réussissez-le pour gagner 1 jeton Mode Rapide.',
         'Après {maxChances} erreurs, la partie est terminée.',
         'Lisez attentivement.'
       ],
@@ -328,7 +323,7 @@
         'La partie se termine après {maxChances} erreurs.',
         'Lisez attentivement.',
         'Répondez avec ce que vous savez.',
-        'Vous croyez connaître le pickleball ? Prouvez-le.'
+        'Mieux connaître les règles, c’est mieux jouer.'
       ],
 
       ctaLabel: 'Jouer'
@@ -339,7 +334,7 @@
         title: 'Premier quart terminé.',
         bodyLines: [
           'Vous avez vu le premier quart des questions.',
-          'Toujours phase 1 : la découverte.',
+          'Vous construisez votre premier passage dans les règles.',
           'Continuez. Vous parcourez les règles une première fois.'
         ],
         cta: 'Suivant'
@@ -348,7 +343,7 @@
         title: 'Moitié atteinte.',
         bodyLines: [
           'Vous avez vu la moitié des questions.',
-          'Vous êtes toujours en phase de découverte.',
+          'Vous construisez votre couverture des règles pas à pas.',
           "Finissez d'abord le tour complet. Vous corrigerez ensuite ce qui vous piège encore."
         ],
         cta: 'Suivant'
@@ -421,23 +416,23 @@
     levels: {
       modalTitle: 'Niveaux',
       placeholder: '',
-      openDetailsAria: 'Ouvrir les détails du niveau',
+      openDetailsAria: 'Ouvrir les détails des niveaux',
       unlockKicker: 'Nouveau niveau',
-      reachedTemplate: 'Vous avez atteint {label}.',
+      reachedTemplate: '',
       currentLabel: 'Niveau actuel',
-      unlockedByLabel: 'Ce que ça veut dire',
-      nextLabel: 'Niveau suivant',
-      reachItLabel: 'Comment débloquer',
-      progressionLabel: 'Parcours complet',
+      unlockedByLabel: '',
+      nextLabel: '',
+      reachItLabel: '',
+      progressionLabel: 'Parcours',
       noLevelTitle: 'Verrouillé',
       noLevelBody: 'Terminez une partie pour débloquer votre premier niveau.',
-      maxLevelBody: 'Vous avez atteint le niveau le plus haut.',
+      maxLevelBody: 'Vous avez atteint le plus haut niveau.',
       currentPill: 'Vous êtes ici',
       unlockedPill: 'Débloqué',
       lockedPill: 'Verrouillé',
       byLevel: {
         1: {
-          label: 'PRÊT À JOUER',
+          label: 'PREMIERS REPÈRES',
           unlock: 'Terminer une partie.',
           sheetBody: 'Vous avez terminé votre première partie.'
         },
@@ -449,7 +444,7 @@
         3: {
           label: 'BON RYTHME',
           unlock: 'Voir 75 questions ou marquer 20+.',
-          sheetBody: 'Vous progressez par volume ou par performance.'
+          sheetBody: 'Vous ne testez plus seulement le jeu. Vous construisez des réflexes de règles.'
         },
         4: {
           label: 'NIVEAU CLUB',
@@ -458,13 +453,13 @@
         },
         5: {
           label: 'NIVEAU COMPÉTITION',
-          unlock: 'Corriger vos erreurs actives, puis réussir 70%+ en Mode Rapide avec 16 questions ou plus.',
-          sheetBody: 'Vous avez prouvé votre connaissance des règles sous pression.'
+          unlock: 'Corriger les erreurs actives et réussir 70%+ en Mode Rapide avec une sélection de 16+ questions.',
+          sheetBody: 'Vous avez prouvé vos règles sous pression en Mode Rapide.'
         },
         6: {
           label: 'NIVEAU PRO',
-          unlock: 'Réussir 85%+ en Mode Rapide avec 50 questions ou plus.',
-          sheetBody: 'Vous avez atteint le niveau le plus haut. Gardez vos règles affûtées.'
+          unlock: 'Réussir 85%+ en Mode Rapide avec une sélection de 50+ questions.',
+          sheetBody: 'Vous avez atteint le plus haut niveau. Gardez vos règles à jour.'
         }
       }
     },
@@ -494,7 +489,7 @@
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       dailyChallengeStartOverlayLabel: 'Le défi du jour est actif',
       dailyChallengeStartOverlayLineTemplate:
-        '{targetScore}+ au score = +1 ticket Mode Rapide',
+        '{targetScore}+ = +1 jeton Mode Rapide',
 
       lastChanceOverlay: "Plus qu'une erreur autorisée.",
       gameOverOverlay: 'Partie terminée.',
@@ -509,18 +504,18 @@
 
     secretBonus: {
       chestAria: 'Mode Rapide',
-      ticketBadgeAriaTemplate: 'Tickets Mode Rapide : {tickets}/{cap}',
+      ticketBadgeAriaTemplate: 'Jetons Mode Rapide : {tickets}/{cap}',
       chestHint: '',
       starterTicketToast:
-        "1 ticket Mode Rapide ajouté. Vous pouvez l'utiliser maintenant.",
+        "1 jeton Mode Rapide ajouté. Vous pouvez l'utiliser maintenant.",
       noSeenWordsToast:
-        "Le Mode Rapide est vide pour l'instant. Jouez quelques parties pour construire votre sélection.",
+        "Le Mode Rapide est vide pour l'instant. Jouez quelques parties pour agrandir votre sélection.",
       badge: 'MODE RAPIDE',
 
       endTitle: '',
       scoreLine: 'Score : {score}',
-      endStatsLine: 'Bonnes réponses : {cleared}/{shown}.',
-      endStatsLineOne: 'Bonnes réponses : {cleared}/{shown}.',
+      endStatsLine: '',
+      endStatsLineOne: '',
       endDeckSizeLine: 'Sélection Mode Rapide : {count} questions.',
       endDeckSizeLineOne: 'Sélection Mode Rapide : 1 question.',
       endPoolProgressTemplate: '{cleared}/{shown} correctes sur ce tour.',
@@ -592,11 +587,11 @@
       startOverlayLine3: 'Jouez plus de parties pour agrandir votre sélection.',
 
       startOverlayFreeRunsLimitLine:
-        '{tickets} ticket{pluralS} restant{pluralS}. Coût : {cost} ticket{costPluralS}.',
+        '{tickets} jeton{pluralS} restant{pluralS}. Coût : {cost} jeton{costPluralS}.',
 
-      freeLimitReachedTitle: 'Aucun ticket Mode Rapide disponible.',
+      freeLimitReachedTitle: 'Aucun jeton Mode Rapide disponible.',
       freeLimitReachedBody:
-        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nJouez le défi du jour pour en gagner un, ou débloquez l'accès complet pour garder votre jeu principal ouvert.",
+        "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nJouez le défi du jour pour en gagner un, ou débloquez l'accès complet pour continuer à jouer.",
       freeLimitReachedCta: 'Continuer à jouer',
       freeLimitReachedClose: 'Plus tard',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
@@ -611,19 +606,19 @@
 
       modalTitle: 'Mode Rapide',
       modalBody:
-        "Le Mode Rapide est plus rapide et plus exigeant.\nIl n'utilise que les questions que vous avez déjà vues.\nCoût : {cost} ticket{costPluralS}.\nDisponible maintenant : {tickets}.",
-      modalCta: 'Jouer en Mode Rapide (1 ticket)',
-      ticketRequiredTitle: 'Aucun ticket Mode Rapide disponible.',
+        "Le Mode Rapide est plus rapide et plus exigeant.\nIl n'utilise que les questions que vous avez déjà vues.\nCoût : {cost} jeton{costPluralS}.\nDisponible maintenant : {tickets}.",
+      modalCta: 'Jouer en Mode Rapide (1 jeton)',
+      ticketRequiredTitle: 'Aucun jeton Mode Rapide disponible.',
       ticketRequiredBodyDaily:
-        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez le défi du jour pour en gagner un.",
+        "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez le défi du jour pour en gagner un.",
       ticketRequiredBodySpentToday:
-        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nLe ticket du jour a déjà été réclamé. Revenez demain pour un nouveau défi et un nouveau ticket.",
+        "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nVous en avez {tickets} pour l'instant.\nLe gain du jour a déjà été réclamé. Revenez demain pour un nouveau défi et un nouveau jeton.",
       ticketRequiredBodyPremium:
-        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez une run et réussissez le défi du jour pour en gagner un.",
+        "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez une partie et réussissez le défi du jour pour en gagner un.",
       ticketRequiredBodyLocked:
-        "Le Mode Rapide coûte {cost} ticket{costPluralS}.\nVous en avez {tickets} pour l'instant.\nVos runs gratuites sont terminées. Débloquez l'accès complet pour continuer à jouer et gagner plus de tickets.",
+        "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nVous en avez {tickets} pour l'instant.\nVos parties gratuites sont terminées. Débloquez l'accès complet pour continuer à jouer et gagner plus de jetons.",
       ticketRequiredCtaDaily: 'Jouer le défi du jour',
-      ticketRequiredCtaRun: 'Jouer une run',
+      ticketRequiredCtaRun: 'Jouer une partie',
       ticketRequiredCtaPaywall: "Débloquer l'accès complet",
       ticketRequiredClose: 'Plus tard'
     },
@@ -731,12 +726,12 @@
 
       freeLimitReachedTitle: 'Belle partie.',
       freeLimitReachedBody:
-        "Vous avez utilisé vos {limit} parties gratuites.\n\nL'accès complet débloque des RUNs illimitées, les 200 questions du jeu sur les règles du pickleball, les explications après chaque réponse, le Mode Erreurs illimité et la boucle Daily dans la durée.",
+        "Vous avez utilisé vos {limit} parties gratuites.\n\nL'accès complet débloque des parties illimitées, les 200 questions du jeu sur les règles du pickleball, les explications après chaque réponse, le Mode Erreurs illimité et le retour quotidien du défi du jour.",
       freeLimitReachedCta: 'Continuer à jouer',
       freeLimitReachedClose: 'Plus tard',
 
       endLine: '',
-      endStatsLine: 'Bonnes réponses : {score}/{total}.',
+      endStatsLine: '',
 
       identityByVerdict: {
         none: 'Quelques questions vous échappent encore.',
@@ -769,24 +764,23 @@
       personalBestLine: 'Meilleur score : {best} {fpLong}',
       nearBestLine: '{delta} {fpLong} du meilleur score.',
       streakLine: '',
-      scoreTierLine: 'Palier actuel : {tier}.',
-      scoreTierNextLine: 'Prochain palier : {nextTier} à {nextTarget}+.',
-      dailyChallengeCleared: 'Défi du jour réussi : {targetScore}+ au score.',
+      scoreTierLine: '',
+      scoreTierNextLine: '',
+      dailyChallengeCleared: 'Défi du jour réussi.',
       dailyChallengeClearedFreeRun:
-        'Défi du jour réussi. Le ticket Mode Rapide se gagne sur votre dernière run gratuite.',
-      dailyChallengeTicketWon: 'Défi du jour réussi. +1 ticket Mode Rapide.',
+        'Défi du jour réussi. Le jeton Mode Rapide se gagne sur votre dernière partie gratuite.',
+      dailyChallengeTicketWon: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       dailyChallengeTicketCapped:
-        'Défi du jour réussi. Les tickets sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
-      dailyChallengeMiss: 'Le défi du jour demandait {targetScore}+ au score.',
+        'Défi du jour réussi. Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
+      dailyChallengeMiss: 'Défi du jour manqué.',
       dailyChallengeMissLastFree:
-        'Pas encore. Le défi du jour demandait {targetScore}+ au score.',
+        'Pas cette fois. Défi du jour manqué.',
       dailyChallengeCtaRetry: 'Retenter le défi du jour',
-      dailyChallengeToast: 'Défi du jour réussi. +1 ticket Mode Rapide.',
+      dailyChallengeToast: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       modeMissingFallback: 'Le récapitulatif de votre partie reste disponible.',
       beatBestLine:
         'Prochain objectif : dépasser votre meilleur score avec {target}+.',
-      beatBestFirstLine:
-        'Prochain objectif : signer un premier meilleur score.',
+      beatBestFirstLine: '',
       freeRunLeft:
         'Il vous reste {remaining} partie{pluralS} gratuite{pluralS}.',
 
@@ -809,10 +803,10 @@
       practiceCta: 'Corriger ce que vous avez raté',
       practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
 
-      bonusCtaPrimary: 'Jouer en Mode Rapide (1 ticket)',
+      bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
       practiceCtaCountPremium: 'Corriger ce que vous avez raté',
-      shareTitle: "Défier quelqu'un"
+      shareTitle: 'Partager le jeu'
     },
 
     paywall: {
@@ -830,18 +824,18 @@
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**RUNs illimitées**',
+        '**Parties illimitées**',
         '**Enregistrez votre score et faites progresser votre meilleur résultat**',
-        '**Voyez les meilleurs scores dans le classement public**',
+        '**Voyez les meilleurs scores du classement**',
         '**Explications après chaque réponse**',
         '**Mode Erreurs** et jeu hors ligne'
       ],
 
       valueBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**RUNs illimitées** sur tout le jeu',
+        '**Parties illimitées** sur tout le jeu',
         '**Enregistrez votre score et faites progresser votre meilleur résultat**',
-        '**Voyez les meilleurs scores dans le classement public**',
+        '**Voyez les meilleurs scores du classement**',
         '**Un mélange de questions faciles, intermédiaires et difficiles**',
         '**Explications après chaque réponse**',
         '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
@@ -849,30 +843,30 @@
 
       bridgeTitle: 'Connaissez mieux les règles du pickleball.',
       bridgeBody:
-        'Débloquez des RUNs illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et gardez le défi du jour vivant dans le temps.',
+        "Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores du classement, utilisez le Mode Erreurs et revenez chaque jour pour le défi du jour.",
       bridgeBodyLastFreeMiss:
-        'Vous avez vu le vrai rythme du jeu. Débloquez des RUNs illimitées, les 200 questions du jeu, voyez les meilleurs scores dans le classement public, utilisez le Mode Erreurs, et revenez sur le défi du jour quand vous voulez.',
+        'Vous avez vu le rythme du jeu. Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores du classement, utilisez le Mode Erreurs et revenez pour le défi du jour.',
 
       trustLine: '**Déverrouillage unique**',
       trustBullets: [
         "**Paiement unique**, pas d'abonnement",
-        "**Pas de compte** ni d'email requis",
+        "**Pas de compte** ni d'e-mail requis",
         "**Gardez votre code** comme sauvegarde si vous changez d'appareil ou effacez vos données",
         '**Fonctionne hors ligne** après le premier chargement',
         '**Paiement sécurisé** via Stripe'
       ],
 
-      socialProofTitle: "Ce qu'en pensent les joueurs",
+      socialProofTitle: 'Leurs retours après quelques parties',
       socialProofQuotes: [
         {
           quote:
             "★★★★★\nJe pensais tout connaître. J'ai découvert trois règles que je comprenais mal au club. Les explications aident vraiment.",
-          author: 'Maya, joueuse de tournoi'
+          author: 'Christine, joueuse en club'
         },
         {
           quote:
             "★★★★★\nEn deux parties, j'ai réalisé que je faisais des erreurs depuis des mois.",
-          author: 'Jon, habitué du double'
+          author: 'Jean, retraité'
         }
       ],
 
@@ -968,7 +962,7 @@
         'Pas de spam. Pas de compte. Désinscription à tout moment.',
       waitlistCta: 'Être prévenu',
       waitlistDisclaimer:
-        'Adresse email uniquement. Désinscription à tout moment.',
+        'Adresse e-mail uniquement. Désinscription à tout moment.',
       houseAdCta: 'Explorer Bonjour Pickleball'
     },
 
@@ -998,7 +992,7 @@
       bodyLine1: 'Pas de spam. Pas de compte. Désinscription à tout moment.',
       bodyLine2: 'Facultatif : ajoutez une idée.',
       inputPlaceholder: 'Facultatif : partagez une idée.',
-      cta: "Préparer l'email",
+      cta: "Préparer l'e-mail",
 
       emailSubjectSuffix: "Liste d'attente",
       emailBodyTemplate: `Bonjour !
@@ -1012,19 +1006,19 @@ Merci !`
     },
 
     share: {
-      ctaLabel: 'Copier le défi',
-      emailLabel: "Préparer l'email",
+      ctaLabel: 'Copier le message',
+      emailLabel: "Préparer l'e-mail",
       emailSubject: 'Quiz Pickleball',
-      previewLabel: 'Aperçu du défi',
+      previewLabel: 'Aperçu du message',
       toastCopied: 'Copié.',
-      template: `Vous croyez connaître le pickleball ?
+      template: `Je viens de découvrir Quiz Pickleball.
 Essayez celle-ci :
 {funFact}
 
 {scoreChallenge}
 {url}`,
-      scoreChallengeWithBest: 'Mon meilleur score est {bestScore}. Et vous ?',
-      scoreChallengeWithoutBest: 'Quel est votre meilleur score ?',
+      scoreChallengeWithBest: 'Mon meilleur score pour l’instant : {bestScore}. Tu veux essayer ?',
+      scoreChallengeWithoutBest: 'Tu veux essayer ?',
 
       teaserTrap: "Ça paraît évident... jusqu'à ce que non.",
       teaserTrue: 'Parfois la réponse évidente est la bonne.',
@@ -1034,57 +1028,57 @@ Essayez celle-ci :
 
     installPrompt: {
       title: 'Installer Quiz Pickleball',
-      body: "Ajoutez-la à votre écran d'accueil et ouvrez-la comme une app.\nPas d'App Store. Pas de compte. Un geste pour jouer.",
+      body: "Ajoutez-la à votre écran d'accueil et ouvrez-la comme une application.\nPas d'App Store. Pas de compte. Un geste pour jouer.",
       bodyIOS:
         "Sur iPhone, appuyez sur Partager, puis Ajouter à l'écran d'accueil.",
-      ctaPrimary: "Installer l'app",
+      ctaPrimary: "Installer l'application",
       ctaPrimaryIOS: 'Voir les étapes iPhone',
       ctaSecondary: 'Plus tard'
     },
 
     statsSharing: {
       sectionTitle: 'Retour anonyme (optionnel)',
-      buttonLabel: 'Partager des stats de jeu anonymes',
+      buttonLabel: 'Partager des statistiques de jeu anonymes',
 
       promptTitle: 'Aidez à améliorer les questions',
       promptBodyTemplate:
-        "Vous avez maintenant vu {thresholdPct}% du pool de questions. Partagez des stats de jeu anonymes pour aider à améliorer la difficulté, les formulations et l'ordre des questions. Vous pouvez tout relire avant d'envoyer.",
+        "Vous avez maintenant vu {thresholdPct}% de l'ensemble des questions. Partagez des statistiques de jeu anonymes pour aider à améliorer la difficulté, les formulations et l'ordre des questions. Vous pouvez tout relire avant d'envoyer.",
       promptBodyLastFree:
-        "C'était votre dernière partie gratuite. Partagez des stats de jeu anonymes pour aider à améliorer la difficulté, les formulations et l'ordre des questions. Vous pouvez tout relire avant d'envoyer.",
+        "C'était votre dernière partie gratuite. Partagez des statistiques de jeu anonymes pour aider à améliorer la difficulté, les formulations et l'ordre des questions. Vous pouvez tout relire avant d'envoyer.",
       promptBodyPowerUser:
-        "Vous avez assez joué pour que vos stats soient utiles. Partagez des stats de jeu anonymes pour aider à améliorer la difficulté, les formulations et l'ordre des questions. Vous pouvez tout relire avant d'envoyer.",
+        "Vous avez assez joué pour que vos statistiques soient utiles. Partagez des statistiques de jeu anonymes pour aider à améliorer la difficulté, les formulations et l'ordre des questions. Vous pouvez tout relire avant d'envoyer.",
       promptCtaPrimary: "Voir avant d'envoyer",
       promptCtaSecondary: 'Plus tard',
 
-      modalTitle: 'Vérifier les stats anonymes',
+      modalTitle: 'Vérifier les statistiques anonymes',
       modalDescription:
-        "Cet email contient votre résumé de jeu, les questions que vous ratez le plus, et des totaux d'usage anonymes.\nAucune donnée personnelle n'est incluse.\nVous pouvez vérifier exactement ce qui sera envoyé ci-dessous.",
+        "Cet e-mail contient votre résumé de jeu, les questions que vous ratez le plus, et des totaux d'usage anonymes.\nAucune donnée personnelle n'est incluse.\nVous pouvez vérifier exactement ce qui sera envoyé ci-dessous.",
       previewLabel: 'Ce qui sera envoyé :',
-      ctaSend: "Préparer l'email",
+      ctaSend: "Préparer l'e-mail",
       ctaCancel: 'Annuler',
       ctaLater: 'Plus tard',
-      ctaCopy: 'Copier les stats',
-      noStatsToast: 'Pas encore de stats à partager.',
+      ctaCopy: 'Copier les statistiques',
+      noStatsToast: 'Pas encore de statistiques à partager.',
       successToast:
-        "Brouillon d'email ouvert. Envoyez-le si vous voulez partager vos stats.",
-      copyToast: 'Stats copiées dans le presse-papier.',
+        "Brouillon d'e-mail ouvert. Envoyez-le si vous voulez partager vos statistiques.",
+      copyToast: 'Statistiques copiées dans le presse-papier.',
       mailtoFallbackToast:
-        "Stats copiées dans le presse-papier. Collez-les dans le brouillon d'email."
+        "Statistiques copiées dans le presse-papier. Collez-les dans le brouillon d'e-mail."
     },
 
     support: {
       label: 'Contact',
       modalTitle: 'Écrivez-nous',
-      modalBodyLine1: "L'email est le moyen le plus rapide de nous joindre.",
+      modalBodyLine1: "L'e-mail est le moyen le plus rapide de nous joindre.",
       modalBodyLine2: "Choisissez une raison ci-dessous ou copiez l'adresse.",
       emailSubjectSuffix: 'Retour',
-      ctaCopy: "Copier l'email",
-      ctaOpen: "Ouvrir l'application email",
-      emailUnavailableToast: "L'email n'est pas disponible pour le moment.",
-      ctaBug: 'Signaler un bug',
+      ctaCopy: "Copier l'e-mail",
+      ctaOpen: "Ouvrir l'application e-mail",
+      emailUnavailableToast: "L'e-mail n'est pas disponible pour le moment.",
+      ctaBug: 'Signaler un problème',
       ctaQuestion: 'Question',
       ctaIdea: 'Idée',
-      bugSubjectSuffix: 'Rapport de bug',
+      bugSubjectSuffix: 'Signalement de problème',
       questionSubjectSuffix: 'Question',
       ideaSubjectSuffix: 'Idée',
 
@@ -1102,7 +1096,7 @@ Merci !`,
 
 Je vous écris au sujet de Quiz Pickleball.
 
-Rapport de bug :
+Signalement de problème :
 
 Ce qui s'est passé :
 

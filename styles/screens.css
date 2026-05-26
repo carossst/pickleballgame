@@ -838,6 +838,10 @@ body.wt-state--end .wt-card--end {
   font-variant-numeric: tabular-nums;
 }
 
+.wt-landing-stat--daily .wt-landing-stat__sub {
+  white-space: pre-line;
+}
+
 @media (min-width: 481px) {
   .wt-landing-stat__sub {
     grid-column: 1 / -1;

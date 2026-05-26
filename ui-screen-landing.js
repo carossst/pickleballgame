@@ -25,6 +25,10 @@
 
     if (!label && !title && !sub) return "";
 
+    const subHtml = sub
+      ? escapeHtml(sub).replace(/\n/g, "<br>")
+      : "";
+
     return `
       <section class="wt-box wt-box--tinted wt-landing-stat${interactiveClass}${cardClass ? ` ${cardClass}` : ``}" aria-label="${escapeHtml(label || title || sub)}"${interactiveAttrs}${cardAttrs ? ` ${cardAttrs}` : ``}>
         <div class="wt-landing-stat__header">
@@ -32,7 +36,7 @@
           ${label ? `<span class="wt-landing-stat__label">${escapeHtml(label)}</span>` : ``}
         </div>
         ${title ? `<p class="wt-landing-stat__title">${escapeHtml(title)}</p>` : ``}
-        ${sub ? `<p class="wt-landing-stat__sub">${escapeHtml(sub).replace(/\r?\n/g, "<br>")}</p>` : ``}
+        ${subHtml ? `<p class="wt-landing-stat__sub">${subHtml}</p>` : ``}
         ${showProgress ? `
           <div class="wt-progress${progressClass}" role="img" aria-label="${escapeHtml(`${pct}%`)}">
             <span class="wt-progress__fill" style="width:${pct}%"></span>
@@ -114,8 +118,6 @@
 
     const tagline = String(landing.tagline || "").trim();
     const microTrust = String(landing.microTrust || "").trim();
-    const progressSectionTitle = String(landing.progressSectionTitle || "").trim();
-    const progressSectionBody = String(landing.progressSectionBody || "").trim();
     const installCtaLabel = String(ui.wording?.installPrompt?.ctaPrimary || "").trim();
     const postTitle = String(landing.postPaywallTitle || "").trim();
     const postBody = String(landing.postPaywallBody || "").trim();
@@ -282,99 +284,9 @@
       ? Math.floor(landingAfterRunsRaw)
       : null;
 
-    try {
-      const statsCfg = cfg?.landingStats || {};
-      const enabled = (statsCfg?.enabled === true);
-      const poolSizeSafe = clampInt(cfg?.game?.poolSize, 1, 9999);
-      const phasePreview = getLandingStatsPreviewState(cfg, poolSizeSafe);
-      const minRunsRaw = Number(statsCfg?.minCompletedRuns);
-      const minRunsToShow = (Number.isFinite(minRunsRaw) && minRunsRaw >= 1 && minRunsRaw <= 999) ? Math.floor(minRunsRaw) : null;
-      const shouldShowStats = !!(
-        enabled &&
-        (
-          phasePreview ||
-          (minRunsToShow != null && Number.isFinite(runCompletes) && runCompletes >= minRunsToShow)
-        )
-      );
-
-      if (shouldShowStats) {
-        let seen = 0;
-        try {
-          if (ui.storage && typeof ui.storage.getSeenItemIds === "function") {
-            const ids = ui.storage.getSeenItemIds() || [];
-            seen = Array.isArray(ids) ? ids.length : 0;
-          }
-        } catch (_) { seen = 0; }
-
-        seen = clampInt(seen, 0, poolSizeSafe);
-
-        let mistakes = 0;
-        try {
-          if (ui.storage && typeof ui.storage.getActiveMistakesCount === "function") {
-            mistakes = Number(ui.storage.getActiveMistakesCount() || 0);
-          }
-        } catch (_) { mistakes = 0; }
-
-        mistakes = clampInt(mistakes, 0, poolSizeSafe);
-
-        let practiceAvailable = true;
-        try {
-          if (!premium) {
-            if (ui.storage && typeof ui.storage.getPracticeRunsRemaining === "function") {
-              const remaining = Number(ui.storage.getPracticeRunsRemaining());
-              practiceAvailable = Number.isFinite(remaining) && remaining > 0;
-            } else {
-              practiceAvailable = false;
-            }
-          }
-        } catch (_) {
-          practiceAvailable = premium ? true : false;
-        }
-
-        if (!practiceAvailable) mistakes = 0;
-
-        if (phasePreview) {
-          seen = clampInt(phasePreview.seen, 0, poolSizeSafe);
-          mistakes = clampInt(phasePreview.mistakes, 0, poolSizeSafe);
-        }
-
-        if (!phasePreview && seen <= 0) {
-          seen = 0;
-          mistakes = 0;
-        } else {
-
-          const phase = getRuleKnowledgePhaseContext({
-            cfg,
-            w,
-            storage: ui.storage,
-            poolSize: poolSizeSafe,
-            seen,
-            mistakes
-          });
-
-          const remaining = clampInt(poolSizeSafe - phase.seen, 0, poolSizeSafe);
-          const vars = {
-            seen: phase.seen,
-            poolSize: poolSizeSafe,
-            remaining,
-            mistakes: phase.mistakes,
-            mastered: phase.mastered
-          };
-
-          const progressValue = phase.isComplete ? phase.mastered : phase.seen;
-          const pct = poolSizeSafe > 0
-            ? Math.max(0, Math.min(100, Math.round((progressValue / poolSizeSafe) * 100)))
-            : 0;
-          const progressClass = phase.isComplete ? " wt-progress--mastery" : "";
-          const label = phase.badge;
-          const title = fillTemplate(phase.landingSummaryTemplate, vars);
-          const subTemplate = phase.landingDetailTemplate || phase.landingDetail;
-          const sub = fillTemplate(subTemplate, vars);
-
-          welcomeBackHtml = renderLandingStatsCard({ badgeHtml: landingLevelBadgeHtml, label, title, sub, pct, progressClass }, escapeHtml);
-        }
-      }
-    } catch (_) { /* silent */ }
+    // Landing cleanup:
+    // the old phase / "first pass" summary was informative but too dashboard-like
+    // and competed with the level card + Daily. Keep the level badge only.
 
     let dailyChallengeIncomplete = false;
     let bestScoreFP = 0;
@@ -451,20 +363,20 @@
         const dailyBadge = String(landing.dailyChallengeBadge || "").trim();
         const dailyTitleTpl = String(landing.dailyChallengeTitleTemplate || "").trim();
         const dailyProgressTpl = String(landing.dailyChallengeProgressTemplate || "").trim();
-        const dailyResetTpl = String(landing.dailyChallengeResetTemplate || "").trim();
         const dailyCompletedTpl = String(landing.dailyChallengeCompletedTemplate || "").trim();
         const dailyRewardTpl = String(landing.dailyChallengeRewardTemplate || "").trim();
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
         const dailyRewardPendingTpl = String(landing.dailyChallengeRewardPendingTemplate || "").trim();
         const dailyCta = String(landing.dailyChallengeCta || "").trim();
-        const dailyTitle = dailyTitleTpl
+        const dailyGoalLine = dailyTitleTpl
           ? fillTemplate(dailyTitleTpl, {
             targetScore: String(dailyModel.targetScore)
           })
           : "";
 
         let dailySub = "";
-        const rewardLine = (!dailyModel.completedToday && dailyModel.challengePlayable)
+        const dailyLines = [];
+        const rewardLine = (!dailyModel.completedToday && !dailyModel.rewardPendingReplay)
           ? (
             (dailyModel.ticketAtCap && dailyRewardCappedTpl)
               ? fillTemplate(dailyRewardCappedTpl, { cap: String(dailyModel.ticketCap || 0) })
@@ -474,49 +386,39 @@
           )
           : "";
 
+        if (dailyGoalLine) dailyLines.push(dailyGoalLine);
+
         if (dailyModel.rewardPendingReplay && dailyRewardPendingTpl) {
-          dailySub = fillTemplate(dailyRewardPendingTpl, {
+          dailyLines.push(fillTemplate(dailyRewardPendingTpl, {
             targetScore: String(dailyModel.targetScore),
             best: String(dailyBestScoreFP || 0),
-            resetTime: String(dailyModel.resetTime || ""),
-            time: String(dailyModel.resetCountdown || "")
-          });
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || dailyModel.resetCountdown || "")
+          }));
         } else if (dailyModel.completedToday && dailyCompletedTpl) {
-          dailySub = fillTemplate(dailyCompletedTpl, {
+          dailyLines.push(fillTemplate(dailyCompletedTpl, {
+            best: String(dailyBestScoreFP || 0),
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || dailyModel.resetCountdown || "")
+          }));
+        } else if (!dailyModel.completedToday && dailyModel.progressPct > 0 && dailyProgressTpl) {
+          dailyLines.push(fillTemplate(dailyProgressTpl, {
             score: String(dailyModel.todayBestScore || 0),
             targetScore: String(dailyModel.targetScore),
             best: String(dailyBestScoreFP || 0),
-            resetTime: String(dailyModel.resetTime || ""),
-            time: String(dailyModel.resetCountdown || "")
-          });
-        } else if (!dailyModel.completedToday && dailyProgressTpl) {
-          dailySub = fillTemplate(dailyProgressTpl, {
-            score: String(dailyModel.todayBestScore || 0),
-            targetScore: String(dailyModel.targetScore),
-            best: String(dailyBestScoreFP || 0),
-            resetTime: String(dailyModel.resetTime || ""),
-            time: String(dailyModel.resetCountdown || "")
-          });
-        } else if (!dailyModel.completedToday && dailyResetTpl) {
-          dailySub = fillTemplate(dailyResetTpl, {
-            score: String(dailyModel.todayBestScore || 0),
-            targetScore: String(dailyModel.targetScore),
-            best: String(dailyBestScoreFP || 0),
-            resetTime: String(dailyModel.resetTime || ""),
-            time: String(dailyModel.resetCountdown || "")
-          });
+            time: String(dailyModel.resetCountdown || ""),
+            resetTime: String(dailyModel.resetTime || dailyModel.resetCountdown || "")
+          }));
         }
 
-        if (rewardLine) {
-          dailySub = dailySub ? `${dailySub}
-${rewardLine}` : rewardLine;
-        }
+        if (rewardLine) dailyLines.push(rewardLine);
+        dailySub = dailyLines.map((line) => String(line || "").trim()).filter(Boolean).join("\n");
 
         dailyChallengeIncomplete = !dailyModel.completedToday || !!dailyModel.rewardPendingReplay;
-        if ((dailyBadge || dailyTitle || dailySub) && (premium || dailyModel.challengePlayable || dailyModel.completedToday)) {
+        if (dailyBadge || dailySub) {
           dailyChallengeCardHtml = renderLandingStatsCard({
             label: dailyBadge,
-            title: dailyTitle,
+            title: "",
             sub: dailySub,
             pct: dailyModel.progressPct,
             showProgress: dailyModel.completedToday || dailyModel.progressPct > 0,
@@ -525,6 +427,8 @@ ${rewardLine}` : rewardLine;
               : " wt-landing-stat--daily",
             progressClass: (dailyModel.completedToday && !dailyModel.rewardPendingReplay) ? " wt-progress--mastery" : "",
             cardAttrs: `data-wt-daily-challenge-card="1"`,
+            cardAction: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : "start-daily-challenge",
+            cardActionAria: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : dailyCta,
             ctaAction: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : "start-daily-challenge",
             ctaLabel: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : dailyCta
           }, escapeHtml);
@@ -683,11 +587,12 @@ ${rewardLine}` : rewardLine;
     const primaryInsightHtml = dailyChallengeCardHtml || personalBestCardHtml;
     const secondaryInsightHtml = "";
     const hasDashboard = Boolean(
+      welcomeBackHtml ||
       primaryInsightHtml ||
       secondaryInsightHtml ||
-      leaderboardLandingHtml ||
       levelProgressQuickHtml
     );
+    const hasLeaderboardSection = Boolean(leaderboardLandingHtml);
 
     return `
   <div class="wt-card wt-card--landing">
@@ -779,22 +684,22 @@ ${(() => {
 
     ${hasDashboard ? `
       <section class="wt-landing-dashboard">
-        ${(progressSectionTitle || progressSectionBody) ? `
-          <div class="wt-landing-dashboard__intro">
-            ${progressSectionTitle ? `<p class="wt-meta wt-landing-dashboard__eyebrow">${escapeHtml(progressSectionTitle)}</p>` : ``}
-            ${progressSectionBody ? `<p class="wt-sub wt-muted wt-landing-dashboard__body">${escapeHtml(progressSectionBody)}</p>` : ``}
-          </div>
-        ` : ``}
-        ${levelProgressQuickHtml ? `
+        ${welcomeBackHtml ? `
           <div class="wt-landing-dashboard__summary">
-            ${levelProgressQuickHtml}
+            ${welcomeBackHtml}
           </div>
         ` : ``}
+        ${(!welcomeBackHtml && levelProgressQuickHtml) ? levelProgressQuickHtml : ``}
         <div class="wt-landing-dashboard__grid">
           ${primaryInsightHtml ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
           ${secondaryInsightHtml ? `<div class="wt-landing-dashboard__secondary">${secondaryInsightHtml}</div>` : ``}
         </div>
-        ${leaderboardLandingHtml ? `<div class="wt-landing-leaderboard-section">${leaderboardLandingHtml}</div>` : ``}
+      </section>
+    ` : ``}
+
+    ${hasLeaderboardSection ? `
+      <section class="wt-landing-leaderboard-section">
+        ${leaderboardLandingHtml}
       </section>
     ` : ``}
 

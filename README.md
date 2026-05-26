@@ -29,6 +29,8 @@ These are current product decisions, not implementation accidents.
 - Daily is a layer on top of normal `RUN`, not a separate mode.
 - Leaderboard is landing-only, shown at the bottom of landing, never during `PLAYING`.
 
+For copy/UX decisions that already shipped and should not be silently reintroduced, see [REGRESSION_GUARDRAILS.md](./REGRESSION_GUARDRAILS.md).
+
 ## Daily Contract
 
 The Daily system is intentionally simple and intentionally a bit hard.
@@ -215,12 +217,14 @@ The test suite now fails closed if:
 
 ## Level System
 
-The app includes a persistent 4-level progression system defined in [config.js](./config.js) and stored locally by [storage.js](./storage.js).
+The app includes a persistent 6-level progression system defined in [config.js](./config.js) and stored locally by [storage.js](./storage.js).
 
-- level 1: full first pass complete
-- level 2: all active mistakes cleared
-- level 3: level 2 plus a Rapid Fire pool of at least `16` and a Rapid Fire run of at least `70%`
-- level 4: level 3 plus a Rapid Fire pool of at least `50` and a Rapid Fire run of at least `85%`
+- level 1: at least `1` completed RUN
+- level 2: unique questions seen >= `25`
+- level 3: unique questions seen >= `75` or RUN best score >= `20`
+- level 4: unique questions seen >= `200`
+- level 5: Rapid Fire seen pool >= `16` and Rapid Fire accuracy >= `70%`
+- level 6: Rapid Fire seen pool >= `50` and Rapid Fire accuracy >= `85%`
 
 Levels never go down once unlocked.
 
@@ -231,10 +235,14 @@ For UI testing only, Pickleball also supports a preview query param:
 - `?levelPreview=level2`
 - `?levelPreview=level3`
 - `?levelPreview=level4`
+- `?levelPreview=level5`
+- `?levelPreview=level6`
 - `?levelPreview=unlock1`
 - `?levelPreview=unlock2`
 - `?levelPreview=unlock3`
 - `?levelPreview=unlock4`
+- `?levelPreview=unlock5`
+- `?levelPreview=unlock6`
 
 Preview is visual only. It does not write fake progression into storage.
 

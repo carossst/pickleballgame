@@ -82,6 +82,33 @@
     return `local-${now().toString(36)}-${rand}`;
   }
 
+  function getConfiguredMaxLevel(config) {
+    const raw = Number(config?.levels?.maxLevel);
+    if (!Number.isFinite(raw)) return 0;
+    const n = Math.floor(raw);
+    if (n < 1 || n > 20) return 0;
+    return n;
+  }
+
+  function makeUnlockedAtByLevel(maxLevel) {
+    const out = {};
+    const n = clampNonNegativeInt(maxLevel);
+    for (let level = 1; level <= n; level += 1) {
+      out[level] = 0;
+    }
+    return out;
+  }
+
+  function ensureUnlockedAtByLevelShape(raw, maxLevel) {
+    const src = raw && typeof raw === 'object' ? raw : {};
+    const out = makeUnlockedAtByLevel(maxLevel);
+    for (let level = 1; level <= maxLevel; level += 1) {
+      out[level] = clampNonNegativeInt(src[level]);
+    }
+    return out;
+  }
+
+
   // ============================================
   // StorageManager Constructor (V2 clean, no legacy)
   // ============================================
@@ -135,6 +162,12 @@
     const gameId = String(config.identity?.appName || '').trim();
     if (!gameId)
       throw new Error('StorageManager: missing config.identity.appName');
+
+    const maxLevel = getConfiguredMaxLevel(config);
+    if (!maxLevel) {
+      throw new Error('StorageManager: missing or invalid config.levels.maxLevel');
+    }
+    const defaultUnlockedAtByLevel = makeUnlockedAtByLevel(maxLevel);
 
     this.defaultData = {
       version: schemaVersion,
@@ -265,12 +298,7 @@
 
       progression: {
         currentLevel: 0,
-        unlockedAtByLevel: {
-          1: 0,
-          2: 0,
-          3: 0,
-          4: 0
-        }
+        unlockedAtByLevel: defaultUnlockedAtByLevel
       },
 
       // Per-item stats (anti-repetition + practice)
@@ -2033,55 +2061,40 @@
     };
   };
 
-  StorageManager.prototype.getLevelState = function () {
-    const p = this.data?.progression || {};
-    const unlockedAtByLevelRaw = p.unlockedAtByLevel || {};
-    const maxLevel = Math.max(
-      1,
-      clampNonNegativeInt(this.config?.levels?.maxLevel || 6)
-    );
-    const unlockedAtByLevel = {};
-    for (let level = 1; level <= maxLevel; level += 1) {
-      unlockedAtByLevel[level] = clampNonNegativeInt(unlockedAtByLevelRaw[level]);
-    }
-    return {
-      currentLevel: Math.min(maxLevel, clampNonNegativeInt(p.currentLevel)),
-      unlockedAtByLevel
-    };
-  };
+  StorageManager.prototype._ensureProgressionShape = function () {
+    if (!this.data) return { currentLevel: 0, unlockedAtByLevel: {} };
 
-  StorageManager.prototype.updateLevelProgression = function (meta) {
-    if (!this.data) {
-      return {
-        previousLevel: 0,
-        currentLevel: 0,
-        unlockedLevel: 0,
-        justUnlocked: false
-      };
+    const maxLevel = getConfiguredMaxLevel(this.config);
+    if (!maxLevel) {
+      throw new Error('StorageManager: missing or invalid config.levels.maxLevel');
     }
 
     if (!this.data.progression || typeof this.data.progression !== 'object') {
       this.data.progression = deepCopy(this.defaultData.progression);
     }
-    if (
-      !this.data.progression.unlockedAtByLevel ||
-      typeof this.data.progression.unlockedAtByLevel !== 'object'
-    ) {
-      this.data.progression.unlockedAtByLevel = deepCopy(
-        this.defaultData.progression.unlockedAtByLevel
-      );
-    }
 
+    this.data.progression.currentLevel = Math.min(
+      maxLevel,
+      clampNonNegativeInt(this.data.progression.currentLevel)
+    );
+    this.data.progression.unlockedAtByLevel = ensureUnlockedAtByLevelShape(
+      this.data.progression.unlockedAtByLevel,
+      maxLevel
+    );
+
+    return this.data.progression;
+  };
+
+  StorageManager.prototype._getLevelEligibility = function (meta) {
     const levelsCfg =
       this.config?.levels && typeof this.config.levels === 'object'
         ? this.config.levels
         : {};
-    const maxLevel = Math.max(1, clampNonNegativeInt(levelsCfg.maxLevel || 6));
-    const prevLevel = Math.min(
-      maxLevel,
-      clampNonNegativeInt(this.data.progression.currentLevel)
-    );
-    let nextLevel = prevLevel;
+
+    if (levelsCfg.enabled !== true) return 0;
+
+    const maxLevel = getConfiguredMaxLevel(this.config);
+    if (!maxLevel) return 0;
 
     const mode = String(meta?.mode || '')
       .trim()
@@ -2090,77 +2103,133 @@
     const scoreFP = clampNonNegativeInt(meta?.scoreFP);
     const accuracy = totalPresented > 0 ? scoreFP / totalPresented : 0;
 
+    const runCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
+    const seenPool = this.getUniqueSeenCount();
+    const mastered = this.isMastered();
+    const personalBest = clampNonNegativeInt(
+      this.data?.personalBest?.bestScoreFP
+    );
+    const bestRunScore = Math.max(personalBest, mode === 'RUN' ? scoreFP : 0);
+
     const level1MinRunCompletes = Math.max(
       1,
       clampNonNegativeInt(levelsCfg.level1MinRunCompletes)
     );
     const level2MinSeen = clampNonNegativeInt(levelsCfg.level2MinSeen);
     const level3MinSeen = clampNonNegativeInt(levelsCfg.level3MinSeen);
-    const level3MinBestScore = clampNonNegativeInt(levelsCfg.level3MinBestScore);
+    const level3MinBestScore = clampNonNegativeInt(
+      levelsCfg.level3MinBestScore
+    );
     const level4MinSeen = clampNonNegativeInt(levelsCfg.level4MinSeen);
-    const level5RapidFireMinSeen = clampNonNegativeInt(
+    const level5MinSeen = clampNonNegativeInt(
       levelsCfg.level5RapidFireMinSeen
     );
-    const level5RapidFireMinAccuracy = Number(
-      levelsCfg.level5RapidFireMinAccuracy
-    );
-    const level6RapidFireMinSeen = clampNonNegativeInt(
+    const level6MinSeen = clampNonNegativeInt(
       levelsCfg.level6RapidFireMinSeen
     );
-    const level6RapidFireMinAccuracy = Number(
-      levelsCfg.level6RapidFireMinAccuracy
-    );
+    const level5MinAccuracy = Number(levelsCfg.level5RapidFireMinAccuracy);
+    const level6MinAccuracy = Number(levelsCfg.level6RapidFireMinAccuracy);
 
-    const seenPool = this.getUniqueSeenCount();
-    const activeMistakes = this.getActiveMistakesCount();
-    const runCompletes = clampNonNegativeInt(this.data?.counters?.runCompletes);
-    const personalBest = clampNonNegativeInt(this.data?.personalBest?.bestScoreFP);
-    const bestRunScore = Math.max(personalBest, mode === 'RUN' ? scoreFP : 0);
+    let eligible = 0;
 
-    function canUnlock(level) {
-      switch (level) {
-        case 1:
-          return runCompletes >= level1MinRunCompletes;
-        case 2:
-          return level2MinSeen > 0 && seenPool >= level2MinSeen;
-        case 3:
-          return (
-            (level3MinSeen > 0 && seenPool >= level3MinSeen) ||
-            (level3MinBestScore > 0 && bestRunScore >= level3MinBestScore)
-          );
-        case 4:
-          return level4MinSeen > 0 && seenPool >= level4MinSeen;
-        case 5:
-          return (
-            activeMistakes <= 0 &&
-            mode === 'BONUS' &&
-            totalPresented >= level5RapidFireMinSeen &&
-            Number.isFinite(level5RapidFireMinAccuracy) &&
-            accuracy >= level5RapidFireMinAccuracy
-          );
-        case 6:
-          return (
-            mode === 'BONUS' &&
-            totalPresented >= level6RapidFireMinSeen &&
-            Number.isFinite(level6RapidFireMinAccuracy) &&
-            accuracy >= level6RapidFireMinAccuracy
-          );
-        default:
-          return false;
+    if (maxLevel >= 1 && runCompletes >= level1MinRunCompletes) eligible = 1;
+    if (maxLevel >= 2 && level2MinSeen > 0 && seenPool >= level2MinSeen) {
+      eligible = 2;
+    }
+    if (
+      maxLevel >= 3 &&
+      ((level3MinSeen > 0 && seenPool >= level3MinSeen) ||
+        (level3MinBestScore > 0 && bestRunScore >= level3MinBestScore))
+    ) {
+      eligible = 3;
+    }
+    if (maxLevel >= 4 && level4MinSeen > 0 && seenPool >= level4MinSeen) {
+      eligible = 4;
+    }
+    if (
+      maxLevel >= 5 &&
+      mode === 'BONUS' &&
+      mastered &&
+      level5MinSeen > 0 &&
+      seenPool >= level5MinSeen &&
+      Number.isFinite(level5MinAccuracy) &&
+      accuracy >= level5MinAccuracy
+    ) {
+      eligible = 5;
+    }
+    if (
+      maxLevel >= 6 &&
+      mode === 'BONUS' &&
+      mastered &&
+      level6MinSeen > 0 &&
+      seenPool >= level6MinSeen &&
+      Number.isFinite(level6MinAccuracy) &&
+      accuracy >= level6MinAccuracy
+    ) {
+      eligible = 6;
+    }
+
+    return Math.min(maxLevel, eligible);
+  };
+
+  StorageManager.prototype.getLevelState = function () {
+    const maxLevel = getConfiguredMaxLevel(this.config);
+    const emptyState = {
+      currentLevel: 0,
+      unlockedAtByLevel: makeUnlockedAtByLevel(maxLevel || 1)
+    };
+
+    if (!this.data) return emptyState;
+
+    const p = this._ensureProgressionShape();
+    const currentLevel = Math.min(maxLevel, clampNonNegativeInt(p.currentLevel));
+
+    // Self-heal older local progress for non-Rapid-Fire levels. Rapid Fire
+    // levels still require an explicit Rapid Fire completion through
+    // updateLevelProgression(meta), because they depend on run accuracy.
+    const eligibleNow = Math.min(4, this._getLevelEligibility({ mode: 'RUN' }));
+    if (eligibleNow > currentLevel) {
+      const ts = now();
+      p.currentLevel = eligibleNow;
+      for (let level = 1; level <= eligibleNow; level += 1) {
+        p.unlockedAtByLevel[level] =
+          clampNonNegativeInt(p.unlockedAtByLevel[level]) || ts;
       }
+      this._save();
     }
 
-    while (nextLevel < maxLevel && canUnlock(nextLevel + 1)) {
-      nextLevel += 1;
+    return {
+      currentLevel: Math.min(maxLevel, clampNonNegativeInt(p.currentLevel)),
+      unlockedAtByLevel: ensureUnlockedAtByLevelShape(
+        p.unlockedAtByLevel,
+        maxLevel
+      )
+    };
+  };
+
+  StorageManager.prototype.updateLevelProgression = function (meta) {
+    const maxLevel = getConfiguredMaxLevel(this.config);
+    if (!this.data || !maxLevel) {
+      return {
+        previousLevel: 0,
+        currentLevel: 0,
+        unlockedLevel: 0,
+        justUnlocked: false
+      };
     }
+
+    const p = this._ensureProgressionShape();
+    const prevLevel = Math.min(maxLevel, clampNonNegativeInt(p.currentLevel));
+    const eligibleLevel = this._getLevelEligibility(meta);
+    const nextLevel = Math.max(prevLevel, eligibleLevel);
 
     const justUnlocked = nextLevel > prevLevel;
     if (justUnlocked) {
-      this.data.progression.currentLevel = nextLevel;
+      const ts = now();
+      p.currentLevel = nextLevel;
       for (let level = prevLevel + 1; level <= nextLevel; level += 1) {
-        if (!this.data.progression.unlockedAtByLevel[level]) {
-          this.data.progression.unlockedAtByLevel[level] = now();
-        }
+        p.unlockedAtByLevel[level] =
+          clampNonNegativeInt(p.unlockedAtByLevel[level]) || ts;
       }
       this._save();
     }

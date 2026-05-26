@@ -77,6 +77,15 @@
     };
   }
 
+
+  function getLocalBestScore(ui) {
+    const pb =
+      ui?.storage && typeof ui.storage.getPersonalBest === 'function'
+        ? ui.storage.getPersonalBest()
+        : null;
+    return clampInt(pb?.bestScoreFP, 0, 9999);
+  }
+
   function buildWindowRows(ui, windowType, remoteRows) {
     const cfg = getCfg(ui);
     const limit = clampInt(cfg?.topN, 1, 100);
@@ -176,6 +185,7 @@
           )
         );
         bucket.lastFetchedAt = Date.now();
+        rerenderOpenLeaderboardModal(ui);
       })
       .catch((err) => {
         buildFallback(ui, err?.message || 'fetch_failed');
@@ -236,22 +246,23 @@
   }
 
 
-  function getNextWeeklyResetUtcMs(baseTs) {
-    const n = Number(baseTs);
-    const nowTs = Number.isFinite(n) && n > 0 ? n : Date.now();
-    const d = new Date(nowTs);
-    if (!Number.isFinite(d.getTime())) return 0;
-
-    const todayUtcMidnight = Date.UTC(
-      d.getUTCFullYear(),
-      d.getUTCMonth(),
-      d.getUTCDate()
-    );
-    const utcDay = new Date(todayUtcMidnight).getUTCDay() || 7;
-    let daysUntilNextMonday = (8 - utcDay) % 7;
-    if (daysUntilNextMonday === 0) daysUntilNextMonday = 7;
-
-    return todayUtcMidnight + daysUntilNextMonday * 24 * 60 * 60 * 1000;
+  function getNextWeeklyResetUtcMs(nowMs) {
+    const now = new Date(clampInt(nowMs, 0, Number.MAX_SAFE_INTEGER));
+    const day = now.getUTCDay();
+    const daysUntilMonday = (8 - day) % 7;
+    const reset = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() + daysUntilMonday,
+      0,
+      0,
+      0,
+      0
+    ));
+    if (reset.getTime() <= now.getTime()) {
+      reset.setUTCDate(reset.getUTCDate() + 7);
+    }
+    return reset.getTime();
   }
 
   function formatLocalWeekdayTime(ts) {
@@ -315,6 +326,7 @@
       hasProfile:
         profile?.optIn === true && !!String(profile?.nickname || '').trim(),
       nickname: String(profile?.nickname || '').trim(),
+      bestScoreFP: getLocalBestScore(ui),
       lastFetchedAt,
       nextRefreshAt
     };
@@ -332,31 +344,25 @@
     const sub = String(
       model.hasProfile ? w.cardSubJoined || '' : w.cardSubDefault || ''
     ).trim();
+    const viewLabel = String(w.cardCtaView || '').trim();
+    const joinLabel = String(w.cardCtaJoin || '').trim();
+    const editLabel = String(w.cardCtaEdit || w.profileTab || '').trim();
     const loadingLabel = String(w.loading || '').trim();
     const emptyLabel = String(w.empty || '').trim();
-    const statusBadge = String(w.statusBadge || '').trim();
     const bestScoreLineTemplate = String(w.cardBestScoreLine || '').trim();
-    const landingWeeklyResetTemplate = String(
+    const weeklyResetTemplate = String(
       w.cardWeeklyResetLine || w.weeklyResetLine || ''
     ).trim();
     const weeklyResetTime = formatLocalWeekdayTime(
       getNextWeeklyResetUtcMs(Date.now())
     );
     const weeklyResetLine =
-      landingWeeklyResetTemplate && weeklyResetTime
-        ? fillTemplate(landingWeeklyResetTemplate, { localTime: weeklyResetTime })
-        : landingWeeklyResetTemplate;
-
-    const freshnessHtml = weeklyResetLine
-      ? `<span>${escapeHtml(weeklyResetLine)}</span>`
-      : '';
-    const bestScoreHtml =
+      weeklyResetTemplate && weeklyResetTime
+        ? fillTemplate(weeklyResetTemplate, { localTime: weeklyResetTime })
+        : weeklyResetTemplate;
+    const bestScoreLine =
       bestScoreLineTemplate && model.bestScoreFP > 0
-        ? `<p class="wt-leaderboard-card__best">${escapeHtml(
-            fillTemplate(bestScoreLineTemplate, {
-              score: String(model.bestScoreFP)
-            })
-          )}</p>`
+        ? fillTemplate(bestScoreLineTemplate, { score: String(model.bestScoreFP) })
         : '';
 
     const rowsHtml = model.loading
@@ -379,35 +385,26 @@
         `
         : `<p class="wt-muted">${escapeHtml(emptyLabel)}</p>`;
 
-    const joinLabel = String(w.cardCtaJoin || '').trim();
-    const viewLabel = String(w.cardCtaView || '').trim();
-    const editLabel = String(w.editProfileCta || '').trim();
-
-    const actionsHtml = model.hasProfile
-      ? `
-          ${viewLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">${escapeHtml(viewLabel)}</button>` : ``}
-          ${editLabel ? `<button type="button" class="wt-btn wt-btn--ghost" data-action="open-leaderboard-profile">${escapeHtml(editLabel)}</button>` : ``}
-        `
-      : joinLabel
-        ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(joinLabel)}</button>`
-        : ``;
-
     return `
       <section class="wt-box wt-box--tinted wt-leaderboard-card" aria-label="${escapeHtml(title || 'Leaderboard')}">
         <div class="wt-leaderboard-card__header">
           ${title ? `<span class="wt-landing-stat__label">${escapeHtml(title)}</span>` : ``}
-          ${model.source === 'remote' && statusBadge ? `<span class="wt-leaderboard-card__live">${escapeHtml(statusBadge)}</span>` : ``}
+          
         </div>
         ${sub ? `<p class="wt-leaderboard-card__sub">${escapeHtml(sub)}</p>` : ``}
-        ${bestScoreHtml}
-        ${freshnessHtml ? `<p class="wt-leaderboard-card__freshness">${freshnessHtml}</p>` : ``}
+        ${weeklyResetLine ? `<p class="wt-leaderboard-card__freshness"><span>${escapeHtml(weeklyResetLine)}</span></p>` : ``}
+        ${bestScoreLine ? `<p class="wt-muted">${escapeHtml(bestScoreLine)}</p>` : ``}
         ${rowsHtml}
-        ${actionsHtml ? `<div class="wt-landing-stat__actions wt-actions wt-actions--compact">${actionsHtml}</div>` : ``}
+        <div class="wt-landing-stat__actions">
+          ${viewLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">${escapeHtml(viewLabel)}</button>` : ``}
+          ${model.hasProfile && editLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(editLabel)}</button>` : ``}
+          ${!model.hasProfile && joinLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(joinLabel)}</button>` : ``}
+        </div>
       </section>
     `;
   }
 
-  function renderRowsHtml(rows, escapeHtml) {
+  function renderRowsHtml(rows, escapeHtml, detachedRow) {
     if (!Array.isArray(rows) || rows.length === 0) return '';
     return `
       <ol class="wt-leaderboard-modal__list" role="list">
@@ -422,8 +419,75 @@
         `
           )
           .join('')}
+        ${
+          detachedRow
+            ? `
+          <li class="wt-leaderboard-modal__item wt-leaderboard-modal__item--gap" aria-hidden="true">
+            <span class="wt-leaderboard-modal__name">...</span>
+          </li>
+          <li class="wt-leaderboard-modal__item wt-leaderboard-modal__item--player">
+            <span class="wt-leaderboard-modal__rank">#${detachedRow.rank}</span>
+            <span class="wt-leaderboard-modal__name" title="${escapeHtml(detachedRow.nickname)}">${escapeHtml(detachedRow.nickname)}</span>
+            <span class="wt-leaderboard-modal__score">${escapeHtml(String(detachedRow.scoreFP))}</span>
+          </li>
+        `
+            : ``
+        }
       </ol>
     `;
+  }
+
+  function getDetachedLocalRankRow(ui, windowType, rows) {
+    const bucket = getRuntimeBucket(ui);
+    if (!bucket) return null;
+
+    const localPlayer = getLocalPlayerRow(ui);
+    if (!localPlayer) return null;
+
+    const rank = windowType === 'all'
+      ? clampInt(bucket.lastKnownAllTimeRank, 0, 999999)
+      : clampInt(bucket.lastKnownWeeklyRank, 0, 999999);
+
+    if (rank <= 0) return null;
+
+    const baseRows = Array.isArray(rows) ? rows : [];
+    if (rank <= baseRows.length) return null;
+    if (
+      baseRows.some(
+        (row) => String(row?.nickname || '').trim() === localPlayer.nickname
+      )
+    ) {
+      return null;
+    }
+
+    return {
+      rank,
+      nickname: localPlayer.nickname,
+      scoreFP: localPlayer.scoreFP
+    };
+  }
+
+  function getOpenModalTab(ui) {
+    try {
+      const rankingPanel = ui?.modalContentEl?.querySelector
+        ? ui.modalContentEl.querySelector('[data-wt-leaderboard-panel="ranking"]')
+        : null;
+      if (rankingPanel && typeof rankingPanel.hasAttribute === 'function') {
+        return rankingPanel.hasAttribute('hidden') ? 'profile' : 'ranking';
+      }
+    } catch (_) {
+      /* silent */
+    }
+    return 'ranking';
+  }
+
+  function rerenderOpenLeaderboardModal(ui) {
+    if (
+      ui?._runtime?._modalKey === 'leaderboard' &&
+      typeof ui?.openLeaderboardModal === 'function'
+    ) {
+      ui.openLeaderboardModal({ initialTab: getOpenModalTab(ui) });
+    }
   }
 
   function renderTabButton(tabKey, activeTab, label, escapeHtml) {
@@ -493,10 +557,22 @@
     const profileTabLabel = String(
       w.profileTab || nicknameLabel || 'Profile'
     ).trim();
-    const initialTab = joined ? 'ranking' : 'profile';
+    const requestedInitialTab = String(helpers?.initialTab || '').trim();
+    const initialTab = requestedInitialTab === 'profile'
+      ? 'profile'
+      : requestedInitialTab === 'ranking'
+        ? 'ranking'
+        : joined
+          ? 'ranking'
+          : 'profile';
 
     const weeklyRows = Array.isArray(bucket?.weekly) ? bucket.weekly : [];
     const allRows = Array.isArray(bucket?.all) ? bucket.all : [];
+    const weeklyDetachedRow = getDetachedLocalRankRow(ui, 'weekly', weeklyRows);
+    const allDetachedRow = getDetachedLocalRankRow(ui, 'all', allRows);
+    const editProfileCta = String(
+      w.editProfileCta || w.cardCtaEdit || w.profileTab || ''
+    ).trim();
 
     const html = `
       <div class="wt-actions wt-actions--compact wt-leaderboard-modal__tabs" role="tablist" aria-label="${escapeHtml(title || 'Leaderboard')}">
@@ -505,11 +581,26 @@
       </div>
       <section data-wt-leaderboard-panel="ranking"${initialTab === 'ranking' ? '' : ' hidden'}>
         ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+        ${
+          joined && editProfileCta
+            ? `
+          <div class="wt-actions wt-actions--compact">
+            <button
+              type="button"
+              class="wt-btn wt-btn--secondary"
+              data-action="switch-leaderboard-tab"
+              data-wt-leaderboard-tab="profile">
+              ${escapeHtml(editProfileCta)}
+            </button>
+          </div>
+        `
+            : ``
+        }
         ${weeklyTitle ? `<p class="wt-question-title">${escapeHtml(weeklyTitle)}</p>` : ``}
-        ${renderRowsHtml(weeklyRows, escapeHtml)}
+        ${renderRowsHtml(weeklyRows, escapeHtml, weeklyDetachedRow)}
         <div class="wt-divider"></div>
         ${allTitle ? `<p class="wt-question-title">${escapeHtml(allTitle)}</p>` : ``}
-        ${renderRowsHtml(allRows, escapeHtml)}
+        ${renderRowsHtml(allRows, escapeHtml, allDetachedRow)}
       </section>
       <section data-wt-leaderboard-panel="profile"${initialTab === 'profile' ? '' : ' hidden'}>
         <label class="wt-label" for="wt-leaderboard-nickname">${escapeHtml(nicknameLabel)}</label>
@@ -792,7 +883,13 @@
 
     const w = getWording(ui);
     if (res.ok === true) {
+      const bucket = getRuntimeBucket(ui);
       const weeklyRank = clampInt(res?.data?.weekly_rank, 0, 999999);
+      const allTimeRank = clampInt(res?.data?.all_time_rank, 0, 999999);
+      if (bucket) {
+        bucket.lastKnownWeeklyRank = weeklyRank;
+        bucket.lastKnownAllTimeRank = allTimeRank;
+      }
       if (weeklyRank > 0) {
         const toastTpl = String(w.rankToastWeekly || '').trim();
         if (toastTpl) {
@@ -805,6 +902,7 @@
           );
         }
       }
+      rerenderOpenLeaderboardModal(ui);
       return;
     }
 

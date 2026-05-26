@@ -195,7 +195,7 @@
 
     landing: {
       title: 'Pickleball Rules Quiz',
-      tagline: '**MAINTENANCE IN PROGRESS PLEASE COME BACK LATER**',
+      tagline: '**Think You Know Pickleball? Prove It.**',
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: 'Quick games · No signup · Free to try',
@@ -219,7 +219,7 @@
       statsMistakesSummaryTemplate: '{mistakes}',
       statsMasterySummaryTemplate: '{mastered} questions answered correctly',
       personalBestBadge: 'BEST SCORE',
-      personalBestTitleTemplate: 'Current score tier: {tier}',
+      personalBestTitleTemplate: 'Best score',
       personalBestSubTemplate:
         'Best score: {best}. Next tier at {nextTarget}+.',
       personalBestTopTierTemplate: 'Best score: {best}. Top tier reached.',
@@ -229,54 +229,47 @@
       personalBestLockedTitle: 'Record your score',
       personalBestLockedSub:
         'Unlock full access to record your score and keep building your best.',
-      progressSectionTitle: '',
-      progressSectionBody: '',
-      dailyChallengeBadge: "TODAY'S TARGET",
-      dailyChallengeTitleTemplate: 'Score {targetScore}+ today',
+      dailyChallengeBadge: "DAILY CHALLENGE",
+      dailyChallengeTitleTemplate: 'Target: {targetScore}+',
       dailyChallengeProgressTemplate:
         'Today: {score}/{targetScore}.',
-      dailyChallengeResetTemplate:
-        'Today: {score}/{targetScore}.',
+      dailyChallengeResetTemplate: '',
       dailyChallengeCompletedTemplate:
-        'Daily challenge cleared.\nNew target tomorrow.',
+        'Daily challenge cleared.\nNext challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
         "Beat today's target to earn 1 Rapid Fire ticket.",
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
-        'You already cleared it once. Clear it again today on your last free run to earn 1 Rapid Fire ticket.',
+        'Cleared once already.\nClear it again today on your last free run to earn 1 Rapid Fire ticket.',
       dailyChallengeCta: 'Start challenge',
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
-        'Unlock unlimited games, record your score, all 200 questions in the game, explanations after every answer, and unlimited Mistakes Mode.',
+        'Unlock unlimited games, record your score, all 200 questions, explanations after every answer, and unlimited Mistakes Mode.',
       practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
-      postPaywallSbTitle: "Today's challenge is live",
+      postPaywallSbTitle: "Today's challenge is on",
       postPaywallSbBody:
-        "Unlock full access to keep chasing today's challenge and earning Rapid Fire tickets."
+        "Unlock full access to come back for today's challenge and keep earning Rapid Fire tickets."
     },
 
     leaderboard: {
       cardTitle: 'THIS WEEK',
-      cardSubDefault:
-        'Top scores this week. Add your nickname after your first completed game.',
-      cardSubJoined: 'View the leaderboard or edit your nickname.',
+      cardSubDefault: 'Top scores this week.',
+      cardSubJoined: 'Top scores this week.',
       cardCtaJoin: 'Choose nickname',
       cardCtaView: 'View leaderboard',
-      statusBadge: '',
+      cardCtaEdit: 'Edit nickname',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
-      cardWeeklyResetLine: 'Weekly reset: {localTime}.',
-      weeklyResetLine: 'Weekly reset: {localTime} (Monday 00:00 UTC).',
+      weeklyResetLine: 'Weekly reset: {localTime}.',
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
-      modalBodyDefault:
-        'Choose a nickname. Weekly reset every Monday.',
-      modalBodyJoined:
-        'Weekly reset every Monday.',
+      modalBodyDefault: 'Weekly reset every Monday.',
+      modalBodyJoined: 'Weekly reset every Monday.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
@@ -285,18 +278,19 @@
       nicknamePlaceholder: 'Choose a nickname',
       joinCta: 'Join leaderboard',
       updateCta: 'Update nickname',
+      editProfileCta: 'Edit my nickname',
       leaveCta: 'Leave leaderboard',
       nicknameRequiredToast: 'Add a nickname first.',
       nicknameTooShortToast: 'Nickname must be at least 3 characters.',
       nicknameInvalidCharsToast:
         'Use letters, numbers, spaces, hyphens, or underscores only.',
-      saveOkToast: 'Leaderboard nickname saved.',
+      saveOkToast: 'Nickname saved.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
-        'Nickname saved on this device. Remote sync can be connected later.',
-      rankToastWeekly: 'Public weekly rank: #{rank}.',
+        'Nickname saved on this device. Online sync can be added later.',
+      rankToastWeekly: 'This week: #{rank}.',
       scoreRejectedToast:
-        'This RUN was not added to the public leaderboard this time.'
+        'This score was not added to the public leaderboard this time.'
     },
 
     firstRun: {
@@ -335,7 +329,7 @@
         title: 'First quarter complete.',
         bodyLines: [
           "You've seen the first quarter of the question set.",
-          'This is still phase 1: discovery.',
+          'You are building your first pass through the rules.',
           "Keep going. You're building your first pass through the rules."
         ],
         cta: 'Next'
@@ -344,7 +338,7 @@
         title: 'Halfway there.',
         bodyLines: [
           "You've seen half of the question set.",
-          "You're still in the discovery phase.",
+          "You're building rule coverage step by step.",
           "Finish the full set first. Then you'll fix what still catches you."
         ],
         cta: 'Next'
@@ -416,12 +410,12 @@
       placeholder: '',
       openDetailsAria: 'Open level details',
       unlockKicker: 'New level',
-      reachedTemplate: 'You reached {label}.',
+      reachedTemplate: '',
       currentLabel: 'Current level',
-      unlockedByLabel: 'What it means',
-      nextLabel: 'Next level',
-      reachItLabel: 'How to unlock',
-      progressionLabel: 'Full path',
+      unlockedByLabel: '',
+      nextLabel: '',
+      reachItLabel: '',
+      progressionLabel: 'Level path',
       noLevelTitle: 'Locked',
       noLevelBody: 'Finish one game to unlock your first level.',
       maxLevelBody: 'You reached the top level.',
@@ -437,26 +431,26 @@
         2: {
           label: 'RULE-READY',
           unlock: 'See 25 questions.',
-          sheetBody: 'You have started building a real rules base.'
+          sheetBody: 'You have started building real rule coverage.'
         },
         3: {
           label: 'RALLY-READY',
           unlock: 'See 75 questions or score 20+.',
-          sheetBody: 'You are building rhythm through volume or performance.'
+          sheetBody: 'You are no longer just testing the game. You are building rules reflexes.'
         },
         4: {
           label: 'CLUB-LEVEL',
           unlock: 'See all 200 questions once.',
-          sheetBody: 'You have seen the full rule set once.'
+          sheetBody: 'You have seen the full question set once.'
         },
         5: {
           label: 'TOURNAMENT-LEVEL',
-          unlock: 'Clear your active mistakes, then score 70%+ in Rapid Fire with 16+ questions.',
+          unlock: 'Clear active mistakes and score 70%+ in Rapid Fire with a 16+ question pool.',
           sheetBody: 'You proved your rules under Rapid Fire pressure.'
         },
         6: {
           label: 'PRO-LEVEL',
-          unlock: 'Score 85%+ in Rapid Fire with 50+ questions.',
+          unlock: 'Score 85%+ in Rapid Fire with a 50+ question pool.',
           sheetBody: 'You reached the top level. Keep the rules sharp.'
         }
       }
@@ -487,7 +481,7 @@
       startOverlayTapAnywhere: 'Tap anywhere to start',
       dailyChallengeStartOverlayLabel: "Today's challenge is live",
       dailyChallengeStartOverlayLineTemplate:
-        '{targetScore}+ score = +1 Rapid Fire ticket',
+        '{targetScore}+ = +1 Rapid Fire ticket',
 
       lastChanceOverlay: 'One mistake left.',
       gameOverOverlay: 'Game over.',
@@ -511,8 +505,8 @@
 
       endTitle: '',
       scoreLine: 'Score: {score}',
-      endStatsLine: 'You got {cleared} out of {shown} right.',
-      endStatsLineOne: 'You got {cleared} out of {shown} right.',
+      endStatsLine: '',
+      endStatsLineOne: '',
       endDeckSizeLine: 'Rapid Fire pool: {count} questions.',
       endDeckSizeLineOne: 'Rapid Fire pool: 1 question.',
       endPoolProgressTemplate: '{cleared} out of {shown} correct this round.',
@@ -716,12 +710,12 @@
 
       freeLimitReachedTitle: 'Nice game.',
       freeLimitReachedBody:
-        "You've used your {limit} free games.\n\nFull access unlocks unlimited RUNs, the full pickleball rules question set, explanations after every answer, unlimited Mistakes Mode, and the long-term daily loop.",
+        "You've used your {limit} free games.\n\nFull access unlocks unlimited games, the full pickleball rules question set, explanations after every answer, unlimited Mistakes Mode, and the daily challenge every day.",
       freeLimitReachedCta: 'Keep playing',
       freeLimitReachedClose: 'Not now',
 
       endLine: '',
-      endStatsLine: 'You got {score} out of {total} right.',
+      endStatsLine: '',
 
       identityByVerdict: {
         none: 'A few questions are still slipping past you.',
@@ -754,23 +748,23 @@
       personalBestLine: 'Best score: {best} {fpLong}',
       nearBestLine: '{delta} {fpLong} away from your best score.',
       streakLine: '',
-      scoreTierLine: 'Current score tier: {tier}.',
-      scoreTierNextLine: 'Next tier: {nextTier} at {nextTarget}+.',
-      dailyChallengeCleared: "Today's challenge cleared: {targetScore}+ score.",
+      scoreTierLine: '',
+      scoreTierNextLine: '',
+      dailyChallengeCleared: 'Daily challenge cleared.',
       dailyChallengeClearedFreeRun:
-        "Today's challenge is cleared. The Rapid Fire ticket unlocks on your last free run.",
+        'Daily challenge cleared. The Rapid Fire ticket unlocks on your last free run.',
       dailyChallengeTicketWon:
-        "Today's challenge cleared. +1 Rapid Fire ticket.",
+        'Daily challenge cleared. +1 Rapid Fire ticket.',
       dailyChallengeTicketCapped:
-        "Today's challenge cleared. Tickets are capped at {cap}. Spend one to earn more.",
-      dailyChallengeMiss: "Today's challenge was {targetScore}+ score.",
+        'Daily challenge cleared. Tickets are capped at {cap}. Spend one to earn more.',
+      dailyChallengeMiss: 'Daily challenge missed.',
       dailyChallengeMissLastFree:
-        "Not this time. Today's challenge was {targetScore}+ score.",
+        'Not this time. Daily challenge missed.',
       dailyChallengeCtaRetry: 'Try the challenge again',
       dailyChallengeToast: "Today's challenge complete. +1 Rapid Fire ticket.",
       modeMissingFallback: 'Your run summary is still available.',
       beatBestLine: 'Beat your best next run: {target}+.',
-      beatBestFirstLine: 'Set your first best score next run.',
+      beatBestFirstLine: '',
       freeRunLeft: '{remaining} free game{pluralS} left.',
 
       mistakesTitle: 'Questions to revisit',
@@ -813,7 +807,7 @@
       compactTitle: 'What unlocks',
       compactBullets: [
         '**All 200 questions in the game**',
-        '**Unlimited RUNs**',
+        '**Unlimited games**',
         '**Record and keep improving your score**',
         '**See the best scores on the public leaderboard**',
         '**Explanations after every answer**',
@@ -822,7 +816,7 @@
 
       valueBullets: [
         '**All 200 questions in the game**',
-        '**Unlimited RUNs** across the full game',
+        '**Unlimited games** across the full game',
         '**Record your score and keep improving your best**',
         '**See the best scores on the public leaderboard**',
         '**A mix of easy, intermediate, and hard questions**',
@@ -832,9 +826,9 @@
 
       bridgeTitle: 'Know the pickleball rules better.',
       bridgeBody:
-        "Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and keep today's challenge alive over time.",
+        "Unlock unlimited games, all 200 questions, see the best scores on the leaderboard, use Mistakes Mode, and come back for today's challenge.",
       bridgeBodyLastFreeMiss:
-        "You've seen the real pace of the game. Unlock unlimited RUNs, all 200 questions in the game, see the best scores on the public leaderboard, use Mistakes Mode, and come back to today's challenge whenever you want.",
+        "You've felt the pace. Unlock unlimited games, all 200 questions, see the best scores on the leaderboard, use Mistakes Mode, and come back for today's challenge.",
 
       trustLine: '**One-time unlock**',
       trustBullets: [
