@@ -1261,8 +1261,9 @@ void (function () {
     // Option A (product): branding always routes to LANDING (internal), never to an external URL.
     // Uses existing delegated action: data-action="go-home".
     if (forceNoLink !== true) {
+      const landingHref = `${location.pathname}${location.search}`;
       return `
-        <a class="wt-branding${modifier}" href="#home" data-action="go-home" aria-label="${escapeHtml(appName)}">
+        <a class="wt-branding${modifier}" href="${escapeHtml(landingHref)}" data-action="go-home" aria-label="${escapeHtml(appName)}">
           ${inner}
         </a>
       `;
@@ -3248,7 +3249,7 @@ void (function () {
 
       // Browser Back => prefer returning to Home (LANDING) for in-app history entries.
       // Robustness: some mobile/PWA contexts emit popstate with a null/partial state,
-      // so we also fall back to the internal hashes we control (#home / #app).
+      // so we also fall back to the internal hash we control (#app).
       window.addEventListener('popstate', (e) => {
         const ignoreUntil = Number(self._nav?.ignorePopstateUntil || 0);
         if (ignoreUntil > 0 && Date.now() <= ignoreUntil) {
@@ -3258,7 +3259,7 @@ void (function () {
         const st = e && e.state ? e.state : null;
         const hash = String(window.location.hash || '').trim();
         const hasInternalState = !!(st && st.wt === true);
-        const hasInternalHash = hash === '#home' || hash === '#app';
+        const hasInternalHash = hash === '#app';
 
         // If the browser navigated outside our internal history model, let it proceed.
         if (!hasInternalState && !hasInternalHash) return;
@@ -3271,13 +3272,13 @@ void (function () {
         }
 
         // Keep URL/state coherent even when popstate arrived with a degraded state payload.
-        if (hash !== '#home') {
+        if (hash === '#app') {
           try {
             const baseUrl = location.pathname + location.search;
             history.replaceState(
               { wt: true, screen: STATES.LANDING },
               '',
-              baseUrl + '#home'
+              baseUrl
             );
           } catch (_) {
             /* silent */
@@ -3495,7 +3496,7 @@ void (function () {
       history.replaceState(
         { wt: true, screen: STATES.LANDING },
         '',
-        baseUrl + '#home'
+        baseUrl
       );
     } catch (_) {}
 
@@ -3872,15 +3873,15 @@ void (function () {
     //   so Back always returns to LANDING.
     try {
       const baseUrl = location.pathname + location.search;
-      const hash = next === STATES.LANDING ? '#home' : '#app';
+      const nextUrl = next === STATES.LANDING ? baseUrl : `${baseUrl}#app`;
       if (this._nav) {
         this._nav.ignorePopstateUntil = Date.now() + 600;
       }
 
       if (next !== STATES.LANDING && prev === STATES.LANDING) {
-        history.pushState({ wt: true, screen: next }, '', baseUrl + hash);
+        history.pushState({ wt: true, screen: next }, '', nextUrl);
       } else {
-        history.replaceState({ wt: true, screen: next }, '', baseUrl + hash);
+        history.replaceState({ wt: true, screen: next }, '', nextUrl);
       }
     } catch (_) {}
 
