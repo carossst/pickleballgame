@@ -362,7 +362,6 @@
         const dailyModel = getDailyChallengeModel(cfg, w, dailyBestScoreFP, ui.storage);
         const dailyBadge = String(landing.dailyChallengeBadge || "").trim();
         const dailyTitleTpl = String(landing.dailyChallengeTitleTemplate || "").trim();
-        const dailyProgressTpl = String(landing.dailyChallengeProgressTemplate || "").trim();
         const dailyCompletedTpl = String(landing.dailyChallengeCompletedTemplate || "").trim();
         const dailyRewardTpl = String(landing.dailyChallengeRewardTemplate || "").trim();
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
@@ -401,14 +400,6 @@
             time: String(dailyModel.resetCountdown || ""),
             resetTime: String(dailyModel.resetTime || dailyModel.resetCountdown || "")
           }));
-        } else if (!dailyModel.completedToday && dailyModel.progressPct > 0 && dailyProgressTpl) {
-          dailyLines.push(fillTemplate(dailyProgressTpl, {
-            score: String(dailyModel.todayBestScore || 0),
-            targetScore: String(dailyModel.targetScore),
-            best: String(dailyBestScoreFP || 0),
-            time: String(dailyModel.resetCountdown || ""),
-            resetTime: String(dailyModel.resetTime || dailyModel.resetCountdown || "")
-          }));
         }
 
         if (rewardLine) dailyLines.push(rewardLine);
@@ -421,7 +412,7 @@
             title: "",
             sub: dailySub,
             pct: dailyModel.progressPct,
-            showProgress: dailyModel.completedToday || dailyModel.progressPct > 0,
+            showProgress: dailyModel.completedToday && !dailyModel.rewardPendingReplay,
             cardClass: (dailyModel.completedToday && !dailyModel.rewardPendingReplay)
               ? " wt-landing-stat--daily wt-landing-stat--daily-complete"
               : " wt-landing-stat--daily",

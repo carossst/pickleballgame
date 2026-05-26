@@ -188,7 +188,7 @@ function createUi(runCompletes, options = {}) {
         dailyChallengeCompletedTemplate:
           'Daily challenge cleared.\nNext challenge at {resetTime}.',
         dailyChallengeRewardTemplate:
-          "Beat today's target to earn 1 Rapid Fire ticket.",
+          'Earn 1 Rapid Fire ticket.',
         dailyChallengeCta: 'Start challenge'
       },
       installPrompt: {},
@@ -305,4 +305,27 @@ test('landing still shows daily card when challenge is not immediately playable'
 
   expect(html).toContain('DAILY CHALLENGE');
   expect(html).not.toContain('data-action="start-daily-challenge"');
+});
+
+test('landing daily card does not show daily score progress before completion', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, { seenCount: 8, bestScoreFP: 0 }),
+    buildHelpers(modules.renderLeaderboardLandingCard, {
+      dailyModel: {
+        completedToday: false,
+        rewardPendingReplay: false,
+        progressPct: 33,
+        todayBestScore: 1,
+        targetScore: 3,
+        challengePlayable: true
+      }
+    })
+  );
+
+  expect(html).toContain('DAILY CHALLENGE');
+  expect(html).toContain('Target: 3+');
+  expect(html).toContain('Earn 1 Rapid Fire ticket.');
+  expect(html).not.toContain('Today:');
+  expect(html).not.toContain('1/3');
 });

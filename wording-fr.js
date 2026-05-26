@@ -233,9 +233,9 @@
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Score : {targetScore}+',
+      dailyChallengeTitleTemplate: 'Atteignez {targetScore}+',
       dailyChallengeProgressTemplate:
-        "Aujourd'hui : {score}/{targetScore}.",
+        'Score du jour : {score}/{targetScore}',
       dailyChallengeResetTemplate: '',
       dailyChallengeCompletedTemplate:
         "Défi du jour réussi.\nProchain défi à {resetTime}.",
