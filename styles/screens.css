@@ -728,6 +728,10 @@ body.wt-state--end .wt-card--end {
   gap: var(--space-12);
 }
 
+.wt-landing-dashboard__grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .wt-landing-dashboard__spotlight .wt-landing-stat,
 .wt-landing-dashboard__secondary .wt-landing-stat,
 .wt-landing-dashboard__tertiary .wt-landing-stat,
@@ -795,8 +799,16 @@ body.wt-state--end .wt-card--end {
     align-items: start;
   }
 
+  .wt-landing-dashboard__grid--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .wt-landing-dashboard__spotlight {
     grid-column: 1;
+  }
+
+  .wt-landing-dashboard__grid--single .wt-landing-dashboard__spotlight {
+    grid-column: 1 / -1;
   }
 
   .wt-landing-dashboard__secondary {
