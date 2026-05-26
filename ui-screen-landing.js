@@ -586,6 +586,9 @@
     // Personal best remains a fallback only, so users do not see two competing score goals.
     const primaryInsightHtml = dailyChallengeCardHtml || personalBestCardHtml;
     const secondaryInsightHtml = "";
+    const dashboardGridClass = secondaryInsightHtml
+      ? ""
+      : " wt-landing-dashboard__grid--single";
     const hasDashboard = Boolean(
       welcomeBackHtml ||
       primaryInsightHtml ||
@@ -690,7 +693,7 @@ ${(() => {
           </div>
         ` : ``}
         ${(!welcomeBackHtml && levelProgressQuickHtml) ? levelProgressQuickHtml : ``}
-        <div class="wt-landing-dashboard__grid">
+        <div class="wt-landing-dashboard__grid${dashboardGridClass}">
           ${primaryInsightHtml ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
           ${secondaryInsightHtml ? `<div class="wt-landing-dashboard__secondary">${secondaryInsightHtml}</div>` : ``}
         </div>
