@@ -237,7 +237,7 @@
       dailyChallengeCompletedTemplate:
         'Daily challenge cleared.\nNext challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
-        "Beat today's target to earn 1 Rapid Fire ticket.",
+        'Earn 1 Rapid Fire ticket.',
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:

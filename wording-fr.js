@@ -233,14 +233,14 @@
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Objectif : {targetScore}+',
+      dailyChallengeTitleTemplate: 'Score : {targetScore}+',
       dailyChallengeProgressTemplate:
         "Aujourd'hui : {score}/{targetScore}.",
       dailyChallengeResetTemplate: '',
       dailyChallengeCompletedTemplate:
         "Défi du jour réussi.\nProchain défi à {resetTime}.",
       dailyChallengeRewardTemplate:
-        'Réussissez le défi du jour pour gagner 1 jeton Mode Rapide.',
+        'Gagnez 1 jeton Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -267,7 +267,7 @@
       cardCtaEdit: 'Modifier mon pseudo',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
-      weeklyResetLine: 'Remise à zéro : {localTime}.',
+      weeklyResetLine: 'Remise à zéro : {localTime}',
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',

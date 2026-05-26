@@ -33,6 +33,9 @@ Do not create a second "recent audit" document for the same purpose. Keep this f
 - Landing Daily card label only:
   - EN: `DAILY CHALLENGE`
   - FR: `DÉFI DU JOUR`
+- FR daily line should use:
+  - `Score : {targetScore}+`
+- Do not revert FR daily title to `Objectif : ...`
 - Keep one idea per line.
 - Do not show `Next challenge at ...` until the Daily is actually completed.
 - When incomplete, show:
@@ -70,6 +73,8 @@ Do not create a second "recent audit" document for the same purpose. Keep this f
   - no `LIVE`
   - no “your time”
   - keep the reset line compact
+  - no trailing period on the landing reset line
+  - section label (`THIS WEEK / CETTE SEMAINE`) must render in bold
 - Leaderboard modal:
   - top list first
   - if local player is outside top 10 and rank is known:

@@ -541,6 +541,10 @@ body.wt-state--end .wt-card--end {
   gap: var(--space-10);
 }
 
+.wt-leaderboard-card__header .wt-landing-stat__label {
+  font-weight: 800;
+}
+
 .wt-leaderboard-card__live {
   flex: 0 0 auto;
   font-size: var(--fs-xs);
@@ -729,6 +733,7 @@ body.wt-state--end .wt-card--end {
 .wt-landing-dashboard__tertiary .wt-landing-stat,
 .wt-landing-leaderboard-section .wt-leaderboard-card {
   min-height: 100%;
+  width: 100%;
 }
 
 .wt-landing-dashboard__spotlight .wt-landing-stat {
