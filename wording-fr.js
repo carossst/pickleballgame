@@ -233,7 +233,7 @@
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Atteignez {targetScore}+',
+      dailyChallengeTitleTemplate: 'Visez un score de {targetScore}+',
       dailyChallengeProgressTemplate:
         'Score du jour : {score}/{targetScore}',
       dailyChallengeResetTemplate: '',

@@ -230,7 +230,7 @@
       personalBestLockedSub:
         'Unlock full access to record your score and keep building your best.',
       dailyChallengeBadge: "DAILY CHALLENGE",
-      dailyChallengeTitleTemplate: 'Target: {targetScore}+',
+      dailyChallengeTitleTemplate: 'Reach a score of {targetScore}+',
       dailyChallengeProgressTemplate:
         'Today: {score}/{targetScore}.',
       dailyChallengeResetTemplate: '',

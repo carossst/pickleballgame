@@ -2,3 +2,4 @@
 node_modules/
 .wrangler/
 leaderboard-worker/wrangler.jsonc
+REGRESSION_GUARDRAILS.md
