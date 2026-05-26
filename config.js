@@ -420,7 +420,7 @@
 
       // Set this to your deployed Worker URL later, for example:
       // "https://prq-leaderboard.<subdomain>.workers.dev"
-      apiBaseUrl: "https://prq-leaderboard.carolestromboni.workers.dev",
+      apiBaseUrl: "",
 
       // Local-only UI test rows.
       // Remove these before go-live if you want the honest empty state again.
