@@ -1019,7 +1019,7 @@ Merci !`
     share: {
       ctaLabel: 'Copier le message',
       emailLabel: "Préparer l'e-mail",
-      emailSubject: 'Quiz Pickleball',
+      emailSubject: 'Essaie Quiz Pickleball',
       previewLabel: 'Aperçu du message',
       toastCopied: 'Copié.',
       template: `Je viens de découvrir Quiz Pickleball.

@@ -990,7 +990,7 @@ Thanks!`
     share: {
       ctaLabel: 'Copy challenge',
       emailLabel: 'Email challenge',
-      emailSubject: 'Pickleball Rules Quiz',
+      emailSubject: 'Try Pickleball Rules Quiz',
       previewLabel: 'Challenge preview',
       toastCopied: 'Copied.',
       template: `Think you know pickleball?
