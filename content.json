@@ -570,7 +570,7 @@
       "i18n": {
         "en": {
           "question": "A volley serve must be made with a forehand motion.",
-          "explanationShort": "Both forehand and backhand motions are legal.\nThe drop serve also allows both motions.\n2026 USA Pickleball Official Rulebook, Rule 7.C.4."
+          "explanationShort": "Both forehand and backhand motions are allowed.\nThe drop serve also allows both motions.\n2026 USA Pickleball Official Rulebook, Rule 7.C.4."
         },
         "fr": {
           "question": "Un service à la volée doit être effectué avec un mouvement de coup droit.",
@@ -750,11 +750,11 @@
       "i18n": {
         "en": {
           "question": "If the served ball hits the net post and lands in the correct service court, the serve is good.",
-          "explanationShort": "Hitting a permanent object before landing is a fault.\nThe net is allowed, but the net post is not.\n2026 USA Pickleball Official Rulebook, Rule 7.E.3."
+          "explanationShort": "Hitting a permanent object before landing is a fault.\nThe ball may touch the net, but not the net post before landing.\n2026 USA Pickleball Official Rulebook, Rule 7.E.3."
         },
         "fr": {
           "question": "Si la balle de service touche le poteau du filet et atterrit dans la bonne zone de service, le service est bon.",
-          "explanationShort": "Toucher un objet permanent avant d'atterrir est une faute.\nLe filet est autorisé, mais pas le poteau.\nRèglement officiel USA Pickleball 2026, règle 7.E.3."
+          "explanationShort": "Toucher un objet permanent avant d'atterrir est une faute.\nLa balle peut toucher le filet, mais pas le poteau avant d'atterrir.\nRèglement officiel USA Pickleball 2026, règle 7.E.3."
         }
       }
     },
@@ -2165,8 +2165,8 @@
           "explanationShort": "When partners disagree on a line call, the ball is considered in.\nThis gives the benefit of the doubt to the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.H."
         },
         "fr": {
-          "question": "Si les partenaires en double sont en désaccord sur une annonce de ligne, la balle est faute.",
-          "explanationShort": "Quand les partenaires sont en désaccord, la balle est bonne.\nLe bénéfice du doute va à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.H."
+          "question": "Si les partenaires en double sont en désaccord sur une annonce de ligne, la balle est out.",
+          "explanationShort": "Non. Quand les partenaires sont en désaccord, la balle est bonne.\nLe bénéfice du doute va à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.H."
         }
       }
     },
@@ -3102,7 +3102,7 @@
       "i18n": {
         "en": {
           "question": "If all players agree that a broken ball affected the rally, the rally must be replayed.",
-          "explanationShort": "All players must agree that the break affected the outcome.\nIf there is no agreement, the result of the rally stands.\n2026 USA Pickleball Official Rulebook, Rule 10.G.1."
+          "explanationShort": "All players must agree that the broken ball affected the rally.\nIf there is no agreement, the result of the rally stands.\n2026 USA Pickleball Official Rulebook, Rule 10.G.1."
         },
         "fr": {
           "question": "Si tous les joueurs reconnaissent qu'une balle cassée a influencé l'échange, l'échange doit être rejoué.",
