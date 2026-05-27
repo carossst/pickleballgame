@@ -44,8 +44,8 @@
           "explanationShort": "Now: if the ball lands in the opponent's court and then hits the net post, the returner is at fault for not making the return, so the hitter wins the rally.\nBefore 2026, this situation was handled differently.\n2026 USA Pickleball Rulebook Change Document, page 5."
         },
         "fr": {
-          "question": "Si la balle atterrit dans le terrain adverse puis touche le poteau du filet, l'échange est rejoué.",
-          "explanationShort": "Maintenant: si la balle atterrit dans le terrain adverse puis touche le poteau, ne pas la renvoyer est une faute du receveur. L'équipe qui a frappé la balle remporte donc l'échange.\nAvant 2026, cette situation était traitée différemment.\nDocument de modifications du règlement USA Pickleball 2026, page 5."
+          "question": "Si la balle atterrit dans le camp adverse puis touche le poteau du filet, l'échange est rejoué.",
+          "explanationShort": "Maintenant: si la balle atterrit dans le camp adverse puis touche le poteau, ne pas la jouer est une faute du receveur. L'équipe qui a frappé la balle remporte donc l'échange.\nAvant 2026, cette situation était traitée différemment.\nDocument de modifications du règlement USA Pickleball 2026, page 5."
         }
       }
     },
@@ -146,8 +146,8 @@
           "explanationShort": "A player can ask for a rule decision, but not argue aggressively.\nAggressive arguing that disrupts play can lead to a warning.\n2026 USA Pickleball Official Rulebook, Rule 22.B.3."
         },
         "fr": {
-          "question": "Contester agressivement est permis si un joueur pense qu'une annonce était erronée.",
-          "explanationShort": "Un joueur peut demander une décision sur la règle, mais il ne doit pas contester agressivement.\nUne contestation agressive qui perturbe le jeu peut entraîner un avertissement.\nRèglement officiel USA Pickleball 2026, règle 22.B.3."
+          "question": "Contester une annonce de façon agressive est permis si un joueur pense qu'elle est erronée.",
+          "explanationShort": "Un joueur peut demander une décision sur la règle, mais il ne doit pas contester de façon agressive.\nUne contestation agressive qui perturbe le jeu peut entraîner un avertissement.\nRèglement officiel USA Pickleball 2026, règle 22.B.3."
         }
       }
     },
@@ -167,8 +167,8 @@
           "explanationShort": "Aggressively hitting a dead ball is ball abuse.\nIt can lead to a verbal warning or technical warning.\n2026 USA Pickleball Official Rulebook, Rule 22.B.4."
         },
         "fr": {
-          "question": "Un joueur peut frapper violemment une balle morte si personne n'est en danger.",
-          "explanationShort": "Frapper violemment une balle morte relève d'un usage abusif de la balle.\nCela peut entraîner un avertissement verbal ou technique.\nRèglement officiel USA Pickleball 2026, règle 22.B.4."
+          "question": "Un joueur peut frapper violemment une balle qui n'est plus en jeu si personne n'est en danger.",
+          "explanationShort": "Frapper violemment une balle qui n'est plus en jeu relève d'un usage abusif de la balle.\nCela peut entraîner un avertissement verbal ou technique.\nRèglement officiel USA Pickleball 2026, règle 22.B.4."
         }
       }
     },
@@ -187,8 +187,8 @@
           "explanationShort": "Before 2026, the extra ball just had to be hidden.\nNow a visible extra ball during a live rally is specifically a fault.\n2026 USA Pickleball Rulebook Change Document, page 22."
         },
         "fr": {
-          "question": "Si une balle supplémentaire portée par un joueur devient visible pour l'adversaire pendant un échange, c'est une faute.",
-          "explanationShort": "Avant 2026, la balle supplémentaire devait seulement être cachée.\nMaintenant, une balle supplémentaire visible pendant un échange en cours est explicitement une faute.\nDocument de modifications du règlement USA Pickleball 2026, page 22."
+          "question": "Si une balle supplémentaire qu'un joueur porte devient visible pour l'adversaire pendant un échange, c'est une faute.",
+          "explanationShort": "Avant 2026, la balle supplémentaire devait seulement être cachée.\nMaintenant, une balle supplémentaire visible pendant un échange est explicitement une faute.\nDocument de modifications du règlement USA Pickleball 2026, page 22."
         }
       }
     },
@@ -208,8 +208,8 @@
           "explanationShort": "Before 2026, the rule mainly said when to call time-out.\nNow it also says how to call it: by voice, hand signal, or both.\n2026 USA Pickleball Rulebook Change Document, page 24."
         },
         "fr": {
-          "question": "Un temps mort doit être demandé clairement, oralement, par geste de la main, ou les deux.",
-          "explanationShort": "Avant 2026, la règle disait surtout quand demander un temps mort.\nMaintenant elle précise aussi comment le demander: oralement, par geste, ou les deux.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
+          "question": "Un temps mort doit être demandé clairement, à voix haute, par geste de la main, ou les deux.",
+          "explanationShort": "Avant 2026, la règle disait surtout quand demander un temps mort.\nMaintenant elle précise aussi comment le demander: à voix haute, par geste, ou les deux.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
         }
       }
     },
@@ -311,8 +311,8 @@
           "explanationShort": "Players may appeal line calls when the rules allow it.\nRepeated appeals that disrupt play can lead to a warning.\n2026 USA Pickleball Official Rulebook, Rule 22.B.6."
         },
         "fr": {
-        "question": "Des contestations répétées d'annonces de ligne peuvent entraîner un avertissement si elles perturbent le jeu.",
-        "explanationShort": "Les joueurs peuvent contester une annonce de ligne quand les règles le permettent.\nDes contestations répétées qui perturbent le jeu peuvent entraîner un avertissement.\nRèglement officiel USA Pickleball 2026, règle 22.B.6."
+          "question": "Des contestations répétées d'annonces de ligne peuvent entraîner un avertissement si elles perturbent le jeu.",
+          "explanationShort": "Les joueurs peuvent contester une annonce de ligne quand les règles le permettent.\nDes contestations répétées qui perturbent le jeu peuvent entraîner un avertissement.\nRèglement officiel USA Pickleball 2026, règle 22.B.6."
         }
       }
     },
@@ -351,7 +351,7 @@
           "explanationShort": "That's a conduct penalty, not a rally fault.\nPutting a person or facility property at risk can still lead to a match forfeit.\n2026 USA Pickleball Rulebook Change Document, page 23."
         },
         "fr": {
-          "question": "Un abus dangereux de raquette ou de balle peut entraîner la perte du match, même si personne n'est touché.",
+          "question": "Un usage dangereux de la raquette ou de la balle peut entraîner la perte du match, même si personne n'est touché.",
           "explanationShort": "C'est une sanction de conduite, pas une faute d'échange.\nMettre en danger une personne ou les biens du club peut entraîner la perte du match.\nDocument de modifications du règlement USA Pickleball 2026, page 23."
         }
       }
@@ -392,7 +392,7 @@
         },
         "fr": {
           "question": "Un joueur éligible en pickleball adapté debout peut laisser la balle rebondir deux fois avant de la renvoyer.",
-          "explanationShort": "Les joueurs éligibles en pickleball adapté debout bénéficient de la tolérance du double rebond.\nLe second rebond peut être n'importe où, mais la balle doit être renvoyée avant un troisième rebond.\nRèglement officiel USA Pickleball 2026, règle 25.B.3."
+          "explanationShort": "Les joueurs éligibles en pickleball adapté debout ont droit à deux rebonds.\nLe second rebond peut être n'importe où, mais la balle doit être renvoyée avant un troisième rebond.\nRèglement officiel USA Pickleball 2026, règle 25.B.3."
         }
       }
     },
@@ -412,8 +412,8 @@
           "explanationShort": "Post-match misconduct can still be reported.\nA warning or foul may apply to the player's next match.\n2026 USA Pickleball Official Rulebook, Rule 22.A.2."
         },
         "fr": {
-          "question": "Une mauvaise conduite après un match peut affecter le match suivant du joueur en tournoi.",
-          "explanationShort": "Une mauvaise conduite post-match peut toujours être signalée.\nUn avertissement ou une faute peut s'appliquer au match suivant du joueur.\nRèglement officiel USA Pickleball 2026, règle 22.A.2."
+          "question": "Une mauvaise conduite après un match peut avoir des conséquences sur le match suivant du joueur en tournoi.",
+          "explanationShort": "Une mauvaise conduite après le match peut toujours être signalée.\nUn avertissement ou une faute peut s'appliquer au match suivant du joueur.\nRèglement officiel USA Pickleball 2026, règle 22.A.2."
         }
       }
     },
@@ -433,8 +433,8 @@
           "explanationShort": "This warning rule is new for 2026.\nFor example, leaving the court without clearly calling time-out can trigger it.\n2026 USA Pickleball Rulebook Change Document, page 24."
         },
         "fr": {
-          "question": "Si un temps mort n'est pas demandé clairement, oralement ou par geste de la main, un arbitre peut donner un avertissement.",
-        "explanationShort": "Cet avertissement a été ajouté en 2026.\nPar exemple, quitter le terrain sans demander clairement un temps mort peut le déclencher.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
+          "question": "Si un temps mort n'est pas demandé clairement, à voix haute ou par geste de la main, un arbitre peut donner un avertissement.",
+          "explanationShort": "Cet avertissement a été ajouté en 2026.\nPar exemple, quitter le terrain sans demander clairement un temps mort peut le déclencher.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
         }
       }
     },
@@ -454,7 +454,7 @@
         },
         "fr": {
           "question": "Si le pied du serveur dépasse le prolongement imaginaire de la ligne de côté, c'est une faute.",
-          "explanationShort": "Les pieds du serveur doivent rester dans la bonne zone de service.\nSortir des limites de la zone de service est une faute.\nRèglement officiel USA Pickleball 2026, règle 7.A.3.a."
+          "explanationShort": "Les pieds du serveur doivent rester dans la zone autorisée pour servir.\nSortir de cette zone au moment du service est une faute.\nRèglement officiel USA Pickleball 2026, règle 7.A.3.a."
         }
       }
     },
@@ -470,11 +470,11 @@
       "i18n": {
         "en": {
           "question": "If the wrong player returns the serve, the rally still counts.",
-          "explanationShort": "This wrong-receiver rule was clarified in 2025.\nFor example, the wrong doubles partner cannot take the return.\n2026 USA Pickleball Official Rulebook, Rule 5.C.1.c."
+          "explanationShort": "No. The serve must be returned by the correct receiver.\nIf the wrong player returns the serve, it is a fault by the receiving team and the rally does not count.\n2026 USA Pickleball Official Rulebook, Rule 5.C.1.c."
         },
         "fr": {
           "question": "Si le mauvais joueur retourne le service, l'échange compte quand même.",
-        "explanationShort": "Cette règle du mauvais receveur a été clarifiée en 2025.\nPar exemple, en double, le mauvais partenaire ne peut pas prendre le retour.\nRèglement officiel USA Pickleball 2026, règle 5.C.1.c."
+          "explanationShort": "Non. Le service doit être retourné par le bon receveur.\nSi le mauvais joueur retourne le service, c'est une faute de l'équipe qui reçoit et l'échange ne compte pas.\nRèglement officiel USA Pickleball 2026, règle 5.C.1.c."
         }
       }
     },
@@ -493,8 +493,8 @@
           "explanationShort": "The serve must go diagonally crosscourt.\nServing straight ahead is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.E."
         },
         "fr": {
-        "question": "Le service peut être frappé droit devant soi.",
-          "explanationShort": "Le service doit aller en diagonale, en croisé.\nServir tout droit est une faute.\nRèglement officiel USA Pickleball 2026, règle 7.E."
+          "question": "Le service peut être frappé tout droit.",
+          "explanationShort": "Le service doit partir en diagonale, en croisé.\nServir tout droit est une faute.\nRèglement officiel USA Pickleball 2026, règle 7.E."
         }
       }
     },
@@ -513,8 +513,8 @@
           "explanationShort": "Before 2026, the rule focused on the arm moving in an upward arc.\nNow the paddle itself must move in an upward arc at contact.\n2026 USA Pickleball Official Rulebook, Rule 7.C.1."
         },
         "fr": {
-          "question": "Pour un service à la volée, la raquette peut se déplacer dans n'importe quelle direction au contact.",
-          "explanationShort": "Avant 2026, la règle visait surtout le bras qui montait en arc.\nMaintenant c'est la raquette elle-même qui doit suivre un arc ascendant au contact.\nRèglement officiel USA Pickleball 2026, règle 7.C.1."
+          "question": "Pour un service à la volée, la raquette peut aller dans n'importe quelle direction au contact.",
+          "explanationShort": "Avant 2026, la règle visait surtout le bras qui montait en arc ascendant.\nMaintenant c'est la raquette elle-même qui doit suivre un arc ascendant au contact.\nRèglement officiel USA Pickleball 2026, règle 7.C.1."
         }
       }
     },
@@ -533,7 +533,7 @@
           "explanationShort": "The paddle head must be at or below the wrist.\nAbove the wrist joint at contact is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.C.2."
         },
         "fr": {
-          "question": "Pour un service à la volée, la tête de raquette ne doit pas être au-dessus du poignet du serveur au contact.",
+          "question": "Pour un service à la volée, la tête de raquette ne doit pas être au-dessus du poignet au contact.",
           "explanationShort": "La tête de raquette doit être au niveau du poignet ou en dessous.\nAu-dessus du poignet au contact, c'est une faute.\nRèglement officiel USA Pickleball 2026, règle 7.C.2."
         }
       }
@@ -609,12 +609,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "A drop serve becomes illegal if the ball bounces twice before it is hit.",
-          "explanationShort": "There's no limit on how many times the ball can bounce.\nThere's also no restriction on where it bounces.\n2026 USA Pickleball Official Rulebook, Rules 7.D.3-7.D.4."
+          "question": "A drop serve is a fault if the ball bounces more than once before the server hits it.",
+          "explanationShort": "No. On a drop serve, there is no limit on how many times the ball can bounce before the server hits it.\nThere is also no restriction on where it bounces on the playing surface.\n2026 USA Pickleball Official Rulebook, Rules 7.D.3-7.D.4."
         },
         "fr": {
-          "question": "Un service avec rebond devient illégal si la balle rebondit deux fois avant d'être frappée.",
-          "explanationShort": "Il n'y a pas de limite au nombre de rebonds de la balle.\nIl n'y a pas non plus de restriction sur l'endroit où elle rebondit.\nRèglement officiel USA Pickleball 2026, règles 7.D.3-7.D.4."
+          "question": "Un service avec rebond est une faute si la balle rebondit plus d'une fois avant que le serveur la frappe.",
+          "explanationShort": "Non. Sur un service avec rebond, il n'y a pas de limite au nombre de rebonds avant que le serveur frappe la balle.\nIl n'y a pas non plus de restriction sur l'endroit où elle rebondit sur la surface de jeu.\nRèglement officiel USA Pickleball 2026, règles 7.D.3-7.D.4."
         }
       }
     },
@@ -633,7 +633,7 @@
           "explanationShort": "One foot must be grounded behind the baseline.\nThis applies to both volley and drop serves.\n2026 USA Pickleball Official Rulebook, Rule 7.A.1."
         },
         "fr": {
-          "question": "Le serveur est autorisé à avoir les deux pieds en l'air au moment du contact.",
+          "question": "Le serveur peut avoir les deux pieds en l'air au moment du contact.",
           "explanationShort": "Un pied doit être posé au sol derrière la ligne de fond.\nCela s'applique au service à la volée comme au service avec rebond.\nRèglement officiel USA Pickleball 2026, règle 7.A.1."
         }
       }
@@ -673,8 +673,8 @@
           "explanationShort": "The receiver can call a replay in this situation.\nThe call must be made before the return of serve.\n2026 USA Pickleball Official Rulebook, Rule 7.B.3.a."
         },
         "fr": {
-          "question": "Si le receveur ne peut pas voir le lâcher de la balle, il peut demander à rejouer l'échange.",
-          "explanationShort": "Le receveur peut demander de rejouer dans cette situation.\nLa demande doit être faite avant le retour de service.\nRèglement officiel USA Pickleball 2026, règle 7.B.3.a."
+          "question": "Si le receveur ne voit pas le lâcher de balle, il peut demander à rejouer l'échange.",
+          "explanationShort": "Le receveur peut demander à rejouer dans cette situation.\nLa demande doit être faite avant le retour de service.\nRèglement officiel USA Pickleball 2026, règle 7.B.3.a."
         }
       }
     },
@@ -714,7 +714,7 @@
         },
         "fr": {
           "question": "Si le service touche le receveur avant d'atterrir, le serveur perd l'échange.",
-          "explanationShort": "La faute est pour le receveur, pas pour le serveur.\nCela inclut tout ce qui est porté par le receveur ou son partenaire.\nRèglement officiel USA Pickleball 2026, règle 7.E.5."
+          "explanationShort": "La faute est pour le receveur, pas pour le serveur.\nCela inclut tout ce que porte le receveur ou son partenaire.\nRèglement officiel USA Pickleball 2026, règle 7.E.5."
         }
       }
     },
@@ -734,7 +734,7 @@
         },
         "fr": {
           "question": "Si le service touche le partenaire du serveur, l'équipe qui sert perd l'échange.",
-          "explanationShort": "C'est une faute si la balle touche le serveur ou son partenaire.\nCela inclut tout ce qui est porté par l'un ou l'autre.\nRèglement officiel USA Pickleball 2026, règle 7.E.4."
+          "explanationShort": "C'est une faute si la balle touche le serveur ou son partenaire.\nCela inclut tout ce que porte l'un ou l'autre.\nRèglement officiel USA Pickleball 2026, règle 7.E.4."
         }
       }
     },
@@ -774,7 +774,7 @@
         },
         "fr": {
           "question": "Un serveur peut servir dès que l'échange précédent se termine.",
-          "explanationShort": "Le serveur doit attendre que le score complet soit annoncé avant de servir.\nSi vous servez avant l'annonce du score, c'est une faute.\nRèglement officiel USA Pickleball 2026, règle 6.C."
+          "explanationShort": "Le serveur doit attendre que le score complet soit annoncé avant de servir.\nServir avant l'annonce du score est une faute.\nRèglement officiel USA Pickleball 2026, règle 6.C."
         }
       }
     },
@@ -829,12 +829,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "The drop serve must follow the volley serve's motion rules.",
-          "explanationShort": "The volley serve has arc, wrist, and waist rules.\nThe drop serve has none of those restrictions.\n2026 USA Pickleball Official Rulebook, Rules 7.C, 7.D."
+          "question": "A drop serve must follow the same arc, wrist, and waist rules as a volley serve.",
+          "explanationShort": "No. The arc, wrist, and waist restrictions apply only to the volley serve.\nOn a drop serve, the ball is dropped and hit after it bounces, so those motion restrictions do not apply.\n2026 USA Pickleball Official Rulebook, Rules 7.C, 7.D."
         },
         "fr": {
-          "question": "Le service avec rebond doit suivre les règles de mouvement du service à la volée.",
-          "explanationShort": "Le service à la volée impose des règles sur l'arc du geste, le poignet et la taille.\nLe service avec rebond n'a aucune de ces restrictions.\nRèglement officiel USA Pickleball 2026, règles 7.C, 7.D."
+          "question": "Le service avec rebond doit respecter les mêmes règles d'arc du geste, de poignet et de hauteur que le service à la volée.",
+          "explanationShort": "Non. Les règles d'arc ascendant, de poignet et de hauteur s'appliquent seulement au service à la volée.\nAvec un service avec rebond, la balle est lâchée puis frappée après rebond: ces restrictions de mouvement ne s'appliquent pas.\nRèglement officiel USA Pickleball 2026, règles 7.C, 7.D."
         }
       }
     },
@@ -853,8 +853,8 @@
           "explanationShort": "Players signal 'not ready' before the score call.\nAfter the call, the server has 10 seconds to serve.\n2026 USA Pickleball Official Rulebook, Rule 6.A."
         },
         "fr": {
-        "question": "Le receveur doit être prêt avant que le service ne soit frappé.",
-          "explanationShort": "Les joueurs signalent « pas prêt » avant l'annonce du score.\nAprès l'annonce, le serveur a 10 secondes pour servir.\nRèglement officiel USA Pickleball 2026, règle 6.A."
+          "question": "Le receveur doit être prêt avant que le service ne soit frappé.",
+          "explanationShort": "Les joueurs doivent signaler qu'ils ne sont pas prêts avant l'annonce du score.\nAprès l'annonce, le serveur a 10 secondes pour servir.\nRèglement officiel USA Pickleball 2026, règle 6.A."
         }
       }
     },
@@ -893,7 +893,7 @@
           "explanationShort": "Gravity-caused rolling off the paddle is allowed.\nOnly deliberate spin during the release is banned.\n2026 USA Pickleball Official Rulebook, Rule 7.B.1."
         },
         "fr": {
-          "question": "Laisser la balle rouler depuis la face de la raquette avant le service est une faute.",
+          "question": "Laisser la balle rouler sur la face de la raquette avant le service est une faute.",
           "explanationShort": "Un roulement causé par la gravité est autorisé.\nSeul l'effet délibéré pendant le lâcher est interdit.\nRèglement officiel USA Pickleball 2026, règle 7.B.1."
         }
       }
@@ -954,7 +954,7 @@
         },
         "fr": {
           "question": "Vous pouvez arrêter l'échange pour contester le score à n'importe quel moment sans pénalité.",
-        "explanationShort": "Si vous arrêtez un échange pour contester un score correct, c'est une faute.\nSeule une contestation d'un score erroné avant le retour de service est sans risque.\nRèglement officiel USA Pickleball 2026, règle 6.F.2."
+          "explanationShort": "Si vous arrêtez un échange pour contester un score correct, c'est une faute.\nSeule une contestation d'un score erroné avant le retour de service est sans risque.\nRèglement officiel USA Pickleball 2026, règle 6.F.2."
         }
       }
     },
@@ -973,7 +973,7 @@
         },
         "fr": {
           "question": "En double, la position du serveur d'ouverture est du côté droit quand le score de l'équipe est zéro ou pair.",
-          "explanationShort": "La position dépend du score de l'équipe, pas de l'individu.\nCela s'applique après chaque changement de service.\nRèglement officiel USA Pickleball 2026, règle 5.B.3."
+          "explanationShort": "La position dépend du score de l'équipe, pas du joueur lui-même.\nCela s'applique après chaque changement de service.\nRèglement officiel USA Pickleball 2026, règle 5.B.3."
         }
       }
     },
@@ -991,7 +991,7 @@
           "explanationShort": "Each server serves until their team loses a rally.\nA side out follows the second server's lost rally.\n2026 USA Pickleball Official Rulebook, Rule 5.B."
         },
         "fr": {
-          "question": "En double, les deux joueurs d'une équipe servent avant que le service passe à l'équipe adverse.",
+          "question": "En double, les deux joueurs d'une équipe servent avant le changement de service.",
           "explanationShort": "Chaque serveur sert jusqu'à ce que son équipe perde un échange.\nLe service passe à l'équipe adverse après l'échange perdu par le second serveur.\nRèglement officiel USA Pickleball 2026, règle 5.B."
         }
       }
@@ -1012,7 +1012,7 @@
         },
         "fr": {
           "question": "Une balle de service qui atterrit sur la ligne centrale de la zone de service est une faute.",
-          "explanationShort": "La ligne centrale fait partie de la zone de service: la balle est bonne.\nLa ligne de côté et la ligne de fond de la zone de service sont bonnes aussi.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.f."
+          "explanationShort": "La ligne centrale fait partie de la zone de service: la balle est bonne.\nLes lignes de côté et de fond de la zone de service sont bonnes aussi.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.f."
         }
       }
     },
@@ -1109,7 +1109,7 @@
           "explanationShort": "Only physical signals count here, like raising the paddle.\nSaying 'not ready' is not a valid signal.\n2026 USA Pickleball Official Rulebook, Rule 6.A.1."
         },
         "fr": {
-          "question": "Dire « pas prêt » compte comme un signal valable pour dire qu'on n'est pas prêt.",
+          "question": "Dire « pas prêt » suffit pour signaler qu'on n'est pas prêt.",
           "explanationShort": "Seuls les signaux physiques comptent ici, comme lever la raquette.\nDire « pas prêt » n'est pas un signal valable.\nRèglement officiel USA Pickleball 2026, règle 6.A.1."
         }
       }
@@ -1125,12 +1125,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "After the score call starts, a 'not ready' signal stops play.",
-          "explanationShort": "Once the score call starts, a 'not ready' signal no longer stops play.\nOnly a hinder signal still counts at that point.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2."
+          "question": "After the score call has started, a player can stop play by signaling that they are not ready.",
+          "explanationShort": "A not-ready signal must be made before the score call starts.\nOnce the score call has started, a not-ready signal no longer stops play.\nOnly a valid hinder can stop play at that point.\n2026 USA Pickleball Official Rulebook, Rule 6.A.2."
         },
         "fr": {
-          "question": "Une fois que l'annonce du score commence, un signal « pas prêt » arrête le jeu.",
-          "explanationShort": "Une fois l'annonce du score commencée, un signal « pas prêt » n'arrête plus le jeu.\nSeul un signal de gêne reste valable à ce moment-là.\nRèglement officiel USA Pickleball 2026, règle 6.A.2."
+          "question": "Une fois l'annonce du score commencée, un joueur peut arrêter le jeu en signalant qu'il n'est pas prêt.",
+          "explanationShort": "Le signal « pas prêt » doit être fait avant le début de l'annonce du score.\nUne fois l'annonce du score commencée, ce signal n'arrête plus le jeu.\nSeule une gêne valable peut encore arrêter le jeu à ce moment-là.\nRèglement officiel USA Pickleball 2026, règle 6.A.2."
         }
       }
     },
@@ -1145,12 +1145,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "The score may be called before all players are in position.",
-          "explanationShort": "The score must wait until all players are ready.\nCalling early can cause a replay or fault.\n2026 USA Pickleball Official Rulebook, Rule 6.B."
+          "question": "The score may be called before all players are ready.",
+          "explanationShort": "No. The score should be called only when the players are ready.\nCalling the score too early can lead to a replay or a fault.\n2026 USA Pickleball Official Rulebook, Rule 6.B."
         },
         "fr": {
-        "question": "Le score peut être annoncé avant que tous les joueurs soient prêts.",
-        "explanationShort": "L'annonce du score doit attendre que tous les joueurs soient prêts.\nUne annonce trop tôt peut entraîner une faute ou faire rejouer l'échange.\nRèglement officiel USA Pickleball 2026, règle 6.B."
+          "question": "Le score peut être annoncé avant que tous les joueurs soient prêts.",
+          "explanationShort": "Non. Le score doit être annoncé quand les joueurs sont prêts.\nUne annonce trop tôt peut entraîner une faute ou faire rejouer l'échange.\nRèglement officiel USA Pickleball 2026, règle 6.B."
         }
       }
     },
@@ -1205,12 +1205,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "After the score call starts, verbal indicators like 'stop' or 'wait' are recognized.",
-          "explanationShort": "Words like 'stop' or 'wait' are recognized.\nThey can halt play to flag a wrong score.\n2026 USA Pickleball Official Rulebook, Rule 6.E."
+          "question": "After the score call has started, a player may say \"stop\" or \"wait\" to challenge a wrong score.",
+          "explanationShort": "Words like \"stop\" or \"wait\" can be used to challenge a wrong score.\nThey do not work as a late not-ready signal.\n2026 USA Pickleball Official Rulebook, Rule 6.E."
         },
         "fr": {
-          "question": "Une fois l'annonce du score commencée, des mots comme « stop » ou « attendez » sont reconnus.",
-          "explanationShort": "Des mots comme « stop » ou « attendez » sont reconnus.\nIls peuvent interrompre le jeu pour signaler un mauvais score.\nRèglement officiel USA Pickleball 2026, règle 6.E."
+          "question": "Une fois l'annonce du score commencée, un joueur peut dire « stop » ou « attendez » pour signaler un mauvais score.",
+          "explanationShort": "Des mots comme « stop » ou « attendez » peuvent servir à signaler un mauvais score.\nIls ne remplacent pas un signal « pas prêt » tardif.\nRèglement officiel USA Pickleball 2026, règle 6.E."
         }
       }
     },
@@ -1244,8 +1244,8 @@
       ],
       "i18n": {
         "en": {
-          "question": "In doubles, the first score call of the game is 'zero – zero – one.'",
-          "explanationShort": "The first doubles score call is 'zero–zero–two.'\nThe opening team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
+          "question": "In doubles, the first score call of the game is 'zero - zero - one.'",
+          "explanationShort": "The first doubles score call is 'zero-zero-two.'\nThe opening team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
         },
         "fr": {
           "question": "En double, la première annonce de score de la partie est « zéro-zéro-un ».",
@@ -1284,11 +1284,11 @@
       ],
       "i18n": {
         "en": {
-          "question": "If the wrong score is called and the rally is stopped before the return of serve, the rally must be replayed.",
+          "question": "If the wrong score is called and play is stopped before the receiver returns the serve, the rally must be replayed.",
           "explanationShort": "The rally is replayed with the correct score.\nA late challenge results in a fault instead.\n2026 USA Pickleball Official Rulebook, Rule 6.F.1."
         },
         "fr": {
-          "question": "Si le mauvais score est annoncé et que l'échange est arrêté avant le retour de service, l'échange doit être rejoué.",
+          "question": "Si le mauvais score est annoncé et que le jeu est arrêté avant que le receveur renvoie le service, l'échange doit être rejoué.",
           "explanationShort": "L'échange est rejoué avec le bon score.\nUne contestation tardive entraîne une faute.\nRèglement officiel USA Pickleball 2026, règle 6.F.1."
         }
       }
@@ -1308,8 +1308,8 @@
           "explanationShort": "The count starts after the call is completed.\nIt doesn't begin when the call starts.\n2026 USA Pickleball Official Rulebook, Rule 6.D."
         },
         "fr": {
-          "question": "Le compte à rebours de 10 secondes commence quand le serveur commence à annoncer le score.",
-          "explanationShort": "Le compte commence une fois l'annonce du score terminée.\nIl ne démarre pas au début de l'annonce.\nRèglement officiel USA Pickleball 2026, règle 6.D."
+          "question": "Le décompte de 10 secondes commence quand le serveur commence à annoncer le score.",
+          "explanationShort": "Le décompte commence une fois l'annonce du score terminée.\nIl ne démarre pas au début de l'annonce.\nRèglement officiel USA Pickleball 2026, règle 6.D."
         }
       }
     },
@@ -1323,8 +1323,8 @@
       ],
       "i18n": {
         "en": {
-          "question": "In singles, a game always starts with the score call 'zero – zero.'",
-          "explanationShort": "Every singles game starts with 'zero–zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1."
+          "question": "In singles, a game always starts with the score call 'zero - zero.'",
+          "explanationShort": "Every singles game starts with 'zero-zero.'\nServer's score is always called first.\n2026 USA Pickleball Official Rulebook, Rule 6.B.1."
         },
         "fr": {
           "question": "En simple, une partie commence toujours par l'annonce « zéro-zéro ».",
@@ -1467,8 +1467,8 @@
           "explanationShort": "The NVZ (kitchen) is 7 feet from the net.\nThe NVZ line itself is part of the zone.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c."
         },
         "fr": {
-          "question": "La zone de non-volée (ZNV) s'étend sur 7 pieds (2,13 m) depuis le filet de chaque côté.",
-          "explanationShort": "La zone de non-volée mesure 7 pieds depuis le filet.\nLa ligne de la ZNV elle-même fait partie de la zone.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.c."
+          "question": "La zone de non-volée (ZNV/kitchen) s'étend sur 7 pieds (2,13 m) de chaque côté du filet.",
+          "explanationShort": "La ZNV/kitchen s'étend sur 7 pieds depuis le filet.\nLa ligne de ZNV fait partie de la zone.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.c."
         }
       }
     },
@@ -1487,8 +1487,8 @@
           "explanationShort": "All lines bounding the NVZ (kitchen) are part of the zone itself.\nThis applies to all lines on all four sides of the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c."
         },
         "fr": {
-          "question": "Une balle qui atterrit sur la ligne de la zone de non-volée (ZNV) est considérée comme dans la ZNV.",
-          "explanationShort": "Toutes les lignes qui délimitent la ZNV font partie de la zone elle-même.\nCela s'applique à toutes les lignes des quatre côtés de la ZNV.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.c."
+          "question": "Une balle qui atterrit sur la ligne de zone de non-volée (ZNV/kitchen) est dans la ZNV.",
+          "explanationShort": "Toutes les lignes qui délimitent la ZNV/kitchen font partie de la zone.\nCela vaut pour les quatre côtés de la ZNV.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.c."
         }
       }
     },
@@ -1847,7 +1847,7 @@
           "explanationShort": "The bounce test uses a granite surface plate.\nTest temperature must be 70°F (±5°F).\n2025 USA Pickleball Equipment Standards Manual, Rule 2.D.5."
         },
         "fr": {
-          "question": "Une balle doit rebondir entre 30 et 34 pouces (76,2-86,4 cm) lâchée depuis 78 pouces (198,1 cm).",
+          "question": "Une balle doit rebondir entre 30 et 34 pouces (76,2-86,4 cm) quand elle est lâchée depuis 78 pouces (198,1 cm).",
           "explanationShort": "Le test de rebond se fait sur une plaque de granit.\nLa température du test doit être d'environ 21 °C (70 °F ±5 °F).\nManuel des standards d'équipement USA Pickleball 2025, règle 2.D.5."
         }
       }
@@ -2086,8 +2086,8 @@
           "explanationShort": "If you can't promptly call it out, it's in.\nQuestionable calls must always be resolved in favor of the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.D."
         },
         "fr": {
-        "question": "Si un joueur n'est pas sûr qu'une balle soit « out », il peut quand même l'annoncer « out ».",
-        "explanationShort": "Si vous ne pouvez pas l'annoncer « out » rapidement, elle est bonne.\nUne annonce douteuse doit toujours être tranchée en faveur de l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.D."
+          "question": "Si un joueur n'est pas sûr qu'une balle soit « out », il peut quand même l'annoncer « out ».",
+          "explanationShort": "Si vous ne pouvez pas l'annoncer « out » rapidement, elle est bonne.\nEn cas de doute, la balle doit être donnée bonne à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.D."
         }
       }
     },
@@ -2106,8 +2106,8 @@
           "explanationShort": "No clear space between ball and line means 'in.'\nThis prevents uncertain out calls.\n2026 USA Pickleball Official Rulebook, Rule 8.E."
         },
         "fr": {
-        "question": "Un joueur doit voir clairement un espace entre la ligne et la balle pour l'annoncer « out ».",
-        "explanationShort": "S'il n'y a pas d'espace clair entre la balle et la ligne, la balle est bonne.\nCela évite les annonces « out » incertaines.\nRèglement officiel USA Pickleball 2026, règle 8.E."
+          "question": "Un joueur doit voir clairement un espace entre la ligne et la balle pour l'annoncer « out ».",
+          "explanationShort": "S'il n'y a pas d'espace clair entre la balle et la ligne, la balle est bonne.\nCela évite les annonces « out » incertaines.\nRèglement officiel USA Pickleball 2026, règle 8.E."
         }
       }
     },
@@ -2126,8 +2126,8 @@
           "explanationShort": "Any ball touching a court line is considered in.\nOnly balls landing fully outside a line are out.\n2026 USA Pickleball Official Rulebook, Rule 8.B."
         },
         "fr": {
-        "question": "Une balle qui touche une ligne du terrain pendant un échange est jugée faute.",
-        "explanationShort": "Toute balle qui touche une ligne du terrain est considérée comme bonne.\nSeules les balles qui atterrissent entièrement à l'extérieur d'une ligne sont jugées faute.\nRèglement officiel USA Pickleball 2026, règle 8.B."
+          "question": "Une balle qui touche une ligne du terrain pendant un échange est out.",
+          "explanationShort": "Non. Une balle qui touche une ligne du terrain est bonne.\nSeules les balles qui atterrissent entièrement à l'extérieur d'une ligne sont out.\nRèglement officiel USA Pickleball 2026, règle 8.B."
         }
       }
     },
@@ -2146,8 +2146,8 @@
           "explanationShort": "A delayed out call may not be recognized.\nThe call has to come before the opponent hits back.\n2026 USA Pickleball Official Rulebook, Rule 8.F."
         },
         "fr": {
-          "question": "Une annonce « out » doit être faite rapidement, oralement, par geste de la main, ou les deux.",
-        "explanationShort": "Une annonce « out » tardive peut ne pas être retenue.\nL'annonce doit venir avant que l'adversaire ne renvoie.\nRèglement officiel USA Pickleball 2026, règle 8.F."
+          "question": "Une annonce « out » doit être faite rapidement, à voix haute, par geste de la main, ou les deux.",
+          "explanationShort": "Une annonce « out » tardive peut ne pas être retenue.\nL'annonce doit venir avant que l'adversaire ne renvoie.\nRèglement officiel USA Pickleball 2026, règle 8.F."
         }
       }
     },
@@ -2165,8 +2165,8 @@
           "explanationShort": "When partners disagree on a line call, the ball is considered in.\nThis gives the benefit of the doubt to the opponent.\n2026 USA Pickleball Official Rulebook, Rule 8.H."
         },
         "fr": {
-        "question": "Si les partenaires en double sont en désaccord sur une annonce de ligne, la balle est jugée faute.",
-          "explanationShort": "Quand les partenaires sont en désaccord, la balle est considérée bonne.\nLe bénéfice du doute va à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.H."
+          "question": "Si les partenaires en double sont en désaccord sur une annonce de ligne, la balle est faute.",
+          "explanationShort": "Quand les partenaires sont en désaccord, la balle est bonne.\nLe bénéfice du doute va à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.H."
         }
       }
     },
@@ -2267,7 +2267,7 @@
         },
         "fr": {
           "question": "Un joueur peut accepter l'annonce de ligne d'un spectateur si le spectateur l'a proposée de lui-même.",
-          "explanationShort": "Les spectateurs ne doivent être consultés sur aucune annonce.\nPeu importe que le spectateur ait proposé ou qu'on lui ait demandé.\nRèglement officiel USA Pickleball 2026, règle 8.J."
+          "explanationShort": "Les spectateurs ne doivent jamais être consultés pour une annonce.\nPeu importe que le spectateur ait proposé son avis ou qu'on le lui ait demandé.\nRèglement officiel USA Pickleball 2026, règle 8.J."
         }
       }
     },
@@ -2287,7 +2287,7 @@
         },
         "fr": {
           "question": "Quand une annonce de ligne est douteuse, le bénéfice du doute va à l'adversaire.",
-        "explanationShort": "Une annonce douteuse doit toujours être tranchée en faveur de l'adversaire.\nC'est un principe fondamental du code d'éthique du pickleball.\nRèglement officiel USA Pickleball 2026, règle 8.D."
+          "explanationShort": "En cas de doute, la balle doit être donnée bonne à l'adversaire.\nC'est un principe fondamental du code d'éthique du pickleball.\nRèglement officiel USA Pickleball 2026, règle 8.D."
         }
       }
     },
@@ -2307,7 +2307,7 @@
         },
         "fr": {
           "question": "Dire « out » alors que la balle est encore en l'air compte comme une annonce de ligne.",
-          "explanationShort": "La communication entre partenaires en l'air n'est pas une annonce.\nUne annonce de ligne n'est valide qu'après que la balle a atterri.\nRèglement officiel USA Pickleball 2026, règle 8.F.4."
+          "explanationShort": "La communication entre partenaires en l'air n'est pas une annonce.\nUne annonce de ligne n'est valable qu'après que la balle a atterri.\nRèglement officiel USA Pickleball 2026, règle 8.F.4."
         }
       }
     },
@@ -2327,7 +2327,7 @@
         },
         "fr": {
           "question": "Après une annonce « out », le jeu doit s'arrêter immédiatement.",
-        "explanationShort": "Une annonce de ligne rend la balle morte immédiatement.\nLe jeu ne peut pas continuer après une annonce « out » valide.\nRèglement officiel USA Pickleball 2026, règle 8.F.2."
+          "explanationShort": "Une annonce de ligne valable arrête immédiatement l'échange.\nLe jeu ne peut pas continuer après une annonce « out » valable.\nRèglement officiel USA Pickleball 2026, règle 8.F.2."
         }
       }
     },
@@ -2366,8 +2366,8 @@
           "explanationShort": "No definitive call from the opponent means 'in.'\nOnly a clear 'in' or 'out' overrides the call.\n2026 USA Pickleball Official Rulebook, Rule 8.I."
         },
         "fr": {
-        "question": "Si un joueur demande l'avis de l'adversaire et que l'adversaire refuse de trancher, la balle est jugée faute.",
-        "explanationShort": "Sans décision claire de l'adversaire, la balle reste bonne.\nSeule une décision claire « bonne » ou « out » remplace l'annonce.\nRèglement officiel USA Pickleball 2026, règle 8.I."
+          "question": "Si un joueur demande l'avis de l'adversaire et que l'adversaire refuse de se prononcer, la balle est out.",
+          "explanationShort": "Non. Sans décision claire de l'adversaire, la balle reste bonne.\nSeule une décision claire « bonne » ou « out » remplace l'annonce.\nRèglement officiel USA Pickleball 2026, règle 8.I."
         }
       }
     },
@@ -2386,8 +2386,8 @@
           "explanationShort": "After the opponent hits back, the out right is lost.\nThe call must come before the opponent strikes.\n2026 USA Pickleball Official Rulebook, Rule 8.F.3."
         },
         "fr": {
-        "question": "Si un joueur renvoie la balle, il peut encore l'annoncer « out » après que l'adversaire l'a renvoyée.",
-        "explanationShort": "Après le renvoi de l'adversaire, il est trop tard pour annoncer « out ».\nL'annonce doit venir avant la frappe de l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.F.3."
+          "question": "Si un joueur renvoie la balle, il peut encore l'annoncer « out » après que l'adversaire l'a renvoyée.",
+          "explanationShort": "Après le renvoi de l'adversaire, il est trop tard pour annoncer « out ».\nL'annonce doit venir avant la frappe de l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 8.F.3."
         }
       }
     },
@@ -2407,7 +2407,7 @@
         },
         "fr": {
           "question": "Les joueurs doivent être précis dans leurs annonces de ligne.",
-        "explanationShort": "La précision est une obligation fondamentale du code d'éthique du pickleball.\nLes annonces douteuses doivent toujours favoriser l'adversaire, pas la personne qui annonce.\nRèglement officiel USA Pickleball 2026, règle 8.D."
+          "explanationShort": "La précision est une obligation fondamentale du code d'éthique du pickleball.\nLes annonces douteuses doivent toujours favoriser l'adversaire, pas la personne qui annonce.\nRèglement officiel USA Pickleball 2026, règle 8.D."
         }
       }
     },
@@ -2426,8 +2426,8 @@
           "explanationShort": "If you can't call it out, it's in.\nSilence on a line call always defaults to in.\n2026 USA Pickleball Official Rulebook, Rule 8.D."
         },
         "fr": {
-          "question": "Si aucun joueur n'annonce « out », la balle est considérée bonne.",
-        "explanationShort": "Si vous ne pouvez pas l'annoncer « out », elle est bonne.\nSans annonce « out », la balle est bonne par défaut.\nRèglement officiel USA Pickleball 2026, règle 8.D."
+          "question": "Si aucun joueur n'annonce « out », la balle est bonne.",
+          "explanationShort": "Si vous ne pouvez pas l'annoncer « out », elle est bonne.\nSans annonce « out », la balle est bonne par défaut.\nRèglement officiel USA Pickleball 2026, règle 8.D."
         }
       }
     },
@@ -2507,7 +2507,7 @@
         },
         "fr": {
           "question": "Un joueur peut annoncer une faute de zone de non-volée (ZNV) contre son adversaire.",
-          "explanationShort": "Les fautes de ZNV et de pied au service peuvent être annoncées sur les adversaires.\nCe sont les seules fautes opposables à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 9.B.3."
+          "explanationShort": "Les fautes de ZNV et de pied au service peuvent être annoncées contre les adversaires.\nCe sont les seules fautes qu'une équipe peut signaler contre l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 9.B.3."
         }
       }
     },
@@ -2527,7 +2527,7 @@
         },
         "fr": {
           "question": "Un joueur peut faire appliquer une faute de double rebond contre son adversaire.",
-          "explanationShort": "Seules les fautes de ZNV et de pied sont opposables à l'adversaire.\nToutes les autres fautes sont à l'appréciation du joueur qui les commet.\nRèglement officiel USA Pickleball 2026, règle 9.B.4."
+          "explanationShort": "Seules les fautes de ZNV et de pied au service peuvent être signalées contre l'adversaire.\nLes autres fautes doivent être annoncées par l'équipe qui les commet.\nRèglement officiel USA Pickleball 2026, règle 9.B.4."
         }
       }
     },
@@ -2566,8 +2566,8 @@
           "explanationShort": "An outside object unexpectedly entering the court is a valid hinder.\nThe rally must be replayed when a valid hinder is called.\n2026 USA Pickleball Official Rulebook, Rule 9.C."
         },
         "fr": {
-          "question": "Une balle qui roule depuis un autre terrain pendant un échange est une gêne valide.",
-          "explanationShort": "Un objet extérieur qui entre soudainement sur le terrain est une gêne valide.\nL'échange doit être rejoué quand une gêne valide est annoncée.\nRèglement officiel USA Pickleball 2026, règle 9.C."
+          "question": "Une balle qui roule depuis un autre terrain pendant un échange est une gêne valable.",
+          "explanationShort": "Un élément extérieur qui entre soudainement sur le terrain est une gêne valable.\nL'échange doit être rejoué quand une gêne valable est annoncée.\nRèglement officiel USA Pickleball 2026, règle 9.C."
         }
       }
     },
@@ -2587,7 +2587,7 @@
         },
         "fr": {
           "question": "Un joueur qui rate un coup peut annoncer une gêne pour rejouer l'échange.",
-          "explanationShort": "Une gêne doit être causée par une interférence extérieure inattendue.\nRater un coup n'est pas une raison valide d'annoncer une gêne.\nRèglement officiel USA Pickleball 2026, règle 9.C."
+          "explanationShort": "Une gêne doit être causée par une interférence extérieure inattendue.\nRater son coup n'est pas une raison valable d'annoncer une gêne.\nRèglement officiel USA Pickleball 2026, règle 9.C."
         }
       }
     },
@@ -2627,7 +2627,7 @@
         },
         "fr": {
           "question": "Un dysfonctionnement du filet pendant un échange est une gêne.",
-          "explanationShort": "Tout dysfonctionnement du système de filet pendant le jeu est considéré comme une gêne.\nL'échange doit être rejoué quand une gêne valide est annoncée.\nRèglement officiel USA Pickleball 2026, règle 13.J."
+          "explanationShort": "Tout dysfonctionnement du système de filet pendant le jeu est une gêne.\nL'échange doit être rejoué quand une gêne valable est annoncée.\nRèglement officiel USA Pickleball 2026, règle 13.J."
         }
       }
     },
@@ -2666,8 +2666,8 @@
           "explanationShort": "If teammates disagree on a fault, the rally is replayed.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b."
         },
         "fr": {
-        "question": "Quand deux équipes sont en désaccord sur l'annonce d'une faute, l'équipe qui la signale gagne le point.",
-          "explanationShort": "Si les coéquipiers sont en désaccord sur une faute, l'échange est rejoué.\nAucune équipe ne gagne ni ne perd le point.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.b."
+          "question": "Quand deux équipes sont en désaccord sur l'annonce d'une faute, l'équipe qui la signale gagne l'échange.",
+          "explanationShort": "Une annonce de faute contestée ne donne pas automatiquement l'échange à l'équipe qui l'annonce.\nSelon la situation prévue par le règlement, l'échange est rejoué ou la décision favorise l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.b."
         }
       }
     },
@@ -2701,12 +2701,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "A dead ball is no longer in play.",
+          "question": "A dead ball is a ball no longer in play.",
           "explanationShort": "A dead ball means play has stopped.\nNeither team can keep the rally going.\n2026 USA Pickleball Official Rulebook, Section 2."
         },
         "fr": {
-          "question": "Une balle morte n'est plus en jeu.",
-          "explanationShort": "Une balle morte signifie que le jeu s'est arrêté.\nAucune équipe ne peut faire continuer l'échange.\nRèglement officiel USA Pickleball 2026, section 2."
+          "question": "Quand le jeu est arrêté, la balle n'est plus en jeu.",
+          "explanationShort": "Cela signifie que l'échange est terminé.\nAucune équipe ne peut décider de continuer le même échange.\nRèglement officiel USA Pickleball 2026, section 2."
         }
       }
     },
@@ -2745,8 +2745,8 @@
           "explanationShort": "Calling a hinder is a valid reason to stop play.\nA valid hinder results in a replayed rally.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1."
         },
         "fr": {
-          "question": "Un joueur peut arrêter un échange pour annoncer une gêne sans commettre de faute.",
-          "explanationShort": "Annoncer une gêne est une raison valide d'arrêter le jeu.\nUne gêne valide entraîne un échange rejoué.\nRèglement officiel USA Pickleball 2026, règle 9.A.1."
+          "question": "Un joueur peut arrêter un échange pour annoncer une gêne valable sans commettre de faute.",
+          "explanationShort": "Annoncer une gêne valable est une raison valable d'arrêter le jeu.\nUne gêne valable entraîne un échange rejoué.\nRèglement officiel USA Pickleball 2026, règle 9.A.1."
         }
       }
     },
@@ -2766,7 +2766,7 @@
         },
         "fr": {
           "question": "Un joueur peut arrêter un échange pour signaler une erreur de position sans commettre de faute.",
-        "explanationShort": "Identifier correctement une erreur de position permet d'arrêter le jeu sans faute.\nUne réclamation erronée devient une faute pour le joueur qui l'a faite.\nRèglement officiel USA Pickleball 2026, règle 9.A.1."
+          "explanationShort": "Identifier correctement une erreur de position permet d'arrêter le jeu sans faute.\nUn signalement erroné devient une faute pour le joueur qui l'a fait.\nRèglement officiel USA Pickleball 2026, règle 9.A.1."
         }
       }
     },
@@ -2802,12 +2802,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "The rally may continue after it has been stopped if both teams agree.",
-          "explanationShort": "Once play has been stopped, the rally can't continue.\nStopping a rally prematurely without a valid reason is a fault.\n2026 USA Pickleball Official Rulebook, Rule 9.A.1."
+          "question": "Once a rally has stopped and the ball is dead, the teams may agree to keep playing the same rally.",
+          "explanationShort": "Once a rally is stopped, the ball is dead and the same rally cannot continue.\nIf play was stopped for a valid reason, the rally may be replayed or resolved under the rules.\nIf a player stops a live rally without a valid reason, it is a fault against that player.\n2026 USA Pickleball Official Rulebook, Rule 9.A."
         },
         "fr": {
-          "question": "L'échange peut continuer après son arrêt si les deux équipes sont d'accord.",
-          "explanationShort": "Une fois le jeu arrêté, l'échange ne peut pas reprendre.\nArrêter un échange prématurément sans raison valide est une faute.\nRèglement officiel USA Pickleball 2026, règle 9.A.1."
+          "question": "Une fois l'échange arrêté, les équipes peuvent se mettre d'accord pour continuer le même échange.",
+          "explanationShort": "Une fois l'échange arrêté, le même échange ne peut pas continuer.\nSi le jeu a été arrêté pour une raison valable, on rejoue l'échange ou on applique la règle correspondante.\nSi un joueur arrête une balle en jeu sans raison valable, c'est une faute contre ce joueur.\nRèglement officiel USA Pickleball 2026, règle 9.A."
         }
       }
     },
@@ -2833,7 +2833,7 @@
     },
     {
       "id": 141,
-      "correctAnswer": true,
+      "correctAnswer": false,
       "tags": [
         "Rally Situations",
         "Easy",
@@ -2842,12 +2842,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "A player must return the ball before a second bounce.",
-          "explanationShort": "Failing to return before the second bounce is a fault.\nThis applies after the first two shots of a rally.\n2026 USA Pickleball Official Rulebook, Rule 10.B."
+          "question": "After the serve and return, the ball may bounce twice on your side before you hit it.",
+          "explanationShort": "No. After the serve and return, you must hit the ball before a second bounce on your side.\nThe two-bounce rule only means the serve and the return must each bounce once.\n2026 USA Pickleball Official Rulebook, Rules 10.B, 10.B.1."
         },
         "fr": {
-          "question": "Un joueur doit renvoyer la balle avant un second rebond.",
-          "explanationShort": "Ne pas renvoyer avant le second rebond est une faute.\nCela s'applique après les deux premiers coups d'un échange.\nRèglement officiel USA Pickleball 2026, règle 10.B."
+          "question": "Après le service et le retour, la balle peut rebondir deux fois dans votre camp avant d'être frappée.",
+          "explanationShort": "Non. Après le service et le retour, vous devez frapper la balle avant un deuxième rebond dans votre camp.\nLa règle des deux rebonds signifie seulement que le service et le retour doivent chacun rebondir une fois.\nRèglement officiel USA Pickleball 2026, règles 10.B, 10.B.1."
         }
       }
     },
@@ -2881,12 +2881,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "In doubles, one shot may legally contact both partners' paddles.",
-          "explanationShort": "Only one player on a team may hit each shot.\nBoth partners hitting the same stroke is a fault.\n2026 USA Pickleball Official Rulebook, Rule 10.D.2."
+          "question": "In doubles, both partners are allowed to hit the ball with their paddles on the same return.",
+          "explanationShort": "Only one player on a team may hit the ball on a return.\nPaddle-to-paddle contact between partners is not the issue; the fault is when the ball is played by both paddles.\n2026 USA Pickleball Official Rulebook, Rule 10.D.2."
         },
         "fr": {
-          "question": "En double, un même coup peut légalement toucher les raquettes des deux partenaires.",
-          "explanationShort": "Un seul joueur de l'équipe peut frapper chaque coup.\nLes deux partenaires qui frappent le même coup, c'est une faute.\nRèglement officiel USA Pickleball 2026, règle 10.D.2."
+          "question": "En double, les deux partenaires peuvent frapper la balle avec leur raquette sur le même renvoi.",
+          "explanationShort": "Un seul membre de l'équipe peut frapper la balle sur un même renvoi.\nLe contact entre les deux raquettes n'est pas le sujet: la faute existe si la balle est jouée par les deux raquettes.\nRèglement officiel USA Pickleball 2026, règle 10.D.2."
         }
       }
     },
@@ -2945,8 +2945,8 @@
           "explanationShort": "Items on a player's side don't stop play.\nThe rally continues even if the ball hits a fallen item.\n2026 USA Pickleball Official Rulebook, Rule 10.J."
         },
         "fr": {
-          "question": "Si le chapeau d'un joueur tombe sur son côté du terrain, l'échange se termine si la balle le touche.",
-          "explanationShort": "Les objets du côté d'un joueur n'arrêtent pas le jeu.\nL'échange continue même si la balle touche un objet tombé.\nRèglement officiel USA Pickleball 2026, règle 10.J."
+          "question": "Si le chapeau d'un joueur tombe dans son camp, l'échange se termine si la balle le touche.",
+          "explanationShort": "Un objet tombé dans le camp d'un joueur n'arrête pas le jeu.\nL'échange continue même si la balle touche cet objet.\nRèglement officiel USA Pickleball 2026, règle 10.J."
         }
       }
     },
@@ -3025,8 +3025,8 @@
           "explanationShort": "Catching or carrying the ball on the paddle is a fault.\nThe ball must bounce away from the paddle on contact.\n2026 USA Pickleball Official Rulebook, Rule 12.C."
         },
         "fr": {
-          "question": "Un joueur peut attraper la balle sur sa raquette et la rediriger pendant un échange.",
-          "explanationShort": "Attraper ou porter la balle sur la raquette est une faute.\nLa balle doit rebondir hors de la raquette au contact.\nRèglement officiel USA Pickleball 2026, règle 12.C."
+          "question": "Un joueur peut retenir la balle sur sa raquette et la rediriger pendant un échange.",
+          "explanationShort": "Retenir, porter ou accompagner la balle sur la raquette est une faute.\nLa balle doit être frappée, pas retenue ni accompagnée.\nRèglement officiel USA Pickleball 2026, règle 12.C."
         }
       }
     },
@@ -3066,7 +3066,7 @@
         },
         "fr": {
           "question": "Un joueur peut lancer sa raquette pour frapper la balle pendant un échange.",
-          "explanationShort": "Le joueur doit tenir sa raquette au moment où il frappe la balle.\nLancer la raquette pour faire contact est une faute.\nRèglement officiel USA Pickleball 2026, règle 12.B.1."
+          "explanationShort": "Le joueur doit tenir sa raquette au moment où il frappe la balle.\nLancer la raquette pour toucher la balle est une faute.\nRèglement officiel USA Pickleball 2026, règle 12.B.1."
         }
       }
     },
@@ -3085,7 +3085,7 @@
           "explanationShort": "A ball hitting a permanent object first is a fault.\nIt must land in court without contact first.\n2026 USA Pickleball Official Rulebook, Rule 10.C.4."
         },
         "fr": {
-          "question": "Si le coup d'un joueur touche le grillage avant d'atterrir sur le terrain, c'est une faute.",
+          "question": "Si la balle frappée par un joueur touche le grillage avant d'atterrir sur le terrain, c'est une faute.",
           "explanationShort": "Une balle qui touche d'abord un objet permanent est une faute.\nElle doit atterrir sur le terrain sans contact préalable.\nRèglement officiel USA Pickleball 2026, règle 10.C.4."
         }
       }
@@ -3101,18 +3101,18 @@
       ],
       "i18n": {
         "en": {
-          "question": "If all players agree a broken ball affected the rally, the rally must be replayed.",
+          "question": "If all players agree that a broken ball affected the rally, the rally must be replayed.",
           "explanationShort": "All players must agree that the break affected the outcome.\nIf there is no agreement, the result of the rally stands.\n2026 USA Pickleball Official Rulebook, Rule 10.G.1."
         },
         "fr": {
-          "question": "Si tous les joueurs sont d'accord qu'une balle cassée a influencé l'échange, l'échange doit être rejoué.",
-          "explanationShort": "Tous les joueurs doivent reconnaître que la casse a influencé le résultat de l'échange.\nSans accord, le résultat de l'échange est maintenu.\nRèglement officiel USA Pickleball 2026, règle 10.G.1."
+          "question": "Si tous les joueurs reconnaissent qu'une balle cassée a influencé l'échange, l'échange doit être rejoué.",
+          "explanationShort": "Tous les joueurs doivent reconnaître que la balle cassée a influencé l'échange.\nSans accord, le résultat de l'échange est maintenu.\nRèglement officiel USA Pickleball 2026, règle 10.G.1."
         }
       }
     },
     {
       "id": 155,
-      "correctAnswer": false,
+      "correctAnswer": true,
       "tags": [
         "Non-Volley Zone",
         "Intermediate",
@@ -3121,12 +3121,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "A player may enter the non-volley zone (NVZ) at any time.",
-          "explanationShort": "Entering the NVZ (kitchen) is allowed at any time.\nThe only restriction is volleying while in it.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
+          "question": "A player may enter the NVZ/kitchen when they are not volleying.",
+          "explanationShort": "A player may enter the NVZ/kitchen at any time except during the act of volleying.\nThe restriction is about volleying, not simply being in the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
         },
         "fr": {
-          "question": "Un joueur peut entrer dans la zone de non-volée (ZNV) à tout moment.",
-          "explanationShort": "Entrer dans la ZNV est autorisé à tout moment.\nLa seule restriction est de jouer la balle à la volée quand on s'y trouve.\nRèglement officiel USA Pickleball 2026, règle 11.A."
+          "question": "Un joueur peut entrer dans la ZNV/kitchen quand il ne joue pas de volée.",
+          "explanationShort": "Un joueur peut entrer dans la ZNV/kitchen à tout moment, sauf pendant l'action de jouer une volée.\nLa restriction concerne les volées, pas le simple fait de se trouver dans la ZNV.\nRèglement officiel USA Pickleball 2026, règle 11.A."
         }
       }
     },
@@ -3145,8 +3145,8 @@
           "explanationShort": "Volleying the ball while in the NVZ (kitchen) is a fault.\nThe player must be completely outside the NVZ to volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
         },
         "fr": {
-          "question": "Un joueur peut jouer la balle à la volée en se tenant dans la zone de non-volée (ZNV).",
-          "explanationShort": "Jouer la balle à la volée depuis la ZNV est une faute.\nLe joueur doit être complètement hors de la ZNV pour jouer une volée.\nRèglement officiel USA Pickleball 2026, règle 11.A."
+          "question": "Un joueur peut jouer une volée en se tenant dans la zone de non-volée (ZNV).",
+          "explanationShort": "Jouer une volée depuis la ZNV est une faute.\nLe joueur doit être complètement hors de la ZNV pour jouer une volée.\nRèglement officiel USA Pickleball 2026, règle 11.A."
         }
       }
     },
@@ -3161,12 +3161,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "If a player's momentum carries them into the non-volley zone (NVZ) after a volley, it is a fault.",
-          "explanationShort": "Momentum into the NVZ (kitchen) after a volley is a fault.\nThis applies even after the ball has become dead.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2."
+          "question": "If a player's momentum carries them into the non-volley zone (NVZ/kitchen) after hitting the ball out of the air, it is a fault.",
+          "explanationShort": "Hitting the ball out of the air is a volley.\nIf a player's momentum carries them into the NVZ (kitchen) after a volley, it is a fault, even after the ball becomes dead.\nIf the ball bounced before the hit, this momentum rule does not apply.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2."
         },
         "fr": {
-          "question": "Si l'élan d'un joueur l'emporte dans la zone de non-volée (ZNV) après une volée, c'est une faute.",
-          "explanationShort": "L'élan dans la ZNV après une volée est une faute.\nCela s'applique même après que la balle est devenue morte.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
+          "question": "Si l'élan d'un joueur l'emporte dans la zone de non-volée (ZNV/kitchen) après avoir frappé la balle avant rebond, c'est une faute.",
+          "explanationShort": "Frapper la balle avant rebond, c'est jouer une volée.\nSi l'élan d'un joueur l'emporte dans la ZNV/kitchen après une volée, c'est une faute, même si l'échange est déjà terminé.\nSi la balle avait rebondi avant la frappe, cette règle liée à l'élan ne s'applique pas.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
         }
       }
     },
@@ -3181,11 +3181,11 @@
       ],
       "i18n": {
         "en": {
-          "question": "One foot outside the non-volley zone (NVZ) is enough to volley legally.",
-          "explanationShort": "Both feet must be completely outside the NVZ (kitchen) before volleying.\nOne foot outside is not sufficient to volley legally.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3."
+          "question": "One foot outside the non-volley zone (NVZ) is enough to volley.",
+          "explanationShort": "Both feet must be completely outside the NVZ (kitchen) before volleying.\nOne foot outside is not enough.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3."
         },
         "fr": {
-          "question": "Un pied hors de la zone de non-volée (ZNV) suffit pour jouer une volée légalement.",
+          "question": "Un pied hors de la zone de non-volée (ZNV) suffit pour jouer une volée.",
           "explanationShort": "Les deux pieds doivent être complètement hors de la ZNV avant de jouer une volée.\nUn seul pied hors de la zone ne suffit pas.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
         }
       }
@@ -3201,12 +3201,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "If the ball becomes soft during a rally, the result of the rally is replayed.",
-          "explanationShort": "A soft or degraded ball doesn't cause a replay.\nOnly a broken ball agreed on by all can.\n2026 USA Pickleball Official Rulebook, Rule 10.G.2."
+          "question": "If the ball becomes soft during a rally, the rally is replayed.",
+          "explanationShort": "A soft or degraded ball does not cause a replay.\nOnly a broken or cracked ball agreed on by all players can lead to a replay.\n2026 USA Pickleball Official Rulebook, Rule 10.G.2."
         },
         "fr": {
-          "question": "Si la balle devient molle pendant un échange, le résultat de l'échange est rejoué.",
-          "explanationShort": "Une balle molle ou dégradée ne provoque pas de reprise de l'échange.\nSeule une balle cassée, reconnue par tous, le peut.\nRèglement officiel USA Pickleball 2026, règle 10.G.2."
+          "question": "Si la balle devient molle pendant un échange, l'échange est rejoué.",
+          "explanationShort": "Une balle molle ou dégradée ne fait pas rejouer l'échange.\nSeule une balle cassée ou fissurée, reconnue par tous les joueurs, peut faire rejouer l'échange.\nRèglement officiel USA Pickleball 2026, règle 10.G.2."
         }
       }
     },
@@ -3244,7 +3244,7 @@
           "explanationShort": "Landing in the NVZ (kitchen) after volleying is a fault.\nThe player must land completely outside.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2."
         },
         "fr": {
-          "question": "Un joueur peut sauter de l'extérieur de la ZNV, jouer la balle à la volée en l'air et atterrir dans la ZNV.",
+          "question": "Un joueur peut sauter de l'extérieur de la ZNV, jouer une volée et atterrir dans la ZNV.",
           "explanationShort": "Atterrir dans la ZNV après une volée est une faute.\nLe joueur doit atterrir complètement à l'extérieur.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
         }
       }
@@ -3305,7 +3305,7 @@
           "explanationShort": "NVZ (kitchen) contact is only banned during volleying.\nTouching it before the volley is not a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
         },
         "fr": {
-          "question": "Un joueur peut toucher la zone de non-volée (ZNV) avec sa raquette avant de frapper une volée.",
+          "question": "Un joueur peut toucher la zone de non-volée (ZNV) avec sa raquette avant de jouer une volée.",
           "explanationShort": "Le contact avec la ZNV n'est interdit que pendant la volée.\nLa toucher avant la volée n'est pas une faute.\nRèglement officiel USA Pickleball 2026, règle 11.A."
         }
       }
@@ -3321,12 +3321,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "Jumping from inside the non-volley zone (NVZ) to volley the ball in the air is legal.",
+          "question": "Jumping from inside the non-volley zone (NVZ) to volley is allowed.",
           "explanationShort": "Both feet must be outside the NVZ (kitchen) first.\nJumping from inside to volley is a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3."
         },
         "fr": {
-          "question": "Sauter depuis l'intérieur de la zone de non-volée (ZNV) pour jouer la balle à la volée est légal.",
-          "explanationShort": "Les deux pieds doivent d'abord être hors de la ZNV.\nSauter depuis l'intérieur pour jouer la balle à la volée est une faute.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
+          "question": "Sauter depuis l'intérieur de la ZNV/kitchen pour jouer une volée est autorisé.",
+          "explanationShort": "Les deux pieds doivent d'abord être hors de la ZNV/kitchen.\nSauter depuis l'intérieur pour jouer une volée est une faute.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
         }
       }
     },
@@ -3487,12 +3487,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "If the ball bounces in your court and returns over the net on its own, you lose the rally.",
-          "explanationShort": "The player may reach over to hit the returned ball.\nThe ball must have crossed back first.\n2026 USA Pickleball Official Rulebook, Rule 13.I.2."
+          "question": "If the ball bounces in your court and spins back over the net on its own, you automatically lose the rally.",
+          "explanationShort": "You do not automatically lose the rally.\nYou may cross over, under, or around the net to hit the ball after it has crossed back.\n2026 USA Pickleball Official Rulebook, Rule 13.I.2."
         },
         "fr": {
-          "question": "Si la balle rebondit dans votre terrain et revient toute seule au-dessus du filet, vous perdez l'échange.",
-          "explanationShort": "Le joueur peut passer sa raquette au-dessus du filet pour frapper la balle qui revient.\nLa balle doit d'abord avoir refranchi le filet.\nRèglement officiel USA Pickleball 2026, règle 13.I.2."
+          "question": "Si la balle rebondit dans votre camp puis repasse toute seule de l'autre côté du filet avec l'effet, vous perdez automatiquement l'échange.",
+          "explanationShort": "Non. Vous ne perdez pas automatiquement l'échange.\nVous pouvez passer au-dessus, au-dessous ou autour du filet pour jouer la balle après qu'elle a repassé le filet.\nRèglement officiel USA Pickleball 2026, règle 13.I.2."
         }
       }
     },
@@ -3532,7 +3532,7 @@
         },
         "fr": {
           "question": "En tournoi, les chaussures doivent avoir des semelles qui ne marquent ni n'endommagent la surface de jeu.",
-        "explanationShort": "Le directeur du tournoi peut exiger un changement de chaussures inadaptées.\nRefuser de changer de chaussures peut entraîner la perte du match.\nRèglement officiel USA Pickleball 2026, règle 18.B.2."
+          "explanationShort": "Le directeur du tournoi peut exiger un changement de chaussures inadaptées.\nRefuser de changer de chaussures peut entraîner la perte du match.\nRèglement officiel USA Pickleball 2026, règle 18.B.2."
         }
       }
     },
@@ -3572,7 +3572,7 @@
           "explanationShort": "The form of identification is determined by the Tournament Director.\nIt has to stay visible to officials and players throughout the match.\n2026 USA Pickleball Official Rulebook, Rule 18.C."
         },
         "fr": {
-          "question": "En tournoi double, le serveur qui ouvre doit porter un moyen d'identification visible.",
+          "question": "En tournoi de double, le serveur qui ouvre doit porter un moyen d'identification visible.",
           "explanationShort": "Le moyen d'identification est déterminé par le directeur du tournoi.\nIl doit rester visible des officiels et des joueurs pendant tout le match.\nRèglement officiel USA Pickleball 2026, règle 18.C."
         }
       }
@@ -3627,12 +3627,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "If the ball hits the net and lands in bounds, play stops and the rally is replayed.",
-          "explanationShort": "The ball stays in play if it lands in bounds.\nNet contact alone does not stop the rally.\n2026 USA Pickleball Official Rulebook, Rule 13.A."
+          "question": "During a rally, if the ball touches the net, crosses over, and lands in bounds, the rally is replayed.",
+          "explanationShort": "No. If the ball touches the net, crosses over, and lands in bounds, it stays in play.\nNet contact alone does not stop the rally.\n2026 USA Pickleball Official Rulebook, Rule 13.A."
         },
         "fr": {
-          "question": "Si la balle touche le filet et atterrit dans les limites, le jeu s'arrête et l'échange est rejoué.",
-          "explanationShort": "La balle reste en jeu si elle atterrit dans les limites.\nLe simple contact avec le filet n'arrête pas l'échange.\nRèglement officiel USA Pickleball 2026, règle 13.A."
+          "question": "Pendant un échange, si la balle touche le filet, passe de l'autre côté et retombe bonne, l'échange est rejoué.",
+          "explanationShort": "Non. Si la balle touche le filet, passe de l'autre côté et retombe bonne, elle reste en jeu.\nLe simple contact avec le filet n'arrête pas l'échange.\nRèglement officiel USA Pickleball 2026, règle 13.A."
         }
       }
     },
@@ -3672,7 +3672,7 @@
         },
         "fr": {
           "question": "Un service qui frôle le haut du filet et atterrit dans la bonne zone de service est une faute.",
-        "explanationShort": "Un service qui touche le filet et atterrit dans la bonne zone est bon.\nAu pickleball, un service qui touche le filet ne se rejoue jamais.\nRèglement officiel USA Pickleball 2026, règle 13.A."
+          "explanationShort": "Un service qui touche le filet et atterrit dans la bonne zone est bon.\nAu pickleball, un service qui touche le filet ne se rejoue jamais.\nRèglement officiel USA Pickleball 2026, règle 13.A."
         }
       }
     },
@@ -3787,12 +3787,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "A player may hit the ball before it has fully crossed the plane of the net to their side.",
-          "explanationShort": "The ball has to fully cross the net plane first.\nIf you hit it early across the plane, it's a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.F.1."
+          "question": "A player may hit the ball before it has fully crossed the plane of the net toward their side.",
+          "explanationShort": "No. The ball must fully cross the plane of the net toward your side before you hit it.\nIf you hit it too early while it is still on the opponent's side of the plane, it is a fault.\n2026 USA Pickleball Official Rulebook, Rule 13.F.1."
         },
         "fr": {
-          "question": "Un joueur peut frapper la balle avant qu'elle ait entièrement franchi le plan du filet vers son côté.",
-          "explanationShort": "La balle doit d'abord franchir entièrement le plan du filet.\nSi vous la frappez trop tôt de l'autre côté du plan, c'est une faute.\nRèglement officiel USA Pickleball 2026, règle 13.F.1."
+          "question": "Un joueur peut frapper la balle avant qu'elle ait entièrement franchi le plan du filet vers son camp.",
+          "explanationShort": "Non. La balle doit d'abord franchir entièrement le plan du filet vers votre camp.\nSi vous la frappez trop tôt, alors qu'elle est encore du côté adverse du plan du filet, c'est une faute.\nRèglement officiel USA Pickleball 2026, règle 13.F.1."
         }
       }
     },
@@ -3926,7 +3926,7 @@
       "i18n": {
         "en": {
           "question": "In standard doubles, the score is called as three numbers.",
-          "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four–two–one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C."
+          "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four-two-one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C."
         },
         "fr": {
           "question": "En double standard, le score est annoncé sous forme de trois nombres.",
@@ -3948,7 +3948,7 @@
           "explanationShort": "No position restrictions exist after serve and return.\nOnly server and receiver have starting positions.\n2026 USA Pickleball Official Rulebook, Rule 5.B.4."
         },
         "fr": {
-          "question": "En double, sauf au service ou au retour, les joueurs peuvent se tenir n'importe où sur le terrain.",
+          "question": "En double, sauf pour le service et le retour, les joueurs peuvent se tenir n'importe où sur le terrain.",
           "explanationShort": "Aucune restriction de position après le service et le retour.\nSeuls le serveur et le receveur ont des positions de départ.\nRèglement officiel USA Pickleball 2026, règle 5.B.4."
         }
       }
@@ -4030,7 +4030,7 @@
         },
         "fr": {
           "question": "Une faute technique entraîne le retrait d'un point du score du joueur sanctionné.",
-          "explanationShort": "Un point est retiré du score du joueur sanctionné.\nSi le score est à zéro, un point va à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 22.E.1."
+          "explanationShort": "Un point est retiré du score du joueur sanctionné.\nSi le joueur est à zéro, un point va à l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 22.E.1."
         }
       }
     }
