@@ -93,6 +93,46 @@ test('RUN reshuffle flag is one-shot when UI reads state', () => {
   expect(engine.getState().poolReshuffled).toBe(false);
 });
 
+test('curated free runs preserve configured question order', () => {
+  const WT_Game = createGameApi();
+  const items = [
+    { id: 1, correctAnswer: true },
+    { id: 2, correctAnswer: false },
+    { id: 3, correctAnswer: true },
+    { id: 4, correctAnswer: false },
+    { id: 5, correctAnswer: true },
+    { id: 6, correctAnswer: false }
+  ];
+  const config = makeRunConfig({
+    curatedFreeRuns: {
+      enabled: true,
+      runCount: 2,
+      cardIdsByRun: {
+        1: [3, 1, 2],
+        2: [6, 5, 4]
+      }
+    }
+  });
+
+  const run1 = WT_Game.buildDeck({
+    items,
+    statsByItem: {},
+    mistakesOnly: false,
+    config,
+    runStartNumber: 1
+  });
+  const run2 = WT_Game.buildDeck({
+    items,
+    statsByItem: {},
+    mistakesOnly: false,
+    config,
+    runStartNumber: 2
+  });
+
+  expect(run1.ids.slice(0, 3)).toEqual([3, 1, 2]);
+  expect(run2.ids.slice(0, 3)).toEqual([6, 5, 4]);
+});
+
 test('BONUS ends at deck end and does not reshuffle', () => {
   const WT_Game = createGameApi();
   const engine = new WT_Game.GameEngine();

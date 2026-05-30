@@ -270,6 +270,122 @@ test('leaderboard landing card shows local best score when available', () => {
   expect(html).toContain('THIS WEEK');
 });
 
+test('leaderboard landing card falls back to seed rows when apiBaseUrl is empty', () => {
+  const leaderboard = loadLeaderboardModule();
+  const ui = {
+    state: 'LANDING',
+    render() {},
+    _runtime: {},
+    config: {
+      leaderboard: {
+        enabled: true,
+        apiBaseUrl: '',
+        cacheTtlMs: 60000,
+        topN: 10,
+        cardPreviewCount: 3,
+        showAfterRunCompletes: 1,
+        seedScores: {
+          weekly: [
+            { nickname: 'SeedOne', scoreFP: 21 },
+            { nickname: 'SeedTwo', scoreFP: 19 }
+          ],
+          all: []
+        }
+      }
+    },
+    wording: {
+      leaderboard: {
+        cardTitle: 'THIS WEEK',
+        cardSubDefault: 'Top scores this week.',
+        cardCtaJoin: 'Choose nickname',
+        cardWeeklyResetLine: 'Weekly reset: {localTime}',
+        loading: 'Loading',
+        empty: 'Be the first'
+      }
+    },
+    storage: {
+      getCounters() {
+        return { runCompletes: 1 };
+      },
+      getLeaderboardProfile() {
+        return { nickname: '', optIn: false };
+      },
+      getPersonalBest() {
+        return { bestScoreFP: 0 };
+      }
+    }
+  };
+
+  const html = leaderboard.renderLandingCard(ui, {
+    escapeHtml: (s) => String(s)
+  });
+
+  expect(html).toContain('SeedOne');
+  expect(html).toContain('SeedTwo');
+});
+
+test('leaderboard landing card prefers remote rows over seed rows when remote data exists', () => {
+  const leaderboard = loadLeaderboardModule();
+  const ui = {
+    state: 'LANDING',
+    render() {},
+    _runtime: {
+      leaderboard: {
+        loading: false,
+        lastFetchedAt: Date.now(),
+        error: '',
+        source: 'remote',
+        weekly: [
+          { rank: 1, nickname: 'RemoteOne', scoreFP: 25, isLocalPlayer: false }
+        ],
+        all: []
+      }
+    },
+    config: {
+      leaderboard: {
+        enabled: true,
+        apiBaseUrl: 'https://example.test',
+        cacheTtlMs: 60000,
+        topN: 10,
+        cardPreviewCount: 3,
+        showAfterRunCompletes: 1,
+        seedScores: {
+          weekly: [{ nickname: 'SeedOne', scoreFP: 21 }],
+          all: []
+        }
+      }
+    },
+    wording: {
+      leaderboard: {
+        cardTitle: 'THIS WEEK',
+        cardSubDefault: 'Top scores this week.',
+        cardCtaJoin: 'Choose nickname',
+        cardWeeklyResetLine: 'Weekly reset: {localTime}',
+        loading: 'Loading',
+        empty: 'Be the first'
+      }
+    },
+    storage: {
+      getCounters() {
+        return { runCompletes: 1 };
+      },
+      getLeaderboardProfile() {
+        return { nickname: '', optIn: false };
+      },
+      getPersonalBest() {
+        return { bestScoreFP: 0 };
+      }
+    }
+  };
+
+  const html = leaderboard.renderLandingCard(ui, {
+    escapeHtml: (s) => String(s)
+  });
+
+  expect(html).toContain('RemoteOne');
+  expect(html).not.toContain('SeedOne');
+});
+
 test('leaderboard tab switching toggles button state and panel visibility', () => {
   const leaderboard = loadLeaderboardModule();
   const rankingBtn = createFakeNode('ranking');

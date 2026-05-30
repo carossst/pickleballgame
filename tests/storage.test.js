@@ -258,3 +258,15 @@ test('share bonus balance survives reload hardening', () => {
   expect(reloaded.hasShareBonusGranted()).toBe(true);
   expect(reloaded.getRunsBalance()).toBe(1);
 });
+
+test('question audio usage flag persists and resets with device UI flags', () => {
+  const { storage } = createStorageManager();
+
+  expect(storage.hasUsedQuestionAudio()).toBe(false);
+
+  storage.markUsedQuestionAudio();
+  expect(storage.hasUsedQuestionAudio()).toBe(true);
+
+  storage.resetUiDeviceFlags();
+  expect(storage.hasUsedQuestionAudio()).toBe(false);
+});

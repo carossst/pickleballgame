@@ -476,6 +476,32 @@ void (function () {
     }
   }
 
+  function hasUsedQuestionAudio(storage) {
+    if (!storage || typeof storage.hasUsedQuestionAudio !== 'function')
+      return false;
+    try {
+      return storage.hasUsedQuestionAudio() === true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function getRunCompletesCount(storage) {
+    if (!storage || typeof storage.getCounters !== 'function') return 0;
+    try {
+      const counters = storage.getCounters() || {};
+      return clampNonNegativeInt(counters.runCompletes);
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function shouldShowQuestionAudioControl(storage) {
+    if (isAutoReadQuestionsEnabled(storage)) return true;
+    if (hasUsedQuestionAudio(storage)) return true;
+    return getRunCompletesCount(storage) < 1;
+  }
+
   function startQuestionSpeech(ui, model, opts) {
     const options = opts || {};
     if (!ui || !ui._runtime || !model || !supportsQuestionSpeech())
@@ -3642,6 +3668,16 @@ void (function () {
     if (this._runtime) {
       this._runtime.questionAutoReadDoneKey = model.speechKey;
     }
+    try {
+      if (
+        this.storage &&
+        typeof this.storage.markUsedQuestionAudio === 'function'
+      ) {
+        this.storage.markUsedQuestionAudio();
+      }
+    } catch (_) {
+      /* silent */
+    }
     startQuestionSpeech(this, model, { render: true });
   };
 
@@ -3657,6 +3693,12 @@ void (function () {
     const next = !isAutoReadQuestionsEnabled(this.storage);
     try {
       this.storage.setAutoReadQuestions(next);
+      if (
+        next === true &&
+        typeof this.storage.markUsedQuestionAudio === 'function'
+      ) {
+        this.storage.markUsedQuestionAudio();
+      }
     } catch (_) {
       return;
     }
@@ -10246,6 +10288,7 @@ ${audioSettingsHtml}
     const stopAria = String(wAll.system?.stopQuestionAria || stopLabel).trim();
     const questionAudioHtml =
       speechSupported &&
+      shouldShowQuestionAudioControl(this.storage) &&
       !this._runtime.feedbackPending &&
       (speakLabel || stopLabel)
         ? `

@@ -418,9 +418,8 @@
       nicknameRegexSource: "^[\\p{L}\\p{N}][\\p{L}\\p{N} _-]{2,23}$",
       nicknameRegexFlags: "u",
 
-      // Set this to your deployed Worker URL later, for example:
-      // "https://prq-leaderboard.<subdomain>.workers.dev"
-      apiBaseUrl: "",
+      // Deployed live Worker URL.
+      apiBaseUrl: "https://prq-leaderboard.carolestromboni.workers.dev",
 
       // Local-only UI test rows.
       // Remove these before go-live if you want the honest empty state again.

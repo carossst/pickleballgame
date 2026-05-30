@@ -131,7 +131,7 @@
       ids.push(idNum);
     }
 
-    return shuffleCopy(ids);
+    return ids;
   }
 
   function prependOpeningIds(baseIds, openingIds) {

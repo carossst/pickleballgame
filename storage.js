@@ -223,6 +223,7 @@
         secretChestHintSolved: false,
         secretChestWelcomeShown: false,
         dailyChallengeToastDayKey: '',
+        questionAudioUsed: false,
         shareBonusGranted: false,
         shareBonusGrantedAt: 0
       },
@@ -522,6 +523,8 @@
       flags.secretChestHintSolved = false;
     if (typeof flags.secretChestWelcomeShown !== 'boolean')
       flags.secretChestWelcomeShown = false;
+    if (typeof flags.questionAudioUsed !== 'boolean')
+      flags.questionAudioUsed = false;
     flags.dailyChallengeToastDayKey = String(
       flags.dailyChallengeToastDayKey || ''
     ).trim();
@@ -1014,6 +1017,14 @@
       return;
     this.data.uiDeviceFlags.dailyChallengeToastDayKey = key;
     this._save();
+  };
+
+  StorageManager.prototype.hasUsedQuestionAudio = function () {
+    return this._readUiDeviceFlag('questionAudioUsed');
+  };
+
+  StorageManager.prototype.markUsedQuestionAudio = function () {
+    this._writeUiDeviceFlag('questionAudioUsed');
   };
 
   StorageManager.prototype.resetUiDeviceFlags = function () {
