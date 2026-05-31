@@ -229,7 +229,7 @@
           "explanationShort": "Before 2026, the rule focused on calling time-out before the next serve.\nNow a late time-out call after the serve is explicitly a fault.\n2026 USA Pickleball Rulebook Change Document, page 24."
         },
         "fr": {
-          "question": "Si un joueur demande un temps mort après que le service a été frappé, c'est une faute.",
+      "question": "Si un joueur demande un temps mort après que le service a été effectué, c'est une faute.",
           "explanationShort": "Avant 2026, la règle visait surtout les temps morts demandés avant le service suivant.\nMaintenant, un temps mort tardif après le service est explicitement une faute.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
         }
       }
@@ -493,7 +493,7 @@
           "explanationShort": "The serve must go diagonally crosscourt.\nServing straight ahead is a fault.\n2026 USA Pickleball Official Rulebook, Rule 7.E."
         },
         "fr": {
-          "question": "Le service peut être frappé tout droit.",
+      "question": "Le service peut être effectué tout droit.",
           "explanationShort": "Le service doit partir en diagonale, en croisé.\nServir tout droit est une faute.\nRèglement officiel USA Pickleball 2026, règle 7.E."
         }
       }
@@ -653,8 +653,8 @@
           "explanationShort": "No foot can touch the court, including the baseline, at contact.\nThe server has to stay behind it until the ball is struck.\n2026 USA Pickleball Official Rulebook, Rule 7.A.2."
         },
         "fr": {
-          "question": "Le pied du serveur peut toucher la ligne de fond au moment de frapper la balle.",
-          "explanationShort": "Aucun pied ne doit toucher le terrain, ligne de fond comprise, au contact.\nLe serveur doit rester derrière jusqu'à la frappe.\nRèglement officiel USA Pickleball 2026, règle 7.A.2."
+      "question": "Le pied du serveur peut toucher la ligne de fond au moment d'effectuer le service.",
+      "explanationShort": "Aucun pied ne doit toucher le terrain, ligne de fond comprise, au contact.\nLe serveur doit rester derrière jusqu'au service.\nRèglement officiel USA Pickleball 2026, règle 7.A.2."
         }
       }
     },
@@ -793,7 +793,7 @@
           "explanationShort": "Touching the baseline at contact is a fault.\nThe foot must be fully behind the baseline.\n2026 USA Pickleball Official Rulebook, Rule 7.A.2.a."
         },
         "fr": {
-          "question": "Le pied du serveur peut toucher la ligne de fond au moment où la raquette frappe la balle.",
+      "question": "Le pied du serveur peut toucher la ligne de fond au moment d'effectuer le service.",
           "explanationShort": "Toucher la ligne de fond au contact est une faute.\nLe pied doit être entièrement derrière la ligne de fond.\nRèglement officiel USA Pickleball 2026, règle 7.A.2.a."
         }
       }
@@ -834,7 +834,7 @@
         },
         "fr": {
           "question": "Le service avec rebond doit respecter les mêmes règles d'arc du geste, de poignet et de hauteur que le service à la volée.",
-          "explanationShort": "Non. Les règles d'arc ascendant, de poignet et de hauteur s'appliquent seulement au service à la volée.\nAvec un service avec rebond, la balle est lâchée puis frappée après rebond: ces restrictions de mouvement ne s'appliquent pas.\nRèglement officiel USA Pickleball 2026, règles 7.C, 7.D."
+      "explanationShort": "Non. Les règles d'arc ascendant, de poignet et de hauteur s'appliquent seulement au service à la volée.\nAvec un service avec rebond, la balle est lâchée puis jouée après rebond: ces restrictions de mouvement ne s'appliquent pas.\nRèglement officiel USA Pickleball 2026, règles 7.C, 7.D."
         }
       }
     },
@@ -853,7 +853,7 @@
           "explanationShort": "Players signal 'not ready' before the score call.\nAfter the call, the server has 10 seconds to serve.\n2026 USA Pickleball Official Rulebook, Rule 6.A."
         },
         "fr": {
-          "question": "Le receveur doit être prêt avant que le service ne soit frappé.",
+      "question": "Le receveur doit être prêt avant que le service ne soit effectué.",
           "explanationShort": "Les joueurs doivent signaler qu'ils ne sont pas prêts avant l'annonce du score.\nAprès l'annonce, le serveur a 10 secondes pour servir.\nRèglement officiel USA Pickleball 2026, règle 6.A."
         }
       }
@@ -1267,12 +1267,12 @@
           "question": "Before the serve is hit, a player may ask their opponent for the correct score.",
           "explanationShort": "A player may ask the opponent for the correct score.\nThis is allowed before the serve is hit.\n2026 USA Pickleball Official Rulebook, Rule 6.F."
         },
-        "fr": {
-          "question": "Avant que le service ne soit frappé, un joueur peut demander le bon score à son adversaire.",
-          "explanationShort": "Un joueur peut demander le bon score à l'adversaire.\nC'est permis avant que le service ne soit frappé.\nRèglement officiel USA Pickleball 2026, règle 6.F."
-        }
-      }
-    },
+    "fr": {
+      "question": "Avant que le service ne soit effectué, un joueur peut demander le bon score à son adversaire.",
+      "explanationShort": "Un joueur peut demander le bon score à l'adversaire.\nC'est permis avant que le service ne soit effectué.\nRèglement officiel USA Pickleball 2026, règle 6.F."
+    }
+  }
+},
     {
       "id": 63,
       "correctAnswer": true,
@@ -2225,8 +2225,8 @@
           "explanationShort": "Once the next serve is hit, the call is final.\nAny change must happen before that serve.\n2026 USA Pickleball Official Rulebook, Rule 8.I."
         },
         "fr": {
-          "question": "Un joueur peut changer d'avis sur une annonce de ligne après que le service suivant a été frappé.",
-          "explanationShort": "Une fois le service suivant frappé, l'annonce est définitive.\nTout changement doit se faire avant ce service.\nRèglement officiel USA Pickleball 2026, règle 8.I."
+      "question": "Un joueur peut changer d'avis sur une annonce de ligne après que le service suivant a été effectué.",
+      "explanationShort": "Une fois le service suivant effectué, l'annonce est définitive.\nTout changement doit se faire avant ce service.\nRèglement officiel USA Pickleball 2026, règle 8.I."
         }
       }
     },
@@ -2546,7 +2546,7 @@
           "explanationShort": "A fault should be called as soon as detected.\nAfter the next serve, it can no longer be enforced.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.a."
         },
         "fr": {
-          "question": "Une annonce de faute doit être faite avant que le service suivant ne soit frappé.",
+      "question": "Une annonce de faute doit être faite avant que le service suivant ne soit effectué.",
           "explanationShort": "Une faute doit être annoncée dès qu'elle est détectée.\nAprès le service suivant, elle ne peut plus être appliquée.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.a."
         }
       }
@@ -2845,12 +2845,12 @@
           "question": "After the serve and return, the ball may bounce twice on your side before you hit it.",
           "explanationShort": "No. After the serve and return, you must hit the ball before a second bounce on your side.\nThe two-bounce rule only means the serve and the return must each bounce once.\n2026 USA Pickleball Official Rulebook, Rules 10.B, 10.B.1."
         },
-        "fr": {
-          "question": "Après le service et le retour, la balle peut rebondir deux fois dans votre camp avant d'être frappée.",
-          "explanationShort": "Non. Après le service et le retour, vous devez frapper la balle avant un deuxième rebond dans votre camp.\nLa règle des deux rebonds signifie seulement que le service et le retour doivent chacun rebondir une fois.\nRèglement officiel USA Pickleball 2026, règles 10.B, 10.B.1."
-        }
-      }
-    },
+    "fr": {
+      "question": "Après le service et le retour, la balle peut rebondir deux fois dans votre camp avant d'être renvoyée.",
+      "explanationShort": "Non. Après le service et le retour, vous devez renvoyer la balle avant un deuxième rebond dans votre camp.\nLa règle des deux rebonds signifie seulement que le service et le retour doivent chacun rebondir une fois.\nRèglement officiel USA Pickleball 2026, règles 10.B, 10.B.1."
+    }
+  }
+},
     {
       "id": 142,
       "correctAnswer": false,
