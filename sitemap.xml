@@ -2,14 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-  <!--
-    Multilingual sitemap (Phase 5).
-    Strategy:
-    - English home is served at /
-    - French home is served at /fr.html
-    - Static pages still use client-side locale switching with ?lang=en|fr alternates
-    We declare hreflang alternates so search engines surface the right entry point.
-  -->
+  <!-- GENERATED FILE — do not hand-edit. Run: node scripts/generate-sitemap.mjs -->
 
   <url>
     <loc>https://pickleballrulesquiz.com/</loc>

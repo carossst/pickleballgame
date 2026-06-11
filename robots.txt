@@ -1,5 +1,51 @@
+# robots.txt — pickleballrulesquiz.com
+# Strategy: maximum visibility. The SEO plan includes LLM citation capture,
+# so AI crawlers (both training and inference/search) are explicitly allowed.
+# Being present in training data and in AI search indexes is how the quiz
+# becomes the canonical answer for "pickleball rules quiz".
+
+# --- Default: everyone allowed ---
 User-agent: *
 Allow: /
 Disallow: /success.html
 
+# --- AI search / inference agents (answer engines, live retrieval) ---
+# Explicitly allowed: these drive citations and referral traffic.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+# --- AI training crawlers ---
+# Explicitly allowed (deliberate choice): presence in training corpora
+# supports long-term LLM citation capture (layer 4 of the SEO plan).
+# To opt out of training later, switch these to "Disallow: /".
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# --- Discovery files ---
 Sitemap: https://pickleballrulesquiz.com/sitemap.xml
+
+# llms.txt lives at https://pickleballrulesquiz.com/llms.txt

@@ -1,0 +1,246 @@
+{
+  "version": "2026-06-11",
+  "comment": "Single source of truth for the static SEO layer. English only — French SEO lives on bonjourpickleball.fr. sitemap.xml entries for SEO pages must be generated from this file, never hand-edited.",
+  "defaults": {
+    "locale": "en",
+    "baseUrl": "https://pickleballrulesquiz.com",
+    "minWordCount": 450,
+    "ruleSource": "2026 USA Pickleball Official Rulebook",
+    "ctaTarget": "/",
+    "statuses": [
+      "draft",
+      "ready",
+      "live"
+    ],
+    "urlPatterns": {
+      "theme": "/quiz/{slug}/",
+      "question": "/rules/{slug}/"
+    }
+  },
+  "hub": {
+    "slug": "",
+    "comment": "The hub IS the root domain (exact-match domain pickleballrulesquiz.com). The SPA landing already targets 'pickleball rules quiz'. No separate hub page — theme and question pages all link up to /.",
+    "primaryKeyword": "pickleball rules quiz",
+    "status": "live"
+  },
+  "themes": [
+    {
+      "slug": "kitchen-rules",
+      "title": "Kitchen Rules Quiz — Non-Volley Zone Questions | Pickleball Rules Quiz",
+      "h1": "Kitchen (Non-Volley Zone) Rules Quiz",
+      "metaDescription": "Think you know the kitchen? Test yourself on the pickleball non-volley zone rules with true/false questions from the official 2026 USA Pickleball rulebook.",
+      "primaryKeyword": "pickleball kitchen rules quiz",
+      "secondaryKeywords": [
+        "non-volley zone rules",
+        "kitchen line rules pickleball"
+      ],
+      "cardTags": [
+        "Non-Volley Zone"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "serving-rules",
+      "title": "Pickleball Serving Rules Quiz — Test Your Serve Knowledge",
+      "h1": "Serving Rules Quiz",
+      "metaDescription": "Drop serve, volley serve, foot faults, service sequence: test your knowledge of the official 2026 pickleball serving rules with true/false questions.",
+      "primaryKeyword": "pickleball serving rules quiz",
+      "secondaryKeywords": [
+        "pickleball serve rules",
+        "drop serve rules"
+      ],
+      "cardTags": [
+        "Serving Rules"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "scoring-rules",
+      "title": "Pickleball Scoring Quiz — Score & Readiness Rules",
+      "h1": "Scoring & Readiness Quiz",
+      "metaDescription": "Side out, server number, calling the score: test yourself on official pickleball scoring rules with true/false questions from the 2026 rulebook.",
+      "primaryKeyword": "pickleball scoring quiz",
+      "secondaryKeywords": [
+        "how to keep score in pickleball",
+        "pickleball score calling rules"
+      ],
+      "cardTags": [
+        "Score & Readiness"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "line-call-rules",
+      "title": "Pickleball Line Call Rules Quiz — In or Out?",
+      "h1": "Line Call Rules Quiz",
+      "metaDescription": "Who makes the call? Is the line in or out? Test your knowledge of official pickleball line call rules with true/false questions.",
+      "primaryKeyword": "pickleball line call rules",
+      "secondaryKeywords": [
+        "pickleball line rules quiz",
+        "is the line in or out pickleball"
+      ],
+      "cardTags": [
+        "Line Calls"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "faults",
+      "title": "Pickleball Faults Quiz — Faults & Dead Ball Rules",
+      "h1": "Faults & Dead Ball Quiz",
+      "metaDescription": "What counts as a fault in pickleball? Test yourself on faults and dead ball rules with true/false questions from the official 2026 rulebook.",
+      "primaryKeyword": "pickleball faults quiz",
+      "secondaryKeywords": [
+        "what is a fault in pickleball",
+        "dead ball rules pickleball"
+      ],
+      "cardTags": [
+        "Faults & Dead Ball"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "2026-rule-changes",
+      "title": "2026 Pickleball Rule Changes Quiz — What's New This Year",
+      "h1": "2026 Rule Changes Quiz",
+      "metaDescription": "Do you know what changed in the 2026 USA Pickleball rulebook? Test yourself on the new rules with true/false questions.",
+      "primaryKeyword": "2026 pickleball rule changes",
+      "secondaryKeywords": [
+        "new pickleball rules 2026",
+        "pickleball rule changes quiz"
+      ],
+      "cardTags": [
+        "2026 Changes"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "court-and-equipment",
+      "title": "Pickleball Court & Equipment Rules Quiz",
+      "h1": "Court & Equipment Quiz",
+      "metaDescription": "Paddle specs, court dimensions, net height: test your knowledge of official pickleball court and equipment rules.",
+      "primaryKeyword": "pickleball equipment rules quiz",
+      "secondaryKeywords": [
+        "pickleball court dimensions quiz",
+        "legal pickleball paddle rules"
+      ],
+      "cardTags": [
+        "Court & Equipment"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    },
+    {
+      "slug": "rally-rules",
+      "title": "Pickleball Rally Rules Quiz — In-Game Situations",
+      "h1": "Rally Situations Quiz",
+      "metaDescription": "Double hits, balls off the body, around-the-post shots: test yourself on tricky in-rally pickleball rules with true/false questions.",
+      "primaryKeyword": "pickleball rally rules",
+      "secondaryKeywords": [
+        "around the post rules pickleball",
+        "double hit rule pickleball"
+      ],
+      "cardTags": [
+        "Rally Situations",
+        "The Net"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    }
+  ],
+  "questions": [
+    {
+      "slug": "can-you-stand-in-the-kitchen",
+      "theme": "kitchen-rules",
+      "question": "Can you stand in the kitchen in pickleball?",
+      "shortAnswer": "Yes — you can stand in the non-volley zone at any time. You just cannot volley the ball while touching it.",
+      "cardIds": [
+        155,
+        156,
+        161
+      ],
+      "ruleRefs": [
+        "11.A",
+        "11.A.1",
+        "11.A.2",
+        "11.A.3"
+      ],
+      "status": "ready",
+      "lastmod": "2026-06-11",
+      "title": "Can You Stand in the Kitchen in Pickleball? | Pickleball Rules Quiz",
+      "metaDescription": "Yes — you can stand in the pickleball kitchen at any time. You just can't volley while touching it. What rule 11.A of the 2026 USA Pickleball rulebook actually says.",
+      "ogDescription": "Yes — at any time. The rule restricts volleying, not standing. What the 2026 rulebook actually says.",
+      "h1": "Can You Stand in the Kitchen in Pickleball?",
+      "breadcrumbTheme": "Kitchen Rules",
+      "content": {
+        "lead": "<strong>Yes — at any time.</strong> Standing in the kitchen is completely legal. The rule restricts <em>volleying</em>, not standing. You cannot hit the ball out of the air while you, or anything touching you, is in contact with the kitchen.",
+        "sections": [
+          {
+            "h2": "What the rule actually says",
+            "paragraphs": [
+              "The kitchen — officially the non-volley zone (NVZ) — is the 7-foot area on each side of the net, lines included. Despite the nickname, it is not a forbidden zone. Under Rule 11.A of the 2026 USA Pickleball Official Rulebook, a player may contact the non-volley zone at any time, with one exception: during the act of volleying a ball.",
+              "A volley means striking the ball before it bounces. So the test is simple: did the ball bounce first? If it bounced, you can play it from anywhere — including from inside the kitchen with both feet planted on the line. If it did not bounce, you must initiate the volley entirely outside the zone."
+            ]
+          },
+          {
+            "h2": "The three ways to commit a kitchen fault",
+            "paragraphs": [
+              "Rule 11.A breaks kitchen faults into three scenarios, and all three revolve around the volley:",
+              "<strong>1. Contact while volleying (11.A.1).</strong> You volley while you — or anything in contact with you, including your paddle, your hat, or your partner — touches the kitchen. Fault.",
+              "<strong>2. Momentum (11.A.2).</strong> You volley from outside the zone, but your follow-through carries you in. Still a fault, even if the ball is already dead by the time you land. Momentum counts until your movement fully stops.",
+              "<strong>3. Failing to exit first (11.A.3).</strong> You were standing in the kitchen, then a volley opportunity comes. You must get both feet in contact with the playing surface completely outside the zone before volleying. Standing in the kitchen and jumping to hit the ball mid-air does not reset you — it's a fault."
+            ]
+          },
+          {
+            "h2": "Why players get this wrong",
+            "paragraphs": [
+              "The nickname does the damage. \"Stay out of the kitchen\" is repeated so often at rec play that many players believe stepping in is itself illegal. It never has been. Dinking from inside the kitchen, retrieving a short ball, even camping there while the rally continues — all legal, as long as every ball you hit from inside has bounced first. The cost of staying in is tactical, not legal: while you're in the zone, you've surrendered your right to volley."
+            ]
+          }
+        ],
+        "quizTeaser": [
+          "A player may enter the NVZ/kitchen when they are not volleying.",
+          "A player may volley the ball while standing in the non-volley zone.",
+          "A player may jump from outside the NVZ, volley the ball in the air, and land inside the NVZ."
+        ],
+        "faq": [
+          {
+            "q": "Can you stand in the kitchen in pickleball?",
+            "a": "Yes. You can stand in the kitchen (non-volley zone) at any time. The restriction is on volleying: you cannot hit the ball out of the air while you, or anything touching you, is in contact with the kitchen. Source: 2026 USA Pickleball Official Rulebook, Rule 11.A."
+          },
+          {
+            "q": "Can you stay in the kitchen after hitting a ball that bounced?",
+            "a": "Yes. If the ball bounces, you can play it from inside the kitchen and stay there. There is no requirement to exit after the shot — but you cannot volley a later ball until both feet have re-established contact completely outside the zone."
+          },
+          {
+            "q": "Can you jump from the kitchen, volley, and land outside?",
+            "a": "No. Once you have touched the kitchen, you cannot volley until both feet have contacted the playing surface completely outside it. Jumping out of the zone to hit a volley mid-air is a fault under Rule 11.A.3."
+          }
+        ],
+        "sourceNote": "Source: 2026 USA Pickleball Official Rulebook, Section 11 (Non-Volley Zone Infractions), Rule 11.A. This page summarizes the rule in plain language and is not affiliated with USA Pickleball."
+      }
+    },
+    {
+      "slug": "is-the-drop-serve-legal",
+      "theme": "serving-rules",
+      "question": "Is the drop serve legal in pickleball?",
+      "shortAnswer": "Yes — the drop serve is a permanent, legal serve option under the official rules.",
+      "cardIds": [],
+      "ruleRefs": [
+        "4.A.8"
+      ],
+      "status": "draft",
+      "lastmod": "2026-06-11"
+    }
+  ],
+  "llmCapture": {
+    "comment": "Layer 4 — pages designed for AI citation. Built after layers 2-3 have indexed.",
+    "pages": []
+  }
+}
