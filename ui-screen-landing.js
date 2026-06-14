@@ -4,6 +4,34 @@
 (() => {
   "use strict";
 
+  function getSeoEntryContext() {
+    if (typeof window === "undefined" || !window.location) return null;
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const source = String(params.get("wt-source") || "").trim().toLowerCase();
+      if (source !== "seo") return null;
+
+      const topic = String(params.get("wt-topic") || "").trim();
+      const topicLabel = String(params.get("wt-topic-label") || "").trim();
+      const entry = String(params.get("wt-entry") || "").trim();
+      const entryLabel = String(params.get("wt-entry-label") || "").trim();
+      const entryType = String(params.get("wt-entry-type") || "").trim().toLowerCase();
+
+      if (!topic && !topicLabel && !entry && !entryLabel) return null;
+
+      return {
+        topic,
+        topicLabel,
+        entry,
+        entryLabel,
+        entryType: entryType === "theme" ? "theme" : "question"
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
   function renderLandingStatsCard(opts, escapeHtml) {
     const badgeHtml = String(opts?.badgeHtml || "");
     const label = String(opts?.label || "").trim();
@@ -126,6 +154,11 @@
 
     const tagline = String(landing.tagline || "").trim();
     const microTrust = String(landing.microTrust || "").trim();
+    const seoBridgeTitleQuestionTpl = String(landing.seoBridgeTitleQuestionTemplate || "").trim();
+    const seoBridgeTitleThemeTpl = String(landing.seoBridgeTitleThemeTemplate || "").trim();
+    const seoBridgeBodyQuestion = String(landing.seoBridgeBodyQuestion || "").trim();
+    const seoBridgeBodyTheme = String(landing.seoBridgeBodyTheme || "").trim();
+    const seoBridgeTrust = String(landing.seoBridgeTrust || "").trim();
     const installCtaLabel = String(ui.wording?.installPrompt?.ctaPrimary || "").trim();
     const postTitle = String(landing.postPaywallTitle || "").trim();
     const postBody = String(landing.postPaywallBody || "").trim();
@@ -437,10 +470,38 @@
 
     const playLabelFirst = String(landing.ctaPlay || "").trim();
     const playLabelAfterFirstRun = String(landing.ctaPlayAfterFirstRun || "").trim();
-    const playLabel =
+    const seoContext = getSeoEntryContext();
+    const playLabelBase =
       (Number.isFinite(runPlays) && runPlays >= 1)
         ? playLabelAfterFirstRun
         : playLabelFirst;
+    const playLabel = seoContext
+      ? String(landing.seoBridgeCta || "").trim() || playLabelBase
+      : playLabelBase;
+
+    let seoBridgeHtml = "";
+    if (seoContext) {
+      const label = seoContext.entryLabel || seoContext.topicLabel || "";
+      const titleTpl =
+        seoContext.entryType === "theme"
+          ? seoBridgeTitleThemeTpl
+          : seoBridgeTitleQuestionTpl;
+      const title = titleTpl ? fillTemplate(titleTpl, { label }) : "";
+      const body =
+        seoContext.entryType === "theme"
+          ? seoBridgeBodyTheme
+          : seoBridgeBodyQuestion;
+
+      if (title || body || seoBridgeTrust) {
+        seoBridgeHtml = `
+          <div class="wt-box wt-box--tinted wt-landing-seo-bridge">
+            ${title ? `<div class="wt-meta wt-meta--strong">${escapeHtml(title)}</div>` : ``}
+            ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+            ${seoBridgeTrust ? `<p class="wt-sub wt-muted">${escapeHtml(seoBridgeTrust)}</p>` : ``}
+          </div>
+        `;
+      }
+    }
 
     const meetsRunGate = (landingAfterRuns == null)
       ? false
@@ -604,6 +665,7 @@ ${landingHeaderRowHtml}
   ${landingUrgencyHtml}
   ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
   <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
+  ${seoBridgeHtml}
 
 <div class="wt-actions">
 

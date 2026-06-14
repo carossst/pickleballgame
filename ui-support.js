@@ -194,7 +194,7 @@
 
     try {
       if (ui.storage && typeof ui.storage.setWaitlistStatus === "function") {
-        ui.storage.setWaitlistStatus("joined");
+        ui.storage.setWaitlistStatus("opted_in");
       }
       if (ui.storage && typeof ui.storage.setWaitlistDraftIdea === "function") {
         ui.storage.setWaitlistDraftIdea("");

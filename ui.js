@@ -3947,6 +3947,22 @@ void (function () {
       if (this.storage && typeof this.storage.markPaywallShown === 'function') {
         this.storage.markPaywallShown(prev); // Storage owns startedAt persistence
       }
+      try {
+        if (
+          window.WT_Analytics &&
+          typeof window.WT_Analytics.trackFunnel === 'function' &&
+          typeof window.WT_Analytics.inferUiContext === 'function'
+        ) {
+          window.WT_Analytics.trackFunnel(
+            'paywall_view',
+            window.WT_Analytics.inferUiContext(this, {
+              from_state: String(prev || '').trim().toLowerCase() || 'other'
+            })
+          );
+        }
+      } catch (_) {
+        /* silent */
+      }
       this._stopPaywallTicker();
       this._startPaywallTicker(); // UI-only: re-render to show ticking mm:ss (PAYWALL/LANDING)
     }
@@ -5581,6 +5597,24 @@ ${audioSettingsHtml}
     // Persist runType for PAYWALL rendering (e.g., headlineLastFree).
     this._runtime.runType = runType;
 
+    try {
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === 'function' &&
+        typeof window.WT_Analytics.inferUiContext === 'function'
+      ) {
+        window.WT_Analytics.trackFunnel(
+          'run_start',
+          window.WT_Analytics.inferUiContext(this, {
+            mode: this._runtime.runMode,
+            run_type: runType || ''
+          })
+        );
+      }
+    } catch (_) {
+      /* silent */
+    }
+
     // PRACTICE: setState(PLAYING) first so the game screen renders underneath,
     // then overlay appears on top of it (not on top of END/LANDING).
     if (mistakesOnly === true) {
@@ -7171,6 +7205,25 @@ ${audioSettingsHtml}
     };
 
     try {
+      if (
+        mode !== MODES.BONUS &&
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === 'function' &&
+        typeof window.WT_Analytics.inferUiContext === 'function'
+      ) {
+        window.WT_Analytics.trackFunnel(
+          'run_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            mode,
+            run_type: this._runtime.lastRun.runType || ''
+          })
+        );
+      }
+    } catch (_) {
+      /* silent */
+    }
+
+    try {
       void this.submitLeaderboardRun(this._runtime.lastRun).then((res) => {
         if (
           window.WT_UI_Leaderboard &&
@@ -8431,6 +8484,17 @@ ${audioSettingsHtml}
           typeof this.storage.markLandingViewed === 'function'
         ) {
           this.storage.markLandingViewed();
+        }
+
+        if (
+          window.WT_Analytics &&
+          typeof window.WT_Analytics.trackFunnel === 'function' &&
+          typeof window.WT_Analytics.inferUiContext === 'function'
+        ) {
+          window.WT_Analytics.trackFunnel(
+            'landing_view',
+            window.WT_Analytics.inferUiContext(this)
+          );
         }
       }
 

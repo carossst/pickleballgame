@@ -108,6 +108,19 @@
       if (redirectLabel) sourceBtn.textContent = redirectLabel;
     }
 
+    try {
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === "function" &&
+        typeof window.WT_Analytics.inferUiContext === "function"
+      ) {
+        window.WT_Analytics.trackFunnel(
+          "checkout_click",
+          window.WT_Analytics.inferUiContext(ui, { price_key: key })
+        );
+      }
+    } catch (_) { /* silent */ }
+
     window.location.href = url;
   }
 

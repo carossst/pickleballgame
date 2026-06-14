@@ -259,6 +259,47 @@ test('share bonus balance survives reload hardening', () => {
   expect(reloaded.getRunsBalance()).toBe(1);
 });
 
+test('waitlist paywall channel ignores seen-threshold but stops after opt-in', () => {
+  const { storage } = createStorageManager({
+    waitlist: {
+      enabled: true,
+      minUniqueSeenToShow: 100
+    }
+  });
+
+  expect(storage.shouldShowWaitlistNow({ inRun: false })).toBe(false);
+  expect(storage.shouldShowWaitlistOnPaywall()).toBe(true);
+
+  storage.setWaitlistStatus('opted_in');
+
+  expect(storage.shouldShowWaitlistOnPaywall()).toBe(false);
+  expect(storage.shouldShowWaitlistNow({ inRun: false })).toBe(false);
+});
+
+test('waitlist status migrates legacy joined state to opted_in on reload', () => {
+  const { context, storage } = createStorageManager({
+    waitlist: {
+      enabled: true,
+      minUniqueSeenToShow: 100
+    }
+  });
+
+  storage.setWaitlistStatus('joined');
+
+  const StorageManager = context.window.WT_StorageManager;
+  const reloaded = new StorageManager({
+    ...baseConfig,
+    waitlist: {
+      enabled: true,
+      minUniqueSeenToShow: 100
+    }
+  });
+  reloaded.init();
+
+  expect(reloaded.getWaitlistStatus()).toBe('opted_in');
+  expect(reloaded.shouldShowWaitlistOnPaywall()).toBe(false);
+});
+
 test('question audio usage flag persists and resets with device UI flags', () => {
   const { storage } = createStorageManager();
 

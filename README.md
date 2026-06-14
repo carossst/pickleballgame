@@ -30,6 +30,7 @@ These are current product decisions, not implementation accidents.
 - Leaderboard is landing-only, shown at the bottom of landing, never during `PLAYING`.
 
 For copy/UX decisions that already shipped and should not be silently reintroduced, see [REGRESSION_GUARDRAILS.md](./REGRESSION_GUARDRAILS.md).
+For non-obvious technical contracts and implementation memory, see [IMPLEMENTATION_MEMORY.md](./IMPLEMENTATION_MEMORY.md).
 
 ## Daily Contract
 

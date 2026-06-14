@@ -234,9 +234,9 @@
         state: 'never_seen' // never_seen | remind_later
       },
 
-      // Waitlist (END screen only) — persisted state
+      // Waitlist (post-completion + paywall) — persisted state
       waitlist: {
-        status: 'not_seen', // not_seen | seen | joined
+        status: 'not_seen', // not_seen | seen | opted_in
         draftIdea: ''
       },
 
@@ -574,10 +574,11 @@
     // Harden Waitlist state
     const wl = this.data.waitlist || {};
     if (typeof wl.status !== 'string') wl.status = 'not_seen';
+    if (wl.status === 'joined') wl.status = 'opted_in';
     if (
       wl.status !== 'not_seen' &&
       wl.status !== 'seen' &&
-      wl.status !== 'joined'
+      wl.status !== 'opted_in'
     ) {
       wl.status = 'not_seen';
     }
@@ -1946,13 +1947,15 @@
 
   StorageManager.prototype.getWaitlistStatus = function () {
     const s = String(this.data?.waitlist?.status || '').trim();
-    return s === 'not_seen' || s === 'seen' || s === 'joined' ? s : 'not_seen';
+    if (s === 'joined') return 'opted_in';
+    return s === 'not_seen' || s === 'seen' || s === 'opted_in' ? s : 'not_seen';
   };
 
   StorageManager.prototype.setWaitlistStatus = function (status) {
     if (!this.data) return;
-    const s = String(status || '').trim();
-    if (s !== 'not_seen' && s !== 'seen' && s !== 'joined') return;
+    let s = String(status || '').trim();
+    if (s === 'joined') s = 'opted_in';
+    if (s !== 'not_seen' && s !== 'seen' && s !== 'opted_in') return;
 
     if (!this.data.waitlist || typeof this.data.waitlist !== 'object') {
       this.data.waitlist = deepCopy(this.defaultData.waitlist);
@@ -2111,9 +2114,25 @@
     // Never show during a run.
     if (ctx && ctx.inRun === true) return false;
 
-    // Optional: if already joined, never show again (fail-closed).
+    // Optional: if already opted in, never show again (fail-closed).
     const st = String(this.data?.waitlist?.status || '').trim();
-    if (st === 'joined') return false;
+    if (st === 'joined' || st === 'opted_in') return false;
+
+    return true;
+  };
+
+  StorageManager.prototype.shouldShowWaitlistOnPaywall = function () {
+    if (!this.data) return false;
+
+    const cfg = this.config || {};
+    const wlCfg = cfg.waitlist || {};
+
+    if (wlCfg.enabled !== true) return false;
+
+    // Paywall channel: separate from the landing/post-completion threshold.
+    // The trigger here is free runs exhausted, not unique cards seen.
+    const st = String(this.data?.waitlist?.status || '').trim();
+    if (st === 'joined' || st === 'opted_in') return false;
 
     return true;
   };

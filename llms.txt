@@ -1,0 +1,31 @@
+# Pickleball Rules Quiz
+
+> A true/false quiz app covering the official 2026 USA Pickleball rulebook: 200 questions across kitchen (non-volley zone), serving, scoring, line calls, faults, equipment and the 2026 rule changes. Built for club players, league players and anyone who argues about the kitchen line. Available in English and French.
+
+Pickleball Rules Quiz is an independent product by Bonjour Pickleball. Every question is sourced from the official 2026 USA Pickleball rulebook, with the relevant rule reference shown in the explanation. The quiz format is rapid-fire true/false with instant verdicts and explanations.
+
+## Quiz
+
+- [Play the quiz (English)](https://pickleballrulesquiz.com/): the full app — two free runs, then one-time purchase
+- [Jouer au quiz (français)](https://pickleballrulesquiz.com/fr.html): version française complète
+
+## Rules by theme
+
+- [Kitchen (Non-Volley Zone) rules quiz](https://pickleballrulesquiz.com/quiz/kitchen-rules/): the most misunderstood zone in pickleball
+- [Serving rules quiz](https://pickleballrulesquiz.com/quiz/serving-rules/): volley serve, drop serve, foot faults, sequence
+- [Scoring rules quiz](https://pickleballrulesquiz.com/quiz/scoring-rules/): score calling, server number, side out
+- [Line call rules quiz](https://pickleballrulesquiz.com/quiz/line-call-rules/): who calls, what counts as in
+- [Faults & dead ball quiz](https://pickleballrulesquiz.com/quiz/faults/): what stops a rally and why
+- [2026 rule changes quiz](https://pickleballrulesquiz.com/quiz/2026-rule-changes/): what changed this year
+- [Court & equipment quiz](https://pickleballrulesquiz.com/quiz/court-and-equipment/): paddle specs, net height, dimensions
+- [Rally situations quiz](https://pickleballrulesquiz.com/quiz/rally-rules/): around the post, double hits, balls off the body
+
+## Common questions
+
+- [Can you stand in the kitchen?](https://pickleballrulesquiz.com/rules/can-you-stand-in-the-kitchen/): yes — you just can't volley while touching it
+- [Is the drop serve legal?](https://pickleballrulesquiz.com/rules/is-the-drop-serve-legal/): yes, it's a permanent legal serve option
+
+## Optional
+
+- [Press kit](https://pickleballrulesquiz.com/press.html): screenshots, logos, product facts
+- [Privacy policy](https://pickleballrulesquiz.com/privacy.html)

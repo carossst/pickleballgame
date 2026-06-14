@@ -203,6 +203,14 @@
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
       microFun: 'Parties courtes · Sans inscription · Progression garantie',
       microTrust: 'Installez-la après votre première partie.',
+      seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
+      seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
+      seoBridgeBodyQuestion:
+        'Vous êtes venu pour une règle précise. Le quiz complet garde le même niveau d’exactitude officielle sur le service, les fautes, le score, les annonces de ligne et plus encore.',
+      seoBridgeBodyTheme:
+        'Vous êtes venu pour ce thème de règles. Le quiz complet garde le même niveau d’exactitude officielle sur tout le jeu.',
+      seoBridgeTrust: 'Parties courtes · Sans inscription · Essai gratuit',
+      seoBridgeCta: 'Lancer le quiz complet',
 
       runsLabel: '',
       runsFreeMode: '',

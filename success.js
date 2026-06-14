@@ -228,6 +228,22 @@
   }
 
   function init() {
+    try {
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === 'function'
+      ) {
+        window.WT_Analytics.trackFunnel(
+          'success_view',
+          typeof window.WT_Analytics.inferPageContext === 'function'
+            ? window.WT_Analytics.inferPageContext()
+            : {}
+        );
+      }
+    } catch (_) {
+      /* silent */
+    }
+
     const code = getOrCreateCode();
     if (!code) {
       const codeEl = document.getElementById("code");

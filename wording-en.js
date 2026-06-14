@@ -201,6 +201,14 @@
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: 'Quick games · No signup · Free to try',
       microTrust: 'Install it after your first game.',
+      seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
+      seoBridgeTitleThemeTemplate: 'From the topic: {label}',
+      seoBridgeBodyQuestion:
+        'You came for one rule. The full quiz keeps the same official-rule standard across serving, faults, scoring, line calls, and more.',
+      seoBridgeBodyTheme:
+        'You came for this rule topic. The full quiz keeps the same official-rule standard across the whole game.',
+      seoBridgeTrust: 'Quick games · No signup · Free to try',
+      seoBridgeCta: 'Start the full rules quiz',
 
       runsLabel: '',
       runsFreeMode: '',

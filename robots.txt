@@ -48,4 +48,3 @@ Allow: /
 # --- Discovery files ---
 Sitemap: https://pickleballrulesquiz.com/sitemap.xml
 
-# llms.txt lives at https://pickleballrulesquiz.com/llms.txt

@@ -148,6 +148,18 @@
     const trustBullets = Array.isArray(pay.trustBullets) ? pay.trustBullets : [];
     const compactBullets = Array.isArray(pay.compactBullets) ? pay.compactBullets : [];
     const notNowLabel = String(w.system?.notNow || "").trim();
+    let waitlistOnPaywall = false;
+    try {
+      if (
+        ui.storage &&
+        typeof ui.storage.shouldShowWaitlistOnPaywall === "function"
+      ) {
+        waitlistOnPaywall = ui.storage.shouldShowWaitlistOnPaywall() === true;
+      }
+    } catch (_) { waitlistOnPaywall = false; }
+    const waitlistCta = String(
+      w.postCompletion?.waitlistCta || w.waitlist?.ctaLabel || ""
+    ).trim();
     const redeemLabel = String(pay.alreadyHaveCode || "").trim();
 
     let seen = NaN;
@@ -362,6 +374,7 @@
       </div>
 
       ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
+      ${(waitlistOnPaywall && waitlistCta) ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="open-waitlist">${escapeHtml(waitlistCta)}</button></p>` : ``}
 
       ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 

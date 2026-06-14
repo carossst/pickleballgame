@@ -3126,7 +3126,7 @@
         },
         "fr": {
           "question": "Un joueur peut entrer dans la ZNV/kitchen quand il ne joue pas de volée.",
-          "explanationShort": "Un joueur peut entrer dans la ZNV/kitchen à tout moment, sauf pendant l'action de jouer une volée.\nLa restriction concerne les volées, pas le simple fait de se trouver dans la ZNV.\nRèglement officiel USA Pickleball 2026, règle 11.A."
+          "explanationShort": "Un joueur peut entrer dans la ZNV/kitchen à tout moment, sauf pendant l'action de volleyer.\nLa restriction concerne les volées, pas le simple fait de se trouver dans la ZNV.\nRèglement officiel USA Pickleball 2026, règle 11.A."
         }
       }
     },
@@ -3145,8 +3145,8 @@
           "explanationShort": "Volleying the ball while in the NVZ (kitchen) is a fault.\nThe player must be completely outside the NVZ to volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
         },
         "fr": {
-          "question": "Un joueur peut jouer une volée en se tenant dans la zone de non-volée (ZNV).",
-          "explanationShort": "Jouer une volée depuis la ZNV est une faute.\nLe joueur doit être complètement hors de la ZNV pour jouer une volée.\nRèglement officiel USA Pickleball 2026, règle 11.A."
+          "question": "Un joueur peut volleyer en se tenant dans la zone de non-volée (ZNV).",
+          "explanationShort": "Volleyer depuis la ZNV est une faute.\nLe joueur doit être complètement hors de la ZNV pour volleyer.\nRèglement officiel USA Pickleball 2026, règle 11.A."
         }
       }
     },
@@ -3166,7 +3166,7 @@
         },
         "fr": {
           "question": "Si l'élan d'un joueur l'emporte dans la zone de non-volée (ZNV/kitchen) après avoir frappé la balle avant rebond, c'est une faute.",
-          "explanationShort": "Frapper la balle avant rebond, c'est jouer une volée.\nSi l'élan d'un joueur l'emporte dans la ZNV/kitchen après une volée, c'est une faute, même si l'échange est déjà terminé.\nSi la balle avait rebondi avant la frappe, cette règle liée à l'élan ne s'applique pas.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
+          "explanationShort": "Frapper la balle avant rebond, c'est volleyer.\nSi l'élan d'un joueur l'emporte dans la ZNV/kitchen après une volée, c'est une faute, même si l'échange est déjà terminé.\nSi la balle avait rebondi avant la frappe, cette règle liée à l'élan ne s'applique pas.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
         }
       }
     },
@@ -3185,8 +3185,8 @@
           "explanationShort": "Both feet must be completely outside the NVZ (kitchen) before volleying.\nOne foot outside is not enough.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3."
         },
         "fr": {
-          "question": "Un pied hors de la zone de non-volée (ZNV) suffit pour jouer une volée.",
-          "explanationShort": "Les deux pieds doivent être complètement hors de la ZNV avant de jouer une volée.\nUn seul pied hors de la zone ne suffit pas.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
+          "question": "Un pied hors de la zone de non-volée (ZNV) suffit pour volleyer.",
+          "explanationShort": "Les deux pieds doivent être complètement hors de la ZNV avant de volleyer.\nUn seul pied hors de la zone ne suffit pas.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
         }
       }
     },
@@ -3218,17 +3218,17 @@
         "Hard",
         "Doubles"
       ],
-      "i18n": {
-        "en": {
-          "question": "If a volleying player's partner touches the non-volley zone (NVZ), it is a fault.",
-          "explanationShort": "The partner must not touch the NVZ (kitchen) either.\nThis applies at the moment of the volley.\n2026 USA Pickleball Official Rulebook, Rule 11.A.1."
-        },
-        "fr": {
-          "question": "Si le partenaire d'un joueur qui joue une volée touche la zone de non-volée (ZNV), c'est une faute.",
-          "explanationShort": "Le partenaire ne doit pas non plus toucher la ZNV.\nCela s'applique au moment de la volée.\nRèglement officiel USA Pickleball 2026, règle 11.A.1."
-        }
+    "i18n": {
+      "en": {
+        "question": "Volleying while touching a partner who touches the non-volley zone (NVZ) is a fault.",
+        "explanationShort": "It is a fault only if the partner is part of the contact chain.\nA partner in the NVZ without touching the volleying player is legal.\n2026 USA Pickleball Official Rulebook, Rule 11.A.1."
+      },
+      "fr": {
+        "question": "Volleyer en touchant un partenaire en contact avec la ZNV est une faute.",
+        "explanationShort": "C'est une faute seulement si le partenaire fait partie de la chaîne de contact.\nUn partenaire dans la ZNV sans toucher le joueur qui volleye reste légal.\nRèglement officiel USA Pickleball 2026, règle 11.A.1."
       }
-    },
+    }
+  },
     {
       "id": 161,
       "correctAnswer": false,
@@ -3244,7 +3244,7 @@
           "explanationShort": "Landing in the NVZ (kitchen) after volleying is a fault.\nThe player must land completely outside.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2."
         },
         "fr": {
-          "question": "Un joueur peut sauter de l'extérieur de la ZNV, jouer une volée et atterrir dans la ZNV.",
+          "question": "Un joueur peut sauter de l'extérieur de la ZNV, volleyer et atterrir dans la ZNV.",
           "explanationShort": "Atterrir dans la ZNV après une volée est une faute.\nLe joueur doit atterrir complètement à l'extérieur.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
         }
       }
@@ -3305,7 +3305,7 @@
           "explanationShort": "NVZ (kitchen) contact is only banned during volleying.\nTouching it before the volley is not a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
         },
         "fr": {
-          "question": "Un joueur peut toucher la zone de non-volée (ZNV) avec sa raquette avant de jouer une volée.",
+          "question": "Un joueur peut toucher la zone de non-volée (ZNV) avec sa raquette avant de volleyer.",
           "explanationShort": "Le contact avec la ZNV n'est interdit que pendant la volée.\nLa toucher avant la volée n'est pas une faute.\nRèglement officiel USA Pickleball 2026, règle 11.A."
         }
       }
@@ -3325,8 +3325,8 @@
           "explanationShort": "Both feet must be outside the NVZ (kitchen) first.\nJumping from inside to volley is a fault.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3."
         },
         "fr": {
-          "question": "Sauter depuis l'intérieur de la ZNV/kitchen pour jouer une volée est autorisé.",
-          "explanationShort": "Les deux pieds doivent d'abord être hors de la ZNV/kitchen.\nSauter depuis l'intérieur pour jouer une volée est une faute.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
+          "question": "Sauter depuis l'intérieur de la ZNV/kitchen pour volleyer est autorisé.",
+          "explanationShort": "Les deux pieds doivent d'abord être hors de la ZNV/kitchen.\nSauter depuis l'intérieur pour volleyer est une faute.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
         }
       }
     },
@@ -3385,11 +3385,11 @@
       "i18n": {
         "en": {
           "question": "A pickleball game may be played to 15 or 21 points in some tournament formats.",
-          "explanationShort": "One game to 15 or 21 points is an allowed tournament format.\nAll formats still require a win by 2 points.\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.c."
+          "explanationShort": "One game to 15 or 21 points is an allowed tournament format.\nAll formats are win by 2, except team play (win by one allowed).\n2026 USA Pickleball Official Rulebook, Rule 15.C.1.c."
         },
         "fr": {
           "question": "Une partie de pickleball peut se jouer en 15 ou 21 points dans certains formats de tournoi.",
-          "explanationShort": "Une partie unique à 15 ou 21 points est un format de tournoi autorisé.\nTous les formats exigent quand même 2 points d'écart pour gagner.\nRèglement officiel USA Pickleball 2026, règle 15.C.1.c."
+          "explanationShort": "Une partie unique à 15 ou 21 points est un format de tournoi autorisé.\nTous les formats se gagnent par 2 points d'écart, sauf en team play (1 point d'écart possible).\nRèglement officiel USA Pickleball 2026, règle 15.C.1.c."
         }
       }
     },

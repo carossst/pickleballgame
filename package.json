@@ -8,7 +8,8 @@
     "test:watch": "vitest",
     "format:check": "prettier --check package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\"",
     "format:write": "prettier --write package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\"",
-    "generate:seo-pages": "node scripts/generate-seo-pages.mjs"
+    "generate:seo-pages": "node scripts/generate-seo-pages.mjs",
+    "publish:seo": "npm run generate:seo-pages && npm run generate:sitemap"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
