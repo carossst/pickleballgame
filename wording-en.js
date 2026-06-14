@@ -244,7 +244,7 @@
         'Today: {score}/{targetScore}.',
       dailyChallengeResetTemplate: '',
       dailyChallengeCompletedTemplate:
-        'Daily challenge cleared.\nNext challenge at {resetTime}.',
+        'Daily challenge complete.\nNext challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
         'Earn 1 Rapid Fire ticket.',
       dailyChallengeRewardCappedTemplate:
@@ -772,13 +772,13 @@
       streakLine: '',
       scoreTierLine: '',
       scoreTierNextLine: '',
-      dailyChallengeCleared: 'Daily challenge cleared.',
+      dailyChallengeCleared: 'Daily challenge complete.',
       dailyChallengeClearedFreeRun:
-        'Daily challenge cleared. The Rapid Fire ticket unlocks on your last free run.',
+        'Daily challenge complete. The Rapid Fire ticket unlocks on your last free run.',
       dailyChallengeTicketWon:
-        'Daily challenge cleared. +1 Rapid Fire ticket.',
+        'Daily challenge complete. +1 Rapid Fire ticket.',
       dailyChallengeTicketCapped:
-        'Daily challenge cleared. Tickets are capped at {cap}. Spend one to earn more.',
+        'Daily challenge complete. Tickets are capped at {cap}. Spend one to earn more.',
       dailyChallengeMiss: 'Daily challenge missed.',
       dailyChallengeMissLastFree:
         'Not this time. Daily challenge missed.',
