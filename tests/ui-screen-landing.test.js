@@ -144,6 +144,7 @@ function createUi(runCompletes, options = {}) {
       game: { poolSize: 200, maxChances: 3 },
       landingStats: { enabled: false, minCompletedRuns: 1 },
       shareBonus: { enabled: true, bonusRuns: 1, premiumOnly: false },
+      waitlist: { enabled: true, minUniqueSeenToShow: 100 },
       levels: {
         maxLevel: 6,
         level2MinSeen: 25,
@@ -199,6 +200,17 @@ function createUi(runCompletes, options = {}) {
         ctaShare: 'Share & play',
         ctaLater: 'Not now'
       },
+      waitlist: {
+        title: 'Get notified',
+        bodyLine1: 'Waitlist line 1',
+        bodyLine2: 'Waitlist line 2',
+        ctaLabel: 'Join waitlist',
+        disclaimer: 'No spam.'
+      },
+      postCompletion: {
+        waitlistCta: 'Get notified',
+        waitlistDisclaimer: 'No spam.'
+      },
       installPrompt: {},
       leaderboard: {
         cardTitle: 'THIS WEEK',
@@ -236,6 +248,12 @@ function createUi(runCompletes, options = {}) {
       },
       hasShareBonusGranted() {
         return options.shareBonusGranted === true;
+      },
+      shouldShowWaitlistNow() {
+        return options.waitlistNow === true;
+      },
+      shouldShowWaitlistOnPaywall() {
+        return options.waitlistOnPaywall === true;
       }
     }
   };
@@ -333,6 +351,27 @@ test('landing exhausted state promotes share bonus before paywall', () => {
   expect(html).toContain('Share & play');
   expect(html).toContain('data-action="open-paywall"');
   expect(html).toContain('Unlock full access');
+});
+
+test('landing exhausted state can still surface waitlist without seen-threshold', () => {
+  const modules = loadLandingModules();
+  const html = modules.renderLanding(
+    createUi(1, {
+      seenCount: 8,
+      bestScoreFP: 0,
+      runsBalance: 0,
+      shareBonusGranted: true,
+      waitlistOnPaywall: true
+    }),
+    buildHelpers(modules.renderLeaderboardLandingCard, {
+      dailyModel: { challengePlayable: false, completedToday: false }
+    })
+  );
+
+  expect(html).toContain('Get notified');
+  expect(html).toContain('Waitlist line 1');
+  expect(html).toContain('Waitlist line 2');
+  expect(html).toContain('data-action="open-waitlist"');
 });
 
 test('landing daily card does not show daily score progress before completion', () => {

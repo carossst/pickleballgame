@@ -220,6 +220,12 @@
         ui._canShowInstallPrompt() === true;
     } catch (_) { showLandingInstallPrompt = false; }
 
+    let runsBalance = null;
+    if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
+      try { runsBalance = Number(ui.storage.getRunsBalance()); } catch (_) { runsBalance = null; }
+    }
+    const runsExhausted = (!premium && Number.isFinite(runsBalance) && runsBalance <= 0);
+
     let postBlock = "";
     let postCompletionHtml = "";
     try {
@@ -232,8 +238,11 @@
       const wlW = w?.waitlist || {};
       const haW = w?.houseAd || {};
 
-      const waitlistEligible =
+      const waitlistThresholdEligible =
         !!(wlCfg.enabled === true && ui.storage && typeof ui.storage.shouldShowWaitlistNow === "function" && ui.storage.shouldShowWaitlistNow({ inRun: false }) === true);
+      const waitlistExhaustedEligible =
+        !!(runsExhausted && wlCfg.enabled === true && ui.storage && typeof ui.storage.shouldShowWaitlistOnPaywall === "function" && ui.storage.shouldShowWaitlistOnPaywall() === true);
+      const waitlistEligible = waitlistThresholdEligible || waitlistExhaustedEligible;
       const houseAdEligible =
         !!(pcCfg?.houseAdEnabled === true && ui.storage && typeof ui.storage.shouldShowHouseAdNow === "function" && ui.storage.shouldShowHouseAdNow({ inRun: false }) === true);
 
@@ -670,11 +679,6 @@ ${landingHeaderRowHtml}
 <div class="wt-actions">
 
       ${(() => {
-        let bal = null;
-        if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
-          try { bal = Number(ui.storage.getRunsBalance()); } catch (_) { bal = null; }
-        }
-        const runsExhausted = (!premium && Number.isFinite(bal) && bal <= 0);
         const shareBonusEligible = !!(
           runsExhausted &&
           shareBonusEnabled &&
@@ -740,11 +744,6 @@ ${(() => {
     ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted wt-landing-followup">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
 
     ${(() => {
-      let bal = null;
-      if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
-        try { bal = Number(ui.storage.getRunsBalance()); } catch (_) { bal = null; }
-      }
-      const runsExhausted = (!premium && Number.isFinite(bal) && bal <= 0);
       const shareBonusEligible = !!(
         runsExhausted &&
         shareBonusEnabled &&
