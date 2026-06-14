@@ -54,4 +54,46 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://pickleballrulesquiz.com/terms.html"/>
   </url>
 
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/kitchen-rules/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/serving-rules/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/scoring-rules/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/line-call-rules/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/faults/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/2026-rule-changes/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>

@@ -1,6 +1,6 @@
 # SEO Playbook — pickleballrulesquiz.com
 
-Référence unique de la stratégie SEO. Dernière mise à jour : 2026-06-11.
+Référence unique de la stratégie SEO. Dernière mise à jour : 2026-06-14.
 À garder dans le repo ET dans la connaissance du projet Claude.
 
 ---
@@ -285,22 +285,27 @@ d'indexation de la page thème dans GSC.
   IA/zéro-clic ; suivre aussi les requêtes de marque et les referrals IA
   dans GoatCounter.
 
-## 6. État au 2026-06-11
+## 6. État au 2026-06-14
 
 - Infra livrée et corrigée après audit externe (breadcrumb conditionnel,
   gate 450 mots, robots.txt nettoyé).
-- Thème Kitchen complet : 5 pages en `ready` (648-696 mots chacune avec la
-  FAQ visible), règles 11.A vérifiées, en attente de relecture → live.
-- Flag ouvert : carte 160 sur-simplifiée vs rulebook 2026 (la faute partenaire
-  exige le contact avec le joueur qui volleye) — reformulation à proposer.
-- llms.txt : rédigé, en attente des premières pages live.
+- Thème Kitchen complet : 5 pages + page thème, règles 11.A vérifiées,
+  relecture Caro effectuée, cluster passé en `live` et republié.
+- Cartes de quiz corrigées après audit de cohérence :
+  - carte 160 : chaîne de contact partenaire / ZNV
+  - carte 168 : exception team play sur le win-by-2
 - État au 2026-06-12 : cluster complet à 29 pages (8 thèmes + 21 questions),
   toutes en `ready`, relecture de fond effectuée contre le rulebook 2026
   (1 erreur corrigée sur win-by-2 : exception team play de 15.C).
 - Maillage interne actif : pages thèmes → "Go deeper" auto-généré vers leurs
-  questions ; généré depuis seo-pages.json, se met à jour à la régénération.
-- Flags content.json ouverts : carte 160 (coquille FR "est une faute"),
-  carte 168 (L2 ignore l'exception team play de 15.C).
-- À venir : relecture éditoriale Caro, mise en live par vagues, llms.txt
-  avec la vague 1, inscription Bing Webmaster Tools + GSC, dates de mise à
-  jour visibles sur les pages.
+  questions ; pages question → retour thème + pages sœurs du cluster.
+- Bridge conversion actif :
+  - CTA SEO plus tôt dans la page
+  - continuité de contexte SEO vers la landing
+  - waitlist visible sur paywall et sur landing après épuisement des free runs
+- llms.txt : prêt côté repo ; à considérer comme bonus de diffusion, pas
+  comme levier principal.
+- Vague 1 publiée : `Kitchen` est désormais indexable et présent dans le
+  sitemap.
+- Prochain geste concret : commit + push du lot, puis soumission sitemap /
+  demande d'indexation dans GSC et Bing Webmaster Tools.
