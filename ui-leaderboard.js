@@ -653,11 +653,21 @@
 
   async function saveProfileFromModal(ui, helpers) {
     const toastNow = helpers?.toastNow;
+    const fillTemplate = helpers?.fillTemplate;
+    const getLeaderboardContentVersion =
+      helpers?.getLeaderboardContentVersion;
     const w = getWording(ui);
     const cfg = getCfg(ui);
     const saveBtn = ui?.modalContentEl
       ? ui.modalContentEl.querySelector('[data-action="save-leaderboard-profile"]')
       : null;
+    const existingProfile =
+      ui?.storage && typeof ui.storage.getLeaderboardProfile === 'function'
+        ? ui.storage.getLeaderboardProfile()
+        : null;
+    const wasJoined =
+      existingProfile?.optIn === true &&
+      !!String(existingProfile?.nickname || '').trim();
     const input = ui?.modalContentEl
       ? ui.modalContentEl.querySelector('#wt-leaderboard-nickname')
       : null;
@@ -758,6 +768,28 @@
     const bucket = getRuntimeBucket(ui);
     if (bucket) {
       bucket.lastFetchedAt = 0;
+    }
+    if (!wasJoined && ui?._runtime?.lastRun) {
+      try {
+        const submitRes = await submitRun(ui, ui._runtime.lastRun, {
+          getLeaderboardContentVersion
+        });
+        handleSubmitResult(ui, submitRes, {
+          clampInt,
+          fillTemplate:
+            typeof fillTemplate === 'function'
+              ? fillTemplate
+              : (tpl, vars) =>
+                  String(tpl || '').replace(/\{(\w+)\}/g, (_m, key) =>
+                    Object.prototype.hasOwnProperty.call(vars || {}, key)
+                      ? String(vars[key])
+                      : ''
+                  ),
+          toastNow
+        });
+      } catch (_) {
+        /* silent */
+      }
     }
     ensureFresh(ui);
     openModal(ui, helpers);

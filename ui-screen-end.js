@@ -591,6 +591,42 @@
       getShareText: ui._getShareText ? ui._getShareText.bind(ui) : null
     });
 
+    const leaderboardW = w.leaderboard || {};
+    let hasLeaderboardProfile = false;
+    try {
+      const profile =
+        ui.storage && typeof ui.storage.getLeaderboardProfile === "function"
+          ? ui.storage.getLeaderboardProfile()
+          : null;
+      hasLeaderboardProfile =
+        profile?.optIn === true && !!String(profile?.nickname || "").trim();
+    } catch (_) {
+      hasLeaderboardProfile = false;
+    }
+
+    const leaderboardJoinTitle = String(leaderboardW.endJoinTitle || "").trim();
+    const leaderboardJoinBody = String(leaderboardW.endJoinBody || "").trim();
+    const leaderboardJoinCta = String(leaderboardW.joinCta || "").trim();
+    const leaderboardJoinHtml =
+      isRun &&
+      scoreFP > 0 &&
+      !hasLeaderboardProfile &&
+      (leaderboardJoinTitle || leaderboardJoinBody || leaderboardJoinCta)
+        ? `
+          <div class="wt-box wt-box--tinted">
+            ${leaderboardJoinTitle ? `<strong class="wt-meta">${escapeHtml(leaderboardJoinTitle)}</strong>` : ``}
+            ${leaderboardJoinBody ? `<p class="wt-muted">${escapeHtml(leaderboardJoinBody)}</p>` : ``}
+            ${leaderboardJoinCta ? `
+              <div class="wt-actions wt-actions--compact">
+                <button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">
+                  ${escapeHtml(leaderboardJoinCta)}
+                </button>
+              </div>
+            ` : ``}
+          </div>
+        `
+        : "";
+
     const endCopyHtml = buildEndCopyHtml({
       isRun,
       isPractice,
@@ -685,6 +721,8 @@
   ${shareHtml}
 
   ${mistakesRecapHtml}
+
+  ${leaderboardJoinHtml}
 
   ${!runsExhausted ? paywallBridgeHtml : ``}
 

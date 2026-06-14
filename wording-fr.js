@@ -301,6 +301,9 @@
       nicknameLabel: 'Pseudo',
       nicknamePlaceholder: 'Choisissez un pseudo',
       joinCta: 'Rejoindre le classement',
+      endJoinTitle: 'Ajouter ce score au classement',
+      endJoinBody:
+        'Choisissez un pseudo pour envoyer cette partie dans le classement public.',
       updateCta: 'Mettre à jour le pseudo',
       editProfileCta: 'Modifier mon pseudo',
       leaveCta: 'Quitter le classement',

@@ -322,3 +322,66 @@ test('END render uses a semantic h1 for the main title', () => {
   expect(html).toContain('<h1 class="wt-h1">Run complete</h1>');
   expect(html).not.toContain('<p class="wt-h1">Run complete</p>');
 });
+
+test('END render proposes leaderboard join when a RUN score exists and no profile is set', () => {
+  const endModule = loadEndModule();
+  const html = endModule.render(
+    {
+      config: {
+        game: { maxChances: 3, poolSize: 200 },
+        routing: {},
+        secretBonus: { tapWindowMs: 900, gates: { endAfterRuns: 0 } },
+        share: { enabled: false },
+        shareBonus: { enabled: false, bonusRuns: 1, premiumOnly: false }
+      },
+      wording: {
+        ui: { scoreLabel: 'Score' },
+        end: {
+          title: 'Run complete',
+          scoreLine: '{score}'
+        },
+        leaderboard: {
+          endJoinTitle: 'Put this score on the leaderboard',
+          endJoinBody:
+            'Choose a nickname to submit this run to the public leaderboard.',
+          joinCta: 'Join leaderboard'
+        },
+        paywall: {},
+        system: {}
+      },
+      storage: {
+        getSeenItemIds() {
+          return [1, 2];
+        },
+        getRunsBalance() {
+          return 1;
+        },
+        getRunNumber() {
+          return 1;
+        },
+        getLeaderboardProfile() {
+          return { nickname: '', optIn: false };
+        }
+      },
+      _runtime: {
+        runMode: 'RUN',
+        runItemIds: [1, 2, 3],
+        lastRun: {
+          mode: 'RUN',
+          runType: 'FREE',
+          scoreFP: 19,
+          maxChances: 3,
+          chancesLeft: 1,
+          newBest: false,
+          bestScoreFP: 19,
+          poolCompleteCelebration: false
+        }
+      }
+    },
+    buildHelpers()
+  );
+
+  expect(html).toContain('Put this score on the leaderboard');
+  expect(html).toContain('data-action="open-leaderboard-profile"');
+  expect(html).toContain('Join leaderboard');
+});

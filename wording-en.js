@@ -296,6 +296,9 @@
       nicknameLabel: 'Nickname',
       nicknamePlaceholder: 'Choose a nickname',
       joinCta: 'Join leaderboard',
+      endJoinTitle: 'Put this score on the leaderboard',
+      endJoinBody:
+        'Choose a nickname to submit this run to the public leaderboard.',
       updateCta: 'Update nickname',
       editProfileCta: 'Edit my nickname',
       leaveCta: 'Leave leaderboard',

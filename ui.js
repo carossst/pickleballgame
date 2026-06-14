@@ -4597,7 +4597,9 @@ ${audioSettingsHtml}
     }
     return window.WT_UI_Leaderboard.saveProfileFromModal(this, {
       escapeHtml,
-      toastNow
+      toastNow,
+      fillTemplate,
+      getLeaderboardContentVersion
     });
   };
 
