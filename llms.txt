@@ -23,7 +23,6 @@ Pickleball Rules Quiz is an independent product by Bonjour Pickleball. Every que
 ## Common questions
 
 - [Can you stand in the kitchen?](https://pickleballrulesquiz.com/rules/can-you-stand-in-the-kitchen/): yes — you just can't volley while touching it
-- [Is the drop serve legal?](https://pickleballrulesquiz.com/rules/is-the-drop-serve-legal/): yes, it's a permanent legal serve option
 
 ## Optional
 

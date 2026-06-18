@@ -96,4 +96,53 @@
     <priority>0.8</priority>
   </url>
 
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/court-and-equipment/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/quiz/rally-rules/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/rules/can-you-stand-in-the-kitchen/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/rules/what-is-a-kitchen-violation/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/rules/can-your-paddle-touch-the-kitchen/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/rules/can-you-jump-and-land-in-the-kitchen/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://pickleballrulesquiz.com/rules/can-your-partner-be-in-the-kitchen/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
 </urlset>
