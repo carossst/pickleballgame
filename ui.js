@@ -10397,13 +10397,19 @@ ${audioSettingsHtml}
       questionPrompt = String(w.assertion || '').trim();
     }
 
+    const questionPromptId = questionPrompt ? 'wt-question-prompt' : '';
+    const questionTextId = 'wt-question-text';
+    const choiceGroupDescribedBy = questionPromptId
+      ? ` aria-describedby="${questionPromptId}"`
+      : '';
+
     const questionHtml = `
 
 
 ${
   questionPrompt
     ? `
-  <p class="wt-question-prompt">
+  <p id="${questionPromptId}" class="wt-question-prompt">
     ${escapeHtml(questionPrompt)}
   </p>
 `
@@ -10412,7 +10418,7 @@ ${
 ${questionAudioHtml}
 <div class="wt-terms-box">
   <div class="wt-term-row">
-    <span class="wt-term-word">${escapeHtml(questionText)}</span>
+    <span id="${questionTextId}" class="wt-term-word">${escapeHtml(questionText)}</span>
   </div>
 </div>
 `;
@@ -10568,7 +10574,7 @@ ${questionAudioHtml}
       ${
         fallEnabled
           ? `
-        <div class="wt-choices">
+        <div class="wt-choices" role="group" aria-labelledby="${questionTextId}"${choiceGroupDescribedBy}>
           <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
             <span class="wt-choice-icon" aria-hidden="true">\u2714</span>
             ${escapeHtml(trueLabel)}
@@ -10581,7 +10587,7 @@ ${questionAudioHtml}
       `
           : `
         <div class="wt-answer-zone">
-          <div class="wt-choices">
+          <div class="wt-choices" role="group" aria-labelledby="${questionTextId}"${choiceGroupDescribedBy}>
             <button class="wt-choice wt-choice--same" data-action="answer-true" aria-label="${escapeHtml(trueLabel)}">
               <span class="wt-choice-icon" aria-hidden="true">\u2714</span>
               ${escapeHtml(trueLabel)}

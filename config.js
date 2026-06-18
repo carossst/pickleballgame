@@ -12,6 +12,13 @@
   // Single source of truth for storage-related keys (avoid drift)
   const WT_STORAGE_KEY = "pickleball_rules_quiz_v1";
   const WT_VANITY_CODE_STORAGE_KEY = "pickleball-rules-quiz:vanityCode";
+  const WT_CONTACT_EMAIL_CIPHER = Object.freeze({
+    key: 23,
+    codes: Object.freeze([
+      116, 120, 121, 99, 118, 116, 99, 87, 117, 120, 121, 125, 120, 98,
+      101, 103, 126, 116, 124, 123, 114, 117, 118, 123, 123, 57, 113, 101
+    ])
+  });
 
 
   // Global UI helpers (shared across IIFE modules)
@@ -537,10 +544,7 @@
 
       // Email stored as XOR-obfuscated char codes.
       // Goal: avoid exposing a trivially decodable address in static source / DOM.
-      toEmailCipher: {
-        key: 23,
-        codes: [116, 120, 121, 99, 118, 116, 99, 87, 117, 120, 121, 125, 120, 98, 101, 103, 126, 116, 124, 123, 114, 117, 118, 123, 123, 57, 113, 101]
-      },
+      toEmailCipher: WT_CONTACT_EMAIL_CIPHER,
       // IMPORTANT: keep this as a pure prefix (UI/email helpers may append details)
       subjectPrefix: "[Pickleball Rules Quiz][Waitlist]"
 
@@ -588,10 +592,7 @@
 
     // Support
     support: {
-      emailCipher: {
-        key: 23,
-        codes: [116, 120, 121, 99, 118, 116, 99, 87, 117, 120, 121, 125, 120, 98, 101, 103, 126, 116, 124, 123, 114, 117, 118, 123, 123, 57, 113, 101]
-      },
+      emailCipher: WT_CONTACT_EMAIL_CIPHER,
       subjectPrefix: "[Pickleball Rules Quiz][Contact]"
     },
 

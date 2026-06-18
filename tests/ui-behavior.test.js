@@ -308,6 +308,19 @@ test('question-audio control is shown only before first completion unless user e
   );
 });
 
+test('playing answer choices are grouped and labelled by the visible question', () => {
+  const ui = createPlayingUi({
+    runCompletes: 0,
+    usedAudio: false,
+    autoRead: false
+  });
+
+  const html = ui._renderPlaying();
+
+  expect(html).toContain('id="wt-question-text"');
+  expect(html).toContain('class="wt-choices" role="group" aria-labelledby="wt-question-text"');
+});
+
 test('claimShareBonus grants via native share and rerenders once', async () => {
   const { UI, context } = loadUiModule();
   let shareGranted = false;
