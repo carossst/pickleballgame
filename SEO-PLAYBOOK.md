@@ -285,7 +285,7 @@ d'indexation de la page thème dans GSC.
   IA/zéro-clic ; suivre aussi les requêtes de marque et les referrals IA
   dans GoatCounter.
 
-## 6. État au 2026-06-14
+## 6. État au 2026-06-30
 
 - Infra livrée et corrigée après audit externe (breadcrumb conditionnel,
   gate 450 mots, robots.txt nettoyé).
@@ -307,5 +307,7 @@ d'indexation de la page thème dans GSC.
   comme levier principal.
 - Vague 1 publiée : `Kitchen` est désormais indexable et présent dans le
   sitemap.
+- Vague 2 publiée : `Serving` est désormais indexable et présent dans le
+  sitemap avec ses 5 pages questions.
 - Prochain geste concret : commit + push du lot, puis soumission sitemap /
   demande d'indexation dans GSC et Bing Webmaster Tools.

@@ -159,18 +159,25 @@ Do not use it for:
 
 ### Current SEO Rollout Memory
 
-- As of `2026-06-14`, the `Kitchen` cluster has been reviewed on real URLs,
-  passed to `live`, and republished.
+- As of `2026-06-30`, the first two live waves are:
+  - `Kitchen`
+  - `Serving`
 - The distinction still matters for future waves:
   - deployed files in `ready` are online but not meant for indexing
   - publication happens only at the status flip + `npm run publish:seo`
-- Current first live wave:
+- Current live clusters:
   - `quiz/kitchen-rules/`
   - `rules/can-you-stand-in-the-kitchen/`
   - `rules/what-is-a-kitchen-violation/`
   - `rules/can-your-paddle-touch-the-kitchen/`
   - `rules/can-you-jump-and-land-in-the-kitchen/`
   - `rules/can-your-partner-be-in-the-kitchen/`
+  - `quiz/serving-rules/`
+  - `rules/what-is-a-foot-fault-on-the-serve/`
+  - `rules/can-the-serve-land-on-the-kitchen-line/`
+  - `rules/is-the-drop-serve-legal/`
+  - `rules/can-you-serve-overhand/`
+  - `rules/is-there-a-let-serve/`
 
 ### SEO Guardrails Already Enforced In Tooling
 
