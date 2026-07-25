@@ -9,6 +9,9 @@ const baseConfig = {
     storageKey: 'prq-test-storage',
     vanityCodeStorageKey: 'prq-test-vanity'
   },
+  premiumCodePrefix: 'PRQ',
+  premiumCodeRegex: '^PRQ-[0-9]{4}-[0-9]{4}$',
+  acceptCodeOncePerDevice: true,
   limits: {
     freeRuns: 2
   },
@@ -194,6 +197,65 @@ test('premium practice economy does not consume free practice counter', () => {
   expect(storage.getPracticeFreeRunsUsed()).toBe(0);
 });
 
+test('tryRedeemPremiumCode rejects empty input', () => {
+  const { storage } = createStorageManager();
+
+  const result = storage.tryRedeemPremiumCode('');
+
+  expect(result).toMatchObject({ ok: false, reason: 'EMPTY' });
+  expect(storage.isPremium()).toBe(false);
+});
+
+test('tryRedeemPremiumCode rejects a code that does not match the configured format', () => {
+  const { storage } = createStorageManager();
+
+  const result = storage.tryRedeemPremiumCode('not-a-real-code');
+
+  expect(result).toMatchObject({ ok: false, reason: 'INVALID' });
+  expect(storage.isPremium()).toBe(false);
+});
+
+// NOTE: this documents the current, known-insecure behavior: any string that
+// matches the PRQ-####-#### shape unlocks premium, with no server-side link
+// back to an actual Stripe payment. Tracked separately as a security gap to
+// close (see audit); this test exists so a future fix intentionally changes
+// this assertion rather than silently regressing coverage.
+test('tryRedeemPremiumCode currently accepts any code matching the configured format', () => {
+  const { storage } = createStorageManager();
+
+  const result = storage.tryRedeemPremiumCode('PRQ-1234-5678');
+
+  expect(result).toMatchObject({ ok: true });
+  expect(storage.isPremium()).toBe(true);
+});
+
+test('tryRedeemPremiumCode enforces one redemption per device when configured', () => {
+  const { storage } = createStorageManager();
+
+  const first = storage.tryRedeemPremiumCode('PRQ-1111-2222');
+  expect(first).toMatchObject({ ok: true });
+  expect(storage.data.codes.redeemedOnce).toBe(true);
+
+  // Simulate a device that already redeemed a code but is no longer premium
+  // (e.g. a future downgrade/expiry path) — the per-device flag must still
+  // block a second free redemption.
+  storage.data.isPremium = false;
+
+  const second = storage.tryRedeemPremiumCode('PRQ-3333-4444');
+
+  expect(second).toMatchObject({ ok: false, reason: 'USED' });
+  expect(storage.isPremium()).toBe(false);
+});
+
+test('tryRedeemPremiumCode is a no-op once premium is already unlocked', () => {
+  const { storage } = createStorageManager();
+
+  storage.unlockPremium();
+  const result = storage.tryRedeemPremiumCode('PRQ-9999-0000');
+
+  expect(result).toMatchObject({ ok: true, reason: 'ALREADY' });
+});
+
 test('resetAll wipes storage state and vanity code', () => {
   const { context, storage } = createStorageManager();
 
@@ -214,9 +276,7 @@ test('resetAll wipes storage state and vanity code', () => {
   expect(storage.getLeaderboardProfile().nickname).toBe('');
   expect(storage.isPremium()).toBe(false);
   expect(context.window.localStorage.getItem('prq-test-vanity')).toBe(null);
-  expect(context.window.localStorage.getItem('prq-test-storage')).toMatch(
-    /\S/
-  );
+  expect(context.window.localStorage.getItem('prq-test-storage')).toMatch(/\S/);
 });
 
 test('share bonus grants one extra run exactly once', () => {
