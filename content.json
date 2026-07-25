@@ -850,11 +850,11 @@
       "i18n": {
         "en": {
           "question": "The receiver must be ready before the server serves.",
-          "explanationShort": "Players signal 'not ready' before the score call.\nAfter the call, the server has 10 seconds to serve.\n2026 USA Pickleball Official Rulebook, Rule 6.A."
+          "explanationShort": "The receiver's only window to signal 'not ready' is before the score call starts.\nOnce the call begins, they're treated as ready, and the server can serve within 10 seconds after it ends.\n2026 USA Pickleball Official Rulebook, Rule 6.A."
         },
         "fr": {
       "question": "Le receveur doit être prêt avant que le service ne soit effectué.",
-          "explanationShort": "Les joueurs doivent signaler qu'ils ne sont pas prêts avant l'annonce du score.\nAprès l'annonce, le serveur a 10 secondes pour servir.\nRèglement officiel USA Pickleball 2026, règle 6.A."
+          "explanationShort": "Le receveur ne peut signaler qu'il n'est pas prêt qu'avant le début de l'annonce du score, sa seule fenêtre pour le faire.\nUne fois l'annonce commencée, il est considéré prêt, et le serveur peut alors servir dans les 10 secondes qui suivent.\nRèglement officiel USA Pickleball 2026, règle 6.A."
         }
       }
     },
