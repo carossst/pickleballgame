@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const repoRoot = path.resolve(
-  '/Users/carole/Documents/ApplicationsHTML/Pickleball game/pickleball-github'
-);
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(scriptDir, '..');
 const contentPath = path.join(repoRoot, 'content.json');
 const configPath = path.join(repoRoot, 'config.js');
 const outputPath = path.join(
