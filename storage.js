@@ -2841,6 +2841,7 @@
     if (!this.data.codes || typeof this.data.codes !== 'object') {
       this.data.codes = { redeemedOnce: false, code: '' };
     }
+    this.data.codes.redeemedOnce = true;
     this.data.codes.code = code;
     this.data.codes.tier = tier;
     if (this.data.counters) {
