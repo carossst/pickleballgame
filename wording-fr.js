@@ -950,6 +950,7 @@
       activationCodePlaceholder: 'PRQ-0000-0000',
       enterCode: 'Entrez un code.',
       codeRejected: 'Code refusé.',
+      codeChecking: 'Vérification du code...',
       activateCta: 'Activer',
       codeInvalid: 'Format de code invalide.',
       codeUsed: 'Cet appareil a déjà utilisé un code.',

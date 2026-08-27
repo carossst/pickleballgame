@@ -25,12 +25,16 @@ Ce dossier ne deploie rien tout seul. Il te donne:
   - met a jour les best `weekly` et `all-time`
 - `GET /leaderboard?window=weekly|all`
   - renvoie le top public
+- `POST /redeem-code`
+  - verifie un code admin/guest cote serveur (voir "Codes admin et invite" plus bas)
+  - ne connait pas encore les vrais codes clients (Stripe) — c'est trace a part
 
 Stockage:
 
 - `players`
 - `score_submissions`
 - `leaderboard_best`
+- `code_redemptions`
 
 ## Pourquoi a part
 
@@ -137,6 +141,43 @@ npx wrangler deploy
 Puis note l'URL finale du Worker, par exemple:
 
 - `https://prq-leaderboard.<subdomain>.workers.dev`
+
+## Codes admin et invite
+
+`POST /redeem-code` verifie deux codes speciaux cote serveur, en plus du
+flow client existant (regex locale, pas encore corrige — c'est le vrai
+bug de paywall, suivi a part). Ces deux codes ne sont jamais envoyes au
+client: ils vivent uniquement comme secrets Cloudflare.
+
+- `ADMIN_CODE`
+  - marche sur autant d'appareils que tu veux, sans limite d'usage
+  - a usage interne (tes propres tests)
+- `GUEST_CODE`
+  - limite a 10 redemptions au total (compteur cote serveur, table
+    `code_redemptions`)
+  - au-dela de 10, le Worker repond `403 GUEST_CODE_EXHAUSTED`
+  - pour "changer" le code, il suffit de mettre a jour le secret: une
+    nouvelle valeur repart automatiquement a 0 usage, puisque le compteur
+    est indexe sur la valeur du code, pas sur un nom fixe
+
+Pour les definir (ou les changer):
+
+```bash
+npx wrangler secret put ADMIN_CODE
+npx wrangler secret put GUEST_CODE
+```
+
+Chaque commande demande la valeur en interactif et ne l'affiche jamais
+dans les logs. Choisis des chaines longues et peu devinables (ce ne sont
+pas des identifiants publics comme `PRQ-0000-0000`, donc pas besoin de
+suivre ce format).
+
+Cote frontend, le champ "code d'activation" du jeu (`storage.js:
+tryRedeemPremiumCodeRemote`) essaie d'abord ce endpoint; si le Worker ne
+reconnait pas le code (ou est injoignable), il retombe sur l'ancienne
+verification locale par format — donc les vrais codes clients (format
+`PRQ-XXXX-XXXX`) continuent de marcher pendant qu'on met en place la
+verification Stripe reelle.
 
 ## Etat actuel du repo principal
 
@@ -252,6 +293,37 @@ Reponse attendue:
   ]
 }
 ```
+
+### `POST /redeem-code`
+
+```json
+{
+  "device_uuid": "uuid-local",
+  "code": "le-code-tape-par-l-utilisateur"
+}
+```
+
+Reponses possibles:
+
+```json
+{ "ok": true, "tier": "admin" }
+```
+
+```json
+{ "ok": true, "tier": "guest", "uses_remaining": 6 }
+```
+
+```json
+{ "ok": false, "reason": "GUEST_CODE_EXHAUSTED" }
+```
+
+```json
+{ "ok": false, "reason": "NOT_FOUND" }
+```
+
+`NOT_FOUND` (le code ne correspond ni a `ADMIN_CODE` ni a `GUEST_CODE`)
+est le signal que le frontend utilise pour retomber sur l'ancienne
+verification locale par format — donc pas une erreur en soi.
 
 ## Decision importante deja retenue
 
