@@ -4790,7 +4790,7 @@ ${audioSettingsHtml}
     this.render();
   };
 
-  UI.prototype._confirmRedeemCode = function () {
+  UI.prototype._confirmRedeemCode = async function () {
     const w = this.wording || {};
     const how = w.howto || {};
 
@@ -4800,6 +4800,9 @@ ${audioSettingsHtml}
     const msg = this.modalContentEl
       ? this.modalContentEl.querySelector('#wt-code-msg')
       : null;
+    const confirmBtn = this.modalContentEl
+      ? this.modalContentEl.querySelector('[data-action="confirm-redeem"]')
+      : null;
 
     const code = String(input && input.value ? input.value : '').trim();
     if (!code) {
@@ -4807,29 +4810,61 @@ ${audioSettingsHtml}
       return;
     }
 
-    const cfg = this.config || {};
-    const reRaw = String(cfg.premiumCodeRegex || '').trim();
-    if (reRaw) {
-      try {
-        const re = new RegExp(reRaw);
-        if (!re.test(code)) {
-          if (msg) msg.textContent = String(how.codeInvalid || '').trim();
-          return;
-        }
-      } catch (_) {
-        // ignore (soft)
-      }
-    }
-
-    if (
-      !this.storage ||
-      typeof this.storage.tryRedeemPremiumCode !== 'function'
-    ) {
+    if (!this.storage) {
       if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
     }
 
-    const res = this.storage.tryRedeemPremiumCode(code);
+    // Server-verified path first (admin/guest codes — see storage.js's
+    // tryRedeemPremiumCodeRemote). Only falls back to the local format-only
+    // check below if the Worker doesn't recognize this code at all or is
+    // unreachable; an explicit server rejection (e.g. a guest code past its
+    // use cap) must NOT fall back, or the cap would be meaningless.
+    let res = null;
+    if (typeof this.storage.tryRedeemPremiumCodeRemote === 'function') {
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.setAttribute('aria-busy', 'true');
+      }
+      if (msg) msg.textContent = String(how.codeChecking || '').trim();
+      try {
+        res = await this.storage.tryRedeemPremiumCodeRemote(code);
+      } catch (_) {
+        res = null;
+      }
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.removeAttribute('aria-busy');
+      }
+    }
+
+    const shouldTryLocalFallback =
+      !res ||
+      (res.ok !== true &&
+        (res.reason === 'REMOTE_UNAVAILABLE' || res.reason === 'NOT_FOUND'));
+
+    if (shouldTryLocalFallback) {
+      const cfg = this.config || {};
+      const reRaw = String(cfg.premiumCodeRegex || '').trim();
+      if (reRaw) {
+        try {
+          const re = new RegExp(reRaw);
+          if (!re.test(code)) {
+            if (msg) msg.textContent = String(how.codeInvalid || '').trim();
+            return;
+          }
+        } catch (_) {
+          // ignore (soft)
+        }
+      }
+
+      if (typeof this.storage.tryRedeemPremiumCode !== 'function') {
+        if (msg) msg.textContent = String(how.codeRejected || '').trim();
+        return;
+      }
+
+      res = this.storage.tryRedeemPremiumCode(code);
+    }
 
     if (!res || res.ok !== true) {
       if (msg) msg.textContent = String(how.codeRejected || '').trim();

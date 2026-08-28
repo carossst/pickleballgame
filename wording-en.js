@@ -928,6 +928,7 @@
       activationCodePlaceholder: 'PRQ-0000-0000',
       enterCode: 'Enter a code.',
       codeRejected: 'Code rejected.',
+      codeChecking: 'Checking code...',
       activateCta: 'Activate',
       codeInvalid: 'Invalid code format.',
       codeUsed: 'This device already used a code.',
