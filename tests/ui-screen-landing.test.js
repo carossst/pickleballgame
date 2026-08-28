@@ -135,7 +135,8 @@ function buildHelpers(renderLeaderboardLandingCard, overrides = {}) {
 function createUi(runCompletes, options = {}) {
   const bestScoreFP = Number(options.bestScoreFP || 0);
   const seenCount = Number(options.seenCount || 0);
-  const runsBalance = options.runsBalance == null ? 1 : Number(options.runsBalance);
+  const runsBalance =
+    options.runsBalance == null ? 1 : Number(options.runsBalance);
   return {
     state: 'LANDING',
     _runtime: {},
@@ -184,13 +185,11 @@ function createUi(runCompletes, options = {}) {
           'Unlock full access to record your score and keep building your best.',
         dailyChallengeBadge: 'DAILY CHALLENGE',
         dailyChallengeTitleTemplate: 'Target: {targetScore}+',
-        dailyChallengeProgressTemplate:
-          'Today: {score}/{targetScore}.',
+        dailyChallengeProgressTemplate: 'Today: {score}/{targetScore}.',
         dailyChallengeResetTemplate: '',
         dailyChallengeCompletedTemplate:
           'Daily challenge cleared.\nNext challenge at {resetTime}.',
-        dailyChallengeRewardTemplate:
-          'Earn 1 Rapid Fire ticket.',
+        dailyChallengeRewardTemplate: 'Earn 1 Rapid Fire ticket.',
         dailyChallengeCta: 'Start challenge',
         postPaywallCta: 'Unlock full access'
       },

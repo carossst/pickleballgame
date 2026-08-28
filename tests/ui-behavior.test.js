@@ -183,10 +183,7 @@ function loadUiModule(overrides) {
   context.window.cancelAnimationFrame = context.cancelAnimationFrame;
   context.window.CustomEvent = CustomEventShim;
 
-  const code = fs.readFileSync(
-    path.resolve(__dirname, '..', 'ui.js'),
-    'utf8'
-  );
+  const code = fs.readFileSync(path.resolve(__dirname, '..', 'ui.js'), 'utf8');
   vm.createContext(context);
   vm.runInContext(code, context, {
     filename: path.resolve(__dirname, '..', 'ui.js')
@@ -318,7 +315,9 @@ test('playing answer choices are grouped and labelled by the visible question', 
   const html = ui._renderPlaying();
 
   expect(html).toContain('id="wt-question-text"');
-  expect(html).toContain('class="wt-choices" role="group" aria-labelledby="wt-question-text"');
+  expect(html).toContain(
+    'class="wt-choices" role="group" aria-labelledby="wt-question-text"'
+  );
 });
 
 test('claimShareBonus grants via native share and rerenders once', async () => {
@@ -366,7 +365,9 @@ test('claimShareBonus grants via native share and rerenders once', async () => {
       this._attrs.set(String(name), String(value));
     },
     getAttribute(name) {
-      return this._attrs.has(String(name)) ? this._attrs.get(String(name)) : null;
+      return this._attrs.has(String(name))
+        ? this._attrs.get(String(name))
+        : null;
     }
   };
 
