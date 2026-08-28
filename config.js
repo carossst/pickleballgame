@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.2",
+    version: "4.3.3",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -121,11 +121,13 @@
     curatedFreeRuns: {
       enabled: true,
       runCount: 2,
-      // Same curated question set per run, ordered so true/false alternates
-      // (no more than 2 identical answers in a row within the opening).
+      // Curated opening for the free runs. Design goal: run 1 = a welcoming
+      // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
+      // with the highest-value "aha" questions and 2-3 hard ones near the end.
+      // Ordered so true/false never repeats more than twice in a row.
       cardIdsByRun: {
-        1: [33, 25, 107, 140, 182, 155, 49, 157, 28, 196],
-        2: [22, 29, 62, 60, 104, 54, 123, 180, 172, 194, 174, 42]
+        1: [23, 26, 105, 113, 50, 143, 144, 77, 62, 48],
+        2: [44, 124, 66, 98, 109, 150, 3, 22, 131, 21, 16, 96]
       }
     },
 
