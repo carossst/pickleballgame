@@ -45,7 +45,7 @@
         },
         "fr": {
           "question": "Si la balle atterrit dans le camp adverse puis touche le poteau du filet, l'échange est rejoué.",
-          "explanationShort": "Maintenant: si la balle atterrit dans le camp adverse puis touche le poteau, ne pas la jouer est une faute du receveur. L'équipe qui a frappé la balle remporte donc l'échange.\nAvant 2026, cette situation était traitée différemment.\nDocument de modifications du règlement USA Pickleball 2026, page 5."
+          "explanationShort": "Maintenant : si la balle atterrit dans le camp adverse puis touche le poteau, ne pas la jouer est une faute du receveur. L'équipe qui a frappé la balle remporte donc l'échange.\nAvant 2026, cette situation était traitée différemment.\nDocument de modifications du règlement USA Pickleball 2026, page 5."
         }
       }
     },
@@ -85,7 +85,7 @@
         },
         "fr": {
           "question": "Vous pouvez imprimer de l'effet à la balle au contact de la raquette.",
-          "explanationShort": "Le règlement 2026 précise que l'effet peut être créé au contact de la raquette.\nCe qui reste interdit: ajouter de l'effet avec la main ou les doigts pendant le lâcher.\nDocument de modifications du règlement USA Pickleball 2026, page 11."
+          "explanationShort": "Le règlement 2026 précise que l'effet peut être créé au contact de la raquette.\nCe qui reste interdit : ajouter de l'effet avec la main ou les doigts pendant le lâcher.\nDocument de modifications du règlement USA Pickleball 2026, page 11."
         }
       }
     },
@@ -126,7 +126,7 @@
         },
         "fr": {
           "question": "L'équipe qui reçoit peut gagner la partie sur une faute technique.",
-          "explanationShort": "Avant 2026, seul le serveur pouvait marquer le point décisif.\nMaintenant l'équipe qui reçoit peut gagner la partie sur une faute technique.\nDocument de modifications du règlement USA Pickleball 2026, page 11."
+          "explanationShort": "Avant 2026, seule l'équipe au service pouvait marquer le point décisif.\nMaintenant l'équipe qui reçoit peut gagner la partie sur une faute technique.\nDocument de modifications du règlement USA Pickleball 2026, page 11."
         }
       }
     },
@@ -209,7 +209,7 @@
         },
         "fr": {
           "question": "Un temps mort doit être demandé clairement, à voix haute, par geste de la main, ou les deux.",
-          "explanationShort": "Avant 2026, la règle disait surtout quand demander un temps mort.\nMaintenant elle précise aussi comment le demander: à voix haute, par geste, ou les deux.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
+          "explanationShort": "Avant 2026, la règle disait surtout quand demander un temps mort.\nMaintenant elle précise aussi comment le demander : à voix haute, par geste, ou les deux.\nDocument de modifications du règlement USA Pickleball 2026, page 24."
         }
       }
     },
@@ -352,7 +352,7 @@
         },
         "fr": {
           "question": "Un usage dangereux de la raquette ou de la balle peut entraîner la perte du match, même si personne n'est touché.",
-          "explanationShort": "C'est une sanction de conduite, pas une faute d'échange.\nMettre en danger une personne ou les biens du club peut entraîner la perte du match.\nDocument de modifications du règlement USA Pickleball 2026, page 23."
+          "explanationShort": "C'est une sanction de conduite, pas une faute d'échange.\nMettre en danger une personne ou les biens de l'installation peut entraîner la perte du match.\nDocument de modifications du règlement USA Pickleball 2026, page 23."
         }
       }
     },
@@ -834,7 +834,7 @@
         },
         "fr": {
           "question": "Le service avec rebond doit respecter les mêmes règles d'arc du geste, de poignet et de hauteur que le service à la volée.",
-      "explanationShort": "Non. Les règles d'arc ascendant, de poignet et de hauteur s'appliquent seulement au service à la volée.\nAvec un service avec rebond, la balle est lâchée puis jouée après rebond: ces restrictions de mouvement ne s'appliquent pas.\nRèglement officiel USA Pickleball 2026, règles 7.C, 7.D."
+      "explanationShort": "Non. Les règles d'arc ascendant, de poignet et de hauteur s'appliquent seulement au service à la volée.\nAvec un service avec rebond, la balle est lâchée puis jouée après rebond : ces restrictions de mouvement ne s'appliquent pas.\nRèglement officiel USA Pickleball 2026, règles 7.C, 7.D."
         }
       }
     },
@@ -854,7 +854,7 @@
         },
         "fr": {
       "question": "Le receveur doit être prêt avant que le service ne soit effectué.",
-          "explanationShort": "Le receveur ne peut signaler qu'il n'est pas prêt qu'avant le début de l'annonce du score, sa seule fenêtre pour le faire.\nUne fois l'annonce commencée, il est considéré prêt, et le serveur peut alors servir dans les 10 secondes qui suivent.\nRèglement officiel USA Pickleball 2026, règle 6.A."
+          "explanationShort": "Le receveur n'a qu'une seule fenêtre pour signaler qu'il n'est pas prêt : avant le début de l'annonce du score.\nUne fois l'annonce commencée, il est considéré comme prêt, et le serveur peut alors servir dans les 10 secondes qui suivent.\nRèglement officiel USA Pickleball 2026, règle 6.A."
         }
       }
     },
@@ -1012,7 +1012,7 @@
         },
         "fr": {
           "question": "Une balle de service qui atterrit sur la ligne centrale de la zone de service est une faute.",
-          "explanationShort": "La ligne centrale fait partie de la zone de service: la balle est bonne.\nLes lignes de côté et de fond de la zone de service sont bonnes aussi.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.f."
+          "explanationShort": "La ligne centrale fait partie de la zone de service : la balle est bonne.\nLes lignes de côté et de fond de la zone de service sont bonnes aussi.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.f."
         }
       }
     },
@@ -1031,7 +1031,7 @@
         },
         "fr": {
           "question": "En double, le score est annoncé sous forme de deux nombres.",
-          "explanationShort": "En double, on annonce trois nombres, pas deux.\nLe troisième nombre est le numéro du serveur: un ou deux.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
+          "explanationShort": "En double, on annonce trois nombres, pas deux.\nLe troisième nombre est le numéro du serveur : un ou deux.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
         }
       }
     },
@@ -1848,7 +1848,7 @@
         },
         "fr": {
           "question": "Une balle doit rebondir entre 30 et 34 pouces (76,2-86,4 cm) quand elle est lâchée depuis 78 pouces (198,1 cm).",
-          "explanationShort": "Le test de rebond se fait sur une plaque de granit.\nLa température du test doit être d'environ 21 °C (70 °F ±5 °F).\nManuel des standards d'équipement USA Pickleball 2025, règle 2.D.5."
+          "explanationShort": "Le test de rebond se fait sur une plaque de granit.\nLa température du test doit être de 70 °F (21 °C), avec une tolérance de ±5 °F.\nManuel des standards d'équipement USA Pickleball 2025, règle 2.D.5."
         }
       }
     },
@@ -2467,7 +2467,7 @@
         },
         "fr": {
           "question": "Une gêne annoncée arrête l'échange.",
-          "explanationShort": "N'importe quel joueur peut annoncer une gêne pour arrêter le jeu.\nExemple: une balle qui roule depuis un autre terrain.\nRèglement officiel USA Pickleball 2026, règle 9.C."
+          "explanationShort": "N'importe quel joueur peut annoncer une gêne pour arrêter le jeu.\nExemple : une balle qui roule depuis un autre terrain.\nRèglement officiel USA Pickleball 2026, règle 9.C."
         }
       }
     },
@@ -2622,12 +2622,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "A net system malfunction during a rally is a hinder.",
-          "explanationShort": "Any malfunction of a net system during play is considered a hinder.\nThe rally must be replayed when a valid hinder is called.\n2026 USA Pickleball Official Rulebook, Rule 13.J."
+          "question": "A net system malfunction during a rally causes the rally to be replayed.",
+          "explanationShort": "A net system malfunction during a rally means the rally must be replayed.\nIt is not classified as a hinder: the 2026 hinder definition covers only transient outside events like stray balls or insects.\n2026 USA Pickleball Official Rulebook, Rule 13.J."
         },
         "fr": {
-          "question": "Un dysfonctionnement du filet pendant un échange est une gêne.",
-          "explanationShort": "Tout dysfonctionnement du système de filet pendant le jeu est une gêne.\nL'échange doit être rejoué quand une gêne valable est annoncée.\nRèglement officiel USA Pickleball 2026, règle 13.J."
+          "question": "Un dysfonctionnement du filet pendant un échange fait rejouer l'échange.",
+          "explanationShort": "Un dysfonctionnement du système de filet pendant un échange oblige à rejouer l'échange.\nCe n'est pas classé comme une gêne : la définition 2026 de la gêne ne couvre que les éléments extérieurs passagers, comme une balle parasite ou un insecte.\nRèglement officiel USA Pickleball 2026, règle 13.J."
         }
       }
     },
@@ -2663,11 +2663,11 @@
       "i18n": {
         "en": {
           "question": "When two teams disagree on a fault call, the calling team wins the point.",
-          "explanationShort": "If teammates disagree on a fault, the rally is replayed.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b."
+          "explanationShort": "When two teams disagree on a fault call, the rally is replayed.\nNeither team wins or loses the point.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b."
         },
         "fr": {
           "question": "Quand deux équipes sont en désaccord sur l'annonce d'une faute, l'équipe qui la signale gagne l'échange.",
-          "explanationShort": "Une annonce de faute contestée ne donne pas automatiquement l'échange à l'équipe qui l'annonce.\nSelon la situation prévue par le règlement, l'échange est rejoué ou la décision favorise l'adversaire.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.b."
+          "explanationShort": "Une annonce de faute contestée ne donne pas automatiquement l'échange à l'équipe qui l'annonce.\nQuand deux équipes sont en désaccord sur une faute, l'échange est rejoué.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.b."
         }
       }
     },
@@ -2705,8 +2705,8 @@
           "explanationShort": "A dead ball means play has stopped.\nNeither team can keep the rally going.\n2026 USA Pickleball Official Rulebook, Section 2."
         },
         "fr": {
-          "question": "Quand le jeu est arrêté, la balle n'est plus en jeu.",
-          "explanationShort": "Cela signifie que l'échange est terminé.\nAucune équipe ne peut décider de continuer le même échange.\nRèglement officiel USA Pickleball 2026, section 2."
+          "question": "Une balle morte est une balle qui n'est plus en jeu.",
+          "explanationShort": "Une balle morte signifie que l'échange est terminé.\nAucune équipe ne peut décider de continuer le même échange.\nRèglement officiel USA Pickleball 2026, section 2."
         }
       }
     },
@@ -2886,7 +2886,7 @@
         },
         "fr": {
           "question": "En double, les deux partenaires peuvent frapper la balle avec leur raquette sur le même renvoi.",
-          "explanationShort": "Un seul membre de l'équipe peut frapper la balle sur un même renvoi.\nLe contact entre les deux raquettes n'est pas le sujet: la faute existe si la balle est jouée par les deux raquettes.\nRèglement officiel USA Pickleball 2026, règle 10.D.2."
+          "explanationShort": "Un seul membre de l'équipe peut frapper la balle sur un même renvoi.\nCe n'est pas le contact entre les raquettes qui compte, mais le fait que la balle soit frappée par les deux.\nRèglement officiel USA Pickleball 2026, règle 10.D.2."
         }
       }
     },
@@ -2986,7 +2986,7 @@
         },
         "fr": {
           "question": "Un joueur ne doit pas distraire son adversaire au moment où ce dernier s'apprête à frapper la balle.",
-          "explanationShort": "Une distraction délibérée est une faute contre le joueur qui distrait.\nExemples: bruits forts, taper du pied, agiter la raquette de façon erratique.\nRèglement officiel USA Pickleball 2026, règle 10.F."
+          "explanationShort": "Une distraction délibérée est une faute contre le joueur qui distrait.\nExemples : bruits forts, taper du pied, agiter la raquette de façon erratique.\nRèglement officiel USA Pickleball 2026, règle 10.F."
         }
       }
     },
@@ -3491,7 +3491,7 @@
           "explanationShort": "You do not automatically lose the rally.\nYou may cross over, under, or around the net to hit the ball after it has crossed back.\n2026 USA Pickleball Official Rulebook, Rule 13.I.2."
         },
         "fr": {
-          "question": "Si la balle rebondit dans votre camp puis repasse toute seule de l'autre côté du filet avec l'effet, vous perdez automatiquement l'échange.",
+          "question": "Si la balle rebondit dans votre camp puis repasse toute seule de l'autre côté du filet à cause de l'effet, vous perdez automatiquement l'échange.",
           "explanationShort": "Non. Vous ne perdez pas automatiquement l'échange.\nVous pouvez passer au-dessus, au-dessous ou autour du filet pour jouer la balle après qu'elle a repassé le filet.\nRèglement officiel USA Pickleball 2026, règle 13.I.2."
         }
       }
@@ -3911,7 +3911,7 @@
         },
         "fr": {
           "question": "En simple, le score est annoncé sous forme de trois nombres.",
-          "explanationShort": "Le simple utilise deux nombres: celui du serveur, puis celui du receveur.\nTrois nombres sont utilisés uniquement en double standard.\nRèglement officiel USA Pickleball 2026, règle 6.B."
+          "explanationShort": "Le simple utilise deux nombres : celui du serveur, puis celui du receveur.\nTrois nombres sont utilisés uniquement en double standard.\nRèglement officiel USA Pickleball 2026, règle 6.B."
         }
       }
     },
@@ -3926,11 +3926,11 @@
       "i18n": {
         "en": {
           "question": "In standard doubles, the score is called as three numbers.",
-          "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four-two-one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.C."
+          "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four-two-one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
         },
         "fr": {
           "question": "En double standard, le score est annoncé sous forme de trois nombres.",
-          "explanationShort": "Le score de l'équipe au service, puis celui de l'équipe qui reçoit, puis le numéro du serveur.\nExemple: « quatre-deux-un » = équipe au service à 4, receveurs à 2.\nRèglement officiel USA Pickleball 2026, règle 6.C."
+          "explanationShort": "Le score de l'équipe au service, puis celui de l'équipe qui reçoit, puis le numéro du serveur.\nExemple : « quatre-deux-un » = équipe au service à 4, receveurs à 2.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
         }
       }
     },
