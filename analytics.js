@@ -120,7 +120,7 @@
       if (lang) parts.push(lang);
     }
 
-    return `/${parts.join('/')}`;
+    return parts.join('/');
   }
 
   function buildEventTitle(name, props) {
