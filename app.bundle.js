@@ -444,12 +444,26 @@
             weekly: [
               { nickname: "Ace", scoreFP: 21 },
               { nickname: "Lob", scoreFP: 19 },
-              { nickname: "NetFox", scoreFP: 18 }
+              { nickname: "NetFox", scoreFP: 18 },
+              { nickname: "Two Word Alias", scoreFP: 17 },
+              { nickname: "DinkDoctor", scoreFP: 16 },
+              { nickname: "KitchenBoss24", scoreFP: 15 },
+              { nickname: "BaselineBanditPro", scoreFP: 14 },
+              { nickname: "UnreturnableServe77", scoreFP: 13 },
+              { nickname: "ThirdShotArchitect", scoreFP: 12 },
+              { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 11 }
             ],
             all: [
               { nickname: "Ace", scoreFP: 28 },
               { nickname: "Lob", scoreFP: 26 },
-              { nickname: "NetFox", scoreFP: 24 }
+              { nickname: "NetFox", scoreFP: 24 },
+              { nickname: "Two Word Alias", scoreFP: 23 },
+              { nickname: "DinkDoctor", scoreFP: 22 },
+              { nickname: "KitchenBoss24", scoreFP: 21 },
+              { nickname: "BaselineBanditPro", scoreFP: 20 },
+              { nickname: "UnreturnableServe77", scoreFP: 19 },
+              { nickname: "ThirdShotArchitect", scoreFP: 18 },
+              { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 17 }
             ]
           }
         : {
