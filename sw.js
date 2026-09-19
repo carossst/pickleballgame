@@ -53,6 +53,7 @@ const ASSETS_TO_CACHE = [
   "./wording-fr.js",
   "./wording-bootstrap.js",
   "./i18n.js",
+  "./analytics.js",
   "./wording.js",
   "./email.js",
   "./footer.js",
@@ -213,6 +214,7 @@ function isNetworkFirstAppShellRequest(req, url) {
     path === "/wording-fr.js" ||
     path === "/wording-bootstrap.js" ||
     path === "/i18n.js" ||
+    path === "/analytics.js" ||
     path === "/i18n-toggle.js" ||
     path === "/content-adapter.js" ||
     path === "/icons.js" ||
