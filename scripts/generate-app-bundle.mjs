@@ -9,6 +9,7 @@ const SOURCES = [
   "wording-fr.js",
   "wording-bootstrap.js",
   "i18n.js",
+  "analytics.js",
   "wording.js",
   "icons.js",
   "logic/rapidfire-logic.js",
