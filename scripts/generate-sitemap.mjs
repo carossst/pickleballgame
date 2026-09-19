@@ -21,7 +21,7 @@ const seoPath = path.join(ROOT, "seo-pages.json");
 const outPath = path.join(ROOT, "sitemap.xml");
 
 const seo = JSON.parse(fs.readFileSync(seoPath, "utf8"));
-const BASE = String(seo?.defaults?.baseUrl || "https://pickleballrulesquiz.com").replace(/\/+$/, "");
+const BASE = String(seo?.defaults?.baseUrl || "https://www.pickleballrulesquiz.com").replace(/\/+$/, "");
 const today = new Date().toISOString().slice(0, 10);
 const fixedPageLastmod = (seo?.defaults?.fixedPageLastmod && typeof seo.defaults.fixedPageLastmod === "object")
   ? seo.defaults.fixedPageLastmod
