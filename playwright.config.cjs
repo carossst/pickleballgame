@@ -2,7 +2,7 @@ const { defineConfig } = require("@playwright/test");
 
 module.exports = defineConfig({
   testDir: "./e2e",
-  testMatch: "smoke.spec.js",
+  testMatch: "smoke.pw.js",
   timeout: 30000,
   use: {
     baseURL: "http://127.0.0.1:4173",
