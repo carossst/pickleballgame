@@ -22617,3 +22617,1488 @@ ${questionAudioHtml}
   };
 
 })();
+
+/* ===== footer.js ===== */
+// footer.js — shared footer injection (uses email.js)
+// Responsibility: inject footer markup into #wt-footer-root when needed.
+// Branding, version, labels and locale-aware links are hydrated here. Contact is handled by email.js.
+// Locale: locale-aware hrefs come from WT_WORDING.footer.links.* via data-wt-href (hydrated by wording.js).
+//         Re-runs hydration on "wt:locale-change".
+(() => {
+    "use strict";
+
+    function hasNonEmptyContent(el) {
+        if (!el) return false;
+        const txt = String(el.textContent || "").replace(/\s+/g, " ").trim();
+        return txt.length > 0 || el.children.length > 0;
+    }
+
+    function injectIntoFooterRoot(root) {
+        if (!root) return;
+
+        // Upgrade-safe guard:
+        // - If footer already exists BUT is missing the Press link, we re-inject.
+        // - If Press exists, we keep current DOM (do not overwrite).
+        if (hasNonEmptyContent(root)) {
+            const hasPress = !!(root.querySelector && root.querySelector("#wt-press-link"));
+            if (hasPress) return;
+        }
+
+        root.innerHTML = `
+      <div class="wt-container">
+        <div class="wt-footer-inner">
+          <!-- Ligne 1 : Branding -->
+          <div class="wt-footer-row wt-footer-row--brand">
+            <span class="wt-footer-creator" data-wt-brand="creatorLine"></span>
+          </div>
+
+          <div class="wt-footer-row">
+            <em class="wt-muted" data-wt-wording="footer.rulebookNote"></em>
+          </div>
+
+          <!-- Ligne 2 : Liens utilitaires -->
+          <div class="wt-footer-row wt-footer-row--links">
+            <a id="wt-contact-link" class="wt-footer-link" href="#" data-wt-wording="footer.contact"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-tyf-link" class="wt-footer-link" href="#"
+              data-wt-wording="footer.links.bonjourPickleball.label"
+              data-wt-href="footer.links.bonjourPickleball.href"
+              target="_blank" rel="noopener"></a>
+            <!-- wt-footer-sep--tyf is a marker class for JS targeting only. Styling comes from wt-footer-sep. -->
+            <span class="wt-footer-sep wt-footer-sep--tyf" aria-hidden="true">·</span>
+            <a id="wt-privacy-link" class="wt-footer-link" href="./privacy.html" target="_blank" rel="noopener"
+              data-wt-wording="footer.privacy"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-terms-link" class="wt-footer-link" href="./terms.html" target="_blank" rel="noopener"
+              data-wt-wording="footer.terms"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-press-link" class="wt-footer-link" href="./press.html" target="_blank" rel="noopener"
+              data-wt-wording="footer.press"></a>
+          </div>
+        </div>
+      </div>
+    `;
+    }
+
+    function hydrateFooter(root) {
+        if (!root) return;
+
+        const wording = window.WT_Wording;
+        if (!wording || typeof wording.hydrate !== "function") return;
+
+        wording.hydrate(root);
+
+        // Locale-aware Bonjour Pickleball link
+        try {
+            const appUrlEl = root.querySelector("#wt-tyf-link");
+            const appUrlSep = root.querySelector(".wt-footer-sep--tyf");
+
+            if (appUrlEl) {
+                const url = String(appUrlEl.getAttribute("href") || "").trim();
+                const label = String(appUrlEl.textContent || "").trim();
+                const shouldShow = !!url && url !== "#" && !!label;
+
+                if (shouldShow) {
+                    appUrlEl.setAttribute("target", "_blank");
+                    appUrlEl.setAttribute("rel", "noopener");
+
+                    appUrlEl.style.display = "";
+                    if (appUrlSep) appUrlSep.style.display = "";
+                } else {
+                    appUrlEl.style.display = "none";
+                    if (appUrlSep) appUrlSep.style.display = "none";
+                }
+            }
+        } catch (_) { /* silent */ }
+
+    }
+
+    function tryInject() {
+        const root = document.getElementById("wt-footer-root");
+        if (!root) return;
+
+        injectIntoFooterRoot(root);
+        hydrateFooter(root);
+
+        // Let email.js wire the contact link, but enforce FAIL-CLOSED here:
+        // - If Contact text looks like an email (contains "@"), remove it (anti-leak).
+        if (window.WT_Email && typeof window.WT_Email.initEmailLinks === "function") {
+            window.WT_Email.initEmailLinks();
+        }
+
+        const contact = document.getElementById("wt-contact-link");
+        if (contact) {
+            const txt = String(contact.textContent || "").trim();
+            const looksLikeEmail = txt.includes("@");
+
+            // Fail-closed rules:
+            // - Never show raw email as visible text.
+            // - Keep Contact on all pages if wording exists; email.js wires behavior.
+            const shouldRemove =
+                looksLikeEmail ||
+                (!txt);
+
+            if (shouldRemove) {
+                const sep = contact.nextElementSibling; contact.remove();
+                if (sep && sep.classList && sep.classList.contains("wt-footer-sep")) {
+                    sep.remove();
+                }
+            }
+        }
+    }
+
+    tryInject();
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", tryInject);
+    }
+
+    // Locale reactivity: re-hydrate footer labels on locale change.
+    // Footer DOM stays in place; only text content (and any data-wt-href) is refreshed.
+    try {
+        window.addEventListener("wt:locale-change", () => {
+            const root = document.getElementById("wt-footer-root");
+            if (root) hydrateFooter(root);
+        });
+    } catch (_) { /* silent */ }
+})();
+
+/* ===== i18n-toggle.js ===== */
+// i18n-toggle.js — Locale switcher, fixed top-right
+//
+// Behavior:
+//   - The button always displays the OTHER language (not the current one).
+//   - When locale = "en", button shows "FR" → click switches to French.
+//   - When locale = "fr", button shows "EN" → click switches to English.
+//   - On localized entry pages (`/` and `/fr.html`), switching performs a
+//     real navigation to the sibling locale page for cleaner SEO/share URLs.
+//   - On other static bilingual pages (ex: success/privacy/terms), switching
+//     stays in-place via WT_I18N.setLocale().
+//
+// Placement:
+//   - Fixed top-right of viewport, respects mobile safe-area.
+//   - No HTML change needed (the button injects itself into <body>).
+//   - Hidden during PLAYING via CSS rule on body.wt-state--playing.
+//
+// Contract:
+//   - i18n.js MUST load before this file
+//   - Safe to load on static pages (no game state)
+//   - If WT_I18N missing or only 1 locale, the file is a no-op
+//   - If 3+ locales supported, falls back to a select dropdown (future-proof)
+
+(() => {
+  "use strict";
+
+  const I18N = window.WT_I18N;
+  if (!I18N || typeof I18N.getLocale !== "function") return;
+
+  const locales = I18N.getSupportedLocales();
+  if (!Array.isArray(locales) || locales.length < 2) return;
+
+  // Display labels for the locale buttons. Hardcoded because they render in their
+  // own script (a French speaker sees "EN" for English) and must show BEFORE
+  // wording.js fully hydrates.
+  const LABELS = {
+    en: "EN",
+    fr: "FR",
+    // Future locales: es: "ES", de: "DE", ...
+  };
+  let host = null;
+  let observer = null;
+  let observedRoot = null;
+  let remountRaf = 0;
+  let prefetchLink = null;
+
+  function getGlobeIconHtml() {
+    return `<span class="wt-locale-swap__icon" aria-hidden="true">
+      <svg viewBox="0 0 16 16" width="14" height="14" focusable="false" aria-hidden="true">
+        <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.25"/>
+        <path d="M2.5 8h11" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M8 2.2c1.8 1.6 2.7 3.5 2.7 5.8S9.8 12.2 8 13.8C6.2 12.2 5.3 10.3 5.3 8S6.2 3.8 8 2.2Z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+      </svg>
+    </span>`;
+  }
+
+  function getLocaleName(loc) {
+    const wording = window.WT_WORDING;
+    const name = wording && wording.i18nToggle && wording.i18nToggle.languageNames
+      ? wording.i18nToggle.languageNames[loc]
+      : "";
+    return String(name || LABELS[loc] || loc).trim();
+  }
+
+  function getSwitchAria(loc) {
+    const wording = window.WT_WORDING;
+    const template = String(wording?.i18nToggle?.switchToTemplate || "").trim();
+    const localeName = getLocaleName(loc);
+    if (template && localeName) {
+      return template.replaceAll("{locale}", localeName);
+    }
+    return `Switch to ${LABELS[loc] || loc}`;
+  }
+
+  function getSelectorAria() {
+    const wording = window.WT_WORDING;
+    const explicit = String(wording?.i18nToggle?.selectorLabel || "").trim();
+    return explicit || "Language selector";
+  }
+
+  function getOtherLocale(active) {
+    // Single-click swap pattern: button shows the locale OTHER than active.
+    // Only applies when exactly 2 supported locales.
+    return locales.find((l) => l !== active) || locales[0];
+  }
+
+  function normalizePathname(pathname) {
+    const raw = String(pathname || "").trim();
+    if (!raw) return "/";
+    return raw.replace(/\/+/g, "/");
+  }
+
+  function isLocalizedEntryPath(pathname) {
+    const path = normalizePathname(pathname);
+    return (
+      path === "/" ||
+      path.endsWith("/") ||
+      path.endsWith("/index.html") ||
+      path.endsWith("/fr.html")
+    );
+  }
+
+  function getEntryHrefForLocale(loc) {
+    const normalized = String(loc || "").trim().toLowerCase();
+    if (normalized === "fr") return "./fr.html";
+    return "./index.html";
+  }
+
+  function getNavigationHref(loc) {
+    if (!isLocalizedEntryPath(window.location.pathname)) return "";
+    return getEntryHrefForLocale(loc);
+  }
+
+  function persistLocaleChoice(loc) {
+    const storageKey = String(window?.WT_CONFIG?.i18n?.localeStorageKey || "").trim();
+    if (!storageKey) return;
+    try {
+      window.localStorage.setItem(storageKey, String(loc || "").trim().toLowerCase());
+    } catch (_) { /* silent */ }
+  }
+
+  function ensureSiblingPrefetch() {
+    const active = I18N.getLocale();
+    const other = getOtherLocale(active);
+    const href = getNavigationHref(other);
+    if (!href) return;
+
+    if (!prefetchLink) {
+      prefetchLink = document.createElement("link");
+      prefetchLink.setAttribute("rel", "prefetch");
+      prefetchLink.setAttribute("as", "document");
+      prefetchLink.setAttribute("data-wt-locale-prefetch", "1");
+      document.head.appendChild(prefetchLink);
+    }
+
+    if (prefetchLink.getAttribute("href") !== href) {
+      prefetchLink.setAttribute("href", href);
+    }
+  }
+
+  function buildButtonHtml(active) {
+    const other = getOtherLocale(active);
+    const label = LABELS[other] || String(other).toUpperCase();
+    const aria = getSwitchAria(other);
+    const href = getNavigationHref(other);
+    if (href) {
+      return `<a
+      class="wt-locale-swap"
+      href="${href}"
+      data-wt-locale-swap-to="${other}"
+      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
+    }
+    return `<button type="button"
+      class="wt-locale-swap"
+      data-wt-locale-swap-to="${other}"
+      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></button>`;
+  }
+
+  function buildDropdownHtml(active) {
+    // Used only if 3+ locales — single-click swap doesn't scale.
+    const options = locales.map((loc) => {
+      const sel = loc === active ? "selected" : "";
+      const label = LABELS[loc] || String(loc).toUpperCase();
+      return `<option value="${loc}" ${sel}>${label}</option>`;
+    }).join("");
+    return `<select class="wt-locale-dropdown" aria-label="${getSelectorAria()}"
+      data-wt-locale-select>${options}</select>`;
+  }
+
+  function rerender(host) {
+    if (!host) return;
+    const active = I18N.getLocale();
+    host.innerHTML = (locales.length === 2)
+      ? buildButtonHtml(active)
+      : buildDropdownHtml(active);
+  }
+
+  function ensureHost() {
+    if (!host) {
+      host = document.createElement("div");
+      host.className = "wt-locale-toggle-host";
+    }
+
+    const slot = document.querySelector("[data-wt-locale-toggle-slot]");
+    if (slot) {
+      host.classList.remove("wt-locale-toggle-host--floating");
+      if (host.parentNode !== slot) slot.appendChild(host);
+      return host;
+    }
+
+    host.classList.add("wt-locale-toggle-host--floating");
+    if (host.parentNode !== document.body) document.body.appendChild(host);
+    return host;
+  }
+
+  function handleClick(e) {
+    const target = e.target.closest && e.target.closest("[data-wt-locale-swap-to]");
+    if (!target) return;
+
+    const loc = target.getAttribute("data-wt-locale-swap-to");
+    if (!loc) return;
+
+    e.preventDefault();
+
+    try {
+      if (typeof e.stopPropagation === "function") e.stopPropagation();
+    } catch (_) { /* silent */ }
+
+    const href = getNavigationHref(loc);
+    if (href) {
+      persistLocaleChoice(loc);
+      window.location.assign(href);
+      return;
+    }
+
+    I18N.setLocale(loc);
+  }
+
+  function handleChange(e) {
+    const target = e.target.closest && e.target.closest("[data-wt-locale-select]");
+    if (!target) return;
+    const loc = target.value;
+    if (!loc) return;
+    const href = getNavigationHref(loc);
+    if (href) {
+      persistLocaleChoice(loc);
+      window.location.assign(href);
+      return;
+    }
+    I18N.setLocale(loc);
+  }
+
+  function mount() {
+    const mountHost = ensureHost();
+    if (!mountHost) return;
+    rerender(mountHost);
+    ensureSiblingPrefetch();
+
+    if (!mountHost.getAttribute("data-wt-toggle-bound")) {
+      mountHost.setAttribute("data-wt-toggle-bound", "1");
+      mountHost.addEventListener("click", handleClick);
+      mountHost.addEventListener("change", handleChange);
+      mountHost.addEventListener("pointerenter", () => ensureSiblingPrefetch(), { passive: true });
+      mountHost.addEventListener("touchstart", () => ensureSiblingPrefetch(), { passive: true });
+    }
+
+    // Re-render on locale change so the label updates to the new "other" locale
+    try {
+      window.addEventListener("wt:locale-change", () => {
+        const currentHost = ensureHost();
+        rerender(currentHost);
+        ensureSiblingPrefetch();
+      });
+    } catch (_) { /* silent */ }
+
+    function bindObserver() {
+      const root = document.getElementById("app");
+      if (!("MutationObserver" in window)) return;
+
+      if (observer && observedRoot === root) return;
+
+      if (observer) {
+        try { observer.disconnect(); } catch (_) { /* silent */ }
+        observer = null;
+        observedRoot = null;
+      }
+
+      if (!root) return;
+
+      observer = new MutationObserver((mutations) => {
+        const shouldRemount = mutations.some((mutation) => {
+          if (!mutation) return false;
+          if (host && mutation.target && host.contains(mutation.target)) return false;
+          return mutation.type === "childList";
+        });
+
+        if (!shouldRemount || remountRaf) return;
+
+        remountRaf = window.requestAnimationFrame(() => {
+          remountRaf = 0;
+          const currentHost = ensureHost();
+          if (!currentHost) return;
+
+          const currentButton = currentHost.querySelector("[data-wt-locale-swap-to], [data-wt-locale-select]");
+          if (!currentButton) rerender(currentHost);
+        });
+      });
+      observer.observe(root, { childList: true, subtree: true });
+      observedRoot = root;
+    }
+
+    bindObserver();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount);
+  } else {
+    mount();
+  }
+})();
+
+/* ===== content-adapter.js ===== */
+// content-adapter.js — Locale-aware content normalization
+// Bridges i18n schema (item.i18n.{locale}.{question,explanationShort}) with the
+// flat schema expected by game.js/ui.js (item.question, item.explanationShort).
+//
+// Backward-compatible:
+//   - If item has no `i18n` block → leaves it alone (legacy schema works as-is)
+//   - If item has `i18n[locale]` → mutates top-level question/explanationShort
+//
+// Design choice: mutate in place rather than clone. Reasons:
+//   - Items are stored by reference in ui._runtime.contentItems
+//   - Mutating in place propagates to all downstream consumers without churn
+//   - Memory-efficient (no per-locale array duplication)
+//
+// Usage:
+//   const items = content.items;
+//   WT_ContentAdapter.applyLocaleToItems(items, "fr");
+//   ui.setContent(items);
+//
+// On locale change:
+//   WT_ContentAdapter.applyLocaleToItems(rawItems, newLocale);
+//   ui.render();  // ui will pick up the mutated values
+//
+// Important runtime note:
+//   Locale switching is safe between screens, but a share/export flow that reads
+//   content text after a locale toggle will use the newly mutated top-level fields.
+//   This is intentional for the current product: sharing reflects the active locale,
+//   not necessarily the locale used when the just-finished run started.
+
+(() => {
+  "use strict";
+
+  function pickLocaleText(item, locale, key) {
+    // Priority:
+    //   1. item.i18n[locale][key]            ← preferred (post-Phase 3)
+    //   2. item.i18n[defaultLocale][key]     ← fallback to default
+    //   3. item.i18n.en[key]                 ← fallback to English
+    //   4. item[key]                          ← legacy flat schema
+    const i18n = item && item.i18n;
+    if (i18n && typeof i18n === "object") {
+      const localeBlock = i18n[locale];
+      if (localeBlock && typeof localeBlock[key] === "string") {
+        return localeBlock[key];
+      }
+      // Try the configured default locale
+      const cfg = window.WT_CONFIG;
+      const defaultLoc = cfg && cfg.i18n && cfg.i18n.defaultLocale;
+      if (defaultLoc && defaultLoc !== locale) {
+        const defaultBlock = i18n[defaultLoc];
+        if (defaultBlock && typeof defaultBlock[key] === "string") {
+          return defaultBlock[key];
+        }
+      }
+      // Try English as ultimate fallback
+      if (i18n.en && typeof i18n.en[key] === "string") {
+        return i18n.en[key];
+      }
+    }
+    // Legacy flat schema
+    if (typeof item[key] === "string") return item[key];
+    return "";
+  }
+
+  function applyLocaleToItem(item, locale) {
+    if (!item || typeof item !== "object") return item;
+    item.question = pickLocaleText(item, locale, "question");
+    item.explanationShort = pickLocaleText(item, locale, "explanationShort");
+    return item;
+  }
+
+  function applyLocaleToItems(items, locale) {
+    if (!Array.isArray(items)) return items;
+    const loc = String(locale || "en");
+    for (const item of items) applyLocaleToItem(item, loc);
+    return items;
+  }
+
+  function hasI18nSchema(items) {
+    if (!Array.isArray(items) || !items.length) return false;
+    // Sample a few items to determine schema (handles partial migrations)
+    let withI18n = 0;
+    const sampleSize = Math.min(10, items.length);
+    for (let i = 0; i < sampleSize; i++) {
+      if (items[i] && items[i].i18n && typeof items[i].i18n === "object") withI18n++;
+    }
+    return (withI18n * 2) >= sampleSize;
+  }
+
+  window.WT_ContentAdapter = {
+    applyLocaleToItem,
+    applyLocaleToItems,
+    pickLocaleText,
+    hasI18nSchema
+  };
+})();
+
+/* ===== main.js ===== */
+// main.js v2.0 - App bootstrap
+
+(() => {
+  'use strict';
+
+  function buildUpdateReloadUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('wt-refresh', String(Date.now()));
+    return url.toString();
+  }
+
+  function reloadForUpdate() {
+    try {
+      Logger.log('[UPDATE] reloadForUpdate', { href: window.location.href });
+    } catch (_) {}
+    window.location.assign(buildUpdateReloadUrl());
+  }
+
+  function escapeHtmlSafe(str) {
+    const s = String(str == null ? '' : str);
+    const fn =
+      window.WT_UTILS && typeof window.WT_UTILS.escapeHtml === 'function'
+        ? window.WT_UTILS.escapeHtml
+        : null;
+
+    if (!fn) {
+      throw new Error(
+        'WT_UTILS.escapeHtml missing. config.js must load before main.js.'
+      );
+    }
+
+    return String(fn(s));
+  }
+
+  function pickOne(arr, fallback) {
+    const list = Array.isArray(arr)
+      ? arr.map((x) => String(x || '').trim()).filter(Boolean)
+      : [];
+    if (!list.length) return String(fallback || '').trim();
+    const index = Math.floor(Math.random() * list.length);
+    return list[index] || String(fallback || '').trim();
+  }
+
+  function fillTemplateLocal(template, vars) {
+    let out = String(template == null ? '' : template);
+    const map = vars && typeof vars === 'object' ? vars : {};
+    for (const [key, value] of Object.entries(map)) {
+      out = out.replaceAll(`{${key}}`, String(value == null ? '' : value));
+    }
+    return out;
+  }
+
+  function getActiveWording() {
+    try {
+      const direct = window.WT_WORDING;
+      if (direct && typeof direct === 'object') return direct;
+
+      const all = window.WT_WORDING_ALL;
+      const loc =
+        window.WT_I18N && typeof window.WT_I18N.getLocale === 'function'
+          ? window.WT_I18N.getLocale()
+          : String(window.WT_CONFIG?.i18n?.defaultLocale || 'en');
+      if (all && typeof all === 'object') {
+        return (
+          all[loc] || all[window.WT_CONFIG?.i18n?.defaultLocale] || all.en || {}
+        );
+      }
+    } catch (_) {}
+    return {};
+  }
+
+  function getSystemCopy(key, fallback, vars) {
+    try {
+      const wording = getActiveWording();
+      const raw =
+        wording && wording.system && typeof wording.system[key] === 'string'
+          ? wording.system[key]
+          : fallback;
+      return fillTemplateLocal(raw, vars);
+    } catch (_) {
+      return fillTemplateLocal(fallback, vars);
+    }
+  }
+
+  // ============================================
+  // Logger (like TYF)
+  // ============================================
+  const Logger = {
+    debug: (...args) =>
+      window.WT_CONFIG?.debug?.enabled &&
+      window.WT_CONFIG.debug.logLevel === 'debug' &&
+      console.log('[WT Debug]', ...args),
+
+    log: (...args) =>
+      window.WT_CONFIG?.debug?.enabled &&
+      ['debug', 'log'].includes(window.WT_CONFIG.debug.logLevel) &&
+      console.log('[WT]', ...args),
+
+    warn: (...args) =>
+      window.WT_CONFIG?.debug?.enabled && console.warn('[WT Warning]', ...args),
+
+    error: (...args) => console.error('[WT Error]', ...args)
+  };
+
+  window.Logger = Logger;
+
+  // ============================================
+  // Error display
+  // ============================================
+  function showFatal(message) {
+    const root = document.getElementById('app');
+    if (!root) return;
+
+    const safeMsg = escapeHtmlSafe(message);
+    const appName = escapeHtmlSafe(
+      String(window.WT_CONFIG?.identity?.appName || 'Game').trim()
+    );
+
+    root.innerHTML = `
+      <div class="wt-card wt-card--error">
+        <h1 class="wt-h1">${appName}</h1>
+        <p class="wt-muted">${safeMsg}</p>
+        <button id="wtFatalReloadBtn" class="wt-btn wt-btn--secondary" type="button">${escapeHtmlSafe(getSystemCopy('fatalReload', 'Reload'))}</button>
+      </div>
+    `;
+
+    const btn = document.getElementById('wtFatalReloadBtn');
+    if (btn) btn.addEventListener('click', reloadForUpdate);
+  }
+
+  window.showFatal = showFatal;
+
+  // ============================================
+  // Global error handlers
+  // ============================================
+  window.addEventListener('error', (event) => {
+    Logger.error('Global error:', event.error || event);
+
+    if (window.__WT_APP_BOOTED__ === true) return;
+
+    const isDev = window.WT_CONFIG?.debug?.enabled;
+    const errorMsg = event.message || event.error?.message || 'Unknown error';
+    showFatal(
+      isDev
+        ? getSystemCopy(
+            'fatalJavascriptPrefix',
+            'JavaScript Error: {message}',
+            { message: errorMsg }
+          )
+        : getSystemCopy(
+            'fatalLoadFailed',
+            'Unable to load the game. Please refresh the page.'
+          )
+    );
+  });
+
+  window.addEventListener('unhandledrejection', (event) => {
+    Logger.error('Unhandled promise rejection:', event.reason);
+
+    if (window.__WT_APP_BOOTED__ === true) return;
+
+    const isDev = window.WT_CONFIG?.debug?.enabled;
+    const errorMsg = event.reason?.message || 'Promise rejection';
+    showFatal(
+      isDev
+        ? getSystemCopy('fatalPromisePrefix', 'Promise Error: {message}', {
+            message: errorMsg
+          })
+        : getSystemCopy(
+            'fatalUnexpected',
+            'An unexpected issue occurred. Please refresh the page.'
+          )
+    );
+  });
+  // ============================================
+  // Content loader
+  // ============================================
+  async function loadJson(url) {
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error(`Failed to load ${url}: ${res.status}`);
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(
+        `Invalid JSON response for ${url} (content-type: ${contentType})`
+      );
+    }
+
+    return await res.json();
+  }
+
+  // ============================================
+  // Service Worker registration
+  // ============================================
+  function initServiceWorker() {
+    const cfg = window.WT_CONFIG;
+    if (!cfg || typeof cfg !== 'object') return;
+    if (cfg?.serviceWorker?.enabled !== true) return;
+    if (cfg.environment === 'development') return;
+
+    if (!('serviceWorker' in navigator)) {
+      Logger.warn('Service Worker not supported');
+      return;
+    }
+
+    function getUpdateToastStorageKey() {
+      try {
+        const storageKey = String(cfg?.storage?.storageKey || '').trim();
+        if (!storageKey) return '';
+        return `wt-sw-update-toast-seen:${storageKey}`;
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function getWaitingWorkerKey(worker) {
+      const w = worker || window.__WT_SW_WAITING__ || null;
+      return String(w?.scriptURL || w?.state || 'waiting').trim();
+    }
+
+    function hasSeenUpdateToast(waitingKey) {
+      const key = String(waitingKey || '').trim();
+      if (!key) return false;
+
+      if (window.__WT_SW_LAST_TOAST_KEY__ === key) return true;
+
+      const storageKey = getUpdateToastStorageKey();
+      if (!storageKey) return false;
+
+      try {
+        return window.localStorage.getItem(storageKey) === key;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function markUpdateToastSeen(waitingKey) {
+      const key = String(waitingKey || '').trim();
+      if (!key) return;
+
+      window.__WT_SW_LAST_TOAST_KEY__ = key;
+
+      const storageKey = getUpdateToastStorageKey();
+      if (!storageKey) return;
+
+      try {
+        window.localStorage.setItem(storageKey, key);
+      } catch (_) {}
+    }
+
+    function hideUpdateToast() {
+      const node = document.getElementById('update-toast');
+      if (node && node.classList) node.classList.remove('wt-toast--visible');
+    }
+
+    function showUpdateToast(message) {
+      const msg = String(message || '').trim();
+      if (!msg) return;
+
+      // KISS: reuse the existing #update-toast shell from index.html
+      const node = document.getElementById('update-toast');
+      if (!node) return;
+
+      const waitingKey = getWaitingWorkerKey(window.__WT_SW_WAITING__ || null);
+      if (!waitingKey) return;
+
+      if (hasSeenUpdateToast(waitingKey)) {
+        window.__WT_SW_UPDATE_READY__ = true;
+        hideUpdateToast();
+        return;
+      }
+
+      // Mark update ready so UI can decide when to apply it (user-controlled).
+      // Persist the seen key immediately. If iOS/PWA keeps the same waiting worker
+      // across reloads, the user is not asked again and again.
+      window.__WT_SW_UPDATE_READY__ = true;
+      markUpdateToastSeen(waitingKey);
+
+      const text = node.querySelector('[data-wt-update-text]');
+      if (text) text.textContent = msg;
+
+      node.classList.add('wt-toast--visible');
+    }
+
+    function setWaitingWorker(worker) {
+      if (!worker) return;
+      window.__WT_SW_WAITING__ = worker;
+      window.__WT_SW_UPDATE_READY__ = true;
+    }
+
+    async function tryPromoteInstallingWorker(worker) {
+      if (!worker) return false;
+      if (worker.state === 'installed') {
+        setWaitingWorker(worker);
+        return true;
+      }
+
+      return await new Promise((resolve) => {
+        let done = false;
+
+        function finish(ok) {
+          if (done) return;
+          done = true;
+          resolve(ok === true);
+        }
+
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            setWaitingWorker(worker);
+            finish(true);
+            return;
+          }
+
+          if (worker.state === 'redundant') {
+            finish(false);
+          }
+        });
+
+        window.setTimeout(() => finish(false), 4000);
+      });
+    }
+
+    window.__WT_APPLY_SW_UPDATE__ = async function () {
+      if (window.__WT_SW_UPDATE_IN_FLIGHT__ === true) return;
+
+      hideUpdateToast();
+
+      let fallbackTimer = null;
+      function armFallbackReload() {
+        if (fallbackTimer) return;
+        fallbackTimer = window.setTimeout(() => {
+          fallbackTimer = null;
+          reloadForUpdate();
+        }, 2500);
+      }
+
+      const registration = window.__WT_SW_REGISTRATION__ || null;
+      let waiting = window.__WT_SW_WAITING__ || registration?.waiting || null;
+
+      if (!waiting && registration) {
+        try {
+          await registration.update();
+        } catch (_) {}
+        waiting = registration.waiting || null;
+      }
+
+      if (!waiting && registration?.installing) {
+        const ready = await tryPromoteInstallingWorker(registration.installing);
+        if (ready) {
+          waiting = window.__WT_SW_WAITING__ || registration.waiting || null;
+        }
+      }
+
+      if (!waiting || typeof waiting.postMessage !== 'function') {
+        reloadForUpdate();
+        return;
+      }
+
+      try {
+        window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = true;
+      } catch (_) {}
+      try {
+        window.__WT_SW_UPDATE_IN_FLIGHT__ = true;
+      } catch (_) {}
+
+      try {
+        armFallbackReload();
+        waiting.postMessage({ type: 'SKIP_WAITING' });
+      } catch (_) {
+        try {
+          window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false;
+        } catch (_) {}
+        try {
+          window.__WT_SW_UPDATE_IN_FLIGHT__ = false;
+        } catch (_) {}
+        reloadForUpdate();
+      }
+    };
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      try {
+        Logger.log('[UPDATE] controllerchange');
+      } catch (_) {}
+      if (window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ !== true) return;
+      try {
+        window.__WT_SW_RELOAD_ON_CONTROLLERCHANGE__ = false;
+      } catch (_) {}
+      try {
+        window.__WT_SW_UPDATE_IN_FLIGHT__ = false;
+      } catch (_) {}
+      reloadForUpdate();
+    });
+
+    window.addEventListener('load', () => {
+      const version = String(cfg.version || '').trim();
+      if (!version) {
+        Logger.warn(
+          'WT_CONFIG.version missing/empty: skipping Service Worker registration (fail-closed)'
+        );
+        return;
+      }
+
+      const storageKey = String(cfg?.storage?.storageKey || '').trim();
+      if (!storageKey) {
+        Logger.warn(
+          'WT_CONFIG.storage.storageKey missing/empty: skipping Service Worker registration (fail-closed)'
+        );
+        return;
+      }
+
+      const v = encodeURIComponent(version);
+      const appScope = encodeURIComponent(storageKey);
+      const swUrl = `./sw.js?v=${v}&app=${appScope}`;
+
+      navigator.serviceWorker
+        .register(swUrl, { scope: './' })
+        .then((registration) => {
+          window.__WT_SW_REGISTRATION__ = registration;
+          Logger.log('✅ Service Worker registered:', registration.scope);
+
+          // Update already waiting from a previous page session: surface it immediately.
+          if (
+            cfg.serviceWorker.showUpdateNotifications &&
+            registration.waiting &&
+            navigator.serviceWorker.controller
+          ) {
+            setWaitingWorker(registration.waiting);
+            const msg = String(
+              window.WT_WORDING?.system?.updateAvailable || ''
+            ).trim();
+            if (msg) showUpdateToast(msg);
+          }
+
+          // Auto-update check
+          if (cfg.serviceWorker.autoUpdate) {
+            if (window.__WT_SW_AUTO_UPDATE_INTERVAL__) {
+              window.clearInterval(window.__WT_SW_AUTO_UPDATE_INTERVAL__);
+            }
+
+            window.__WT_SW_AUTO_UPDATE_INTERVAL__ = window.setInterval(
+              () => {
+                registration.update().catch(() => {});
+              },
+              10 * 60 * 1000
+            ); // Every 10 min
+          }
+
+          // Update notification (config: showUpdateNotifications)
+          // IMPORTANT: never auto-reload (can kill an active run). User-controlled reload only.
+          if (cfg.serviceWorker.showUpdateNotifications) {
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (!newWorker) return;
+
+              newWorker.addEventListener('statechange', () => {
+                // Only notify when updating an already-controlled page
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
+                  setWaitingWorker(newWorker);
+                  const msg = String(
+                    window.WT_WORDING?.system?.updateAvailable || ''
+                  ).trim();
+                  if (msg) showUpdateToast(msg);
+                }
+              });
+            });
+          }
+        })
+        .catch((err) => {
+          Logger.warn(
+            'Service Worker registration failed:',
+            err?.message || err
+          );
+        });
+    });
+  }
+
+  // ============================================
+  // Validation
+  // ============================================
+  function validatePrerequisites() {
+    if (!window.WT_CONFIG) {
+      Logger.error('WT_CONFIG not found');
+      showFatal(
+        getSystemCopy(
+          'fatalConfigMissing',
+          'Configuration error: application settings not loaded.'
+        )
+      );
+      return false;
+    }
+
+    let storageOk = false;
+    try {
+      const ls = window.localStorage;
+      if (ls) {
+        const probeKey = '__wt_storage_probe__';
+        ls.setItem(probeKey, '1');
+        ls.removeItem(probeKey);
+        storageOk = true;
+      }
+    } catch (_) {
+      storageOk = false;
+    }
+
+    if (!storageOk) {
+      Logger.error('localStorage not supported or unavailable');
+      showFatal(
+        getSystemCopy(
+          'fatalStorageUnsupported',
+          'Your browser does not support local storage. Please use a modern browser.'
+        )
+      );
+      return false;
+    }
+
+    const appContainer = document.getElementById('app');
+    if (!appContainer) {
+      Logger.error('App container not found');
+      showFatal(
+        getSystemCopy(
+          'fatalAppContainerMissing',
+          'Critical error: app container not found.'
+        )
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  function validateModules() {
+    // IMPORTANT:
+    // StorageManager is a reserved native name in browsers (Storage API).
+    // Our app storage class must NOT use that global name.
+    const required = ['WT_StorageManager', 'WT_Game', 'WT_UI', 'WT_ICONS'];
+    const missing = required.filter((name) => !window[name]);
+
+    if (missing.length > 0) {
+      Logger.error(`Missing modules: ${missing.join(', ')}`);
+      showFatal(
+        getSystemCopy(
+          'fatalComponentsMissing',
+          'Unable to load game components: {components}. Please refresh the page.',
+          { components: missing.join(', ') }
+        )
+      );
+      return false;
+    }
+
+    if (typeof window.WT_ICONS.renderIcon !== 'function') {
+      Logger.error('WT_ICONS.renderIcon missing');
+      showFatal(
+        getSystemCopy(
+          'fatalIconsMissing',
+          'Unable to load game components: WT_ICONS.renderIcon. Please refresh the page.'
+        )
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  // ============================================
+  // Loading screen
+  // ============================================
+  function showLoadingScreen() {
+    const root = document.getElementById('app');
+    if (!root) return;
+
+    const wording = window.WT_WORDING;
+    const sys =
+      wording &&
+      typeof wording === 'object' &&
+      wording.system &&
+      typeof wording.system === 'object'
+        ? wording.system
+        : null;
+
+    if (!sys) return;
+
+    const title = String(sys.loadingTitle || '').trim();
+    const hint = String(sys.loadingHint || '').trim();
+    const logoUrl = String(window.WT_CONFIG?.identity?.uiLogoUrl || '').trim();
+    const loadingVisual = logoUrl
+      ? `<img src="${escapeHtmlSafe(logoUrl)}" alt="" class="wt-loading-icon" />`
+      : `<div class="wt-loading-icon">●</div>`;
+
+    root.innerHTML = `
+    <div class="wt-loading">
+      ${loadingVisual}
+      <div class="wt-loading-spinner"></div>
+      <h2 class="wt-h2">${escapeHtmlSafe(title)}</h2>
+      <p class="wt-muted">${escapeHtmlSafe(hint)}</p>
+    </div>
+  `;
+  }
+
+  // ============================================
+  // ============================================
+  // Main application start
+  // ============================================
+  async function startApplication() {
+    showLoadingScreen();
+
+    try {
+      const config = window.WT_CONFIG;
+      if (!config || typeof config !== 'object') {
+        Logger.error('WT_CONFIG missing or invalid');
+        showFatal(
+          getSystemCopy(
+            'fatalConfigMissing',
+            'Configuration error: application settings not loaded.'
+          )
+        );
+        return;
+      }
+
+      const wording = window.WT_WORDING;
+      if (!wording || typeof wording !== 'object') {
+        Logger.error('WT_WORDING missing or invalid');
+        showFatal(
+          getSystemCopy(
+            'fatalWordingMissing',
+            'Configuration error: UI wording not loaded.'
+          )
+        );
+        return;
+      }
+
+      // Init storage
+      const storage = new window.WT_StorageManager(config);
+      storage.init();
+      window.storageManager = storage; // Global for debug
+
+      // Init game engine
+      const game = new window.WT_Game.GameEngine();
+
+      // Init UI immediately (LANDING is not content-dependent)
+      const ui = new window.WT_UI({ storage, game, config, wording });
+      if (ui && typeof ui.setContentLoading === 'function')
+        ui.setContentLoading(true);
+
+      // Listen for storage updates (KISS)
+      // Contract (intentional): StorageManager emits a single global event "storage-updated".
+      // UI refresh strategy is FULL re-render on any mutation (no granular diffs).
+      // Reason: preserve inter-module coherence and avoid partial UI desync bugs.
+      if (window.__WT_ON_STORAGE_UPDATED__) {
+        window.removeEventListener(
+          'storage-updated',
+          window.__WT_ON_STORAGE_UPDATED__
+        );
+      }
+      window.__WT_ON_STORAGE_UPDATED__ = () => ui.onStorageUpdated();
+      window.addEventListener(
+        'storage-updated',
+        window.__WT_ON_STORAGE_UPDATED__
+      );
+
+      if (window.__WT_ON_STORAGE_SAVE_FAILED__) {
+        window.removeEventListener(
+          'storage-save-failed',
+          window.__WT_ON_STORAGE_SAVE_FAILED__
+        );
+      }
+      window.__WT_ON_STORAGE_SAVE_FAILED__ = () => {
+        if (ui && typeof ui.onStorageSaveFailed === 'function')
+          ui.onStorageSaveFailed();
+      };
+      window.addEventListener(
+        'storage-save-failed',
+        window.__WT_ON_STORAGE_SAVE_FAILED__
+      );
+
+      ui.init();
+
+      try {
+        const onLocaleChange = () => {
+          try {
+            const newLoc =
+              window.WT_I18N && window.WT_I18N.getLocale
+                ? window.WT_I18N.getLocale()
+                : 'en';
+            const reopenLeaderboardModal = !!(
+              ui &&
+              ui._runtime &&
+              ui._runtime._modalKey === 'leaderboard' &&
+              typeof ui.openLeaderboardModal === 'function'
+            );
+
+            if (ui) {
+              if (
+                reopenLeaderboardModal &&
+                typeof ui.closeModal === 'function'
+              ) {
+                ui.closeModal();
+              }
+
+              ui.wording = window.WT_WORDING;
+
+              if (
+                window.WT_ContentAdapter &&
+                ui._runtime &&
+                Array.isArray(ui._runtime.contentItems)
+              ) {
+                window.WT_ContentAdapter.applyLocaleToItems(
+                  ui._runtime.contentItems,
+                  newLoc
+                );
+              }
+
+              if (typeof ui.render === 'function') {
+                ui.render();
+              }
+
+              try {
+                const announcer = document.getElementById('locale-feedback');
+                const wording = window.WT_WORDING || {};
+                const localeW = wording.i18nToggle || {};
+                const systemW = wording.system || {};
+                const localeName = String(
+                  localeW.languageNames?.[newLoc] || newLoc
+                ).trim();
+                const tpl = String(
+                  systemW.localeChangedTemplate || 'Language changed to {locale}'
+                ).trim();
+                if (announcer && localeName) {
+                  announcer.textContent = '';
+                  window.requestAnimationFrame(() => {
+                    try {
+                      announcer.textContent = fillTemplateLocal(tpl, {
+                        locale: localeName
+                      });
+                    } catch (_) {
+                      /* silent */
+                    }
+                  });
+                }
+              } catch (_) {
+                /* silent */
+              }
+
+              if (reopenLeaderboardModal) {
+                ui.openLeaderboardModal();
+              }
+            }
+          } catch (e) {
+            try {
+              Logger.warn('[main] locale-change handler failed', e);
+            } catch (_) {
+              /* silent */
+            }
+          }
+        };
+
+        if (window.__WT_ON_LOCALE_CHANGE__) {
+          window.removeEventListener(
+            'wt:locale-change',
+            window.__WT_ON_LOCALE_CHANGE__
+          );
+        }
+        window.__WT_ON_LOCALE_CHANGE__ = onLocaleChange;
+        window.addEventListener('wt:locale-change', onLocaleChange);
+      } catch (_) {
+        /* silent */
+      }
+
+      // Boot optimization: if a premium code was saved by success.html, prompt instant activation.
+      // Single source of truth: ui.js (promptAutoRedeemIfReady + howto.autoActivate* wording).
+      if (ui && typeof ui.promptAutoRedeemIfReady === 'function') {
+        try {
+          ui.promptAutoRedeemIfReady();
+        } catch (_) {
+          /* silent */
+        }
+      }
+
+      // Load content in parallel during boot
+      loadJson(config.contentUrl)
+        .then((content) => {
+          const items = Array.isArray(content.items) ? content.items : [];
+
+          if (!items.length) {
+            if (ui && typeof ui.setContentLoading === 'function')
+              ui.setContentLoading(false);
+            showFatal(
+              getSystemCopy(
+                'fatalContentUnavailable',
+                'Content not available. Please check your connection and reload.'
+              )
+            );
+            return;
+          }
+
+          try {
+            if (window.WT_ContentAdapter && window.WT_I18N) {
+              window.WT_ContentAdapter.applyLocaleToItems(
+                items,
+                window.WT_I18N.getLocale()
+              );
+            }
+          } catch (_) {
+            /* silent */
+          }
+          ui.setContent(items);
+          if (ui && typeof ui.setContentLoading === 'function')
+            ui.setContentLoading(false);
+          ui.render();
+
+          window.__WT_APP_BOOTED__ = true;
+          Logger.log(`Content loaded: ${items.length} items`);
+        })
+        .catch((error) => {
+          Logger.error('Content load error:', error);
+          showFatal(
+            `${getSystemCopy('fatalDataLoadFailed', 'Unable to load game data. Please check your connection and refresh.')}${window.WT_CONFIG?.debug?.enabled ? ` Error: ${error.message}` : ''}`
+          );
+        });
+
+      // Secret bonus (END chest) - orchestration lives in main.js (KISS)
+      // ui.js dispatches: "wt-secret-bonus-requested"
+      if (window.__WT_ON_OPEN_SUPPORT__) {
+        document.removeEventListener(
+          'wt-open-support',
+          window.__WT_ON_OPEN_SUPPORT__
+        );
+      }
+      window.__WT_ON_OPEN_SUPPORT__ = () => {
+        try {
+          ui.openSupportModal();
+        } catch (_) {
+          /* silent */
+        }
+      };
+      document.addEventListener(
+        'wt-open-support',
+        window.__WT_ON_OPEN_SUPPORT__
+      );
+
+      if (window.__WT_ON_SECRET_BONUS_REQUESTED__) {
+        window.removeEventListener(
+          'wt-secret-bonus-requested',
+          window.__WT_ON_SECRET_BONUS_REQUESTED__
+        );
+      }
+      window.__WT_ON_SECRET_BONUS_REQUESTED__ = () => {
+        try {
+          // The UI owns gameplay screens; main.js just triggers the entry point.
+          if (ui && typeof ui.startSecretBonusRun === 'function') {
+            ui.startSecretBonusRun();
+          }
+        } catch (_) {
+          // Never break gameplay for a hidden bonus hook
+        }
+      };
+      window.addEventListener(
+        'wt-secret-bonus-requested',
+        window.__WT_ON_SECRET_BONUS_REQUESTED__
+      );
+
+      // Init email links
+      if (
+        window.WT_Email &&
+        typeof window.WT_Email.initEmailLinks === 'function'
+      ) {
+        window.WT_Email.initEmailLinks();
+      }
+
+      // Init PWA
+      if (typeof window.WT_PWA !== 'undefined' && window.WT_PWA.initPWA) {
+        window.WT_PWA.initPWA(storage, ui);
+      }
+
+      Logger.log(
+        `✅ ${config.identity.appName} v${config.version} started successfully`
+      );
+    } catch (error) {
+      Logger.error('Startup error:', error);
+      showFatal(
+        `${getSystemCopy('fatalDataLoadFailed', 'Unable to load game data. Please check your connection and refresh.')}${window.WT_CONFIG?.debug?.enabled ? ` Error: ${error.message}` : ''}`
+      );
+    }
+  }
+
+  // ============================================
+  // DOMContentLoaded
+  // ============================================
+  document.addEventListener('DOMContentLoaded', () => {
+    const cfg = window.WT_CONFIG;
+    const version = String(cfg?.version || '').trim();
+    const env = String(cfg?.environment || '').trim();
+
+    if (!version) Logger.warn('WT_CONFIG.version missing/empty');
+    if (!env) Logger.warn('WT_CONFIG.environment missing/empty');
+
+    const appName = String(cfg?.identity?.appName || 'Game').trim();
+
+    if (version && env)
+      Logger.log(`Initializing ${appName} v${version} (${env})`);
+    else if (version) Logger.log(`Initializing ${appName} v${version}`);
+    else Logger.log(`Initializing ${appName}`);
+
+    if (!validatePrerequisites()) return;
+    if (!validateModules()) return;
+
+    startApplication();
+  });
+
+  // Init service worker immediately (before DOMContentLoaded)
+  initServiceWorker();
+
+  // ============================================
+  // Debug tools
+  // ============================================
+  if (window.WT_CONFIG?.debug?.enabled) {
+    window.WT_DEBUG = {
+      Logger,
+      config: window.WT_CONFIG,
+      wording: window.WT_WORDING,
+      get storage() {
+        return window.storageManager;
+      },
+      resetStorage() {
+        if (
+          window.storageManager &&
+          typeof window.storageManager.resetAll === 'function'
+        ) {
+          window.storageManager.resetAll();
+        }
+
+        location.reload();
+      }
+    };
+  }
+})();
