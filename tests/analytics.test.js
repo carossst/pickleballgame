@@ -10,7 +10,7 @@ function loadAnalytics(overrides = {}) {
   const windowLike = createWindowLike({
     location: {
       search: '?wt-source=seo',
-      href: 'https://pickleballrulesquiz.com/?wt-source=seo'
+      href: 'https://www.pickleballrulesquiz.com/?wt-source=seo'
     },
     ...(overrides.window || {})
   });

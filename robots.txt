@@ -46,5 +46,5 @@ User-agent: Applebot-Extended
 Allow: /
 
 # --- Discovery files ---
-Sitemap: https://pickleballrulesquiz.com/sitemap.xml
+Sitemap: https://www.pickleballrulesquiz.com/sitemap.xml
 

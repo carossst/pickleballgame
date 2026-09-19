@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.4",
+    version: "4.3.5",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -71,10 +71,10 @@
     // success.html (contact email domain)
     identity: {
       appName: "Pickleball Rules Quiz",
-      appUrl: "https://pickleballrulesquiz.com",
+      appUrl: "https://www.pickleballrulesquiz.com",
       appUrlsByLocale: {
-        en: "https://pickleballrulesquiz.com/",
-        fr: "https://pickleballrulesquiz.com/fr.html"
+        en: "https://www.pickleballrulesquiz.com/",
+        fr: "https://www.pickleballrulesquiz.com/fr.html"
       },
       // Intentionally empty: Pickleball Rules Quiz has no parent site link in the footer.
       parentUrl: "",
@@ -435,32 +435,37 @@
       // Local-only UI test rows.
       // Remove these before go-live if you want the honest empty state again.
       // Includes varied nickname lengths to judge wrapping/truncation visually.
-      seedScores: {
-        weekly: [
-          { nickname: "Ace", scoreFP: 21 },
-          { nickname: "Lob", scoreFP: 19 },
-          { nickname: "NetFox", scoreFP: 18 },
-          { nickname: "Two Word Alias", scoreFP: 17 },
-          { nickname: "DinkDoctor", scoreFP: 16 },
-          { nickname: "KitchenBoss24", scoreFP: 15 },
-          { nickname: "BaselineBanditPro", scoreFP: 14 },
-          { nickname: "UnreturnableServe77", scoreFP: 13 },
-          { nickname: "ThirdShotArchitect", scoreFP: 12 },
-          { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 11 }
-        ],
-        all: [
-          { nickname: "Ace", scoreFP: 28 },
-          { nickname: "Lob", scoreFP: 26 },
-          { nickname: "NetFox", scoreFP: 24 },
-          { nickname: "Two Word Alias", scoreFP: 23 },
-          { nickname: "DinkDoctor", scoreFP: 22 },
-          { nickname: "KitchenBoss24", scoreFP: 21 },
-          { nickname: "BaselineBanditPro", scoreFP: 20 },
-          { nickname: "UnreturnableServe77", scoreFP: 19 },
-          { nickname: "ThirdShotArchitect", scoreFP: 18 },
-          { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 17 }
-        ]
-      }
+      seedScores: isLocalhost
+        ? {
+            weekly: [
+              { nickname: "Ace", scoreFP: 21 },
+              { nickname: "Lob", scoreFP: 19 },
+              { nickname: "NetFox", scoreFP: 18 },
+              { nickname: "Two Word Alias", scoreFP: 17 },
+              { nickname: "DinkDoctor", scoreFP: 16 },
+              { nickname: "KitchenBoss24", scoreFP: 15 },
+              { nickname: "BaselineBanditPro", scoreFP: 14 },
+              { nickname: "UnreturnableServe77", scoreFP: 13 },
+              { nickname: "ThirdShotArchitect", scoreFP: 12 },
+              { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 11 }
+            ],
+            all: [
+              { nickname: "Ace", scoreFP: 28 },
+              { nickname: "Lob", scoreFP: 26 },
+              { nickname: "NetFox", scoreFP: 24 },
+              { nickname: "Two Word Alias", scoreFP: 23 },
+              { nickname: "DinkDoctor", scoreFP: 22 },
+              { nickname: "KitchenBoss24", scoreFP: 21 },
+              { nickname: "BaselineBanditPro", scoreFP: 20 },
+              { nickname: "UnreturnableServe77", scoreFP: 19 },
+              { nickname: "ThirdShotArchitect", scoreFP: 18 },
+              { nickname: "RidiculouslyLongDisplayName12345", scoreFP: 17 }
+            ]
+          }
+        : {
+            weekly: [],
+            all: []
+          }
     },
 
     // Secret bonus mode

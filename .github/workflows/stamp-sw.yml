@@ -1,20 +1,24 @@
-name: Stamp SW on deploy
+name: Validate service worker
+
 on:
   push:
     branches: [main]
+  pull_request:
+
 jobs:
-  stamp:
+  validate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Stamp sw.js with commit hash
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax check
         run: |
-          HASH=$(git rev-parse --short HEAD)
-          sed -i "s/const BUILD_HASH = \".*\"/const BUILD_HASH = \"$HASH\"/" sw.js
-      - name: Commit if changed
+          node --check sw.js
+          node --check config.js
+      - name: Validate versioned PWA contract
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git diff --quiet sw.js || (git add sw.js && git commit -m "chore: stamp SW $HASH" && git push)
+          grep -Fq 'searchParams.get("v")' sw.js
+          grep -Fq './app.bundle.js' sw.js
+          grep -Eq 'version: "[^"]+"' config.js
