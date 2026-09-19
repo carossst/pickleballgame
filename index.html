@@ -154,6 +154,100 @@
   <script defer src="./i18n-toggle.js"></script>
   <script defer src="./content-adapter.js"></script>
   <script defer src="./main.js"></script>
+
+  <!-- Boot recovery: self-heal a stale/broken service-worker cache without touching game progress. -->
+  <script>
+    (function () {
+      'use strict';
+
+      var RECOVERY_KEY = 'wt-boot-recovery-v1';
+      var CACHE_PREFIX = 'wt-pickleball_rules_quiz_v1-';
+
+      function reloadWithCacheBust() {
+        try {
+          var url = new URL(window.location.href);
+          url.searchParams.set('wt-recover', String(Date.now()));
+          window.location.replace(url.toString());
+        } catch (_) {
+          window.location.reload();
+        }
+      }
+
+      function resetRuntimeCachesAndReload() {
+        var jobs = [];
+
+        try {
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            jobs.push(
+              navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                return Promise.all(
+                  registrations.map(function (registration) {
+                    return registration.unregister().catch(function () { return false; });
+                  })
+                );
+              })
+            );
+          }
+        } catch (_) {}
+
+        try {
+          if (window.caches && window.caches.keys) {
+            jobs.push(
+              window.caches.keys().then(function (keys) {
+                return Promise.all(
+                  keys
+                    .filter(function (key) { return key.indexOf(CACHE_PREFIX) === 0; })
+                    .map(function (key) {
+                      return window.caches.delete(key).catch(function () { return false; });
+                    })
+                );
+              })
+            );
+          }
+        } catch (_) {}
+
+        Promise.all(
+          jobs.map(function (job) {
+            return Promise.resolve(job).catch(function () { return null; });
+          })
+        ).then(reloadWithCacheBust, reloadWithCacheBust);
+      }
+
+      function showRecoveryPanel() {
+        var app = document.getElementById('app');
+        if (!app) return;
+        app.innerHTML = '<div style="max-width:680px;margin:48px auto;padding:24px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;line-height:1.5;color:#111827;background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)">' +
+          '<h1 style="font-size:24px;margin:0 0 12px">The quiz did not start</h1>' +
+          '<p style="margin:0 0 18px">The app cache appears to be stuck. Reload the quiz after resetting its local app cache.</p>' +
+          '<button id="wtBootRecoveryBtn" type="button" style="cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:700;background:#0f172a;color:#ffffff">Reset app cache and reload</button>' +
+          '</div>';
+        var btn = document.getElementById('wtBootRecoveryBtn');
+        if (btn) btn.addEventListener('click', resetRuntimeCachesAndReload);
+      }
+
+      window.addEventListener('load', function () {
+        window.setTimeout(function () {
+          var app = document.getElementById('app');
+          var hasRenderedUi = !!(app && String(app.innerHTML || '').trim());
+          if (window.__WT_APP_BOOTED__ === true || hasRenderedUi) return;
+
+          var alreadyTried = false;
+          try {
+            alreadyTried = window.sessionStorage.getItem(RECOVERY_KEY) === '1';
+          } catch (_) {}
+
+          if (!alreadyTried) {
+            try { window.sessionStorage.setItem(RECOVERY_KEY, '1'); } catch (_) {}
+            resetRuntimeCachesAndReload();
+            return;
+          }
+
+          showRecoveryPanel();
+        }, 1800);
+      });
+    })();
+  </script>
+
 </body>
 
 
