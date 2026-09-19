@@ -42,14 +42,14 @@ test('analytics builds a stable event path from funnel props', () => {
   const { analytics } = loadAnalytics();
 
   expect(
-    analytics.buildEventPath('checkout_click', {
+    analytics.buildEventPath('checkout_start', {
       mode: 'RUN',
       entry_source: 'seo',
       premium: false,
       lang: 'en',
       price_key: 'EARLY'
     })
-  ).toBe('/event/checkout-click/run/price-early/src-seo/free/en');
+  ).toBe('event/checkout-start/run/price-early/src-seo/free/en');
 });
 
 test('analytics infers UI context from locale, source, and storage', () => {
@@ -106,7 +106,7 @@ test('analytics sends GoatCounter funnel events as custom events', () => {
   expect(sent).toBe(true);
   expect(calls).toHaveLength(1);
   expect(calls[0]).toMatchObject({
-    path: '/event/success-view/src-direct/en',
+    path: 'event/success-view/src-direct/en',
     event: true
   });
   expect(calls[0].title).toContain('success_view');
