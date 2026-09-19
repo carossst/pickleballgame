@@ -15,8 +15,8 @@ test('config exposes localized app URLs for EN and FR entry pages', () => {
   const cfg = loadConfig('localhost');
 
   expect(cfg.identity.appUrlsByLocale).toEqual({
-    en: 'https://pickleballrulesquiz.com/',
-    fr: 'https://pickleballrulesquiz.com/fr.html'
+    en: 'https://www.pickleballrulesquiz.com/',
+    fr: 'https://www.pickleballrulesquiz.com/fr.html'
   });
 });
 
