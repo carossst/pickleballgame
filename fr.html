@@ -81,7 +81,7 @@
     <main id="main-content" class="wt-main">
       <div class="wt-container">
         <div id="app" tabindex="-1" aria-live="off" aria-label="Contenu du jeu Quiz Pickleball" data-wt-aria-label="common.gameContentAria">
-          <section class="wt-card wt-card--hero wt-boot-static" aria-label="Quiz Pickleball">
+          <section class="wt-card wt-card--hero wt-boot-static" data-wt-boot-static="1" aria-label="Quiz Pickleball">
             <h1 class="wt-h1">Quiz Pickleball</h1>
             <p class="wt-sub"><strong>Mieux connaître les règles, c’est mieux jouer.</strong></p>
             <p>Un jeu rapide de vrai ou faux sur le service, les fautes, le score, les annonces de ligne et les changements de règles 2026.</p>
@@ -186,7 +186,8 @@
       window.addEventListener('load', function () {
         window.setTimeout(function () {
           var app = document.getElementById('app');
-          var hasRenderedUi = !!(app && String(app.innerHTML || '').trim());
+          var hasStaticBootShell = !!(app && app.querySelector && app.querySelector('[data-wt-boot-static="1"]'));
+          var hasRenderedUi = !!(app && String(app.innerHTML || '').trim() && !hasStaticBootShell);
           if (window.__WT_APP_BOOTED__ === true || hasRenderedUi) return;
 
           var alreadyTried = false;
