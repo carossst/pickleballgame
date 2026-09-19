@@ -28,6 +28,10 @@ jobs:
         run: |
           npm run build:assets
           git diff --exit-code -- app.bundle.js style.css
+      - name: Verify generated SEO pages
+        run: |
+          npm run publish:seo
+          git diff --exit-code -- quiz rules sitemap.xml
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Browser smoke tests
