@@ -367,6 +367,12 @@ body.wt-state--end .wt-card--end {
   }
 }
 
+@media (min-width: 900px) {
+  .wt-card--landing {
+    min-height: clamp(320px, 42vh, 480px);
+  }
+}
+
 .wt-landing-header {
   display: flex;
   align-items: flex-start;

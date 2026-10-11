@@ -199,7 +199,7 @@
       tagline: '**Think You Know Pickleball? Prove It.**',
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
-      microFun: 'Quick games · No signup · Free to try',
+      microFun: '2 free games · No signup · 30 seconds to start',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -213,7 +213,7 @@
       runsLabel: '',
       runsFreeMode: '',
 
-      ctaPlay: 'Play now',
+      ctaPlay: 'Start quiz',
       ctaPlayAfterFirstRun: 'Play again',
       ctaHow: 'How to play',
       statsSeenLabel: 'Questions seen',
@@ -830,10 +830,7 @@
       compactBullets: [
         '**All 200 questions in the game**',
         '**Unlimited games**',
-        '**Record and keep improving your score**',
-        '**See the best scores on the public leaderboard**',
-        '**Explanations after every answer**',
-        '**Mistakes Mode** and offline play'
+        '**Explanations after every answer** plus Mistakes Mode'
       ],
 
       valueBullets: [

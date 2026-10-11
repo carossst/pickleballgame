@@ -2777,18 +2777,6 @@ void (function () {
             self._ignoreAppActionsUntil = Date.now() + 900;
           }
 
-          // First-run framing must open only from the LANDING screen itself.
-          // If the click already comes from the first-run modal CTA, we must start the run.
-          // The first-run modal is intentionally shown on mobile too: it explains the game before the first answer.
-          if (
-            !startedFromModal &&
-            self.state === STATES.LANDING &&
-            self._canShowFirstRunFraming()
-          ) {
-            self._openFirstRunFraming();
-            break;
-          }
-
           // Funnel counter: only when starting from LANDING
           if (self.state === STATES.LANDING) {
             if (

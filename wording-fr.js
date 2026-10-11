@@ -201,7 +201,7 @@
       tagline: '**Mieux connaître les règles, c’est mieux jouer.**',
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
-      microFun: 'Parties courtes · Sans inscription · Progression garantie',
+      microFun: '2 parties gratuites · Sans inscription · Départ en 30 secondes',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -215,7 +215,7 @@
       runsLabel: '',
       runsFreeMode: '',
 
-      ctaPlay: 'Jouer maintenant',
+      ctaPlay: 'Commencer le quiz',
       ctaPlayAfterFirstRun: 'Rejouer',
       ctaHow: 'Comment jouer',
       statsSeenLabel: 'Questions vues',
@@ -847,10 +847,7 @@
       compactBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
         '**Parties illimitées**',
-        '**Enregistrez votre score et faites progresser votre meilleur résultat**',
-        '**Voyez les meilleurs scores du classement**',
-        '**Explications après chaque réponse**',
-        '**Mode Erreurs** et jeu hors ligne'
+        '**Explications après chaque réponse** et Mode Erreurs'
       ],
 
       valueBullets: [
