@@ -3,7 +3,7 @@
   "comment": "Single source of truth for the static SEO layer. English only — French SEO lives on bonjourpickleball.fr. sitemap.xml entries for SEO pages must be generated from this file, never hand-edited.",
   "defaults": {
     "locale": "en",
-    "baseUrl": "https://pickleballrulesquiz.com",
+    "baseUrl": "https://www.pickleballrulesquiz.com",
     "minWordCount": 450,
     "ruleSource": "2026 USA Pickleball Official Rulebook",
     "ctaTarget": "/",

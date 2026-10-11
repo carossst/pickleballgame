@@ -9,8 +9,8 @@ import {
 } from "./score-utils.js";
 
 const DEFAULT_ALLOWED_ORIGINS = [
-  "https://pickleballrulesquiz.com",
   "https://www.pickleballrulesquiz.com",
+  "https://pickleballrulesquiz.com",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "http://localhost:4173",
@@ -53,7 +53,7 @@ function resolveCorsOrigin(request, env) {
   const allowed = getAllowedOrigins(env);
   const requestOrigin = String(request?.headers?.get("origin") || "").trim();
   if (requestOrigin && allowed.includes(requestOrigin)) return requestOrigin;
-  return allowed[0] || "https://pickleballrulesquiz.com";
+  return allowed[0] || "https://www.pickleballrulesquiz.com";
 }
 
 function corsHeaders(request, env) {

@@ -21,8 +21,12 @@ const seoPath = path.join(ROOT, "seo-pages.json");
 const outPath = path.join(ROOT, "sitemap.xml");
 
 const seo = JSON.parse(fs.readFileSync(seoPath, "utf8"));
-const BASE = String(seo?.defaults?.baseUrl || "https://pickleballrulesquiz.com").replace(/\/+$/, "");
+const BASE = String(seo?.defaults?.baseUrl || "https://www.pickleballrulesquiz.com").replace(/\/+$/, "");
 const today = new Date().toISOString().slice(0, 10);
+const fixedPageLastmod = (seo?.defaults?.fixedPageLastmod && typeof seo.defaults.fixedPageLastmod === "object")
+  ? seo.defaults.fixedPageLastmod
+  : {};
+const fixedLastmod = (pathname) => String(fixedPageLastmod[pathname] || today);
 
 function urlEntry({ loc, lastmod, changefreq, priority, alternates }) {
   const alt = (alternates || [])
@@ -50,7 +54,7 @@ const entries = [];
 entries.push(
   urlEntry({
     loc: `${BASE}/`,
-    lastmod: "2026-05-19",
+    lastmod: fixedLastmod("/"),
     changefreq: "weekly",
     priority: "1.0",
     alternates: [
@@ -63,7 +67,7 @@ entries.push(
 entries.push(
   urlEntry({
     loc: `${BASE}/fr.html`,
-    lastmod: "2026-05-21",
+    lastmod: fixedLastmod("/fr.html"),
     changefreq: "weekly",
     priority: "0.9",
     alternates: [
@@ -77,7 +81,7 @@ for (const page of ["press.html", "privacy.html", "terms.html"]) {
   entries.push(
     urlEntry({
       loc: `${BASE}/${page}`,
-      lastmod: "2026-05-19",
+      lastmod: fixedLastmod(`/${page}`),
       changefreq: page === "press.html" ? "monthly" : "yearly",
       priority: page === "press.html" ? "0.6" : "0.3",
       alternates: [

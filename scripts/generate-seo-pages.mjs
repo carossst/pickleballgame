@@ -19,7 +19,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const seo = JSON.parse(fs.readFileSync(path.join(ROOT, "seo-pages.json"), "utf8"));
 const content = JSON.parse(fs.readFileSync(path.join(ROOT, "content.json"), "utf8"));
-const BASE = String(seo?.defaults?.baseUrl || "https://pickleballrulesquiz.com").replace(/\/+$/, "");
+const BASE = String(seo?.defaults?.baseUrl || "https://www.pickleballrulesquiz.com").replace(/\/+$/, "");
 const cardsById = new Map(
   (content?.items || []).map((item) => [Number(item?.id), item])
 );

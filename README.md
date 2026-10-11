@@ -121,6 +121,18 @@ These rules are now part of the working contract for Pickleball.
 7. Keep DOM wording hydration in one shared place.
    Static pages, the footer, and shell-level labels must use `wording.js` instead of inline page-specific hydrators.
 
+## Production Assets
+
+The source files remain modular for maintenance, while production entry pages use generated assets:
+
+- `app.bundle.js` is generated from the ordered browser scripts with `npm run generate:bundle`
+- `style.css` is generated from the modular files under `styles/` with `npm run generate:css`
+- `npm run build:assets` regenerates both files
+- CI fails if either generated asset is stale
+- browser smoke tests boot both `/` and `/fr.html` and catch blank-screen regressions
+
+The canonical public host is `https://www.pickleballrulesquiz.com`. The non-`www` origin remains accepted by the Worker for backwards compatibility.
+
 ## Start Locally
 
 This project is static. No bundler or dependency install is required.

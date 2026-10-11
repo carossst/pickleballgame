@@ -190,7 +190,7 @@ Mise à jour après Google I/O 2026 (19 mai) :
 ### Une seule fois — au premier passage en live
 
 8. Google Search Console : créer la propriété pickleballrulesquiz.com,
-   soumettre https://pickleballrulesquiz.com/sitemap.xml.
+   soumettre https://www.pickleballrulesquiz.com/sitemap.xml.
 9. Bing Webmaster Tools : pareil (import direct possible depuis GSC).
    Inscrire AUSSI bonjourpickleball.fr au passage.
 10. Accélérateur : GSC → Inspection d'URL → "Demander l'indexation" sur

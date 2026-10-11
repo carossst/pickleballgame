@@ -4764,6 +4764,25 @@ ${audioSettingsHtml}
       return;
     }
 
+    if (String(res.reason || '').trim().toUpperCase() === 'UNLOCKED') {
+      try {
+        if (
+          window.WT_Analytics &&
+          typeof window.WT_Analytics.trackFunnel === 'function' &&
+          typeof window.WT_Analytics.inferUiContext === 'function'
+        ) {
+          window.WT_Analytics.trackFunnel(
+            'unlock_success',
+            window.WT_Analytics.inferUiContext(this, {
+              unlock_method: 'auto'
+            })
+          );
+        }
+      } catch (_) {
+        /* silent */
+      }
+    }
+
     // Success: clear vanity key to prevent re-prompting
     if (typeof this.storage.clearVanityCode === 'function') {
       try {
@@ -4857,6 +4876,25 @@ ${audioSettingsHtml}
     if (!res || res.ok !== true) {
       if (msg) msg.textContent = String(how.codeRejected || '').trim();
       return;
+    }
+
+    if (String(res.reason || '').trim().toUpperCase() === 'UNLOCKED') {
+      try {
+        if (
+          window.WT_Analytics &&
+          typeof window.WT_Analytics.trackFunnel === 'function' &&
+          typeof window.WT_Analytics.inferUiContext === 'function'
+        ) {
+          window.WT_Analytics.trackFunnel(
+            'unlock_success',
+            window.WT_Analytics.inferUiContext(this, {
+              unlock_method: 'manual'
+            })
+          );
+        }
+      } catch (_) {
+        /* silent */
+      }
     }
 
     /// Success

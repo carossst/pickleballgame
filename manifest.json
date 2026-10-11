@@ -1,10 +1,10 @@
 {
   "name": "Pickleball Rules Quiz",
   "short_name": "Pickleball Quiz",
-  "id": "./",
+  "id": "/",
   "description": "Think you know pickleball? Prove it. A fast true-or-false pickleball rules game about serving, faults, scoring, line calls, and rule changes.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f8fafc",

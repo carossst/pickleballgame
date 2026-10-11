@@ -115,7 +115,7 @@
         typeof window.WT_Analytics.inferUiContext === "function"
       ) {
         window.WT_Analytics.trackFunnel(
-          "checkout_click",
+          "checkout_start",
           window.WT_Analytics.inferUiContext(ui, { price_key: key })
         );
       }
