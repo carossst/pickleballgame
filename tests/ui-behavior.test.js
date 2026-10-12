@@ -320,6 +320,36 @@ test('playing answer choices are grouped and labelled by the visible question', 
   );
 });
 
+test('feedback shows a compact learning line from playing wording fallback', () => {
+  const ui = createPlayingUi({
+    runCompletes: 0,
+    usedAudio: false,
+    autoRead: false
+  });
+
+  ui.wording.practice.playing = {
+    feedbackMicroBad: 'Trap spotted for next time.'
+  };
+  ui._runtime.frozenItem = {
+    id: 1,
+    question: 'Is this legal?',
+    assertion: 'Choose true or false.',
+    correctAnswer: true
+  };
+  ui._runtime.feedbackPending = true;
+  ui._runtime.lastAnswer = {
+    isCorrect: false,
+    pickedAnswer: true,
+    correctAnswer: false,
+    feedbackLine: 'The serve must go diagonally crosscourt.'
+  };
+
+  const html = ui._renderPlaying();
+
+  expect(html).toContain('wt-feedback__learn-line');
+  expect(html).toContain('Trap spotted for next time.');
+});
+
 test('claimShareBonus grants via native share and rerenders once', async () => {
   const { UI, context } = loadUiModule();
   let shareGranted = false;

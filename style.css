@@ -1480,16 +1480,19 @@ button.wt-level-chip {
 .wt-question-tools {
   display: flex;
   justify-content: center;
-  margin: 0 0 var(--space-8);
+  margin: 0 0 var(--space-6);
 }
 
 .wt-question-audio {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-8);
-  min-height: 40px;
-  padding-top: 0;
-  padding-bottom: 0;
+  justify-content: center;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 50%;
   color: rgb(var(--text-muted));
 }
 
@@ -1962,6 +1965,13 @@ button.wt-level-chip {
   margin-top: var(--space-6);
 }
 
+.wt-feedback__learn-line {
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: rgb(var(--text));
+}
+
 
 /* ============================================
    EXPLANATION (feedback pedagogical block)
@@ -1984,6 +1994,16 @@ button.wt-level-chip {
 
 .wt-explanation__cite {
   font-style: italic;
+}
+
+.wt-explanation__label {
+  display: block;
+  margin-bottom: var(--space-4);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgb(var(--primary-dark));
 }
 
 @media (min-height: 741px) {
@@ -3157,6 +3177,28 @@ body.wt-state--end .wt-card--end {
 }
 
 @media (min-width: 900px) {
+  .wt-container[data-wt-state='playing'] {
+    max-width: 760px;
+  }
+
+  .wt-container[data-wt-state='playing'] > .wt-card {
+    padding-top: var(--space-14);
+    padding-bottom: var(--space-14);
+  }
+
+  .wt-container[data-wt-state='playing'] .wt-term-word {
+    font-size: clamp(var(--fs-xl), 2.8vw, var(--fs-2xl));
+  }
+
+  .wt-container[data-wt-state='playing'] .wt-answer-zone {
+    margin-top: var(--space-10);
+  }
+
+  .wt-container[data-wt-state='playing'] .wt-choices {
+    gap: var(--space-8);
+    margin-top: var(--space-10);
+  }
+
   .wt-card--hero::before {
     background:
       radial-gradient(
@@ -3194,6 +3236,12 @@ body.wt-state--end .wt-card--end {
 @media (min-height: 741px) {
   .wt-card--landing {
     min-height: clamp(420px, 56vh, 720px);
+  }
+}
+
+@media (min-width: 900px) {
+  .wt-card--landing {
+    min-height: clamp(320px, 42vh, 480px);
   }
 }
 

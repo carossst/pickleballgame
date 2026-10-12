@@ -1111,7 +1111,7 @@
       tagline: '**Think You Know Pickleball? Prove It.**',
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
-      microFun: 'Quick games · No signup · Free to try',
+      microFun: '2 free games · No signup · 30 seconds to start',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -1125,7 +1125,7 @@
       runsLabel: '',
       runsFreeMode: '',
 
-      ctaPlay: 'Play now',
+      ctaPlay: 'Start',
       ctaPlayAfterFirstRun: 'Play again',
       ctaHow: 'How to play',
       statsSeenLabel: 'Questions seen',
@@ -1608,6 +1608,9 @@
         questionHeadingTemplate: '',
         feedbackTitleOk: '',
         feedbackTitleBad: '',
+        feedbackMicroOk: 'Rule learned.',
+        feedbackMicroBad: 'Trap spotted for next time.',
+        explanationLabel: 'Rule',
         newBestScore: 'New best score.',
         feedbackRelationSameTemplate: '{question}',
         feedbackRelationDifferentTemplate: '{question}'
@@ -1732,6 +1735,8 @@
 
       progressLine1:
         "You've seen {seen} questions. {remaining} more are waiting in the full set.",
+      mistakeLineTemplate:
+        'You missed {mistakes} rule trap{pluralS}. Mistakes Mode turns them into focused practice.',
       progressLine2: '',
 
       payOnceLine: 'Pay once. No subscription.',
@@ -1742,10 +1747,7 @@
       compactBullets: [
         '**All 200 questions in the game**',
         '**Unlimited games**',
-        '**Record and keep improving your score**',
-        '**See the best scores on the public leaderboard**',
-        '**Explanations after every answer**',
-        '**Mistakes Mode** and offline play'
+        '**Explanations after every answer** plus Mistakes Mode'
       ],
 
       valueBullets: [
@@ -2245,7 +2247,7 @@ Thanks!`
       tagline: '**Mieux connaître les règles, c’est mieux jouer.**',
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
-      microFun: 'Parties courtes · Sans inscription · Progression garantie',
+      microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -2259,7 +2261,7 @@ Thanks!`
       runsLabel: '',
       runsFreeMode: '',
 
-      ctaPlay: 'Jouer maintenant',
+      ctaPlay: 'Commencer',
       ctaPlayAfterFirstRun: 'Rejouer',
       ctaHow: 'Comment jouer',
       statsSeenLabel: 'Questions vues',
@@ -2756,6 +2758,9 @@ Thanks!`
         questionHeadingTemplate: '',
         feedbackTitleOk: '',
         feedbackTitleBad: '',
+        feedbackMicroOk: 'Règle retenue.',
+        feedbackMicroBad: 'Piège repéré pour la prochaine fois.',
+        explanationLabel: 'Règle',
         newBestScore: 'Nouveau meilleur score.',
         feedbackRelationSameTemplate: '{question}',
         feedbackRelationDifferentTemplate: '{question}'
@@ -2881,6 +2886,8 @@ Thanks!`
 
       progressLine1:
         'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
+      mistakeLineTemplate:
+        'Vous avez raté {mistakes} piège{pluralS} de règle. Le Mode Erreurs les transforme en révision ciblée.',
       progressLine2: '',
 
       payOnceLine: "Payez une fois. Pas d'abonnement.",
@@ -2891,10 +2898,7 @@ Thanks!`
       compactBullets: [
         '**Les 200 questions du jeu sur les règles du pickleball**',
         '**Parties illimitées**',
-        '**Enregistrez votre score et faites progresser votre meilleur résultat**',
-        '**Voyez les meilleurs scores du classement**',
-        '**Explications après chaque réponse**',
-        '**Mode Erreurs** et jeu hors ligne'
+        '**Explications après chaque réponse** et Mode Erreurs'
       ],
 
       valueBullets: [
@@ -8034,7 +8038,11 @@ Merci !`
 
     const progressLine1Tpl = String(pay.progressLine1 || "").trim();
     const progressLine2Tpl = String(pay.progressLine2 || "").trim();
-    const lastRunScore = clampInt(Number(ui._runtime?.lastRun?.scoreFP), 0, 99999);
+    const lastRun = ui._runtime?.lastRun || {};
+    const lastRunScore = clampInt(Number(lastRun?.scoreFP), 0, 99999);
+    const mistakeCount = Array.isArray(lastRun?.mistakeIds)
+      ? clampInt(lastRun.mistakeIds.length, 0, 999)
+      : 0;
     let payRunCount = 0;
 
     try {
@@ -8057,10 +8065,20 @@ Merci !`
         ? fillTemplate(progressLine1Tpl, { seen, poolSize, remaining, score: lastRunScore, runs: payRunCount })
         : "";
 
-    const progressLine2Raw =
-      (progressLine2Tpl && Number.isFinite(remaining))
-        ? fillTemplate(progressLine2Tpl, { remaining })
+    const mistakeLineTpl = String(pay.mistakeLineTemplate || "").trim();
+    const mistakeLine =
+      (mistakeCount > 0 && mistakeLineTpl)
+        ? fillTemplate(mistakeLineTpl, {
+          mistakes: String(mistakeCount),
+          pluralS: mistakeCount === 1 ? "" : "s"
+        })
         : "";
+
+    const progressLine2Raw =
+      mistakeLine ||
+      ((progressLine2Tpl && Number.isFinite(remaining))
+        ? fillTemplate(progressLine2Tpl, { remaining })
+        : "");
 
     const progressLine2 = (() => {
       const t = String(progressLine2Raw || "").trim();
@@ -14617,18 +14635,6 @@ void (function () {
             self._ignoreAppActionsUntil = Date.now() + 900;
           }
 
-          // First-run framing must open only from the LANDING screen itself.
-          // If the click already comes from the first-run modal CTA, we must start the run.
-          // The first-run modal is intentionally shown on mobile too: it explains the game before the first answer.
-          if (
-            !startedFromModal &&
-            self.state === STATES.LANDING &&
-            self._canShowFirstRunFraming()
-          ) {
-            self._openFirstRunFraming();
-            break;
-          }
-
           // Funnel counter: only when starting from LANDING
           if (self.state === STATES.LANDING) {
             if (
@@ -18294,8 +18300,11 @@ ${audioSettingsHtml}
     try {
       const liveEl = document.getElementById('answer-feedback');
       if (liveEl) {
-        const pw =
-          this.wording && this.wording.playing ? this.wording.playing : {};
+        const pw = Object.assign(
+          {},
+          (this.wording && this.wording.practice && this.wording.practice.playing) || {},
+          (this.wording && this.wording.playing) || {}
+        );
 
         const verdictText =
           res.isCorrect === true
@@ -21864,7 +21873,7 @@ ${audioSettingsHtml}
 
   UI.prototype._renderPlaying = function () {
     const wAll = this.wording || {};
-    const w = wAll.playing || {};
+    const w = Object.assign({}, wAll.practice?.playing || {}, wAll.playing || {});
     const ui = wAll.ui || {};
     const cfg = this.config || {};
     const premium = isPremiumNow(this.storage);
@@ -22286,7 +22295,7 @@ ${audioSettingsHtml}
       aria-label="${escapeHtml(isQuestionSpeaking ? stopAria : autoReadEnabled ? replayAria : speakAria)}"
     >
       ${renderIcon('volume-2')}
-      <span>${escapeHtml(isQuestionSpeaking ? stopLabel || replayLabel || speakLabel : autoReadEnabled ? replayLabel || speakLabel : speakLabel)}</span>
+	      <span class="sr-only">${escapeHtml(isQuestionSpeaking ? stopLabel || replayLabel || speakLabel : autoReadEnabled ? replayLabel || speakLabel : speakLabel)}</span>
     </button>
   </div>
 `
@@ -22377,6 +22386,10 @@ ${questionAudioHtml}
           ? `${verdictText} - ${correctLabel}`
           : verdictText || correctLabel || '';
 
+      const learnLine = isCorrect
+        ? String(w.feedbackMicroOk || '').trim()
+        : String(w.feedbackMicroBad || '').trim();
+
       // Optional clarity line: "You chose: <label>" (no fallback)
       const pickedLabel =
         ans.pickedAnswer === true
@@ -22398,8 +22411,9 @@ ${questionAudioHtml}
       // Stable explanation for the frozen item during feedback (KISS)
       const stableExplanation = String(ans.feedbackLine || '').trim();
 
+      const explanationLabel = String(w.explanationLabel || '').trim();
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : '';
 
       return renderShell(`
@@ -22407,10 +22421,19 @@ ${questionAudioHtml}
     ${questionHtml}
 
     <div class="wt-feedback ${feedbackClass}">
-      <strong class="wt-feedback-title">
-                    ${escapeHtml(titleLine)}
-      </strong>
-      ${
+	      <strong class="wt-feedback-title">
+	                    ${escapeHtml(titleLine)}
+	      </strong>
+	      ${
+          learnLine
+            ? `
+	        <div class="wt-feedback__learn-line">
+	          ${escapeHtml(learnLine)}
+	        </div>
+	      `
+            : ``
+        }
+	      ${
         youChoseLine
           ? `
         <div class="wt-muted wt-feedback__subline">
@@ -23712,7 +23735,10 @@ ${questionAudioHtml}
 
     function hideUpdateToast() {
       const node = document.getElementById('update-toast');
-      if (node && node.classList) node.classList.remove('wt-toast--visible');
+      if (node && node.classList) {
+        node.classList.remove('wt-toast--visible');
+        node.setAttribute('aria-hidden', 'true');
+      }
     }
 
     function showUpdateToast(message) {
@@ -23742,6 +23768,7 @@ ${questionAudioHtml}
       if (text) text.textContent = msg;
 
       node.classList.add('wt-toast--visible');
+      node.setAttribute('aria-hidden', 'false');
     }
 
     function setWaitingWorker(worker) {

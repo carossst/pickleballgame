@@ -213,7 +213,7 @@
       runsLabel: '',
       runsFreeMode: '',
 
-      ctaPlay: 'Start quiz',
+      ctaPlay: 'Start',
       ctaPlayAfterFirstRun: 'Play again',
       ctaHow: 'How to play',
       statsSeenLabel: 'Questions seen',
@@ -696,6 +696,9 @@
         questionHeadingTemplate: '',
         feedbackTitleOk: '',
         feedbackTitleBad: '',
+        feedbackMicroOk: 'Rule learned.',
+        feedbackMicroBad: 'Trap spotted for next time.',
+        explanationLabel: 'Rule',
         newBestScore: 'New best score.',
         feedbackRelationSameTemplate: '{question}',
         feedbackRelationDifferentTemplate: '{question}'
@@ -820,6 +823,8 @@
 
       progressLine1:
         "You've seen {seen} questions. {remaining} more are waiting in the full set.",
+      mistakeLineTemplate:
+        'You missed {mistakes} rule trap{pluralS}. Mistakes Mode turns them into focused practice.',
       progressLine2: '',
 
       payOnceLine: 'Pay once. No subscription.',

@@ -253,7 +253,10 @@
 
     function hideUpdateToast() {
       const node = document.getElementById('update-toast');
-      if (node && node.classList) node.classList.remove('wt-toast--visible');
+      if (node && node.classList) {
+        node.classList.remove('wt-toast--visible');
+        node.setAttribute('aria-hidden', 'true');
+      }
     }
 
     function showUpdateToast(message) {
@@ -283,6 +286,7 @@
       if (text) text.textContent = msg;
 
       node.classList.add('wt-toast--visible');
+      node.setAttribute('aria-hidden', 'false');
     }
 
     function setWaitingWorker(worker) {

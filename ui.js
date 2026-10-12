@@ -6442,8 +6442,11 @@ ${audioSettingsHtml}
     try {
       const liveEl = document.getElementById('answer-feedback');
       if (liveEl) {
-        const pw =
-          this.wording && this.wording.playing ? this.wording.playing : {};
+        const pw = Object.assign(
+          {},
+          (this.wording && this.wording.practice && this.wording.practice.playing) || {},
+          (this.wording && this.wording.playing) || {}
+        );
 
         const verdictText =
           res.isCorrect === true
@@ -10012,7 +10015,7 @@ ${audioSettingsHtml}
 
   UI.prototype._renderPlaying = function () {
     const wAll = this.wording || {};
-    const w = wAll.playing || {};
+    const w = Object.assign({}, wAll.practice?.playing || {}, wAll.playing || {});
     const ui = wAll.ui || {};
     const cfg = this.config || {};
     const premium = isPremiumNow(this.storage);
@@ -10434,7 +10437,7 @@ ${audioSettingsHtml}
       aria-label="${escapeHtml(isQuestionSpeaking ? stopAria : autoReadEnabled ? replayAria : speakAria)}"
     >
       ${renderIcon('volume-2')}
-      <span>${escapeHtml(isQuestionSpeaking ? stopLabel || replayLabel || speakLabel : autoReadEnabled ? replayLabel || speakLabel : speakLabel)}</span>
+	      <span class="sr-only">${escapeHtml(isQuestionSpeaking ? stopLabel || replayLabel || speakLabel : autoReadEnabled ? replayLabel || speakLabel : speakLabel)}</span>
     </button>
   </div>
 `
@@ -10525,6 +10528,10 @@ ${questionAudioHtml}
           ? `${verdictText} - ${correctLabel}`
           : verdictText || correctLabel || '';
 
+      const learnLine = isCorrect
+        ? String(w.feedbackMicroOk || '').trim()
+        : String(w.feedbackMicroBad || '').trim();
+
       // Optional clarity line: "You chose: <label>" (no fallback)
       const pickedLabel =
         ans.pickedAnswer === true
@@ -10546,8 +10553,9 @@ ${questionAudioHtml}
       // Stable explanation for the frozen item during feedback (KISS)
       const stableExplanation = String(ans.feedbackLine || '').trim();
 
+      const explanationLabel = String(w.explanationLabel || '').trim();
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : '';
 
       return renderShell(`
@@ -10555,10 +10563,19 @@ ${questionAudioHtml}
     ${questionHtml}
 
     <div class="wt-feedback ${feedbackClass}">
-      <strong class="wt-feedback-title">
-                    ${escapeHtml(titleLine)}
-      </strong>
-      ${
+	      <strong class="wt-feedback-title">
+	                    ${escapeHtml(titleLine)}
+	      </strong>
+	      ${
+          learnLine
+            ? `
+	        <div class="wt-feedback__learn-line">
+	          ${escapeHtml(learnLine)}
+	        </div>
+	      `
+            : ``
+        }
+	      ${
         youChoseLine
           ? `
         <div class="wt-muted wt-feedback__subline">

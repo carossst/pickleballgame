@@ -178,7 +178,11 @@
 
     const progressLine1Tpl = String(pay.progressLine1 || "").trim();
     const progressLine2Tpl = String(pay.progressLine2 || "").trim();
-    const lastRunScore = clampInt(Number(ui._runtime?.lastRun?.scoreFP), 0, 99999);
+    const lastRun = ui._runtime?.lastRun || {};
+    const lastRunScore = clampInt(Number(lastRun?.scoreFP), 0, 99999);
+    const mistakeCount = Array.isArray(lastRun?.mistakeIds)
+      ? clampInt(lastRun.mistakeIds.length, 0, 999)
+      : 0;
     let payRunCount = 0;
 
     try {
@@ -201,10 +205,20 @@
         ? fillTemplate(progressLine1Tpl, { seen, poolSize, remaining, score: lastRunScore, runs: payRunCount })
         : "";
 
-    const progressLine2Raw =
-      (progressLine2Tpl && Number.isFinite(remaining))
-        ? fillTemplate(progressLine2Tpl, { remaining })
+    const mistakeLineTpl = String(pay.mistakeLineTemplate || "").trim();
+    const mistakeLine =
+      (mistakeCount > 0 && mistakeLineTpl)
+        ? fillTemplate(mistakeLineTpl, {
+          mistakes: String(mistakeCount),
+          pluralS: mistakeCount === 1 ? "" : "s"
+        })
         : "";
+
+    const progressLine2Raw =
+      mistakeLine ||
+      ((progressLine2Tpl && Number.isFinite(remaining))
+        ? fillTemplate(progressLine2Tpl, { remaining })
+        : "");
 
     const progressLine2 = (() => {
       const t = String(progressLine2Raw || "").trim();

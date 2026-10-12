@@ -201,7 +201,7 @@
       tagline: '**Mieux connaître les règles, c’est mieux jouer.**',
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
-      microFun: '2 parties gratuites · Sans inscription · Départ en 30 secondes',
+      microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -215,7 +215,7 @@
       runsLabel: '',
       runsFreeMode: '',
 
-      ctaPlay: 'Commencer le quiz',
+      ctaPlay: 'Commencer',
       ctaPlayAfterFirstRun: 'Rejouer',
       ctaHow: 'Comment jouer',
       statsSeenLabel: 'Questions vues',
@@ -712,6 +712,9 @@
         questionHeadingTemplate: '',
         feedbackTitleOk: '',
         feedbackTitleBad: '',
+        feedbackMicroOk: 'Règle retenue.',
+        feedbackMicroBad: 'Piège repéré pour la prochaine fois.',
+        explanationLabel: 'Règle',
         newBestScore: 'Nouveau meilleur score.',
         feedbackRelationSameTemplate: '{question}',
         feedbackRelationDifferentTemplate: '{question}'
@@ -837,6 +840,8 @@
 
       progressLine1:
         'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
+      mistakeLineTemplate:
+        'Vous avez raté {mistakes} piège{pluralS} de règle. Le Mode Erreurs les transforme en révision ciblée.',
       progressLine2: '',
 
       payOnceLine: "Payez une fois. Pas d'abonnement.",

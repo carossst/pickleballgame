@@ -327,6 +327,28 @@ body.wt-state--end .wt-card--end {
 }
 
 @media (min-width: 900px) {
+  .wt-container[data-wt-state='playing'] {
+    max-width: 760px;
+  }
+
+  .wt-container[data-wt-state='playing'] > .wt-card {
+    padding-top: var(--space-14);
+    padding-bottom: var(--space-14);
+  }
+
+  .wt-container[data-wt-state='playing'] .wt-term-word {
+    font-size: clamp(var(--fs-xl), 2.8vw, var(--fs-2xl));
+  }
+
+  .wt-container[data-wt-state='playing'] .wt-answer-zone {
+    margin-top: var(--space-10);
+  }
+
+  .wt-container[data-wt-state='playing'] .wt-choices {
+    gap: var(--space-8);
+    margin-top: var(--space-10);
+  }
+
   .wt-card--hero::before {
     background:
       radial-gradient(
