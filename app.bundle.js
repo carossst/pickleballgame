@@ -12334,30 +12334,8 @@ void (function () {
     }
   }
 
-  function hasUsedQuestionAudio(storage) {
-    if (!storage || typeof storage.hasUsedQuestionAudio !== 'function')
-      return false;
-    try {
-      return storage.hasUsedQuestionAudio() === true;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  function getRunCompletesCount(storage) {
-    if (!storage || typeof storage.getCounters !== 'function') return 0;
-    try {
-      const counters = storage.getCounters() || {};
-      return clampNonNegativeInt(counters.runCompletes);
-    } catch (_) {
-      return 0;
-    }
-  }
-
-  function shouldShowQuestionAudioControl(storage) {
-    if (isAutoReadQuestionsEnabled(storage)) return true;
-    if (hasUsedQuestionAudio(storage)) return true;
-    return getRunCompletesCount(storage) < 1;
+  function shouldShowQuestionAudioControl(isQuestionSpeaking) {
+    return isQuestionSpeaking === true;
   }
 
   function startQuestionSpeech(ui, model, opts) {
@@ -22282,7 +22260,7 @@ ${audioSettingsHtml}
     const stopAria = String(wAll.system?.stopQuestionAria || stopLabel).trim();
     const questionAudioHtml =
       speechSupported &&
-      shouldShowQuestionAudioControl(this.storage) &&
+      shouldShowQuestionAudioControl(isQuestionSpeaking) &&
       !this._runtime.feedbackPending &&
       (speakLabel || stopLabel)
         ? `

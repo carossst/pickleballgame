@@ -269,7 +269,7 @@ function createPlayingUi(options) {
   return ui;
 }
 
-test('question-audio control is shown only before first completion unless user engaged', () => {
+test('question-audio control is shown only while current question is being read', () => {
   const firstRunUi = createPlayingUi({
     runCompletes: 0,
     usedAudio: false,
@@ -290,17 +290,27 @@ test('question-audio control is shown only before first completion unless user e
     usedAudio: false,
     autoRead: true
   });
+  const speakingUi = createPlayingUi({
+    runCompletes: 1,
+    usedAudio: false,
+    autoRead: true
+  });
+  speakingUi._runtime.questionSpeechActive = true;
+  speakingUi._runtime.questionSpeechKey = 'en-US:1:Is this legal?';
 
-  expect(firstRunUi._renderPlaying()).toContain(
+  expect(firstRunUi._renderPlaying()).not.toContain(
     'data-action="toggle-question-audio"'
   );
   expect(laterUi._renderPlaying()).not.toContain(
     'data-action="toggle-question-audio"'
   );
-  expect(engagedUi._renderPlaying()).toContain(
+  expect(engagedUi._renderPlaying()).not.toContain(
     'data-action="toggle-question-audio"'
   );
-  expect(autoReadUi._renderPlaying()).toContain(
+  expect(autoReadUi._renderPlaying()).not.toContain(
+    'data-action="toggle-question-audio"'
+  );
+  expect(speakingUi._renderPlaying()).toContain(
     'data-action="toggle-question-audio"'
   );
 });
