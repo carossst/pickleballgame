@@ -256,7 +256,7 @@
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
         'Unlock unlimited games, record your score, all 200 questions, explanations after every answer, and unlimited Mistakes Mode.',
-      practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
+      practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
       postPaywallSbTitle: "Today's challenge is on",
@@ -808,18 +808,19 @@
       houseAdSummaryLabel: 'Keep going with another game',
       playAgain: 'Play again',
 
-      practiceCta: 'Fix what you missed',
-      practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
+      practiceCta: 'Practice my mistakes',
+      practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
 
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
-      practiceCtaCountPremium: 'Fix what you missed',
+      practiceCtaCountPremium: 'Practice my mistakes',
       shareTitle: 'Challenge a friend'
     },
 
     paywall: {
       headline: 'Walk onto the court knowing every call.',
       headlineLastFree: 'That was the free preview. Unlock the full game.',
+      mistakeHeadlineTemplate: 'Fix the {mistakes} rule trap{pluralS} you just missed.',
 
       progressLine1:
         "You've seen {seen} questions. {remaining} more are waiting in the full set.",
@@ -833,9 +834,17 @@
       trustTitle: 'Simple unlock',
       compactTitle: 'What unlocks',
       compactBullets: [
-        '**All 200 questions in the game**',
-        '**Unlimited games**',
-        '**Explanations after every answer** plus Mistakes Mode'
+        '**Practice the mistakes you just made**',
+        '**Unlock all 200 rule traps**',
+        '**Unlimited games**'
+      ],
+
+      lockedPreviewTitle: 'Locked after the preview',
+      lockedPreviewItems: [
+        'Kitchen faults',
+        'Serve rules',
+        'Line calls',
+        'Scoring traps'
       ],
 
       valueBullets: [
@@ -862,6 +871,13 @@
         '**Works offline** after first load',
         '**Secure payment** through Stripe'
       ],
+      reassuranceTitle: 'Quick, low-friction checkout',
+      reassuranceItems: [
+        '**One-time payment**',
+        '**Instant access**',
+        '**Secure checkout by Stripe**',
+        '**No account required**'
+      ],
 
       socialProofTitle: 'What players say',
       socialProofQuotes: [
@@ -881,6 +897,8 @@
       checkoutNote:
         'Payment handled securely by Stripe. Usually about 30 seconds.',
       checkoutRedirecting: 'Redirecting to secure checkout...',
+      notReadyLine: 'Not ready today?',
+      notReadyCta: 'Get updates instead',
 
       ctaEarly: 'Unlock full access for $4.99',
       ctaStandard: 'Unlock full access for $6.99',

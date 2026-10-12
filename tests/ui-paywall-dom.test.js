@@ -102,3 +102,69 @@ test('paywall personalizes progress copy when the last run had mistakes', () => 
   expect(html).toContain('You missed 2 rule traps.');
   expect(html).not.toContain('Default progress line.');
 });
+
+test('paywall renders conversion reassurance, locked preview, and not-ready action', () => {
+  const paywall = loadPaywallModule();
+  const html = paywall.render(
+    {
+      config: {
+        currency: 'USD',
+        earlyPriceCents: 499,
+        standardPriceCents: 699,
+        game: { poolSize: 200 }
+      },
+      wording: {
+        system: { notNow: 'Not now' },
+        landing: {},
+        howto: {},
+        waitlist: { ctaLabel: 'Get notified' },
+        paywall: {
+          headline: 'Unlock',
+          mistakeHeadlineTemplate: 'Fix the {mistakes} traps.',
+          progressLine1: 'Seen {seen}. {remaining} left.',
+          mistakeLineTemplate: 'You missed {mistakes} traps.',
+          compactTitle: 'What unlocks',
+          compactBullets: ['**Practice mistakes**'],
+          lockedPreviewTitle: 'Locked after preview',
+          lockedPreviewItems: ['Kitchen faults', 'Line calls'],
+          reassuranceTitle: 'Quick checkout',
+          reassuranceItems: ['**Instant access**', '**No account required**'],
+          notReadyLine: 'Not ready today?',
+          notReadyCta: 'Get updates instead',
+          standardLabel: 'Standard',
+          ctaStandard: 'Unlock'
+        }
+      },
+      storage: {
+        getSeenItemIds() {
+          return [1, 2, 3];
+        },
+        getRunsUsed() {
+          return 2;
+        },
+        getCounters() {
+          return { runCompletes: 2 };
+        },
+        shouldShowWaitlistOnPaywall() {
+          return true;
+        }
+      },
+      _runtime: {
+        lastRun: {
+          scoreFP: 4,
+          mistakeIds: [10, 11]
+        }
+      }
+    },
+    buildHelpers()
+  );
+
+  expect(html).toContain('Fix the 2 traps.');
+  expect(html).toContain('Quick checkout');
+  expect(html).toContain('<strong>Instant access</strong>');
+  expect(html).toContain('Locked after preview');
+  expect(html).toContain('Kitchen faults');
+  expect(html).toContain('Not ready today?');
+  expect(html).toContain('data-action="open-waitlist"');
+  expect(html).toContain('Get updates instead');
+});

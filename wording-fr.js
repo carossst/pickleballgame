@@ -259,7 +259,7 @@
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
         "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu, aux explications après chaque réponse et au Mode Erreurs illimité.",
-      practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
+      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
       postPaywallSbTitle: 'Le défi du jour est actif',
@@ -825,18 +825,20 @@
       houseAdSummaryLabel: 'Enchaînez avec une autre partie',
       playAgain: 'Rejouer',
 
-      practiceCta: 'Corriger ce que vous avez raté',
-      practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
+      practiceCta: 'Travailler mes erreurs',
+      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
 
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
-      practiceCtaCountPremium: 'Corriger ce que vous avez raté',
+      practiceCtaCountPremium: 'Travailler mes erreurs',
       shareTitle: 'Partager le jeu'
     },
 
     paywall: {
       headline: 'Entrez sur le terrain en sachant quoi annoncer.',
       headlineLastFree: "C'était l'aperçu gratuit. Débloquez le jeu complet.",
+      mistakeHeadlineTemplate:
+        'Corrigez les {mistakes} piège{pluralS} de règle que vous venez de rater.',
 
       progressLine1:
         'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
@@ -850,9 +852,17 @@
       trustTitle: 'Déverrouillage simple',
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
-        '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**Parties illimitées**',
-        '**Explications après chaque réponse** et Mode Erreurs'
+        '**Travaillez les erreurs que vous venez de faire**',
+        '**Débloquez les 200 pièges de règles**',
+        '**Parties illimitées**'
+      ],
+
+      lockedPreviewTitle: "Verrouillé après l'aperçu",
+      lockedPreviewItems: [
+        'Fautes de cuisine',
+        'Règles de service',
+        'Balles sur les lignes',
+        'Pièges de score'
       ],
 
       valueBullets: [
@@ -879,6 +889,13 @@
         '**Fonctionne hors ligne** après le premier chargement',
         '**Paiement sécurisé** via Stripe'
       ],
+      reassuranceTitle: 'Paiement rapide, sans friction',
+      reassuranceItems: [
+        '**Paiement unique**',
+        '**Accès instantané**',
+        '**Paiement sécurisé via Stripe**',
+        '**Pas de compte requis**'
+      ],
 
       socialProofTitle: 'Leurs retours après quelques parties',
       socialProofQuotes: [
@@ -898,6 +915,8 @@
       checkoutNote:
         'Paiement traité en toute sécurité par Stripe. En général, cela prend environ 30 secondes.',
       checkoutRedirecting: 'Redirection vers le paiement sécurisé...',
+      notReadyLine: "Pas prêt aujourd'hui ?",
+      notReadyCta: 'Recevoir les nouveautés',
 
       ctaEarly: "Débloquer l'accès complet pour 4,99 $",
       ctaStandard: "Débloquer l'accès complet pour 6,99 $",

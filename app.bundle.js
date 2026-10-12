@@ -1168,7 +1168,7 @@
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
         'Unlock unlimited games, record your score, all 200 questions, explanations after every answer, and unlimited Mistakes Mode.',
-      practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
+      practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
       postPaywallSbTitle: "Today's challenge is on",
@@ -1720,18 +1720,19 @@
       houseAdSummaryLabel: 'Keep going with another game',
       playAgain: 'Play again',
 
-      practiceCta: 'Fix what you missed',
-      practiceCtaTemplate: 'Fix your {count} mistake{pluralS}',
+      practiceCta: 'Practice my mistakes',
+      practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
 
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
-      practiceCtaCountPremium: 'Fix what you missed',
+      practiceCtaCountPremium: 'Practice my mistakes',
       shareTitle: 'Challenge a friend'
     },
 
     paywall: {
       headline: 'Walk onto the court knowing every call.',
       headlineLastFree: 'That was the free preview. Unlock the full game.',
+      mistakeHeadlineTemplate: 'Fix the {mistakes} rule trap{pluralS} you just missed.',
 
       progressLine1:
         "You've seen {seen} questions. {remaining} more are waiting in the full set.",
@@ -1745,9 +1746,17 @@
       trustTitle: 'Simple unlock',
       compactTitle: 'What unlocks',
       compactBullets: [
-        '**All 200 questions in the game**',
-        '**Unlimited games**',
-        '**Explanations after every answer** plus Mistakes Mode'
+        '**Practice the mistakes you just made**',
+        '**Unlock all 200 rule traps**',
+        '**Unlimited games**'
+      ],
+
+      lockedPreviewTitle: 'Locked after the preview',
+      lockedPreviewItems: [
+        'Kitchen faults',
+        'Serve rules',
+        'Line calls',
+        'Scoring traps'
       ],
 
       valueBullets: [
@@ -1774,6 +1783,13 @@
         '**Works offline** after first load',
         '**Secure payment** through Stripe'
       ],
+      reassuranceTitle: 'Quick, low-friction checkout',
+      reassuranceItems: [
+        '**One-time payment**',
+        '**Instant access**',
+        '**Secure checkout by Stripe**',
+        '**No account required**'
+      ],
 
       socialProofTitle: 'What players say',
       socialProofQuotes: [
@@ -1793,6 +1809,8 @@
       checkoutNote:
         'Payment handled securely by Stripe. Usually about 30 seconds.',
       checkoutRedirecting: 'Redirecting to secure checkout...',
+      notReadyLine: 'Not ready today?',
+      notReadyCta: 'Get updates instead',
 
       ctaEarly: 'Unlock full access for $4.99',
       ctaStandard: 'Unlock full access for $6.99',
@@ -2305,7 +2323,7 @@ Thanks!`
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
         "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu, aux explications après chaque réponse et au Mode Erreurs illimité.",
-      practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
+      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
       postPaywallSbTitle: 'Le défi du jour est actif',
@@ -2871,18 +2889,20 @@ Thanks!`
       houseAdSummaryLabel: 'Enchaînez avec une autre partie',
       playAgain: 'Rejouer',
 
-      practiceCta: 'Corriger ce que vous avez raté',
-      practiceCtaTemplate: 'Corrigez vos {count} erreur{pluralS}',
+      practiceCta: 'Travailler mes erreurs',
+      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
 
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
-      practiceCtaCountPremium: 'Corriger ce que vous avez raté',
+      practiceCtaCountPremium: 'Travailler mes erreurs',
       shareTitle: 'Partager le jeu'
     },
 
     paywall: {
       headline: 'Entrez sur le terrain en sachant quoi annoncer.',
       headlineLastFree: "C'était l'aperçu gratuit. Débloquez le jeu complet.",
+      mistakeHeadlineTemplate:
+        'Corrigez les {mistakes} piège{pluralS} de règle que vous venez de rater.',
 
       progressLine1:
         'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
@@ -2896,9 +2916,17 @@ Thanks!`
       trustTitle: 'Déverrouillage simple',
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
-        '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**Parties illimitées**',
-        '**Explications après chaque réponse** et Mode Erreurs'
+        '**Travaillez les erreurs que vous venez de faire**',
+        '**Débloquez les 200 pièges de règles**',
+        '**Parties illimitées**'
+      ],
+
+      lockedPreviewTitle: "Verrouillé après l'aperçu",
+      lockedPreviewItems: [
+        'Fautes de cuisine',
+        'Règles de service',
+        'Balles sur les lignes',
+        'Pièges de score'
       ],
 
       valueBullets: [
@@ -2925,6 +2953,13 @@ Thanks!`
         '**Fonctionne hors ligne** après le premier chargement',
         '**Paiement sécurisé** via Stripe'
       ],
+      reassuranceTitle: 'Paiement rapide, sans friction',
+      reassuranceItems: [
+        '**Paiement unique**',
+        '**Accès instantané**',
+        '**Paiement sécurisé via Stripe**',
+        '**Pas de compte requis**'
+      ],
 
       socialProofTitle: 'Leurs retours après quelques parties',
       socialProofQuotes: [
@@ -2944,6 +2979,8 @@ Thanks!`
       checkoutNote:
         'Paiement traité en toute sécurité par Stripe. En général, cela prend environ 30 secondes.',
       checkoutRedirecting: 'Redirection vers le paiement sécurisé...',
+      notReadyLine: "Pas prêt aujourd'hui ?",
+      notReadyCta: 'Recevoir les nouveautés',
 
       ctaEarly: "Débloquer l'accès complet pour 4,99 $",
       ctaStandard: "Débloquer l'accès complet pour 6,99 $",
@@ -7993,7 +8030,7 @@ Merci !`
       (Number.isFinite(runsBalance) && runsBalance <= 0) ||
       (ui._runtime && ui._runtime.runType === "LAST_FREE");
 
-    const headline =
+    const baseHeadline =
       isLastFree && pay.headlineLastFree
         ? String(pay.headlineLastFree).trim()
         : String(pay.headline || "").trim();
@@ -8073,6 +8110,14 @@ Merci !`
           pluralS: mistakeCount === 1 ? "" : "s"
         })
         : "";
+    const mistakeHeadlineTpl = String(pay.mistakeHeadlineTemplate || "").trim();
+    const headline =
+      (mistakeCount > 0 && mistakeHeadlineTpl)
+        ? fillTemplate(mistakeHeadlineTpl, {
+          mistakes: String(mistakeCount),
+          pluralS: mistakeCount === 1 ? "" : "s"
+        })
+        : baseHeadline;
 
     const progressLine2Raw =
       mistakeLine ||
@@ -8116,6 +8161,10 @@ Merci !`
 
     const checkoutNote = String(pay.checkoutNote || "").trim();
     const deviceNote = String(pay.deviceNote || "").trim();
+    const reassuranceTitle = String(pay.reassuranceTitle || "").trim();
+    const reassuranceItems = Array.isArray(pay.reassuranceItems) ? pay.reassuranceItems : [];
+    const lockedPreviewTitle = String(pay.lockedPreviewTitle || "").trim();
+    const lockedPreviewItems = Array.isArray(pay.lockedPreviewItems) ? pay.lockedPreviewItems : [];
 
     const renderBullets = (arr, muted) => {
       if (!arr.length) return "";
@@ -8130,6 +8179,8 @@ Merci !`
 
     const socialProofTitle = String(pay.socialProofTitle || "").trim();
     const socialProofQuotes = Array.isArray(pay.socialProofQuotes) ? pay.socialProofQuotes : [];
+    const notReadyCta = String(pay.notReadyCta || waitlistCta || "").trim();
+    const notReadyLine = String(pay.notReadyLine || "").trim();
 
     const renderUrgencyBanner = () => {
       if (!isEarly || !urgencyEnabled) return "";
@@ -8222,6 +8273,24 @@ Merci !`
       )
       : "";
     const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
+    const reassuranceHtml =
+      (reassuranceTitle || reassuranceItems.length)
+        ? `
+      <div class="wt-box wt-box--tinted wt-paywall-reassurance">
+        ${reassuranceTitle ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(reassuranceTitle)}</div>` : ``}
+        ${reassuranceItems.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(reassuranceItems, false)}</div>` : ``}
+      </div>
+    `
+        : "";
+    const lockedPreviewHtml =
+      (lockedPreviewTitle || lockedPreviewItems.length)
+        ? renderPaywallSection(
+          lockedPreviewTitle,
+          lockedPreviewItems.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(lockedPreviewItems, false)}</div>` : ``,
+          "wt-paywall-section wt-paywall-section--locked-preview",
+          escapeHtml
+        )
+        : "";
 
     return `
     <div class="wt-card wt-card--hero wt-card--paywall">
@@ -8248,14 +8317,18 @@ Merci !`
       </div>
 
       ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
-      ${(waitlistOnPaywall && waitlistCta) ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="open-waitlist">${escapeHtml(waitlistCta)}</button></p>` : ``}
+      ${(waitlistOnPaywall && notReadyCta) ? `<p class="wt-paywall-linkline">${notReadyLine ? `<span class="wt-muted">${escapeHtml(notReadyLine)}</span> ` : ``}<button class="wt-text-action" data-action="open-waitlist">${escapeHtml(notReadyCta)}</button></p>` : ``}
 
       ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 
       ${checkoutNote ? `<p class="wt-muted wt-note wt-note--checkout">${escapeHtml(checkoutNote)}</p>` : ``}
       ${deviceNote ? `<p class="wt-muted wt-note wt-note--device">${escapeHtml(deviceNote)}</p>` : ``}
 
+      ${reassuranceHtml}
+
       ${compactSectionHtml}
+
+      ${lockedPreviewHtml}
 
       ${valueSectionHtml}
 

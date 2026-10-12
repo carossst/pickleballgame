@@ -133,7 +133,7 @@
       (Number.isFinite(runsBalance) && runsBalance <= 0) ||
       (ui._runtime && ui._runtime.runType === "LAST_FREE");
 
-    const headline =
+    const baseHeadline =
       isLastFree && pay.headlineLastFree
         ? String(pay.headlineLastFree).trim()
         : String(pay.headline || "").trim();
@@ -213,6 +213,14 @@
           pluralS: mistakeCount === 1 ? "" : "s"
         })
         : "";
+    const mistakeHeadlineTpl = String(pay.mistakeHeadlineTemplate || "").trim();
+    const headline =
+      (mistakeCount > 0 && mistakeHeadlineTpl)
+        ? fillTemplate(mistakeHeadlineTpl, {
+          mistakes: String(mistakeCount),
+          pluralS: mistakeCount === 1 ? "" : "s"
+        })
+        : baseHeadline;
 
     const progressLine2Raw =
       mistakeLine ||
@@ -256,6 +264,10 @@
 
     const checkoutNote = String(pay.checkoutNote || "").trim();
     const deviceNote = String(pay.deviceNote || "").trim();
+    const reassuranceTitle = String(pay.reassuranceTitle || "").trim();
+    const reassuranceItems = Array.isArray(pay.reassuranceItems) ? pay.reassuranceItems : [];
+    const lockedPreviewTitle = String(pay.lockedPreviewTitle || "").trim();
+    const lockedPreviewItems = Array.isArray(pay.lockedPreviewItems) ? pay.lockedPreviewItems : [];
 
     const renderBullets = (arr, muted) => {
       if (!arr.length) return "";
@@ -270,6 +282,8 @@
 
     const socialProofTitle = String(pay.socialProofTitle || "").trim();
     const socialProofQuotes = Array.isArray(pay.socialProofQuotes) ? pay.socialProofQuotes : [];
+    const notReadyCta = String(pay.notReadyCta || waitlistCta || "").trim();
+    const notReadyLine = String(pay.notReadyLine || "").trim();
 
     const renderUrgencyBanner = () => {
       if (!isEarly || !urgencyEnabled) return "";
@@ -362,6 +376,24 @@
       )
       : "";
     const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
+    const reassuranceHtml =
+      (reassuranceTitle || reassuranceItems.length)
+        ? `
+      <div class="wt-box wt-box--tinted wt-paywall-reassurance">
+        ${reassuranceTitle ? `<div class="wt-meta wt-meta--strong wt-paywall-section-title">${escapeHtml(reassuranceTitle)}</div>` : ``}
+        ${reassuranceItems.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(reassuranceItems, false)}</div>` : ``}
+      </div>
+    `
+        : "";
+    const lockedPreviewHtml =
+      (lockedPreviewTitle || lockedPreviewItems.length)
+        ? renderPaywallSection(
+          lockedPreviewTitle,
+          lockedPreviewItems.length ? `<div class="wt-paywall-list-wrap wt-list-copy">${renderBullets(lockedPreviewItems, false)}</div>` : ``,
+          "wt-paywall-section wt-paywall-section--locked-preview",
+          escapeHtml
+        )
+        : "";
 
     return `
     <div class="wt-card wt-card--hero wt-card--paywall">
@@ -388,14 +420,18 @@
       </div>
 
       ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
-      ${(waitlistOnPaywall && waitlistCta) ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="open-waitlist">${escapeHtml(waitlistCta)}</button></p>` : ``}
+      ${(waitlistOnPaywall && notReadyCta) ? `<p class="wt-paywall-linkline">${notReadyLine ? `<span class="wt-muted">${escapeHtml(notReadyLine)}</span> ` : ``}<button class="wt-text-action" data-action="open-waitlist">${escapeHtml(notReadyCta)}</button></p>` : ``}
 
       ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 
       ${checkoutNote ? `<p class="wt-muted wt-note wt-note--checkout">${escapeHtml(checkoutNote)}</p>` : ``}
       ${deviceNote ? `<p class="wt-muted wt-note wt-note--device">${escapeHtml(deviceNote)}</p>` : ``}
 
+      ${reassuranceHtml}
+
       ${compactSectionHtml}
+
+      ${lockedPreviewHtml}
 
       ${valueSectionHtml}
 
