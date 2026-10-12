@@ -278,7 +278,9 @@ Preview is visual only. It does not write fake progression into storage.
 - the early-price timer is a local UX timer tied to the first paywall view on that device
 - it is not a server-verified countdown and it resets if local storage is cleared
 - the Stripe Payment Links must be configured manually to redirect to your hosted `success.html`
+- if Stripe supports/uses a cancel return for the chosen payment flow, point it to `/?checkout=cancel` so GoatCounter receives `checkout_cancel`
 - `successRedirectUrl` in [config.js](./config.js) is documentation/config context only; the live redirect is controlled in Stripe
+- `checkoutCancelRedirectUrl` in [config.js](./config.js) is also documentation/config context; the live cancel return is controlled in Stripe
 - with the current static stack, `success.html` is not a payment-verification layer
 - a real payment lock would require a server-verified Stripe return or a signed unlock mechanism that cannot be generated locally
 

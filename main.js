@@ -606,6 +606,50 @@
   `;
   }
 
+  function trackCheckoutCancelReturn(ui) {
+    try {
+      const url = new URL(window.location.href);
+      const checkoutState = String(url.searchParams.get('checkout') || '')
+        .trim()
+        .toLowerCase();
+      if (checkoutState !== 'cancel') return;
+
+      const extras = {};
+      try {
+        if (
+          ui?.storage &&
+          typeof ui.storage.getCheckoutAnalyticsState === 'function'
+        ) {
+          const st = ui.storage.getCheckoutAnalyticsState() || {};
+          const priceKey = String(st.priceKey || '').trim();
+          const source = String(st.paywallLastSource || '').trim();
+          if (priceKey) extras.price_key = priceKey;
+          if (source) extras.from_state = source;
+        }
+      } catch (_) {
+        /* silent */
+      }
+
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === 'function' &&
+        typeof window.WT_Analytics.inferUiContext === 'function'
+      ) {
+        window.WT_Analytics.trackFunnel(
+          'checkout_cancel',
+          window.WT_Analytics.inferUiContext(ui, extras)
+        );
+      }
+
+      url.searchParams.delete('checkout');
+      const qs = url.searchParams.toString();
+      const cleanUrl = `${url.pathname}${qs ? `?${qs}` : ''}${url.hash || ''}`;
+      window.history.replaceState(window.history.state, '', cleanUrl);
+    } catch (_) {
+      /* silent */
+    }
+  }
+
   // ============================================
   // ============================================
   // Main application start
@@ -650,6 +694,7 @@
       const ui = new window.WT_UI({ storage, game, config, wording });
       if (ui && typeof ui.setContentLoading === 'function')
         ui.setContentLoading(true);
+      trackCheckoutCancelReturn(ui);
 
       // Listen for storage updates (KISS)
       // Contract (intentional): StorageManager emits a single global event "storage-updated".

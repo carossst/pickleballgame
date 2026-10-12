@@ -4,6 +4,21 @@
 (() => {
   "use strict";
 
+  function trackUiFunnel(ui, name, extras) {
+    try {
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === "function" &&
+        typeof window.WT_Analytics.inferUiContext === "function"
+      ) {
+        window.WT_Analytics.trackFunnel(
+          name,
+          window.WT_Analytics.inferUiContext(ui, extras || {})
+        );
+      }
+    } catch (_) { /* silent */ }
+  }
+
   function openSupport(ui, helpers) {
     const { escapeHtml, toastNow } = helpers || {};
     if (typeof escapeHtml !== "function" || typeof toastNow !== "function") {
@@ -117,6 +132,10 @@
     const toEmail = String(window.WT_Email?.getWaitlistEmailDecoded?.() || "").trim();
     if (!toEmail) return;
 
+    trackUiFunnel(ui, "waitlist_open", {
+      from_state: String(ui.state || "").trim().toLowerCase() || "unknown"
+    });
+
     try {
       if (ui.storage && typeof ui.storage.getWaitlistStatus === "function" && typeof ui.storage.setWaitlistStatus === "function") {
         const st = String(ui.storage.getWaitlistStatus() || "").trim();
@@ -200,6 +219,11 @@
         ui.storage.setWaitlistDraftIdea("");
       }
     } catch (_) { /* silent */ }
+
+    trackUiFunnel(ui, "waitlist_send", {
+      from_state: String(ui.state || "").trim().toLowerCase() || "unknown",
+      idea_length: idea.length
+    });
 
     window.location.href = `mailto:${toEmail}?subject=${subject}&body=${body}`;
     ui.closeModal();

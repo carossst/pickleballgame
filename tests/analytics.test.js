@@ -52,6 +52,33 @@ test('analytics builds a stable event path from funnel props', () => {
   ).toBe('event/checkout-start/run/price-early/src-seo/free/en');
 });
 
+test('analytics includes paywall source in funnel event paths', () => {
+  const { analytics } = loadAnalytics();
+
+  expect(
+    analytics.buildEventPath('paywall_dismiss', {
+      from_state: 'END',
+      entry_source: 'seo',
+      premium: false,
+      lang: 'fr'
+    })
+  ).toBe('event/paywall-dismiss/from-end/src-seo/free/fr');
+});
+
+test('analytics builds checkout cancel paths with last checkout context', () => {
+  const { analytics } = loadAnalytics();
+
+  expect(
+    analytics.buildEventPath('checkout_cancel', {
+      from_state: 'end',
+      price_key: 'STANDARD',
+      entry_source: 'seo',
+      premium: false,
+      lang: 'en'
+    })
+  ).toBe('event/checkout-cancel/from-end/price-standard/src-seo/free/en');
+});
+
 test('analytics infers UI context from locale, source, and storage', () => {
   const { analytics } = loadAnalytics({
     window: {

@@ -94,3 +94,53 @@ test('checkout does nothing while offline', () => {
   expect(context.window.location.href).toBe('');
   expect(toasted).toBe('You are offline.');
 });
+
+test('checkout_start analytics includes paywall and run context', () => {
+  const { context, checkout } = loadCheckout();
+  let eventName = '';
+  let eventProps = null;
+  context.window.WT_Analytics = {
+    inferUiContext(_ui, extras) {
+      return { lang: 'en', entry_source: 'seo', premium: false, ...extras };
+    },
+    trackFunnel(name, props) {
+      eventName = name;
+      eventProps = props;
+      return true;
+    }
+  };
+
+  const ui = makeUi();
+  ui._nav = { paywallFromState: 'END' };
+  ui._runtime = {
+    runMode: 'RUN',
+    runType: 'LAST_FREE',
+    lastRun: {
+      mode: 'RUN',
+      runType: 'LAST_FREE',
+      mistakeIds: [10, 11]
+    }
+  };
+  ui.storage = {
+    markCheckoutStarted() {},
+    getSeenItemIds() {
+      return [1, 2, 3, 4];
+    },
+    getActiveMistakesCount() {
+      return 7;
+    }
+  };
+
+  checkout(ui, 'STANDARD', null, makeHelpers());
+
+  expect(eventName).toBe('checkout_start');
+  expect(eventProps).toMatchObject({
+    price_key: 'STANDARD',
+    from_state: 'end',
+    mode: 'RUN',
+    run_type: 'LAST_FREE',
+    mistakes_count: 2,
+    active_mistakes_count: 7,
+    seen_count: 4
+  });
+});

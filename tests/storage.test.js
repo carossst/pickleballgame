@@ -212,6 +212,19 @@ test('tryRedeemPremiumCode rejects empty input', () => {
   expect(storage.isPremium()).toBe(false);
 });
 
+test('checkout analytics state records the last checkout attempt', () => {
+  const { storage } = createStorageManager();
+
+  storage.markPaywallShown('END');
+  storage.markCheckoutStarted('STANDARD');
+
+  expect(storage.getCheckoutAnalyticsState()).toMatchObject({
+    priceKey: 'STANDARD',
+    paywallLastSource: 'end'
+  });
+  expect(storage.getCheckoutAnalyticsState().startedAt).toBeGreaterThan(0);
+});
+
 test('tryRedeemPremiumCode rejects a code that does not match the configured format', () => {
   const { storage } = createStorageManager();
 

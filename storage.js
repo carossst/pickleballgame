@@ -2609,6 +2609,15 @@
     this._save();
   };
 
+  StorageManager.prototype.getCheckoutAnalyticsState = function () {
+    const a = this.data?.analytics || {};
+    return {
+      startedAt: clampNonNegativeInt(a.checkoutStartedAt),
+      priceKey: String(a.checkoutPriceKey || '').trim(),
+      paywallLastSource: String(a.paywallLastSource || '').trim()
+    };
+  };
+
   StorageManager.prototype.markShareClicked = function () {
     if (!this.data) return;
     this.data.counters.shareClicked =

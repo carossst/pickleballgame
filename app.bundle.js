@@ -221,6 +221,7 @@
     stripeEarlyPaymentUrl: "https://buy.stripe.com/dRmcN53jhc63evD3EOejK00",
     stripeStandardPaymentUrl: "https://buy.stripe.com/bJe3cv2fd7PNbjr7V4ejK01",
     successRedirectUrl: "./success.html",
+    checkoutCancelRedirectUrl: "./?checkout=cancel",
 
     // Marketing (opt-in only; Stripe receipt email is NOT marketing consent)
     marketing: {
@@ -6708,6 +6709,15 @@ Merci !`
     this._save();
   };
 
+  StorageManager.prototype.getCheckoutAnalyticsState = function () {
+    const a = this.data?.analytics || {};
+    return {
+      startedAt: clampNonNegativeInt(a.checkoutStartedAt),
+      priceKey: String(a.checkoutPriceKey || '').trim(),
+      paywallLastSource: String(a.paywallLastSource || '').trim()
+    };
+  };
+
   StorageManager.prototype.markShareClicked = function () {
     if (!this.data) return;
     this.data.counters.shareClicked =
@@ -10182,6 +10192,21 @@ ${(() => {
 (() => {
   "use strict";
 
+  function trackUiFunnel(ui, name, extras) {
+    try {
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === "function" &&
+        typeof window.WT_Analytics.inferUiContext === "function"
+      ) {
+        window.WT_Analytics.trackFunnel(
+          name,
+          window.WT_Analytics.inferUiContext(ui, extras || {})
+        );
+      }
+    } catch (_) { /* silent */ }
+  }
+
   function openSupport(ui, helpers) {
     const { escapeHtml, toastNow } = helpers || {};
     if (typeof escapeHtml !== "function" || typeof toastNow !== "function") {
@@ -10295,6 +10320,10 @@ ${(() => {
     const toEmail = String(window.WT_Email?.getWaitlistEmailDecoded?.() || "").trim();
     if (!toEmail) return;
 
+    trackUiFunnel(ui, "waitlist_open", {
+      from_state: String(ui.state || "").trim().toLowerCase() || "unknown"
+    });
+
     try {
       if (ui.storage && typeof ui.storage.getWaitlistStatus === "function" && typeof ui.storage.setWaitlistStatus === "function") {
         const st = String(ui.storage.getWaitlistStatus() || "").trim();
@@ -10378,6 +10407,11 @@ ${(() => {
         ui.storage.setWaitlistDraftIdea("");
       }
     } catch (_) { /* silent */ }
+
+    trackUiFunnel(ui, "waitlist_send", {
+      from_state: String(ui.state || "").trim().toLowerCase() || "unknown",
+      idea_length: idea.length
+    });
 
     window.location.href = `mailto:${toEmail}?subject=${subject}&body=${body}`;
     ui.closeModal();
@@ -10643,6 +10677,48 @@ ${(() => {
 (() => {
   "use strict";
 
+  function clampCount(value, max) {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return Math.min(Math.floor(n), Number.isFinite(max) ? max : 99999);
+  }
+
+  function getCheckoutAnalyticsExtras(ui, priceKey) {
+    const runtime = ui && ui._runtime ? ui._runtime : {};
+    const lastRun = runtime.lastRun || {};
+    const out = {
+      price_key: priceKey
+    };
+
+    const fromState = String(ui?._nav?.paywallFromState || "").trim();
+    if (fromState) out.from_state = fromState.toLowerCase();
+
+    const mode = String(lastRun.mode || runtime.runMode || "").trim();
+    if (mode) out.mode = mode;
+
+    const runType = String(lastRun.runType || runtime.runType || "").trim();
+    if (runType) out.run_type = runType;
+
+    if (Array.isArray(lastRun.mistakeIds)) {
+      out.mistakes_count = clampCount(lastRun.mistakeIds.length, 999);
+    }
+
+    try {
+      if (ui.storage && typeof ui.storage.getActiveMistakesCount === "function") {
+        out.active_mistakes_count = clampCount(ui.storage.getActiveMistakesCount(), 99999);
+      }
+    } catch (_) { /* silent */ }
+
+    try {
+      if (ui.storage && typeof ui.storage.getSeenItemIds === "function") {
+        const seen = ui.storage.getSeenItemIds();
+        if (Array.isArray(seen)) out.seen_count = clampCount(seen.length, 99999);
+      }
+    } catch (_) { /* silent */ }
+
+    return out;
+  }
+
   function startPaywallTicker(ui, helpers) {
     const {
       syncScopedRenderTicker,
@@ -10755,7 +10831,10 @@ ${(() => {
       ) {
         window.WT_Analytics.trackFunnel(
           "checkout_start",
-          window.WT_Analytics.inferUiContext(ui, { price_key: key })
+          window.WT_Analytics.inferUiContext(
+            ui,
+            getCheckoutAnalyticsExtras(ui, key)
+          )
         );
       }
     } catch (_) { /* silent */ }
@@ -14937,6 +15016,22 @@ void (function () {
 
           if (self.state === STATES.PAYWALL) {
             const fromState = String(self._nav?.paywallFromState || '').trim();
+            try {
+              if (
+                window.WT_Analytics &&
+                typeof window.WT_Analytics.trackFunnel === 'function' &&
+                typeof window.WT_Analytics.inferUiContext === 'function'
+              ) {
+                window.WT_Analytics.trackFunnel(
+                  'paywall_dismiss',
+                  window.WT_Analytics.inferUiContext(self, {
+                    from_state: fromState.toLowerCase() || 'other'
+                  })
+                );
+              }
+            } catch (_) {
+              /* silent */
+            }
 
             if (fromState === STATES.END) {
               if (self._nav) {
@@ -24139,6 +24234,50 @@ ${questionAudioHtml}
   `;
   }
 
+  function trackCheckoutCancelReturn(ui) {
+    try {
+      const url = new URL(window.location.href);
+      const checkoutState = String(url.searchParams.get('checkout') || '')
+        .trim()
+        .toLowerCase();
+      if (checkoutState !== 'cancel') return;
+
+      const extras = {};
+      try {
+        if (
+          ui?.storage &&
+          typeof ui.storage.getCheckoutAnalyticsState === 'function'
+        ) {
+          const st = ui.storage.getCheckoutAnalyticsState() || {};
+          const priceKey = String(st.priceKey || '').trim();
+          const source = String(st.paywallLastSource || '').trim();
+          if (priceKey) extras.price_key = priceKey;
+          if (source) extras.from_state = source;
+        }
+      } catch (_) {
+        /* silent */
+      }
+
+      if (
+        window.WT_Analytics &&
+        typeof window.WT_Analytics.trackFunnel === 'function' &&
+        typeof window.WT_Analytics.inferUiContext === 'function'
+      ) {
+        window.WT_Analytics.trackFunnel(
+          'checkout_cancel',
+          window.WT_Analytics.inferUiContext(ui, extras)
+        );
+      }
+
+      url.searchParams.delete('checkout');
+      const qs = url.searchParams.toString();
+      const cleanUrl = `${url.pathname}${qs ? `?${qs}` : ''}${url.hash || ''}`;
+      window.history.replaceState(window.history.state, '', cleanUrl);
+    } catch (_) {
+      /* silent */
+    }
+  }
+
   // ============================================
   // ============================================
   // Main application start
@@ -24183,6 +24322,7 @@ ${questionAudioHtml}
       const ui = new window.WT_UI({ storage, game, config, wording });
       if (ui && typeof ui.setContentLoading === 'function')
         ui.setContentLoading(true);
+      trackCheckoutCancelReturn(ui);
 
       // Listen for storage updates (KISS)
       // Contract (intentional): StorageManager emits a single global event "storage-updated".

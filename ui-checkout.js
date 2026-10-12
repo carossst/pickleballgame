@@ -4,6 +4,48 @@
 (() => {
   "use strict";
 
+  function clampCount(value, max) {
+    const n = Number(value);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return Math.min(Math.floor(n), Number.isFinite(max) ? max : 99999);
+  }
+
+  function getCheckoutAnalyticsExtras(ui, priceKey) {
+    const runtime = ui && ui._runtime ? ui._runtime : {};
+    const lastRun = runtime.lastRun || {};
+    const out = {
+      price_key: priceKey
+    };
+
+    const fromState = String(ui?._nav?.paywallFromState || "").trim();
+    if (fromState) out.from_state = fromState.toLowerCase();
+
+    const mode = String(lastRun.mode || runtime.runMode || "").trim();
+    if (mode) out.mode = mode;
+
+    const runType = String(lastRun.runType || runtime.runType || "").trim();
+    if (runType) out.run_type = runType;
+
+    if (Array.isArray(lastRun.mistakeIds)) {
+      out.mistakes_count = clampCount(lastRun.mistakeIds.length, 999);
+    }
+
+    try {
+      if (ui.storage && typeof ui.storage.getActiveMistakesCount === "function") {
+        out.active_mistakes_count = clampCount(ui.storage.getActiveMistakesCount(), 99999);
+      }
+    } catch (_) { /* silent */ }
+
+    try {
+      if (ui.storage && typeof ui.storage.getSeenItemIds === "function") {
+        const seen = ui.storage.getSeenItemIds();
+        if (Array.isArray(seen)) out.seen_count = clampCount(seen.length, 99999);
+      }
+    } catch (_) { /* silent */ }
+
+    return out;
+  }
+
   function startPaywallTicker(ui, helpers) {
     const {
       syncScopedRenderTicker,
@@ -116,7 +158,10 @@
       ) {
         window.WT_Analytics.trackFunnel(
           "checkout_start",
-          window.WT_Analytics.inferUiContext(ui, { price_key: key })
+          window.WT_Analytics.inferUiContext(
+            ui,
+            getCheckoutAnalyticsExtras(ui, key)
+          )
         );
       }
     } catch (_) { /* silent */ }

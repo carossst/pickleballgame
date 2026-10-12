@@ -217,6 +217,7 @@
     stripeEarlyPaymentUrl: "https://buy.stripe.com/dRmcN53jhc63evD3EOejK00",
     stripeStandardPaymentUrl: "https://buy.stripe.com/bJe3cv2fd7PNbjr7V4ejK01",
     successRedirectUrl: "./success.html",
+    checkoutCancelRedirectUrl: "./?checkout=cancel",
 
     // Marketing (opt-in only; Stripe receipt email is NOT marketing consent)
     marketing: {

@@ -3006,6 +3006,22 @@ void (function () {
 
           if (self.state === STATES.PAYWALL) {
             const fromState = String(self._nav?.paywallFromState || '').trim();
+            try {
+              if (
+                window.WT_Analytics &&
+                typeof window.WT_Analytics.trackFunnel === 'function' &&
+                typeof window.WT_Analytics.inferUiContext === 'function'
+              ) {
+                window.WT_Analytics.trackFunnel(
+                  'paywall_dismiss',
+                  window.WT_Analytics.inferUiContext(self, {
+                    from_state: fromState.toLowerCase() || 'other'
+                  })
+                );
+              }
+            } catch (_) {
+              /* silent */
+            }
 
             if (fromState === STATES.END) {
               if (self._nav) {
