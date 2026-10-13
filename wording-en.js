@@ -810,6 +810,12 @@
 
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
+      mistakePracticePromptTitle:
+        'You missed {count} rule trap{pluralS}.',
+      mistakePracticePromptBody:
+        'Practice Mode turns them into a short review before you play again.',
+      mistakePracticePromptCta: 'Practice my mistakes',
+      mistakePracticePromptUnlockCta: 'Unlock Mistakes Mode',
 
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 

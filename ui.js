@@ -2645,6 +2645,54 @@ void (function () {
     if (!this.appEl) return;
 
     const pointerEvt = 'PointerEvent' in window ? 'pointerup' : 'click';
+    const trackedEndActions = new Set([
+      'start-run',
+      'play-again',
+      'start-practice',
+      'open-paywall',
+      'copy-share',
+      'send-share-email',
+      'open-leaderboard-profile',
+      'claim-share-bonus',
+      'start-secret-bonus',
+      'start-daily-challenge'
+    ]);
+
+    function trackEndActionClick(action) {
+      if (self.state !== STATES.END) return;
+      if (!trackedEndActions.has(String(action || ''))) return;
+
+      try {
+        if (
+          !window.WT_Analytics ||
+          typeof window.WT_Analytics.trackFunnel !== 'function' ||
+          typeof window.WT_Analytics.inferUiContext !== 'function'
+        ) {
+          return;
+        }
+
+        const lastRun = self._runtime?.lastRun || {};
+        const mode = String(lastRun.mode || self._runtime?.runMode || '').trim();
+        const runType = String(lastRun.runType || self._runtime?.runType || '').trim();
+        const mistakeCount = Array.isArray(lastRun.mistakeIds)
+          ? clampInt(lastRun.mistakeIds.length, 0, 999)
+          : 0;
+        const score = clampInt(lastRun.scoreFP, 0, 99999);
+
+        window.WT_Analytics.trackFunnel(
+          'end_action_click',
+          window.WT_Analytics.inferUiContext(self, {
+            action,
+            mode,
+            run_type: runType,
+            mistakes_count: mistakeCount,
+            score
+          })
+        );
+      } catch (_) {
+        /* silent */
+      }
+    }
 
     function dispatchAction(action, event) {
       try {
@@ -2655,6 +2703,8 @@ void (function () {
       } catch (_) {
         self._lastActionDispatchTs = Date.now();
       }
+
+      trackEndActionClick(action);
 
       switch (action) {
         case 'continue':
@@ -9836,7 +9886,8 @@ ${audioSettingsHtml}
       poolSize,
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
-      dailyChallengeCta
+      dailyChallengeCta,
+      suppressPracticeSecondary
     } = ctx;
 
     const exhausted = !!(
@@ -9905,7 +9956,7 @@ ${audioSettingsHtml}
         primaryLabel = runsExhausted
           ? String(upgradeCta || '').trim()
           : String(runPlayAgain || '').trim();
-        if (canPractice) {
+        if (canPractice && suppressPracticeSecondary !== true) {
           secondaryAction = 'start-practice';
           secondaryLabel = String(practiceCta || '').trim();
         }

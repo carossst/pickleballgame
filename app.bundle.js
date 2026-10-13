@@ -1723,6 +1723,12 @@
 
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
+      mistakePracticePromptTitle:
+        'You missed {count} rule trap{pluralS}.',
+      mistakePracticePromptBody:
+        'Practice Mode turns them into a short review before you play again.',
+      mistakePracticePromptCta: 'Practice my mistakes',
+      mistakePracticePromptUnlockCta: 'Unlock Mistakes Mode',
 
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
@@ -2892,6 +2898,12 @@ Thanks!`
 
       practiceCta: 'Travailler mes erreurs',
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      mistakePracticePromptTitle:
+        'Vous avez raté {count} piège{pluralS} de règle.',
+      mistakePracticePromptBody:
+        'Le Mode Erreurs les transforme en courte révision avant de rejouer.',
+      mistakePracticePromptCta: 'Travailler mes erreurs',
+      mistakePracticePromptUnlockCta: 'Débloquer le Mode Erreurs',
 
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
@@ -3599,6 +3611,11 @@ Merci !`
     if (p.from_state) {
       const fromState = slugify(p.from_state);
       if (fromState) parts.push(`from-${fromState}`);
+    }
+
+    if (p.action) {
+      const action = slugify(p.action);
+      if (action) parts.push(`action-${action}`);
     }
 
     if (p.price_key) {
@@ -8736,8 +8753,31 @@ Merci !`
       vars
     });
 
+    const lastRunMistakeCount = Array.isArray(lastRun?.mistakeIds)
+      ? clampInt(lastRun.mistakeIds.length, 0, 999)
+      : 0;
     const shareEnabled = !!(cfg.share && cfg.share.enabled);
     const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
+    let practicePromptRunsAvailable = true;
+    if (!premium && ui.storage && typeof ui.storage.getPracticeRunsRemaining === "function") {
+      try {
+        practicePromptRunsAvailable = Number(ui.storage.getPracticeRunsRemaining()) > 0;
+      } catch (_) {
+        practicePromptRunsAvailable = false;
+      }
+    }
+    const practicePromptAction =
+      (cfg?.mistakesOnly?.enabled === true && practicePromptRunsAvailable)
+        ? "start-practice"
+        : "open-paywall";
+    const showMistakePracticePrompt = !!(
+      isRun &&
+      !premium &&
+      !runsExhausted &&
+      !runShouldPromotePractice &&
+      lastRunMistakeCount > 0 &&
+      cfg?.mistakesOnly?.enabled === true
+    );
     const shareBonusCfg = cfg?.shareBonus || {};
     const shareBonusEnabled = shareBonusCfg.enabled === true;
     const shareBonusPremiumOnly = shareBonusCfg.premiumOnly === true;
@@ -8986,6 +9026,36 @@ Merci !`
         `
         : "";
 
+    const mistakePracticePromptHtml = showMistakePracticePrompt
+      ? (() => {
+        const titleTpl = String(end.mistakePracticePromptTitle || "").trim();
+        const bodyTpl = String(end.mistakePracticePromptBody || "").trim();
+        const practiceLabel = String(end.mistakePracticePromptCta || practiceCta || "").trim();
+        const unlockLabel = String(end.mistakePracticePromptUnlockCta || upgradeCta || "").trim();
+        const cta = practicePromptAction === "start-practice" ? practiceLabel : unlockLabel;
+        const varsForPrompt = {
+          count: String(lastRunMistakeCount),
+          pluralS: lastRunMistakeCount === 1 ? "" : "s"
+        };
+        const title = titleTpl ? fillTemplate(titleTpl, varsForPrompt) : "";
+        const body = bodyTpl ? fillTemplate(bodyTpl, varsForPrompt) : "";
+        if (!title && !body && !cta) return "";
+        return `
+          <div class="wt-box wt-box--tinted wt-end-practice-prompt">
+            ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
+            ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+            ${cta ? `
+              <div class="wt-actions wt-actions--compact">
+                <button type="button" class="wt-btn wt-btn--secondary" data-action="${escapeHtml(practicePromptAction)}">
+                  ${escapeHtml(cta)}
+                </button>
+              </div>
+            ` : ``}
+          </div>
+        `;
+      })()
+      : "";
+
     const endCopyHtml = buildEndCopyHtml({
       isRun,
       isPractice,
@@ -9070,9 +9140,12 @@ Merci !`
       poolSize,
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
-      dailyChallengeCta
+      dailyChallengeCta,
+      suppressPracticeSecondary: !!(mistakePracticePromptHtml && practicePromptAction === "start-practice")
     })}
   </div>
+
+  ${mistakePracticePromptHtml}
 
   ${runsExhausted ? shareBonusOfferHtml : ``}
   ${runsExhausted ? paywallBridgeHtml : ``}
@@ -14655,6 +14728,54 @@ void (function () {
     if (!this.appEl) return;
 
     const pointerEvt = 'PointerEvent' in window ? 'pointerup' : 'click';
+    const trackedEndActions = new Set([
+      'start-run',
+      'play-again',
+      'start-practice',
+      'open-paywall',
+      'copy-share',
+      'send-share-email',
+      'open-leaderboard-profile',
+      'claim-share-bonus',
+      'start-secret-bonus',
+      'start-daily-challenge'
+    ]);
+
+    function trackEndActionClick(action) {
+      if (self.state !== STATES.END) return;
+      if (!trackedEndActions.has(String(action || ''))) return;
+
+      try {
+        if (
+          !window.WT_Analytics ||
+          typeof window.WT_Analytics.trackFunnel !== 'function' ||
+          typeof window.WT_Analytics.inferUiContext !== 'function'
+        ) {
+          return;
+        }
+
+        const lastRun = self._runtime?.lastRun || {};
+        const mode = String(lastRun.mode || self._runtime?.runMode || '').trim();
+        const runType = String(lastRun.runType || self._runtime?.runType || '').trim();
+        const mistakeCount = Array.isArray(lastRun.mistakeIds)
+          ? clampInt(lastRun.mistakeIds.length, 0, 999)
+          : 0;
+        const score = clampInt(lastRun.scoreFP, 0, 99999);
+
+        window.WT_Analytics.trackFunnel(
+          'end_action_click',
+          window.WT_Analytics.inferUiContext(self, {
+            action,
+            mode,
+            run_type: runType,
+            mistakes_count: mistakeCount,
+            score
+          })
+        );
+      } catch (_) {
+        /* silent */
+      }
+    }
 
     function dispatchAction(action, event) {
       try {
@@ -14665,6 +14786,8 @@ void (function () {
       } catch (_) {
         self._lastActionDispatchTs = Date.now();
       }
+
+      trackEndActionClick(action);
 
       switch (action) {
         case 'continue':
@@ -21846,7 +21969,8 @@ ${audioSettingsHtml}
       poolSize,
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
-      dailyChallengeCta
+      dailyChallengeCta,
+      suppressPracticeSecondary
     } = ctx;
 
     const exhausted = !!(
@@ -21915,7 +22039,7 @@ ${audioSettingsHtml}
         primaryLabel = runsExhausted
           ? String(upgradeCta || '').trim()
           : String(runPlayAgain || '').trim();
-        if (canPractice) {
+        if (canPractice && suppressPracticeSecondary !== true) {
           secondaryAction = 'start-practice';
           secondaryLabel = String(practiceCta || '').trim();
         }

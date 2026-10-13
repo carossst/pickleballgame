@@ -101,6 +101,11 @@
       if (fromState) parts.push(`from-${fromState}`);
     }
 
+    if (p.action) {
+      const action = slugify(p.action);
+      if (action) parts.push(`action-${action}`);
+    }
+
     if (p.price_key) {
       const priceKey = slugify(p.price_key);
       if (priceKey) parts.push(`price-${priceKey}`);

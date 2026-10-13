@@ -323,6 +323,73 @@ test('END render uses a semantic h1 for the main title', () => {
   expect(html).not.toContain('<p class="wt-h1">Run complete</p>');
 });
 
+test('END render surfaces a contextual mistakes practice prompt after a RUN with mistakes', () => {
+  const endModule = loadEndModule();
+  const html = endModule.render(
+    {
+      config: {
+        game: { maxChances: 3, poolSize: 200 },
+        routing: { practicePrimaryMinWrong: 7 },
+        mistakesOnly: { enabled: true },
+        secretBonus: { tapWindowMs: 900, gates: { endAfterRuns: 0 } },
+        share: { enabled: false },
+        shareBonus: { enabled: false, bonusRuns: 1, premiumOnly: false }
+      },
+      wording: {
+        ui: { scoreLabel: 'Score' },
+        end: {
+          title: 'Run complete',
+          scoreLine: '{score}',
+          mistakePracticePromptTitle: 'You missed {count} traps.',
+          mistakePracticePromptBody: 'Turn them into a short review.',
+          mistakePracticePromptCta: 'Practice my mistakes',
+          playAgain: 'Play again'
+        },
+        paywall: { cta: 'Unlock' },
+        system: {}
+      },
+      storage: {
+        getSeenItemIds() {
+          return [1, 2];
+        },
+        getRunsBalance() {
+          return 1;
+        },
+        getPracticeRunsRemaining() {
+          return 1;
+        },
+        getActiveMistakesCount() {
+          return 2;
+        },
+        getRunNumber() {
+          return 1;
+        }
+      },
+      _runtime: {
+        runMode: 'RUN',
+        runItemIds: [1, 2, 3],
+        lastRun: {
+          mode: 'RUN',
+          runType: 'FREE',
+          scoreFP: 4,
+          maxChances: 3,
+          chancesLeft: 1,
+          newBest: false,
+          bestScoreFP: 4,
+          mistakeIds: [1, 2],
+          poolCompleteCelebration: false
+        }
+      }
+    },
+    buildHelpers()
+  );
+
+  expect(html).toContain('You missed 2 traps.');
+  expect(html).toContain('Turn them into a short review.');
+  expect(html).toContain('data-action="start-practice"');
+  expect(html).toContain('Practice my mistakes');
+});
+
 test('END render proposes leaderboard join when a RUN score exists and no profile is set', () => {
   const endModule = loadEndModule();
   const html = endModule.render(

@@ -827,6 +827,12 @@
 
       practiceCta: 'Travailler mes erreurs',
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      mistakePracticePromptTitle:
+        'Vous avez raté {count} piège{pluralS} de règle.',
+      mistakePracticePromptBody:
+        'Le Mode Erreurs les transforme en courte révision avant de rejouer.',
+      mistakePracticePromptCta: 'Travailler mes erreurs',
+      mistakePracticePromptUnlockCta: 'Débloquer le Mode Erreurs',
 
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 

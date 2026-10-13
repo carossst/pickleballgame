@@ -79,6 +79,20 @@ test('analytics builds checkout cancel paths with last checkout context', () => 
   ).toBe('event/checkout-cancel/from-end/price-standard/src-seo/free/en');
 });
 
+test('analytics includes end action in funnel event paths', () => {
+  const { analytics } = loadAnalytics();
+
+  expect(
+    analytics.buildEventPath('end_action_click', {
+      mode: 'RUN',
+      action: 'start-practice',
+      entry_source: 'seo',
+      premium: false,
+      lang: 'en'
+    })
+  ).toBe('event/end-action-click/run/action-start-practice/src-seo/free/en');
+});
+
 test('analytics infers UI context from locale, source, and storage', () => {
   const { analytics } = loadAnalytics({
     window: {

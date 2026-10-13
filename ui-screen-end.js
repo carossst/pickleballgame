@@ -377,8 +377,31 @@
       vars
     });
 
+    const lastRunMistakeCount = Array.isArray(lastRun?.mistakeIds)
+      ? clampInt(lastRun.mistakeIds.length, 0, 999)
+      : 0;
     const shareEnabled = !!(cfg.share && cfg.share.enabled);
     const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
+    let practicePromptRunsAvailable = true;
+    if (!premium && ui.storage && typeof ui.storage.getPracticeRunsRemaining === "function") {
+      try {
+        practicePromptRunsAvailable = Number(ui.storage.getPracticeRunsRemaining()) > 0;
+      } catch (_) {
+        practicePromptRunsAvailable = false;
+      }
+    }
+    const practicePromptAction =
+      (cfg?.mistakesOnly?.enabled === true && practicePromptRunsAvailable)
+        ? "start-practice"
+        : "open-paywall";
+    const showMistakePracticePrompt = !!(
+      isRun &&
+      !premium &&
+      !runsExhausted &&
+      !runShouldPromotePractice &&
+      lastRunMistakeCount > 0 &&
+      cfg?.mistakesOnly?.enabled === true
+    );
     const shareBonusCfg = cfg?.shareBonus || {};
     const shareBonusEnabled = shareBonusCfg.enabled === true;
     const shareBonusPremiumOnly = shareBonusCfg.premiumOnly === true;
@@ -627,6 +650,36 @@
         `
         : "";
 
+    const mistakePracticePromptHtml = showMistakePracticePrompt
+      ? (() => {
+        const titleTpl = String(end.mistakePracticePromptTitle || "").trim();
+        const bodyTpl = String(end.mistakePracticePromptBody || "").trim();
+        const practiceLabel = String(end.mistakePracticePromptCta || practiceCta || "").trim();
+        const unlockLabel = String(end.mistakePracticePromptUnlockCta || upgradeCta || "").trim();
+        const cta = practicePromptAction === "start-practice" ? practiceLabel : unlockLabel;
+        const varsForPrompt = {
+          count: String(lastRunMistakeCount),
+          pluralS: lastRunMistakeCount === 1 ? "" : "s"
+        };
+        const title = titleTpl ? fillTemplate(titleTpl, varsForPrompt) : "";
+        const body = bodyTpl ? fillTemplate(bodyTpl, varsForPrompt) : "";
+        if (!title && !body && !cta) return "";
+        return `
+          <div class="wt-box wt-box--tinted wt-end-practice-prompt">
+            ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
+            ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+            ${cta ? `
+              <div class="wt-actions wt-actions--compact">
+                <button type="button" class="wt-btn wt-btn--secondary" data-action="${escapeHtml(practicePromptAction)}">
+                  ${escapeHtml(cta)}
+                </button>
+              </div>
+            ` : ``}
+          </div>
+        `;
+      })()
+      : "";
+
     const endCopyHtml = buildEndCopyHtml({
       isRun,
       isPractice,
@@ -711,9 +764,12 @@
       poolSize,
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
-      dailyChallengeCta
+      dailyChallengeCta,
+      suppressPracticeSecondary: !!(mistakePracticePromptHtml && practicePromptAction === "start-practice")
     })}
   </div>
+
+  ${mistakePracticePromptHtml}
 
   ${runsExhausted ? shareBonusOfferHtml : ``}
   ${runsExhausted ? paywallBridgeHtml : ``}
