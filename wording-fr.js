@@ -824,9 +824,14 @@
       },
       houseAdSummaryLabel: 'Enchaînez avec une autre partie',
       playAgain: 'Rejouer',
+      nextChallengeCta: 'Défi suivant',
 
       practiceCta: 'Travailler mes erreurs',
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      focusedRunPracticeLine:
+        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain.',
+      focusedRunPaywallLine:
+        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités.',
       mistakePracticePromptTitle:
         'Vous avez raté {count} piège{pluralS} de règle.',
       mistakePracticePromptBody:

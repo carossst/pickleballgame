@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.7",
+    version: "4.3.8",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1720,9 +1720,14 @@
       },
       houseAdSummaryLabel: 'Keep going with another game',
       playAgain: 'Play again',
+      nextChallengeCta: 'Next challenge',
 
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
+      focusedRunPracticeLine:
+        'This challenge ended after {count} mistakes. Practice them before the next run.',
+      focusedRunPaywallLine:
+        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges.',
       mistakePracticePromptTitle:
         'You missed {count} rule trap{pluralS}.',
       mistakePracticePromptBody:
@@ -2895,9 +2900,14 @@ Thanks!`
       },
       houseAdSummaryLabel: 'Enchaînez avec une autre partie',
       playAgain: 'Rejouer',
+      nextChallengeCta: 'Défi suivant',
 
       practiceCta: 'Travailler mes erreurs',
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      focusedRunPracticeLine:
+        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain.',
+      focusedRunPaywallLine:
+        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités.',
       mistakePracticePromptTitle:
         'Vous avez raté {count} piège{pluralS} de règle.',
       mistakePracticePromptBody:
@@ -8758,26 +8768,6 @@ Merci !`
       : 0;
     const shareEnabled = !!(cfg.share && cfg.share.enabled);
     const runsExhausted = (isRun && !premium && Number.isFinite(remaining) && remaining <= 0);
-    let practicePromptRunsAvailable = true;
-    if (!premium && ui.storage && typeof ui.storage.getPracticeRunsRemaining === "function") {
-      try {
-        practicePromptRunsAvailable = Number(ui.storage.getPracticeRunsRemaining()) > 0;
-      } catch (_) {
-        practicePromptRunsAvailable = false;
-      }
-    }
-    const practicePromptAction =
-      (cfg?.mistakesOnly?.enabled === true && practicePromptRunsAvailable)
-        ? "start-practice"
-        : "open-paywall";
-    const showMistakePracticePrompt = !!(
-      isRun &&
-      !premium &&
-      !runsExhausted &&
-      !runShouldPromotePractice &&
-      lastRunMistakeCount > 0 &&
-      cfg?.mistakesOnly?.enabled === true
-    );
     const shareBonusCfg = cfg?.shareBonus || {};
     const shareBonusEnabled = shareBonusCfg.enabled === true;
     const shareBonusPremiumOnly = shareBonusCfg.premiumOnly === true;
@@ -8881,6 +8871,32 @@ Merci !`
     const upgradeCta = String(w.paywall?.cta || "").trim();
     const shareTitle = String(end.shareTitle || "").trim();
     const dailyChallengeCta = String(end.dailyChallengeCtaRetry || w.landing?.dailyChallengeCta || "").trim();
+    const focusedRunEnd = !!(isRun && !premium && lastRunMistakeCount > 0 && !poolCompleteCelebration);
+    const focusedRunCanPractice = !!(
+      focusedRunEnd &&
+      !runsExhausted &&
+      canPractice &&
+      cfg?.mistakesOnly?.enabled === true
+    );
+    const focusedEndPrimaryAction = focusedRunEnd
+      ? (runsExhausted ? "open-paywall" : focusedRunCanPractice ? "start-practice" : "start-run")
+      : "";
+    const focusedEndPrimaryLabel = focusedRunEnd
+      ? (runsExhausted
+        ? upgradeCta
+        : focusedRunCanPractice
+          ? String(end.practiceCta || practiceCta || "").trim()
+          : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
+      : "";
+    const focusedRunCopyTpl = focusedRunEnd
+      ? String((runsExhausted ? end.focusedRunPaywallLine : end.focusedRunPracticeLine) || end.focusedRunLine || "").trim()
+      : "";
+    const focusedRunCopy = focusedRunCopyTpl
+      ? fillTemplate(focusedRunCopyTpl, {
+        count: String(lastRunMistakeCount),
+        pluralS: lastRunMistakeCount === 1 ? "" : "s"
+      })
+      : "";
 
     const windowMs = Number(cfg?.secretBonus?.tapWindowMs);
     const endAfterRunsRaw = Number(cfg?.secretBonus?.gates?.endAfterRuns);
@@ -8952,7 +8968,7 @@ Merci !`
       ? `<p class="wt-muted">${escapeHtml(String(end.modeMissingFallback || "").trim())}</p>`
       : ``;
 
-    const microLinesHtml = buildEndMicroLines({
+    const microLinesHtml = focusedRunEnd ? "" : buildEndMicroLines({
       isRun,
       premium,
       end,
@@ -8983,7 +8999,7 @@ Merci !`
         `
         : "";
 
-    const shareHtml = buildEndShareBlock({
+    const shareHtml = focusedRunEnd ? "" : buildEndShareBlock({
       shareEnabled,
       w,
       shareTitle,
@@ -9007,6 +9023,7 @@ Merci !`
     const leaderboardJoinBody = String(leaderboardW.endJoinBody || "").trim();
     const leaderboardJoinCta = String(leaderboardW.joinCta || "").trim();
     const leaderboardJoinHtml =
+      !focusedRunEnd &&
       isRun &&
       scoreFP > 0 &&
       !hasLeaderboardProfile &&
@@ -9026,54 +9043,26 @@ Merci !`
         `
         : "";
 
-    const mistakePracticePromptHtml = showMistakePracticePrompt
-      ? (() => {
-        const titleTpl = String(end.mistakePracticePromptTitle || "").trim();
-        const bodyTpl = String(end.mistakePracticePromptBody || "").trim();
-        const practiceLabel = String(end.mistakePracticePromptCta || practiceCta || "").trim();
-        const unlockLabel = String(end.mistakePracticePromptUnlockCta || upgradeCta || "").trim();
-        const cta = practicePromptAction === "start-practice" ? practiceLabel : unlockLabel;
-        const varsForPrompt = {
-          count: String(lastRunMistakeCount),
-          pluralS: lastRunMistakeCount === 1 ? "" : "s"
-        };
-        const title = titleTpl ? fillTemplate(titleTpl, varsForPrompt) : "";
-        const body = bodyTpl ? fillTemplate(bodyTpl, varsForPrompt) : "";
-        if (!title && !body && !cta) return "";
-        return `
-          <div class="wt-box wt-box--tinted wt-end-practice-prompt">
-            ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
-            ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
-            ${cta ? `
-              <div class="wt-actions wt-actions--compact">
-                <button type="button" class="wt-btn wt-btn--secondary" data-action="${escapeHtml(practicePromptAction)}">
-                  ${escapeHtml(cta)}
-                </button>
-              </div>
-            ` : ``}
-          </div>
-        `;
-      })()
-      : "";
-
-    const endCopyHtml = buildEndCopyHtml({
-      isRun,
-      isPractice,
-      isBonus,
-      practiceStatsLineTpl,
-      bonusStatsLine,
-      runStatsLine,
-      endLine,
-      practiceRepeatNoteTpl,
-      bonusDecisionLine,
-      runIdentityTpl,
-      freeRunMessage,
-      premium,
-      poolCompleteCelebration,
-      runPoolCompleteLine2Tpl,
-      end,
-      vars
-    });
+    const endCopyHtml = focusedRunEnd
+      ? (focusedRunCopy ? `<p class="wt-end-copy__verdict">${escapeHtml(focusedRunCopy)}</p>` : "")
+      : buildEndCopyHtml({
+        isRun,
+        isPractice,
+        isBonus,
+        practiceStatsLineTpl,
+        bonusStatsLine,
+        runStatsLine,
+        endLine,
+        practiceRepeatNoteTpl,
+        bonusDecisionLine,
+        runIdentityTpl,
+        freeRunMessage,
+        premium,
+        poolCompleteCelebration,
+        runPoolCompleteLine2Tpl,
+        end,
+        vars
+      });
 
     return `
 <div class="wt-card wt-card--end">
@@ -9104,7 +9093,7 @@ Merci !`
     </div>
   ` : ``}
 
-  ${levelUnlockHtml}
+  ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
     ${microLinesHtml}
@@ -9141,22 +9130,22 @@ Merci !`
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
       dailyChallengeCta,
-      suppressPracticeSecondary: !!(mistakePracticePromptHtml && practicePromptAction === "start-practice")
+      focusedEndPrimaryAction,
+      focusedEndPrimaryLabel,
+      forceSinglePrimary: focusedRunEnd
     })}
   </div>
 
-  ${mistakePracticePromptHtml}
-
-  ${runsExhausted ? shareBonusOfferHtml : ``}
-  ${runsExhausted ? paywallBridgeHtml : ``}
+  ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
+  ${runsExhausted && !focusedRunEnd ? paywallBridgeHtml : ``}
 
   ${shareHtml}
 
-  ${mistakesRecapHtml}
+  ${focusedRunEnd ? "" : mistakesRecapHtml}
 
   ${leaderboardJoinHtml}
 
-  ${!runsExhausted ? paywallBridgeHtml : ``}
+  ${!runsExhausted && !focusedRunEnd ? paywallBridgeHtml : ``}
 
 </div>
 `;
@@ -12559,8 +12548,8 @@ void (function () {
     }
   }
 
-  function shouldShowQuestionAudioControl(isQuestionSpeaking) {
-    return isQuestionSpeaking === true;
+  function shouldShowQuestionAudioControl() {
+    return true;
   }
 
   function startQuestionSpeech(ui, model, opts) {
@@ -21970,6 +21959,9 @@ ${audioSettingsHtml}
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
       dailyChallengeCta,
+      focusedEndPrimaryAction,
+      focusedEndPrimaryLabel,
+      forceSinglePrimary,
       suppressPracticeSecondary
     } = ctx;
 
@@ -22004,7 +21996,13 @@ ${audioSettingsHtml}
     let secondaryAction = '';
     let secondaryLabel = '';
 
-    if (mastered) {
+    const focusedAction = String(focusedEndPrimaryAction || '').trim();
+    const focusedLabel = String(focusedEndPrimaryLabel || '').trim();
+
+    if (!mastered && focusedAction && focusedLabel) {
+      primaryAction = focusedAction;
+      primaryLabel = focusedLabel;
+    } else if (mastered) {
       primaryAction = 'start-secret-bonus';
       primaryLabel = String(postW.masteredCtaBonus || '').trim();
       secondaryAction = 'start-run';
@@ -22073,6 +22071,7 @@ ${audioSettingsHtml}
     }
 
     if (
+      forceSinglePrimary !== true &&
       isRun &&
       !runsExhausted &&
       dailyChallengeNeedsReplayReward === true &&
@@ -22084,6 +22083,7 @@ ${audioSettingsHtml}
     }
 
     if (
+      forceSinglePrimary !== true &&
       isRun &&
       !runsExhausted &&
       dailyChallengeIncomplete === true &&
@@ -22097,6 +22097,11 @@ ${audioSettingsHtml}
     }
 
     if (!primaryLabel || !primaryAction) return masteredHtml || ``;
+
+    if (forceSinglePrimary === true) {
+      secondaryAction = '';
+      secondaryLabel = '';
+    }
 
     const secondaryBtn =
       secondaryLabel && secondaryAction

@@ -44,7 +44,7 @@ function buildHelpers(overrides) {
         return '<div>share</div>';
       },
       buildEndActionsHtml(args) {
-        return `<div data-flags="incomplete:${args.dailyChallengeIncomplete}|replay:${args.dailyChallengeNeedsReplayReward}|cta:${args.dailyChallengeCta}"></div>`;
+        return `<div data-flags="incomplete:${args.dailyChallengeIncomplete}|replay:${args.dailyChallengeNeedsReplayReward}|cta:${args.dailyChallengeCta}|focused:${args.focusedEndPrimaryAction || ''}|single:${args.forceSinglePrimary === true}">${args.focusedEndPrimaryLabel || ''}</div>`;
       },
       getRunTierInfo() {
         return { currentLabel: 'Solid', nextTarget: 12, nextLabel: 'Strong' };
@@ -174,7 +174,7 @@ test('END render flags daily replay reward for free RUN 1 success case', () => {
   );
 
   expect(html).toContain(
-    'data-flags="incomplete:true|replay:true|cta:Retry daily"'
+    'data-flags="incomplete:true|replay:true|cta:Retry daily|focused:|single:false"'
   );
   expect(html).toContain('data-daily-line="Cleared preview 12"');
 });
@@ -323,7 +323,7 @@ test('END render uses a semantic h1 for the main title', () => {
   expect(html).not.toContain('<p class="wt-h1">Run complete</p>');
 });
 
-test('END render surfaces a contextual mistakes practice prompt after a RUN with mistakes', () => {
+test('END render keeps a RUN with mistakes focused on one next action', () => {
   const endModule = loadEndModule();
   const html = endModule.render(
     {
@@ -340,9 +340,9 @@ test('END render surfaces a contextual mistakes practice prompt after a RUN with
         end: {
           title: 'Run complete',
           scoreLine: '{score}',
-          mistakePracticePromptTitle: 'You missed {count} traps.',
-          mistakePracticePromptBody: 'Turn them into a short review.',
-          mistakePracticePromptCta: 'Practice my mistakes',
+          focusedRunPracticeLine:
+            'This challenge ended after {count} mistakes. Practice them before the next run.',
+          practiceCta: 'Practice my mistakes',
           playAgain: 'Play again'
         },
         paywall: { cta: 'Unlock' },
@@ -384,10 +384,14 @@ test('END render surfaces a contextual mistakes practice prompt after a RUN with
     buildHelpers()
   );
 
-  expect(html).toContain('You missed 2 traps.');
-  expect(html).toContain('Turn them into a short review.');
-  expect(html).toContain('data-action="start-practice"');
+  expect(html).toContain(
+    'This challenge ended after 2 mistakes. Practice them before the next run.'
+  );
+  expect(html).toContain('focused:start-practice');
+  expect(html).toContain('single:true');
   expect(html).toContain('Practice my mistakes');
+  expect(html).not.toContain('<div>share</div>');
+  expect(html).not.toContain('<div>mistakes</div>');
 });
 
 test('END render proposes leaderboard join when a RUN score exists and no profile is set', () => {

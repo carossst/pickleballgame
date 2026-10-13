@@ -807,9 +807,14 @@
       },
       houseAdSummaryLabel: 'Keep going with another game',
       playAgain: 'Play again',
+      nextChallengeCta: 'Next challenge',
 
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
+      focusedRunPracticeLine:
+        'This challenge ended after {count} mistakes. Practice them before the next run.',
+      focusedRunPaywallLine:
+        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges.',
       mistakePracticePromptTitle:
         'You missed {count} rule trap{pluralS}.',
       mistakePracticePromptBody:

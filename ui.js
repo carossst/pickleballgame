@@ -476,8 +476,8 @@ void (function () {
     }
   }
 
-  function shouldShowQuestionAudioControl(isQuestionSpeaking) {
-    return isQuestionSpeaking === true;
+  function shouldShowQuestionAudioControl() {
+    return true;
   }
 
   function startQuestionSpeech(ui, model, opts) {
@@ -9887,6 +9887,9 @@ ${audioSettingsHtml}
       dailyChallengeIncomplete,
       dailyChallengeNeedsReplayReward,
       dailyChallengeCta,
+      focusedEndPrimaryAction,
+      focusedEndPrimaryLabel,
+      forceSinglePrimary,
       suppressPracticeSecondary
     } = ctx;
 
@@ -9921,7 +9924,13 @@ ${audioSettingsHtml}
     let secondaryAction = '';
     let secondaryLabel = '';
 
-    if (mastered) {
+    const focusedAction = String(focusedEndPrimaryAction || '').trim();
+    const focusedLabel = String(focusedEndPrimaryLabel || '').trim();
+
+    if (!mastered && focusedAction && focusedLabel) {
+      primaryAction = focusedAction;
+      primaryLabel = focusedLabel;
+    } else if (mastered) {
       primaryAction = 'start-secret-bonus';
       primaryLabel = String(postW.masteredCtaBonus || '').trim();
       secondaryAction = 'start-run';
@@ -9990,6 +9999,7 @@ ${audioSettingsHtml}
     }
 
     if (
+      forceSinglePrimary !== true &&
       isRun &&
       !runsExhausted &&
       dailyChallengeNeedsReplayReward === true &&
@@ -10001,6 +10011,7 @@ ${audioSettingsHtml}
     }
 
     if (
+      forceSinglePrimary !== true &&
       isRun &&
       !runsExhausted &&
       dailyChallengeIncomplete === true &&
@@ -10014,6 +10025,11 @@ ${audioSettingsHtml}
     }
 
     if (!primaryLabel || !primaryAction) return masteredHtml || ``;
+
+    if (forceSinglePrimary === true) {
+      secondaryAction = '';
+      secondaryLabel = '';
+    }
 
     const secondaryBtn =
       secondaryLabel && secondaryAction
