@@ -263,6 +263,20 @@
       const msg = String(message || '').trim();
       if (!msg) return;
 
+      const uiState = String(window.WT_APP?.ui?.state || '').trim();
+      if (uiState && uiState !== 'LANDING') {
+        window.__WT_SW_PENDING_UPDATE_TOAST__ = msg;
+        if (!window.__WT_SW_UPDATE_TOAST_RETRY__) {
+          window.__WT_SW_UPDATE_TOAST_RETRY__ = window.setTimeout(() => {
+            window.__WT_SW_UPDATE_TOAST_RETRY__ = null;
+            const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
+            if (pending) showUpdateToast(pending);
+          }, 5000);
+        }
+        return;
+      }
+      window.__WT_SW_PENDING_UPDATE_TOAST__ = '';
+
       // KISS: reuse the existing #update-toast shell from index.html
       const node = document.getElementById('update-toast');
       if (!node) return;

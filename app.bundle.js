@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.8",
+    version: "4.3.10",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -337,12 +337,12 @@
       // Overlays (PLAYING)
       // - chanceLostOverlayMs: -1 chance + "Game over" window
       // - runStartOverlayMs: start-of-run + BONUS rules
-      chanceLostOverlayMs: 1800,
+      chanceLostOverlayMs: 950,
       runStartOverlayMs: 3000,
 
 
       // Pulses (HUD) + extension window for last-chance overlay
-      gameplayPulseMs: 1000,
+      gameplayPulseMs: 450,
 
       // Momentum meter (HUD, UI-only)
       momentumMeter: {
@@ -1113,6 +1113,7 @@
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
+      proofLine: '200 rule traps · 3 mistakes ends the run · Practice what you miss',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -1725,9 +1726,9 @@
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       focusedRunPracticeLine:
-        'This challenge ended after {count} mistakes. Practice them before the next run.',
+        'This challenge ended after {count} mistakes. Practice them before the next run. Next goal: score {target}+.',
       focusedRunPaywallLine:
-        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges.',
+        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges. Next goal: score {target}+.',
       mistakePracticePromptTitle:
         'You missed {count} rule trap{pluralS}.',
       mistakePracticePromptBody:
@@ -2278,6 +2279,7 @@ Thanks!`
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
+      proofLine: '200 pièges de règles · 3 erreurs terminent la partie · Travaillez ce qui manque',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -2905,9 +2907,9 @@ Thanks!`
       practiceCta: 'Travailler mes erreurs',
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
       focusedRunPracticeLine:
-        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain.',
+        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain. Prochain objectif : {target}+.',
       focusedRunPaywallLine:
-        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités.',
+        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
       mistakePracticePromptTitle:
         'Vous avez raté {count} piège{pluralS} de règle.',
       mistakePracticePromptBody:
@@ -8310,6 +8312,18 @@ Merci !`
       )
       : "";
     const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
+    const paywallSummaryHtml = compactBullets.length
+      ? `
+      <div class="wt-paywall-summary" aria-label="${escapeHtml(compactTitle || valueTitle || "")}">
+        ${compactBullets
+          .slice(0, 3)
+          .map((item) => String(item || "").trim())
+          .filter(Boolean)
+          .map((item) => `<div class="wt-paywall-summary__item">${renderTextWithStrong(item)}</div>`)
+          .join("")}
+      </div>
+    `
+      : "";
     const reassuranceHtml =
       (reassuranceTitle || reassuranceItems.length)
         ? `
@@ -8342,6 +8356,8 @@ Merci !`
 
       ${renderUrgencyBanner()}
 
+      ${paywallSummaryHtml}
+
       ${renderPriceBlock()}
 
       ${savingsLine ? `<p class="wt-muted wt-paywall-savings">${escapeHtml(savingsLine)}</p>` : ``}
@@ -8363,7 +8379,7 @@ Merci !`
 
       ${reassuranceHtml}
 
-      ${compactSectionHtml}
+      ${paywallSummaryHtml ? `` : compactSectionHtml}
 
       ${lockedPreviewHtml}
 
@@ -8894,7 +8910,8 @@ Merci !`
     const focusedRunCopy = focusedRunCopyTpl
       ? fillTemplate(focusedRunCopyTpl, {
         count: String(lastRunMistakeCount),
-        pluralS: lastRunMistakeCount === 1 ? "" : "s"
+        pluralS: lastRunMistakeCount === 1 ? "" : "s",
+        target: String(clampInt(scoreFP + 1, 1, 99999))
       })
       : "";
 
@@ -9308,8 +9325,14 @@ Merci !`
     if (ui.storage && typeof ui.storage.hasShareBonusGranted === "function") {
       try { shareBonusGranted = ui.storage.hasShareBonusGranted() === true; } catch (_) { shareBonusGranted = false; }
     }
+    const shareBonusSuppressed = !!(
+      ui._runtime?.shareBonusDismissed ||
+      ui._runtime?.shareBonusModalPending ||
+      ui._runtime?.shareBonusModalShown
+    );
 
     const tagline = String(landing.tagline || "").trim();
+    const proofLine = String(landing.proofLine || "").trim();
     const microTrust = String(landing.microTrust || "").trim();
     const seoBridgeTitleQuestionTpl = String(landing.seoBridgeTitleQuestionTemplate || "").trim();
     const seoBridgeTitleThemeTpl = String(landing.seoBridgeTitleThemeTemplate || "").trim();
@@ -9736,7 +9759,7 @@ Merci !`
 
       const label = String(pay.timerLabel || "").trim();
 
-      if (!premium && isEarly && urgencyEnabled && label) {
+      if (!premium && !isPostPaywallVariant && isEarly && urgencyEnabled && label) {
         const cls = `wt-box wt-box--tinted`;
         landingUrgencyHtml = `
         <div class="${cls}" role="status" aria-live="polite">
@@ -9831,6 +9854,7 @@ ${landingHeaderRowHtml}
   ${landingUrgencyHtml}
   ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
   <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
+  ${proofLine && !isPostPaywallVariant ? `<p class="wt-landing-proof">${escapeHtml(proofLine)}</p>` : ``}
   ${seoBridgeHtml}
 
 <div class="wt-actions">
@@ -9840,7 +9864,8 @@ ${landingHeaderRowHtml}
           runsExhausted &&
           shareBonusEnabled &&
           !shareBonusPremiumOnly &&
-          !shareBonusGranted
+          !shareBonusGranted &&
+          !shareBonusSuppressed
         );
 
         if (runsExhausted) {
@@ -9905,7 +9930,8 @@ ${(() => {
         runsExhausted &&
         shareBonusEnabled &&
         !shareBonusPremiumOnly &&
-        !shareBonusGranted
+        !shareBonusGranted &&
+        !shareBonusSuppressed
       );
       const title = String(shareBonusW.title || "").trim();
       const body = String(shareBonusW.body || "").trim();
@@ -9936,7 +9962,7 @@ ${(() => {
 
     ${postBlock}
 
-    ${postCompletionHtml}
+    ${isPostPaywallVariant ? `` : postCompletionHtml}
 
     ${showLandingInstallPrompt ? `
       <p class="wt-sub wt-muted wt-landing-trust">${escapeHtml(microTrust)}</p>
@@ -9949,7 +9975,7 @@ ${(() => {
       ` : ``}
     ` : ``}
 
-    ${hasDashboard ? `
+    ${hasDashboard && !isPostPaywallVariant ? `
       <section class="wt-landing-dashboard">
         ${welcomeBackHtml ? `
           <div class="wt-landing-dashboard__summary">
@@ -9964,7 +9990,7 @@ ${(() => {
       </section>
     ` : ``}
 
-    ${hasLeaderboardSection ? `
+    ${hasLeaderboardSection && !isPostPaywallVariant ? `
       <section class="wt-landing-leaderboard-section">
         ${leaderboardLandingHtml}
       </section>
@@ -15159,7 +15185,16 @@ void (function () {
                 fromState === STATES.LANDING ? 'POST_PAYWALL' : null;
               self._nav.paywallFromState = null;
             }
+            if (
+              self._runtime &&
+              self._runtime.shareBonusDismissed !== true &&
+              self._runtime.shareBonusModalShown !== true &&
+              self.isShareBonusOfferEligible()
+            ) {
+              self._runtime.shareBonusModalPending = true;
+            }
             self.setState(STATES.LANDING);
+            self.maybeOpenShareBonusModalAfterPaywallDismiss();
             break;
           }
 
@@ -19615,7 +19650,77 @@ ${audioSettingsHtml}
     this._runtime = this._runtime || {};
     if (this._runtime.shareBonusDismissed === true) return;
     this._runtime.shareBonusDismissed = true;
+    this.closeModal();
     this.render();
+  };
+
+  UI.prototype.isShareBonusOfferEligible = function () {
+    const cfg = this.config || {};
+    const shareBonusCfg = cfg.shareBonus || {};
+    if (shareBonusCfg.enabled !== true) return false;
+    if (shareBonusCfg.premiumOnly === true && !isPremiumNow(this.storage)) {
+      return false;
+    }
+    if (isPremiumNow(this.storage)) return false;
+
+    try {
+      if (
+        this.storage &&
+        typeof this.storage.hasShareBonusGranted === 'function' &&
+        this.storage.hasShareBonusGranted() === true
+      ) {
+        return false;
+      }
+    } catch (_) {
+      return false;
+    }
+
+    try {
+      if (this.storage && typeof this.storage.getRunsBalance === 'function') {
+        const balance = Number(this.storage.getRunsBalance());
+        return Number.isFinite(balance) && balance <= 0;
+      }
+    } catch (_) {
+      return false;
+    }
+
+    return false;
+  };
+
+  UI.prototype.maybeOpenShareBonusModalAfterPaywallDismiss = function () {
+    this._runtime = this._runtime || {};
+    if (this._runtime.shareBonusDismissed === true) return false;
+    const pending = this._runtime.shareBonusModalPending === true;
+    if (this._runtime.shareBonusModalShown === true && !pending) return false;
+    if (!this.isShareBonusOfferEligible()) return false;
+    if (typeof this.openModal !== 'function') return false;
+
+    const shareBonusW = this.wording?.shareBonus || {};
+    const title = String(shareBonusW.title || '').trim();
+    const body = String(shareBonusW.body || '').trim();
+    const shareLabel = String(shareBonusW.ctaShare || '').trim();
+    const laterLabel =
+      String(shareBonusW.ctaLater || '').trim() ||
+      String(this.wording?.system?.notNow || '').trim();
+    const unlockLabel = String(this.wording?.landing?.postPaywallCta || '').trim();
+
+    if (!title || (!body && !shareLabel)) return false;
+
+    const html = `
+      <div class="wt-stack wt-stack--sm">
+        ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+        <div class="wt-actions wt-modal-actions wt-modal-actions--lg">
+          ${shareLabel ? `<button class="wt-btn wt-btn--primary" data-action="claim-share-bonus">${escapeHtml(shareLabel)}</button>` : ``}
+          ${unlockLabel ? `<button class="wt-btn wt-btn--ghost" data-action="open-paywall">${escapeHtml(unlockLabel)}</button>` : ``}
+          ${laterLabel ? `<button class="wt-btn wt-btn--secondary" data-action="dismiss-share-bonus">${escapeHtml(laterLabel)}</button>` : ``}
+        </div>
+      </div>
+    `;
+
+    this._runtime.shareBonusModalShown = true;
+    this._runtime.shareBonusModalPending = false;
+    this.openModal(html, title, { modalKey: 'share-bonus' });
+    return true;
   };
 
   UI.prototype.claimShareBonus = async function (event) {
@@ -19697,6 +19802,12 @@ ${audioSettingsHtml}
       this._runtime.shareBonusDismissed = false;
       if (unlockedMsg) {
         toastNow(this.config, unlockedMsg, { variant: 'success' });
+      }
+      const modalKey = String(this._runtime?._modalKey || '').trim();
+      if (modalKey === 'share-bonus') {
+        this.closeModal();
+        this.startRun(false);
+        return;
       }
       this.render();
     } finally {
@@ -24019,6 +24130,20 @@ ${questionAudioHtml}
     function showUpdateToast(message) {
       const msg = String(message || '').trim();
       if (!msg) return;
+
+      const uiState = String(window.WT_APP?.ui?.state || '').trim();
+      if (uiState && uiState !== 'LANDING') {
+        window.__WT_SW_PENDING_UPDATE_TOAST__ = msg;
+        if (!window.__WT_SW_UPDATE_TOAST_RETRY__) {
+          window.__WT_SW_UPDATE_TOAST_RETRY__ = window.setTimeout(() => {
+            window.__WT_SW_UPDATE_TOAST_RETRY__ = null;
+            const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
+            if (pending) showUpdateToast(pending);
+          }, 5000);
+        }
+        return;
+      }
+      window.__WT_SW_PENDING_UPDATE_TOAST__ = '';
 
       // KISS: reuse the existing #update-toast shell from index.html
       const node = document.getElementById('update-toast');

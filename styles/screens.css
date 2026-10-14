@@ -972,6 +972,27 @@ body.wt-state--end .wt-card--end {
   margin-top: var(--space-6);
 }
 
+.wt-landing-proof {
+  display: none;
+  margin: var(--space-14) 0 0;
+  color: rgb(var(--text-muted));
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+@media (min-width: 900px) {
+  .wt-landing-proof {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    padding: var(--space-8) var(--space-12);
+    border: 1px solid rgb(var(--border));
+    border-radius: var(--r-pill);
+    background: rgb(var(--surface-tint));
+  }
+}
+
 /* Tagline: calmer, less “grey corporate”, better rhythm (overrides inline margin) */
 .wt-tagline {
   margin-top: var(--space-10);
@@ -1638,6 +1659,29 @@ arcade" feel; deviation from --fs-* scale is expected. */
 
 .wt-paywall-savings {
   margin: var(--space-10) 0 0;
+}
+
+.wt-paywall-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  margin-top: var(--space-12);
+}
+
+.wt-paywall-summary__item {
+  padding: var(--space-10) var(--space-12);
+  border: 1px solid rgb(var(--primary) / var(--wt-a-18));
+  border-radius: var(--r-md);
+  background: rgb(var(--primary) / var(--wt-a-06));
+  color: rgb(var(--text-strong));
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+}
+
+@media (min-width: 700px) {
+  .wt-paywall-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .wt-paywall-redeem {

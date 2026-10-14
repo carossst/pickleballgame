@@ -508,7 +508,8 @@
     const focusedRunCopy = focusedRunCopyTpl
       ? fillTemplate(focusedRunCopyTpl, {
         count: String(lastRunMistakeCount),
-        pluralS: lastRunMistakeCount === 1 ? "" : "s"
+        pluralS: lastRunMistakeCount === 1 ? "" : "s",
+        target: String(clampInt(scoreFP + 1, 1, 99999))
       })
       : "";
 

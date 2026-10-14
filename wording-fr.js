@@ -202,6 +202,7 @@
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
+      proofLine: '200 pièges de règles · 3 erreurs terminent la partie · Travaillez ce qui manque',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -829,9 +830,9 @@
       practiceCta: 'Travailler mes erreurs',
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
       focusedRunPracticeLine:
-        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain.',
+        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain. Prochain objectif : {target}+.',
       focusedRunPaywallLine:
-        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités.',
+        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
       mistakePracticePromptTitle:
         'Vous avez raté {count} piège{pluralS} de règle.',
       mistakePracticePromptBody:

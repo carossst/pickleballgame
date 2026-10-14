@@ -376,6 +376,18 @@
       )
       : "";
     const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
+    const paywallSummaryHtml = compactBullets.length
+      ? `
+      <div class="wt-paywall-summary" aria-label="${escapeHtml(compactTitle || valueTitle || "")}">
+        ${compactBullets
+          .slice(0, 3)
+          .map((item) => String(item || "").trim())
+          .filter(Boolean)
+          .map((item) => `<div class="wt-paywall-summary__item">${renderTextWithStrong(item)}</div>`)
+          .join("")}
+      </div>
+    `
+      : "";
     const reassuranceHtml =
       (reassuranceTitle || reassuranceItems.length)
         ? `
@@ -408,6 +420,8 @@
 
       ${renderUrgencyBanner()}
 
+      ${paywallSummaryHtml}
+
       ${renderPriceBlock()}
 
       ${savingsLine ? `<p class="wt-muted wt-paywall-savings">${escapeHtml(savingsLine)}</p>` : ``}
@@ -429,7 +443,7 @@
 
       ${reassuranceHtml}
 
-      ${compactSectionHtml}
+      ${paywallSummaryHtml ? `` : compactSectionHtml}
 
       ${lockedPreviewHtml}
 

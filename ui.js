@@ -3087,7 +3087,16 @@ void (function () {
                 fromState === STATES.LANDING ? 'POST_PAYWALL' : null;
               self._nav.paywallFromState = null;
             }
+            if (
+              self._runtime &&
+              self._runtime.shareBonusDismissed !== true &&
+              self._runtime.shareBonusModalShown !== true &&
+              self.isShareBonusOfferEligible()
+            ) {
+              self._runtime.shareBonusModalPending = true;
+            }
             self.setState(STATES.LANDING);
+            self.maybeOpenShareBonusModalAfterPaywallDismiss();
             break;
           }
 
@@ -7543,7 +7552,77 @@ ${audioSettingsHtml}
     this._runtime = this._runtime || {};
     if (this._runtime.shareBonusDismissed === true) return;
     this._runtime.shareBonusDismissed = true;
+    this.closeModal();
     this.render();
+  };
+
+  UI.prototype.isShareBonusOfferEligible = function () {
+    const cfg = this.config || {};
+    const shareBonusCfg = cfg.shareBonus || {};
+    if (shareBonusCfg.enabled !== true) return false;
+    if (shareBonusCfg.premiumOnly === true && !isPremiumNow(this.storage)) {
+      return false;
+    }
+    if (isPremiumNow(this.storage)) return false;
+
+    try {
+      if (
+        this.storage &&
+        typeof this.storage.hasShareBonusGranted === 'function' &&
+        this.storage.hasShareBonusGranted() === true
+      ) {
+        return false;
+      }
+    } catch (_) {
+      return false;
+    }
+
+    try {
+      if (this.storage && typeof this.storage.getRunsBalance === 'function') {
+        const balance = Number(this.storage.getRunsBalance());
+        return Number.isFinite(balance) && balance <= 0;
+      }
+    } catch (_) {
+      return false;
+    }
+
+    return false;
+  };
+
+  UI.prototype.maybeOpenShareBonusModalAfterPaywallDismiss = function () {
+    this._runtime = this._runtime || {};
+    if (this._runtime.shareBonusDismissed === true) return false;
+    const pending = this._runtime.shareBonusModalPending === true;
+    if (this._runtime.shareBonusModalShown === true && !pending) return false;
+    if (!this.isShareBonusOfferEligible()) return false;
+    if (typeof this.openModal !== 'function') return false;
+
+    const shareBonusW = this.wording?.shareBonus || {};
+    const title = String(shareBonusW.title || '').trim();
+    const body = String(shareBonusW.body || '').trim();
+    const shareLabel = String(shareBonusW.ctaShare || '').trim();
+    const laterLabel =
+      String(shareBonusW.ctaLater || '').trim() ||
+      String(this.wording?.system?.notNow || '').trim();
+    const unlockLabel = String(this.wording?.landing?.postPaywallCta || '').trim();
+
+    if (!title || (!body && !shareLabel)) return false;
+
+    const html = `
+      <div class="wt-stack wt-stack--sm">
+        ${body ? `<p class="wt-muted">${escapeHtml(body)}</p>` : ``}
+        <div class="wt-actions wt-modal-actions wt-modal-actions--lg">
+          ${shareLabel ? `<button class="wt-btn wt-btn--primary" data-action="claim-share-bonus">${escapeHtml(shareLabel)}</button>` : ``}
+          ${unlockLabel ? `<button class="wt-btn wt-btn--ghost" data-action="open-paywall">${escapeHtml(unlockLabel)}</button>` : ``}
+          ${laterLabel ? `<button class="wt-btn wt-btn--secondary" data-action="dismiss-share-bonus">${escapeHtml(laterLabel)}</button>` : ``}
+        </div>
+      </div>
+    `;
+
+    this._runtime.shareBonusModalShown = true;
+    this._runtime.shareBonusModalPending = false;
+    this.openModal(html, title, { modalKey: 'share-bonus' });
+    return true;
   };
 
   UI.prototype.claimShareBonus = async function (event) {
@@ -7625,6 +7704,12 @@ ${audioSettingsHtml}
       this._runtime.shareBonusDismissed = false;
       if (unlockedMsg) {
         toastNow(this.config, unlockedMsg, { variant: 'success' });
+      }
+      const modalKey = String(this._runtime?._modalKey || '').trim();
+      if (modalKey === 'share-bonus') {
+        this.closeModal();
+        this.startRun(false);
+        return;
       }
       this.render();
     } finally {

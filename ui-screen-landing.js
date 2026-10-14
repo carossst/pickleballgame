@@ -151,8 +151,14 @@
     if (ui.storage && typeof ui.storage.hasShareBonusGranted === "function") {
       try { shareBonusGranted = ui.storage.hasShareBonusGranted() === true; } catch (_) { shareBonusGranted = false; }
     }
+    const shareBonusSuppressed = !!(
+      ui._runtime?.shareBonusDismissed ||
+      ui._runtime?.shareBonusModalPending ||
+      ui._runtime?.shareBonusModalShown
+    );
 
     const tagline = String(landing.tagline || "").trim();
+    const proofLine = String(landing.proofLine || "").trim();
     const microTrust = String(landing.microTrust || "").trim();
     const seoBridgeTitleQuestionTpl = String(landing.seoBridgeTitleQuestionTemplate || "").trim();
     const seoBridgeTitleThemeTpl = String(landing.seoBridgeTitleThemeTemplate || "").trim();
@@ -579,7 +585,7 @@
 
       const label = String(pay.timerLabel || "").trim();
 
-      if (!premium && isEarly && urgencyEnabled && label) {
+      if (!premium && !isPostPaywallVariant && isEarly && urgencyEnabled && label) {
         const cls = `wt-box wt-box--tinted`;
         landingUrgencyHtml = `
         <div class="${cls}" role="status" aria-live="polite">
@@ -674,6 +680,7 @@ ${landingHeaderRowHtml}
   ${landingUrgencyHtml}
   ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
   <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
+  ${proofLine && !isPostPaywallVariant ? `<p class="wt-landing-proof">${escapeHtml(proofLine)}</p>` : ``}
   ${seoBridgeHtml}
 
 <div class="wt-actions">
@@ -683,7 +690,8 @@ ${landingHeaderRowHtml}
           runsExhausted &&
           shareBonusEnabled &&
           !shareBonusPremiumOnly &&
-          !shareBonusGranted
+          !shareBonusGranted &&
+          !shareBonusSuppressed
         );
 
         if (runsExhausted) {
@@ -748,7 +756,8 @@ ${(() => {
         runsExhausted &&
         shareBonusEnabled &&
         !shareBonusPremiumOnly &&
-        !shareBonusGranted
+        !shareBonusGranted &&
+        !shareBonusSuppressed
       );
       const title = String(shareBonusW.title || "").trim();
       const body = String(shareBonusW.body || "").trim();
@@ -779,7 +788,7 @@ ${(() => {
 
     ${postBlock}
 
-    ${postCompletionHtml}
+    ${isPostPaywallVariant ? `` : postCompletionHtml}
 
     ${showLandingInstallPrompt ? `
       <p class="wt-sub wt-muted wt-landing-trust">${escapeHtml(microTrust)}</p>
@@ -792,7 +801,7 @@ ${(() => {
       ` : ``}
     ` : ``}
 
-    ${hasDashboard ? `
+    ${hasDashboard && !isPostPaywallVariant ? `
       <section class="wt-landing-dashboard">
         ${welcomeBackHtml ? `
           <div class="wt-landing-dashboard__summary">
@@ -807,7 +816,7 @@ ${(() => {
       </section>
     ` : ``}
 
-    ${hasLeaderboardSection ? `
+    ${hasLeaderboardSection && !isPostPaywallVariant ? `
       <section class="wt-landing-leaderboard-section">
         ${leaderboardLandingHtml}
       </section>

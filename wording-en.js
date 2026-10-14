@@ -200,6 +200,7 @@
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
+      proofLine: '200 rule traps · 3 mistakes ends the run · Practice what you miss',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -812,9 +813,9 @@
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       focusedRunPracticeLine:
-        'This challenge ended after {count} mistakes. Practice them before the next run.',
+        'This challenge ended after {count} mistakes. Practice them before the next run. Next goal: score {target}+.',
       focusedRunPaywallLine:
-        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges.',
+        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges. Next goal: score {target}+.',
       mistakePracticePromptTitle:
         'You missed {count} rule trap{pluralS}.',
       mistakePracticePromptBody:

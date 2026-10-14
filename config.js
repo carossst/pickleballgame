@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.8",
+    version: "4.3.10",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -333,12 +333,12 @@
       // Overlays (PLAYING)
       // - chanceLostOverlayMs: -1 chance + "Game over" window
       // - runStartOverlayMs: start-of-run + BONUS rules
-      chanceLostOverlayMs: 1800,
+      chanceLostOverlayMs: 950,
       runStartOverlayMs: 3000,
 
 
       // Pulses (HUD) + extension window for last-chance overlay
-      gameplayPulseMs: 1000,
+      gameplayPulseMs: 450,
 
       // Momentum meter (HUD, UI-only)
       momentumMeter: {
