@@ -1983,6 +1983,12 @@ arcade" feel; deviation from --fs-* scale is expected. */
   margin-top: var(--space-18);
 }
 
+.wt-feedback-read-longer {
+  display: block;
+  margin: var(--space-10) auto 0;
+  font-size: var(--fs-small);
+}
+
 .wt-card > .wt-explanation + .wt-actions:not(.wt-actions--feedback) {
   margin-top: var(--space-18);
 }

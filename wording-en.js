@@ -97,6 +97,7 @@
       stopQuestionAria: 'Stop reading the current question aloud',
       notNow: 'Not now',
       continue: 'Next',
+      readLonger: 'Keep reading',
       tapToContinue: '',
 
       youChosePrefix: 'You chose:',

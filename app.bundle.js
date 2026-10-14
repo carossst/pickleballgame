@@ -1014,6 +1014,7 @@
       stopQuestionAria: 'Stop reading the current question aloud',
       notNow: 'Not now',
       continue: 'Next',
+      readLonger: 'Keep reading',
       tapToContinue: '',
 
       youChosePrefix: 'You chose:',
@@ -2177,6 +2178,7 @@ Thanks!`
       stopQuestionAria: 'Arrêter la lecture de la question actuelle',
       notNow: 'Plus tard',
       continue: 'Suivant',
+      readLonger: 'Lire encore',
       tapToContinue: '',
 
       youChosePrefix: 'Vous avez choisi :',
@@ -14687,6 +14689,7 @@ void (function () {
       feedbackReveal: true,
       feedbackRevealTimerId: null,
       feedbackAutoAdvanceTimerId: null,
+      feedbackAutoAdvancePaused: false,
       frozenItem: null,
       finishAfterFeedback: false,
       autoGameOverAfterFeedback: false,
@@ -14831,6 +14834,14 @@ void (function () {
       switch (action) {
         case 'continue':
           self.continueAfterFeedback();
+          break;
+
+        case 'pause-feedback':
+          if (self._runtime?.feedbackAutoAdvanceTimerId) {
+            clearRuntimeTimer(self, 'feedbackAutoAdvanceTimerId');
+          }
+          if (self._runtime) self._runtime.feedbackAutoAdvancePaused = true;
+          self.render();
           break;
 
         case 'how-to-play':
@@ -19106,6 +19117,7 @@ ${audioSettingsHtml}
 
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;
+    this._runtime.feedbackAutoAdvancePaused = false;
     this._runtime.lastAnswer = null;
     this._runtime.frozenItem = null;
     this._runtime.finishAfterFeedback = false;
@@ -22842,12 +22854,17 @@ ${questionAudioHtml}
         youChosePrefix && pickedLabel ? `${youChosePrefix} ${pickedLabel}` : '';
 
       const continueCta = String(wAll.system?.continue || '').trim();
+      const readLongerCta = String(wAll.system?.readLonger || '').trim();
       const tapToContinue = String(wAll.system?.tapToContinue || '').trim();
       const autoGameOverAfterFeedback =
         this._runtime?.autoGameOverAfterFeedback === true;
       const feedbackActionAttr = autoGameOverAfterFeedback
         ? ` data-action="continue"`
         : '';
+      const canPauseAutoAdvance =
+        !autoGameOverAfterFeedback &&
+        this._runtime?.feedbackAutoAdvancePaused !== true &&
+        !!readLongerCta;
 
       // Stable explanation for the frozen item during feedback (KISS)
       const stableExplanation = String(ans.feedbackLine || '').trim();
@@ -22896,6 +22913,11 @@ ${questionAudioHtml}
           ${escapeHtml(continueCta)}
         </button>
       </div>
+      ${canPauseAutoAdvance ? `
+        <button type="button" class="wt-text-action wt-feedback-read-longer" data-action="pause-feedback">
+          ${escapeHtml(readLongerCta)}
+        </button>
+      ` : ``}
     `
                 : ``
             }
