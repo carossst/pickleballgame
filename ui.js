@@ -1331,7 +1331,11 @@ void (function () {
       return 'end';
     }
 
-    if (p === 'feedbackRevealTimerId' || p === 'bonusAnswerFeedbackTimerId') {
+    if (
+      p === 'feedbackRevealTimerId' ||
+      p === 'feedbackAutoAdvanceTimerId' ||
+      p === 'bonusAnswerFeedbackTimerId'
+    ) {
       return 'feedback';
     }
 
@@ -1685,6 +1689,10 @@ void (function () {
     if (ui && ui._runtime) {
       if (ui._runtime.feedbackRevealTimerId) {
         clearRuntimeTimer(ui, 'feedbackRevealTimerId');
+      }
+
+      if (ui._runtime.feedbackAutoAdvanceTimerId) {
+        clearRuntimeTimer(ui, 'feedbackAutoAdvanceTimerId');
       }
 
       if (ui._runtime.bonusAnswerFeedbackTimerId) {
@@ -2565,6 +2573,7 @@ void (function () {
       feedbackPending: false,
       feedbackReveal: true,
       feedbackRevealTimerId: null,
+      feedbackAutoAdvanceTimerId: null,
       frozenItem: null,
       finishAfterFeedback: false,
       autoGameOverAfterFeedback: false,
@@ -6870,6 +6879,31 @@ ${audioSettingsHtml}
       );
     };
 
+    const autoAdvanceMsRaw = Number(this.config?.ui?.feedbackAutoAdvanceMs);
+    const autoAdvanceMs =
+      Number.isFinite(autoAdvanceMsRaw) &&
+      autoAdvanceMsRaw >= 1800 &&
+      autoAdvanceMsRaw <= 6000
+        ? Math.floor(autoAdvanceMsRaw)
+        : 3200;
+    const scheduleFeedbackAutoAdvance = () => {
+      if (isGameOverNow) return;
+      if (!this._runtime || this._runtime.feedbackPending !== true) return;
+      if (this._runtime.feedbackAutoAdvanceTimerId) {
+        clearRuntimeTimer(this, 'feedbackAutoAdvanceTimerId');
+      }
+      setRuntimeTimer(
+        this,
+        'feedbackAutoAdvanceTimerId',
+        () => {
+          if (!this._runtime || this._runtime.feedbackPending !== true) return;
+          this.continueAfterFeedback();
+        },
+        autoAdvanceMs,
+        'feedback'
+      );
+    };
+
     // UX: only apply the "solo moment" if timing is explicitly valid in WT_CONFIG.ui.toast
     if (chanceLost && Number.isFinite(focusMs) && focusMs > 0) {
       this._runtime.feedbackReveal = false;
@@ -6887,6 +6921,7 @@ ${audioSettingsHtml}
           this._runtime.feedbackReveal = true;
           this.render();
           scheduleFatalGameOver();
+          scheduleFeedbackAutoAdvance();
         },
         Math.floor(focusMs)
       );
@@ -6897,6 +6932,7 @@ ${audioSettingsHtml}
     this._runtime.feedbackReveal = true;
     this.render();
     scheduleFatalGameOver();
+    scheduleFeedbackAutoAdvance();
 
     try {
       const normalFlashClass =
@@ -6949,6 +6985,10 @@ ${audioSettingsHtml}
 
     if (this._runtime.feedbackRevealTimerId) {
       clearRuntimeTimer(this, 'feedbackRevealTimerId');
+    }
+
+    if (this._runtime.feedbackAutoAdvanceTimerId) {
+      clearRuntimeTimer(this, 'feedbackAutoAdvanceTimerId');
     }
 
     this._runtime.feedbackPending = false;

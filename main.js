@@ -264,15 +264,10 @@
       if (!msg) return;
 
       const uiState = String(window.WT_APP?.ui?.state || '').trim();
-      if (uiState && uiState !== 'LANDING') {
+      // Never interrupt an active question or feedback screen. When the UI state
+      // is not known yet, stay silent as well; the next page load can surface it.
+      if (uiState !== 'LANDING') {
         window.__WT_SW_PENDING_UPDATE_TOAST__ = msg;
-        if (!window.__WT_SW_UPDATE_TOAST_RETRY__) {
-          window.__WT_SW_UPDATE_TOAST_RETRY__ = window.setTimeout(() => {
-            window.__WT_SW_UPDATE_TOAST_RETRY__ = null;
-            const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
-            if (pending) showUpdateToast(pending);
-          }, 5000);
-        }
         return;
       }
       window.__WT_SW_PENDING_UPDATE_TOAST__ = '';

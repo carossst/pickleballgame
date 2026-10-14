@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.10",
+    version: "4.3.11",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -363,6 +363,10 @@
       // Choice buttons: short selected-answer feedback before moving on.
       // Applies to RUN, PRACTICE, and BONUS. UI-only, no storage writes.
       choiceSelectFeedbackMs: 260,
+
+      // Feedback stays readable, then advances without requiring a second tap.
+      // The visible Next button remains available immediately for fast play.
+      feedbackAutoAdvanceMs: 3200,
 
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.

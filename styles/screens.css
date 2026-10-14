@@ -385,7 +385,7 @@ body.wt-state--end .wt-card--end {
 
 @media (min-height: 741px) {
   .wt-card--landing {
-    min-height: clamp(420px, 56vh, 720px);
+    min-height: clamp(380px, 46vh, 590px);
   }
 }
 

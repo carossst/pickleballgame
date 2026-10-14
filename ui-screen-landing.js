@@ -345,6 +345,8 @@
     // and competed with the level card + Daily. Keep the level badge only.
 
     let dailyChallengeIncomplete = false;
+    let dailyChallengePlayable = false;
+    let dailyChallengeShouldLead = false;
     let bestScoreFP = 0;
     try {
       bestScoreFP = (ui.storage && typeof ui.storage.getPersonalBest === "function")
@@ -416,6 +418,7 @@
           : 0;
         const dailyBestScoreFP = clampInt(bestScoreFP || fallbackBestScoreFP, 0, 99999);
         const dailyModel = getDailyChallengeModel(cfg, w, dailyBestScoreFP, ui.storage);
+        dailyChallengePlayable = dailyModel.challengePlayable === true;
         const dailyBadge = String(landing.dailyChallengeBadge || "").trim();
         const dailyTitleTpl = String(landing.dailyChallengeTitleTemplate || "").trim();
         const dailyCompletedTpl = String(landing.dailyChallengeCompletedTemplate || "").trim();
@@ -462,6 +465,8 @@
         dailySub = dailyLines.map((line) => String(line || "").trim()).filter(Boolean).join("\n");
 
         dailyChallengeIncomplete = !dailyModel.completedToday || !!dailyModel.rewardPendingReplay;
+        dailyChallengeShouldLead =
+          dailyChallengeIncomplete && dailyChallengePlayable && !!dailyCta;
         if (dailyBadge || dailySub) {
           dailyChallengeCardHtml = renderLandingStatsCard({
             label: dailyBadge,
@@ -493,6 +498,12 @@
     const playLabel = seoContext
       ? String(landing.seoBridgeCta || "").trim() || playLabelBase
       : playLabelBase;
+    const primaryPlayAction = dailyChallengeShouldLead
+      ? "start-daily-challenge"
+      : "start-run";
+    const primaryPlayLabel = dailyChallengeShouldLead
+      ? String(landing.dailyChallengeCta || "").trim() || playLabel
+      : playLabel;
 
     let seoBridgeHtml = "";
     if (seoContext) {
@@ -707,10 +718,10 @@ ${landingHeaderRowHtml}
         }
 
         return `
-          <button class="wt-btn wt-btn--primary" data-action="start-run"
-            aria-label="${escapeHtml(playLabel)}"
+          <button class="wt-btn wt-btn--primary" data-action="${primaryPlayAction}"
+            aria-label="${escapeHtml(primaryPlayLabel)}"
             ${((ui._runtime && Number(ui._runtime.contentTotal) > 0) ? "" : "disabled")}>
-             ${escapeHtml(playLabel)}
+             ${escapeHtml(primaryPlayLabel)}
           </button>
         `;
       })()}
