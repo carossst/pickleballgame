@@ -384,12 +384,6 @@ void (function () {
 
   function supportsQuestionSpeechForLocale(locale) {
     if (!supportsQuestionSpeech()) return false;
-    const target = String(locale || '')
-      .trim()
-      .toLowerCase();
-    if (target.startsWith('fr')) {
-      return false;
-    }
     return true;
   }
 
@@ -490,7 +484,8 @@ void (function () {
     try {
       const utterance = new window.SpeechSynthesisUtterance(model.questionText);
       utterance.lang = model.locale;
-      utterance.voice = getQuestionSpeechVoice(model.locale);
+      const voice = getQuestionSpeechVoice(model.locale);
+      if (voice) utterance.voice = voice;
       utterance.rate = 1;
 
       ui._runtime.questionSpeechActive = true;
@@ -516,6 +511,9 @@ void (function () {
       };
 
       window.speechSynthesis.cancel();
+      if (typeof window.speechSynthesis.resume === 'function') {
+        window.speechSynthesis.resume();
+      }
       window.speechSynthesis.speak(utterance);
 
       if (options.render !== false) ui.render();
