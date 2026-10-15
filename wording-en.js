@@ -40,7 +40,7 @@
     meta: {
       indexTitle: 'Pickleball Rules Quiz',
       indexDescription:
-        'Think you know pickleball? Prove it. A fast true-or-false pickleball rules game about serving, faults, scoring, line calls, and rule changes.',
+        'Know the rules. Play with confidence. A fast true-or-false pickleball rules game about serving, faults, scoring, line calls, and rule changes.',
       successTitle: 'Full Access Ready - Pickleball Rules Quiz',
       successDescription:
         'Payment successful. Your Pickleball Rules Quiz device unlock code is ready.',
@@ -197,7 +197,7 @@
 
     landing: {
       title: 'Pickleball Rules Quiz',
-      tagline: '**Think You Know Pickleball? Prove It.**',
+      tagline: '**Know the rules. Play with confidence.**',
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
