@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.14",
+    version: "4.3.15",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1118,7 +1118,7 @@
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
-      proofLine: '200 rule traps · 3 mistakes ends the run · Practice what you miss',
+      proofLine: '200 questions · 3 mistakes end the run · Practice what you miss',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -1174,7 +1174,7 @@
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
-        'Unlock unlimited games, record your score, all 200 questions, explanations after every answer, and unlimited Mistakes Mode.',
+        'Unlock unlimited games, all 200 questions, explanations after every answer, and Mistakes Mode to keep improving.',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
@@ -1748,8 +1748,8 @@
     },
 
     paywall: {
-      headline: 'Walk onto the court knowing every call.',
-      headlineLastFree: 'That was the free preview. Unlock the full game.',
+      headline: 'Keep playing. Know the rules with confidence.',
+      headlineLastFree: 'Your free games are used. Keep playing with full access.',
       mistakeHeadlineTemplate: 'Fix the {mistakes} rule trap{pluralS} you just missed.',
 
       progressLine1:
@@ -1787,11 +1787,11 @@
         '**Unlimited Mistakes Mode** to fix what you missed'
       ],
 
-      bridgeTitle: 'Know the pickleball rules better.',
+      bridgeTitle: 'Keep playing. Build confidence.',
       bridgeBody:
-        "Unlock unlimited games, all 200 questions, see the best scores on the leaderboard, use Mistakes Mode, and come back for today's challenge.",
+        'Unlock unlimited games, all 200 questions, explanations after every answer, and Mistakes Mode to keep improving.',
       bridgeBodyLastFreeMiss:
-        "You've felt the pace. Unlock unlimited games, all 200 questions, see the best scores on the leaderboard, use Mistakes Mode, and come back for today's challenge.",
+        "You've seen how the game works. Unlock full access to keep playing, review mistakes, and return for the daily challenge.",
 
       trustLine: '**One-time unlock**',
       trustBullets: [
@@ -2285,7 +2285,7 @@ Thanks!`
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
-      proofLine: '200 pièges de règles · 3 erreurs terminent la partie · Travaillez ce qui manque',
+      proofLine: '200 questions · 3 erreurs terminent la partie · Travaillez ce qui manque',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -2342,7 +2342,7 @@ Thanks!`
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
-        "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu, aux explications après chaque réponse et au Mode Erreurs illimité.",
+        "Débloquez des parties illimitées, les 200 questions, les explications après chaque réponse et le Mode Erreurs pour continuer à progresser.",
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
@@ -2930,8 +2930,8 @@ Thanks!`
     },
 
     paywall: {
-      headline: 'Entrez sur le terrain en sachant quoi annoncer.',
-      headlineLastFree: "C'était l'aperçu gratuit. Débloquez le jeu complet.",
+      headline: 'Continuez à jouer. Jouez en confiance.',
+      headlineLastFree: 'Vos parties gratuites sont terminées. Continuez avec le jeu complet.',
       mistakeHeadlineTemplate:
         'Corrigez les {mistakes} piège{pluralS} de règle que vous venez de rater.',
 
@@ -2970,11 +2970,11 @@ Thanks!`
         '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
       ],
 
-      bridgeTitle: 'Connaissez mieux les règles du pickleball.',
+      bridgeTitle: 'Continuez à jouer. Prenez confiance.',
       bridgeBody:
-        "Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores du classement, utilisez le Mode Erreurs et revenez chaque jour pour le défi du jour.",
+        'Débloquez des parties illimitées, les 200 questions, les explications après chaque réponse et le Mode Erreurs pour continuer à progresser.',
       bridgeBodyLastFreeMiss:
-        'Vous avez vu le rythme du jeu. Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores du classement, utilisez le Mode Erreurs et revenez pour le défi du jour.',
+        'Vous avez vu comment fonctionne le jeu. Débloquez le plein accès pour continuer, revoir vos erreurs et revenir pour le défi du jour.',
 
       trustLine: '**Déverrouillage unique**',
       trustBullets: [

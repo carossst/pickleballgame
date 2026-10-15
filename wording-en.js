@@ -201,7 +201,7 @@
       subtitle:
         'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
-      proofLine: '200 rule traps · 3 mistakes ends the run · Practice what you miss',
+      proofLine: '200 questions · 3 mistakes end the run · Practice what you miss',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -257,7 +257,7 @@
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:
-        'Unlock unlimited games, record your score, all 200 questions, explanations after every answer, and unlimited Mistakes Mode.',
+        'Unlock unlimited games, all 200 questions, explanations after every answer, and Mistakes Mode to keep improving.',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       postPaywallCta: 'Unlock full access',
 
@@ -831,8 +831,8 @@
     },
 
     paywall: {
-      headline: 'Walk onto the court knowing every call.',
-      headlineLastFree: 'That was the free preview. Unlock the full game.',
+      headline: 'Keep playing. Know the rules with confidence.',
+      headlineLastFree: 'Your free games are used. Keep playing with full access.',
       mistakeHeadlineTemplate: 'Fix the {mistakes} rule trap{pluralS} you just missed.',
 
       progressLine1:
@@ -870,11 +870,11 @@
         '**Unlimited Mistakes Mode** to fix what you missed'
       ],
 
-      bridgeTitle: 'Know the pickleball rules better.',
+      bridgeTitle: 'Keep playing. Build confidence.',
       bridgeBody:
-        "Unlock unlimited games, all 200 questions, see the best scores on the leaderboard, use Mistakes Mode, and come back for today's challenge.",
+        'Unlock unlimited games, all 200 questions, explanations after every answer, and Mistakes Mode to keep improving.',
       bridgeBodyLastFreeMiss:
-        "You've felt the pace. Unlock unlimited games, all 200 questions, see the best scores on the leaderboard, use Mistakes Mode, and come back for today's challenge.",
+        "You've seen how the game works. Unlock full access to keep playing, review mistakes, and return for the daily challenge.",
 
       trustLine: '**One-time unlock**',
       trustBullets: [

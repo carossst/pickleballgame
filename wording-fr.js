@@ -203,7 +203,7 @@
       subtitle:
         'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
-      proofLine: '200 pièges de règles · 3 erreurs terminent la partie · Travaillez ce qui manque',
+      proofLine: '200 questions · 3 erreurs terminent la partie · Travaillez ce qui manque',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -260,7 +260,7 @@
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
-        "Débloquez des parties illimitées, enregistrez votre score, accédez aux 200 questions du jeu, aux explications après chaque réponse et au Mode Erreurs illimité.",
+        "Débloquez des parties illimitées, les 200 questions, les explications après chaque réponse et le Mode Erreurs pour continuer à progresser.",
       practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
@@ -848,8 +848,8 @@
     },
 
     paywall: {
-      headline: 'Entrez sur le terrain en sachant quoi annoncer.',
-      headlineLastFree: "C'était l'aperçu gratuit. Débloquez le jeu complet.",
+      headline: 'Continuez à jouer. Jouez en confiance.',
+      headlineLastFree: 'Vos parties gratuites sont terminées. Continuez avec le jeu complet.',
       mistakeHeadlineTemplate:
         'Corrigez les {mistakes} piège{pluralS} de règle que vous venez de rater.',
 
@@ -888,11 +888,11 @@
         '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
       ],
 
-      bridgeTitle: 'Connaissez mieux les règles du pickleball.',
+      bridgeTitle: 'Continuez à jouer. Prenez confiance.',
       bridgeBody:
-        "Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores du classement, utilisez le Mode Erreurs et revenez chaque jour pour le défi du jour.",
+        'Débloquez des parties illimitées, les 200 questions, les explications après chaque réponse et le Mode Erreurs pour continuer à progresser.',
       bridgeBodyLastFreeMiss:
-        'Vous avez vu le rythme du jeu. Débloquez des parties illimitées, les 200 questions du jeu, voyez les meilleurs scores du classement, utilisez le Mode Erreurs et revenez pour le défi du jour.',
+        'Vous avez vu comment fonctionne le jeu. Débloquez le plein accès pour continuer, revoir vos erreurs et revenir pour le défi du jour.',
 
       trustLine: '**Déverrouillage unique**',
       trustBullets: [
