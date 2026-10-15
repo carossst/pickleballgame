@@ -8893,7 +8893,16 @@ Merci !`
     const upgradeCta = String(w.paywall?.cta || "").trim();
     const shareTitle = String(end.shareTitle || "").trim();
     const dailyChallengeCta = String(end.dailyChallengeCtaRetry || w.landing?.dailyChallengeCta || "").trim();
-    const focusedRunEnd = !!(isRun && !premium && lastRunMistakeCount > 0 && !poolCompleteCelebration);
+    // Keep the compact end screen during the free preview, but do not hide the
+    // final-run conversion offer: exhausted players must still see the share
+    // bonus that unlocks one third game.
+    const focusedRunEnd = !!(
+      isRun &&
+      !premium &&
+      !runsExhausted &&
+      lastRunMistakeCount > 0 &&
+      !poolCompleteCelebration
+    );
     const focusedRunCanPractice = !!(
       focusedRunEnd &&
       !runsExhausted &&
