@@ -73,6 +73,7 @@
     return {
       nickname,
       scoreFP,
+      playerId: clampInt(profile.playerId, 0, 999999999),
       isLocalPlayer: true
     };
   }
@@ -102,6 +103,7 @@
       rank: idx + 1,
       nickname: String(row.nickname || '').trim(),
       scoreFP: clampInt(row.scoreFP, 0, 9999),
+      playerId: clampInt(row.playerId, 0, 999999999),
       isLocalPlayer: row.isLocalPlayer === true
     }));
   }
@@ -454,7 +456,13 @@
     if (rank <= baseRows.length) return null;
     if (
       baseRows.some(
-        (row) => String(row?.nickname || '').trim() === localPlayer.nickname
+        (row) => {
+          const rowPlayerId = clampInt(row?.playerId, 0, 999999999);
+          if (localPlayer.playerId > 0 && rowPlayerId > 0) {
+            return rowPlayerId === localPlayer.playerId;
+          }
+          return String(row?.nickname || '').trim() === localPlayer.nickname;
+        }
       )
     ) {
       return null;
@@ -463,7 +471,8 @@
     return {
       rank,
       nickname: localPlayer.nickname,
-      scoreFP: localPlayer.scoreFP
+      scoreFP: localPlayer.scoreFP,
+      playerId: localPlayer.playerId
     };
   }
 
@@ -547,9 +556,13 @@
     const nickname = String(profile.nickname || '').trim();
     const joined = profile.optIn === true && !!nickname;
     const title = String(w.modalTitle || '').trim();
-    const body = String(
+    const bodyTemplate = String(
       joined ? w.modalBodyJoined || '' : w.modalBodyDefault || ''
     ).trim();
+    const resetTime = formatLocalWeekdayTime(getNextWeeklyResetUtcMs(Date.now()));
+    const body = typeof helpers?.fillTemplate === 'function'
+      ? helpers.fillTemplate(bodyTemplate, { localTime: resetTime })
+      : bodyTemplate.replace(/\{localTime\}/g, resetTime);
     const weeklyTitle = String(w.weeklyTitle || '').trim();
     const allTitle = String(w.allTitle || '').trim();
     const nicknameLabel = String(w.nicknameLabel || '').trim();
@@ -715,13 +728,6 @@
       return;
     }
 
-    if (
-      ui?.storage &&
-      typeof ui.storage.saveLeaderboardProfile === 'function'
-    ) {
-      ui.storage.saveLeaderboardProfile(nickname, true);
-    }
-
     const baseUrl = String(cfg?.apiBaseUrl || '')
       .trim()
       .replace(/\/+$/, '');
@@ -735,26 +741,51 @@
     }
     if (baseUrl) {
       try {
-        const profile = ui.storage.getLeaderboardProfile();
-        await fetch(`${baseUrl}/player`, {
+        const deviceUuid =
+          ui?.storage && typeof ui.storage.ensureLeaderboardDeviceUuid === 'function'
+            ? ui.storage.ensureLeaderboardDeviceUuid()
+            : String(existingProfile?.deviceUuid || '').trim();
+        const res = await fetch(`${baseUrl}/player`, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
             accept: 'application/json'
           },
           body: JSON.stringify({
-            device_uuid: String(profile.deviceUuid || '').trim(),
-            nickname: String(profile.nickname || '').trim(),
+            device_uuid: deviceUuid,
+            nickname,
             opt_in: true
           })
         });
+        const responseJson = await res.json().catch(() => null);
+        if (!res.ok || responseJson?.ok !== true) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        if (ui?.storage && typeof ui.storage.saveLeaderboardProfile === 'function') {
+          ui.storage.saveLeaderboardProfile(
+            nickname,
+            true,
+            clampInt(responseJson.player_id, 0, 999999999)
+          );
+        }
       } catch (_) {
+        try {
+          if (saveBtn) {
+            saveBtn.setAttribute('aria-busy', 'false');
+            saveBtn.disabled = false;
+          }
+        } catch (_) {
+          /* silent */
+        }
         if (typeof toastNow === 'function') {
           toastNow(ui.config, String(w.remoteSaveErrorToast || '').trim(), {
-            variant: 'info'
+            variant: 'danger'
           });
         }
+        return;
       }
+    } else if (ui?.storage && typeof ui.storage.saveLeaderboardProfile === 'function') {
+      ui.storage.saveLeaderboardProfile(nickname, true, existingProfile?.playerId);
     }
     try {
       if (saveBtn) {

@@ -40,8 +40,26 @@ test('normalizeRows clamps and filters rows for leaderboard display', () => {
   );
 
   expect(rows).toEqual([
-    { nickname: 'Caro', scoreFP: 18 },
-    { nickname: 'Sam', scoreFP: 0 },
-    { nickname: 'Lee', scoreFP: 9999 }
+    { nickname: 'Caro', scoreFP: 18, playerId: 0 },
+    { nickname: 'Sam', scoreFP: 0, playerId: 0 },
+    { nickname: 'Lee', scoreFP: 9999, playerId: 0 }
+  ]);
+});
+
+test('mergeLocalPlayer de-dupes by player_id when nickname changes', () => {
+  const rows = [
+    { nickname: 'Old name', playerId: 42, scoreFP: 12 },
+    { nickname: 'Someone else', playerId: 7, scoreFP: 10 }
+  ];
+  const local = {
+    nickname: 'New name',
+    playerId: 42,
+    scoreFP: 15,
+    isLocalPlayer: true
+  };
+
+  expect(mergeLocalPlayer(rows, local, 5)).toEqual([
+    { nickname: 'New name', playerId: 42, scoreFP: 15, isLocalPlayer: true },
+    { nickname: 'Someone else', playerId: 7, scoreFP: 10 }
   ]);
 });

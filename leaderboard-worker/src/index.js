@@ -345,7 +345,7 @@ export async function handleGetLeaderboard(request, env) {
 
   const rows = await env.DB.prepare(
     `
-      SELECT lb.best_score_fp AS score_fp, p.nickname
+      SELECT lb.player_id, lb.best_score_fp AS score_fp, p.nickname
       FROM leaderboard_best lb
       JOIN players p ON p.player_id = lb.player_id
       WHERE lb.window_type = ?1 AND lb.week_key = ?2
@@ -359,6 +359,7 @@ export async function handleGetLeaderboard(request, env) {
   const top = Array.isArray(rows?.results)
     ? rows.results.map((row, idx) => ({
       rank: idx + 1,
+      player_id: clampNonNegativeInt(row.player_id),
       nickname: String(row.nickname || ""),
       score_fp: clampNonNegativeInt(row.score_fp)
     }))

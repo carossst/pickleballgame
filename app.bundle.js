@@ -1195,9 +1195,9 @@
 
     leaderboard: {
       cardTitle: 'THIS WEEK',
-      cardSubDefault: 'Top scores this week.',
-      cardSubJoined: 'Top scores this week.',
-      cardCtaJoin: 'Choose nickname',
+      cardSubDefault: 'See where your score lands this week.',
+      cardSubJoined: 'See where your score ranks this week.',
+      cardCtaJoin: 'Join leaderboard',
       cardCtaView: 'View leaderboard',
       cardCtaEdit: 'Edit nickname',
       lastUpdatedTemplate: '',
@@ -1206,8 +1206,8 @@
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
-      modalBodyDefault: 'Weekly reset every Monday.',
-      modalBodyJoined: 'Weekly reset every Monday.',
+      modalBodyDefault: 'Weekly reset: {localTime}.',
+      modalBodyJoined: 'Weekly reset: {localTime}.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
@@ -1217,7 +1217,7 @@
       joinCta: 'Join leaderboard',
       endJoinTitle: 'Put this score on the leaderboard',
       endJoinBody:
-        'Choose a nickname to submit this run to the public leaderboard.',
+        'Choose a nickname to see where this score lands this week.',
       updateCta: 'Update nickname',
       editProfileCta: 'Edit my nickname',
       leaveCta: 'Leave leaderboard',
@@ -1228,7 +1228,7 @@
       saveOkToast: 'Nickname saved.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
-        'Nickname saved on this device. Online sync can be added later.',
+        'Could not save your nickname online. Please try again.',
       rankToastWeekly: 'This week: #{rank}.',
       scoreRejectedToast:
         'This score was not added to the public leaderboard this time.'
@@ -2363,9 +2363,9 @@ Thanks!`
 
     leaderboard: {
       cardTitle: 'CETTE SEMAINE',
-      cardSubDefault: 'Meilleurs scores de la semaine.',
-      cardSubJoined: 'Meilleurs scores de la semaine.',
-      cardCtaJoin: 'Choisir un pseudo',
+      cardSubDefault: 'Voyez où votre score se place cette semaine.',
+      cardSubJoined: 'Voyez votre classement cette semaine.',
+      cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
       cardCtaEdit: 'Modifier mon pseudo',
       lastUpdatedTemplate: '',
@@ -2374,10 +2374,8 @@ Thanks!`
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
-      modalBodyDefault:
-        'Le classement de la semaine est réinitialisé chaque lundi.',
-      modalBodyJoined:
-        'Le classement de la semaine est réinitialisé chaque lundi.',
+      modalBodyDefault: 'Remise à zéro : {localTime}',
+      modalBodyJoined: 'Remise à zéro : {localTime}',
       rankingTab: 'Classement',
       profileTab: 'Mon pseudo',
       weeklyTitle: 'Cette semaine',
@@ -2387,7 +2385,7 @@ Thanks!`
       joinCta: 'Rejoindre le classement',
       endJoinTitle: 'Ajouter ce score au classement',
       endJoinBody:
-        'Choisissez un pseudo pour envoyer cette partie dans le classement public.',
+        'Choisissez un pseudo pour voir où se place ce score cette semaine.',
       updateCta: 'Mettre à jour le pseudo',
       editProfileCta: 'Modifier mon pseudo',
       leaveCta: 'Quitter le classement',
@@ -2398,7 +2396,7 @@ Thanks!`
       saveOkToast: 'Pseudo enregistré.',
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
-        'Pseudo enregistré sur cet appareil. La synchronisation en ligne pourra être ajoutée plus tard.',
+        'Votre pseudo n’a pas pu être enregistré en ligne. Réessayez.',
       rankToastWeekly: 'Cette semaine : #{rank}.',
       scoreRejectedToast:
         "Cette partie n'a pas été ajoutée au classement public cette fois."
@@ -4099,7 +4097,8 @@ Merci !`
     return rows
       .map((row) => ({
         nickname: String(row?.nickname || '').trim(),
-        scoreFP: clampInt(row?.scoreFP ?? row?.score_fp, 0, 9999)
+        scoreFP: clampInt(row?.scoreFP ?? row?.score_fp, 0, 9999),
+        playerId: clampInt(row?.playerId ?? row?.player_id, 0, 999999999)
       }))
       .filter((row) => row.nickname && row.scoreFP >= 0)
       .slice(0, Math.max(1, clampInt(limit, 1, 100)));
@@ -4111,9 +4110,14 @@ Merci !`
     if (!localPlayer) return base.slice(0, maxRows);
 
     const localNickname = String(localPlayer?.nickname || '').trim();
-    const filtered = base.filter(
-      (row) => String(row?.nickname || '').trim() !== localNickname
-    );
+    const localPlayerId = clampInt(localPlayer?.playerId, 0, 999999999);
+    const filtered = base.filter((row) => {
+      const rowPlayerId = clampInt(row?.playerId, 0, 999999999);
+      if (localPlayerId > 0 && rowPlayerId > 0) {
+        return rowPlayerId !== localPlayerId;
+      }
+      return String(row?.nickname || '').trim() !== localNickname;
+    });
     filtered.push(localPlayer);
     filtered.sort((a, b) => {
       const scoreDiff =
@@ -4338,6 +4342,7 @@ Merci !`
         deviceUuid: '',
         nickname: '',
         optIn: false,
+        playerId: 0,
         updatedAt: 0
       },
 
@@ -5365,6 +5370,7 @@ Merci !`
       deviceUuid: String(lb.deviceUuid || '').trim(),
       nickname: String(lb.nickname || '').trim(),
       optIn: lb.optIn === true,
+      playerId: clampNonNegativeInt(lb.playerId),
       updatedAt: clampNonNegativeInt(lb.updatedAt)
     };
   };
@@ -5386,9 +5392,9 @@ Merci !`
     return next;
   };
 
-  StorageManager.prototype.saveLeaderboardProfile = function (nickname, optIn) {
+  StorageManager.prototype.saveLeaderboardProfile = function (nickname, optIn, playerId) {
     if (!this.data)
-      return { ok: false, nickname: '', optIn: false, deviceUuid: '' };
+      return { ok: false, nickname: '', optIn: false, playerId: 0, deviceUuid: '' };
 
     if (!this.data.leaderboard || typeof this.data.leaderboard !== 'object') {
       this.data.leaderboard = deepCopy(this.defaultData.leaderboard);
@@ -5398,6 +5404,9 @@ Merci !`
     this.data.leaderboard.deviceUuid = this.ensureLeaderboardDeviceUuid();
     this.data.leaderboard.nickname = nextNickname;
     this.data.leaderboard.optIn = optIn === true;
+    this.data.leaderboard.playerId = optIn === true
+      ? clampNonNegativeInt(playerId)
+      : 0;
     this.data.leaderboard.updatedAt = now();
     this._save();
 
@@ -5405,6 +5414,7 @@ Merci !`
       ok: true,
       nickname: nextNickname,
       optIn: this.data.leaderboard.optIn === true,
+      playerId: clampNonNegativeInt(this.data.leaderboard.playerId),
       deviceUuid: String(this.data.leaderboard.deviceUuid || '').trim()
     };
   };
@@ -11198,6 +11208,7 @@ ${(() => {
     return {
       nickname,
       scoreFP,
+      playerId: clampInt(profile.playerId, 0, 999999999),
       isLocalPlayer: true
     };
   }
@@ -11227,6 +11238,7 @@ ${(() => {
       rank: idx + 1,
       nickname: String(row.nickname || '').trim(),
       scoreFP: clampInt(row.scoreFP, 0, 9999),
+      playerId: clampInt(row.playerId, 0, 999999999),
       isLocalPlayer: row.isLocalPlayer === true
     }));
   }
@@ -11579,7 +11591,13 @@ ${(() => {
     if (rank <= baseRows.length) return null;
     if (
       baseRows.some(
-        (row) => String(row?.nickname || '').trim() === localPlayer.nickname
+        (row) => {
+          const rowPlayerId = clampInt(row?.playerId, 0, 999999999);
+          if (localPlayer.playerId > 0 && rowPlayerId > 0) {
+            return rowPlayerId === localPlayer.playerId;
+          }
+          return String(row?.nickname || '').trim() === localPlayer.nickname;
+        }
       )
     ) {
       return null;
@@ -11588,7 +11606,8 @@ ${(() => {
     return {
       rank,
       nickname: localPlayer.nickname,
-      scoreFP: localPlayer.scoreFP
+      scoreFP: localPlayer.scoreFP,
+      playerId: localPlayer.playerId
     };
   }
 
@@ -11672,9 +11691,13 @@ ${(() => {
     const nickname = String(profile.nickname || '').trim();
     const joined = profile.optIn === true && !!nickname;
     const title = String(w.modalTitle || '').trim();
-    const body = String(
+    const bodyTemplate = String(
       joined ? w.modalBodyJoined || '' : w.modalBodyDefault || ''
     ).trim();
+    const resetTime = formatLocalWeekdayTime(getNextWeeklyResetUtcMs(Date.now()));
+    const body = typeof helpers?.fillTemplate === 'function'
+      ? helpers.fillTemplate(bodyTemplate, { localTime: resetTime })
+      : bodyTemplate.replace(/\{localTime\}/g, resetTime);
     const weeklyTitle = String(w.weeklyTitle || '').trim();
     const allTitle = String(w.allTitle || '').trim();
     const nicknameLabel = String(w.nicknameLabel || '').trim();
@@ -11840,13 +11863,6 @@ ${(() => {
       return;
     }
 
-    if (
-      ui?.storage &&
-      typeof ui.storage.saveLeaderboardProfile === 'function'
-    ) {
-      ui.storage.saveLeaderboardProfile(nickname, true);
-    }
-
     const baseUrl = String(cfg?.apiBaseUrl || '')
       .trim()
       .replace(/\/+$/, '');
@@ -11860,26 +11876,51 @@ ${(() => {
     }
     if (baseUrl) {
       try {
-        const profile = ui.storage.getLeaderboardProfile();
-        await fetch(`${baseUrl}/player`, {
+        const deviceUuid =
+          ui?.storage && typeof ui.storage.ensureLeaderboardDeviceUuid === 'function'
+            ? ui.storage.ensureLeaderboardDeviceUuid()
+            : String(existingProfile?.deviceUuid || '').trim();
+        const res = await fetch(`${baseUrl}/player`, {
           method: 'POST',
           headers: {
             'content-type': 'application/json',
             accept: 'application/json'
           },
           body: JSON.stringify({
-            device_uuid: String(profile.deviceUuid || '').trim(),
-            nickname: String(profile.nickname || '').trim(),
+            device_uuid: deviceUuid,
+            nickname,
             opt_in: true
           })
         });
+        const responseJson = await res.json().catch(() => null);
+        if (!res.ok || responseJson?.ok !== true) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        if (ui?.storage && typeof ui.storage.saveLeaderboardProfile === 'function') {
+          ui.storage.saveLeaderboardProfile(
+            nickname,
+            true,
+            clampInt(responseJson.player_id, 0, 999999999)
+          );
+        }
       } catch (_) {
+        try {
+          if (saveBtn) {
+            saveBtn.setAttribute('aria-busy', 'false');
+            saveBtn.disabled = false;
+          }
+        } catch (_) {
+          /* silent */
+        }
         if (typeof toastNow === 'function') {
           toastNow(ui.config, String(w.remoteSaveErrorToast || '').trim(), {
-            variant: 'info'
+            variant: 'danger'
           });
         }
+        return;
       }
+    } else if (ui?.storage && typeof ui.storage.saveLeaderboardProfile === 'function') {
+      ui.storage.saveLeaderboardProfile(nickname, true, existingProfile?.playerId);
     }
     try {
       if (saveBtn) {

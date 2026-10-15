@@ -278,9 +278,9 @@
 
     leaderboard: {
       cardTitle: 'THIS WEEK',
-      cardSubDefault: 'Top scores this week.',
-      cardSubJoined: 'Top scores this week.',
-      cardCtaJoin: 'Choose nickname',
+      cardSubDefault: 'See where your score lands this week.',
+      cardSubJoined: 'See where your score ranks this week.',
+      cardCtaJoin: 'Join leaderboard',
       cardCtaView: 'View leaderboard',
       cardCtaEdit: 'Edit nickname',
       lastUpdatedTemplate: '',
@@ -289,8 +289,8 @@
       loading: 'Loading leaderboard...',
       empty: 'No public scores yet.',
       modalTitle: 'Leaderboard',
-      modalBodyDefault: 'Weekly reset every Monday.',
-      modalBodyJoined: 'Weekly reset every Monday.',
+      modalBodyDefault: 'Weekly reset: {localTime}.',
+      modalBodyJoined: 'Weekly reset: {localTime}.',
       rankingTab: 'Leaderboard',
       profileTab: 'My nickname',
       weeklyTitle: 'This week',
@@ -300,7 +300,7 @@
       joinCta: 'Join leaderboard',
       endJoinTitle: 'Put this score on the leaderboard',
       endJoinBody:
-        'Choose a nickname to submit this run to the public leaderboard.',
+        'Choose a nickname to see where this score lands this week.',
       updateCta: 'Update nickname',
       editProfileCta: 'Edit my nickname',
       leaveCta: 'Leave leaderboard',
@@ -311,7 +311,7 @@
       saveOkToast: 'Nickname saved.',
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
-        'Nickname saved on this device. Online sync can be added later.',
+        'Could not save your nickname online. Please try again.',
       rankToastWeekly: 'This week: #{rank}.',
       scoreRejectedToast:
         'This score was not added to the public leaderboard this time.'

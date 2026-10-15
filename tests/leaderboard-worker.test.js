@@ -418,7 +418,10 @@ test('Worker echoes allowed origin in CORS headers', async () => {
 
   const response = await workerModule.default.fetch(request, {
     DB: createFakeDb((sql, _args, op) => {
-      if (sql.includes('SELECT lb.best_score_fp AS score_fp') && op === 'all') {
+      if (
+        sql.includes('SELECT lb.player_id, lb.best_score_fp AS score_fp') &&
+        op === 'all'
+      ) {
         return { results: [] };
       }
       throw new Error(`Unexpected query: ${op} ${sql}`);

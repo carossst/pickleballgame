@@ -38,7 +38,10 @@ function buildHelpers() {
       return '00:00';
     },
     renderTextWithStrong(value) {
-      return String(value || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      return String(value || '').replace(
+        /\*\*(.*?)\*\*/g,
+        '<strong>$1</strong>'
+      );
     },
     renderBrandingRow() {
       return '<div>brand</div>';

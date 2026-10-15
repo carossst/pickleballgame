@@ -31,7 +31,8 @@
     return rows
       .map((row) => ({
         nickname: String(row?.nickname || '').trim(),
-        scoreFP: clampInt(row?.scoreFP ?? row?.score_fp, 0, 9999)
+        scoreFP: clampInt(row?.scoreFP ?? row?.score_fp, 0, 9999),
+        playerId: clampInt(row?.playerId ?? row?.player_id, 0, 999999999)
       }))
       .filter((row) => row.nickname && row.scoreFP >= 0)
       .slice(0, Math.max(1, clampInt(limit, 1, 100)));
@@ -43,9 +44,14 @@
     if (!localPlayer) return base.slice(0, maxRows);
 
     const localNickname = String(localPlayer?.nickname || '').trim();
-    const filtered = base.filter(
-      (row) => String(row?.nickname || '').trim() !== localNickname
-    );
+    const localPlayerId = clampInt(localPlayer?.playerId, 0, 999999999);
+    const filtered = base.filter((row) => {
+      const rowPlayerId = clampInt(row?.playerId, 0, 999999999);
+      if (localPlayerId > 0 && rowPlayerId > 0) {
+        return rowPlayerId !== localPlayerId;
+      }
+      return String(row?.nickname || '').trim() !== localNickname;
+    });
     filtered.push(localPlayer);
     filtered.sort((a, b) => {
       const scoreDiff =

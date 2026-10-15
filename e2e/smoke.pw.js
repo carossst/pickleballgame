@@ -1,8 +1,8 @@
 const { test, expect } = require("@playwright/test");
 
 const pages = [
-  { path: "/", landing: "Play now", lang: "en" },
-  { path: "/fr.html", landing: "Jouer maintenant", lang: "fr" }
+  { path: "/", landing: "Start", lang: "en" },
+  { path: "/fr.html", landing: "Commencer", lang: "fr" }
 ];
 
 for (const spec of pages) {
@@ -20,12 +20,12 @@ for (const spec of pages) {
 
 test("language switch navigates to the French entry page", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("#app")).toContainText("Play now", { timeout: 15000 });
+  await expect(page.locator("#app")).toContainText("Start", { timeout: 15000 });
   const switcher = page.locator('[data-wt-locale-swap-to="fr"]');
   await expect(switcher).toBeVisible();
   await switcher.click();
   await expect(page).toHaveURL(/\/fr\.html(?:[?#].*)?$/);
-  await expect(page.locator("#app")).toContainText("Jouer maintenant", { timeout: 15000 });
+  await expect(page.locator("#app")).toContainText("Commencer", { timeout: 15000 });
 });
 
 test("critical PWA assets are published", async ({ request }) => {

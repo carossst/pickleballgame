@@ -81,7 +81,7 @@ test('English wording keeps challenge tone but drops maintenance copy and dead l
   const wording = loadWording();
   const en = wording.en;
 
-    expect(en.landing.tagline).toBe('**Know the rules. Play with confidence.**');
+  expect(en.landing.tagline).toBe('**Know the rules. Play with confidence.**');
   expect(en.landing.tagline).not.toContain('MAINTENANCE IN PROGRESS');
 
   expect(en.landing).not.toHaveProperty('progressSectionTitle');

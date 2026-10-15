@@ -148,6 +148,7 @@ test('leaderboard opt-out clears nickname and disables opt-in', () => {
   expect(joined.ok).toBe(true);
   expect(joined.optIn).toBe(true);
   expect(joined.deviceUuid).toMatch(/\S/);
+  expect(joined.playerId).toBe(0);
   expect(left.ok).toBe(true);
   expect(left.nickname).toBe('');
   expect(left.optIn).toBe(false);
