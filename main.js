@@ -298,6 +298,13 @@
       node.setAttribute('aria-hidden', 'false');
     }
 
+    // A notification discovered during a run is intentionally deferred until
+    // the player returns to the landing screen.
+    window.__WT_SHOW_PENDING_UPDATE__ = function () {
+      const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
+      if (pending) showUpdateToast(pending);
+    };
+
     function setWaitingWorker(worker) {
       if (!worker) return;
       window.__WT_SW_WAITING__ = worker;

@@ -4007,6 +4007,14 @@ void (function () {
 
     this.state = next;
 
+    if (next === STATES.LANDING) {
+      try {
+        if (typeof window.__WT_SHOW_PENDING_UPDATE__ === 'function') {
+          window.__WT_SHOW_PENDING_UPDATE__();
+        }
+      } catch (_) {}
+    }
+
     // Pool exhausted toast: show once per entry into PLAYING (all modes)
     if (next === STATES.PLAYING && prev !== STATES.PLAYING) {
       this._maybeShowPoolExhaustedToast();

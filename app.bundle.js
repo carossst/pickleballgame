@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.12",
+    version: "4.3.13",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -16122,6 +16122,14 @@ void (function () {
 
     this.state = next;
 
+    if (next === STATES.LANDING) {
+      try {
+        if (typeof window.__WT_SHOW_PENDING_UPDATE__ === 'function') {
+          window.__WT_SHOW_PENDING_UPDATE__();
+        }
+      } catch (_) {}
+    }
+
     // Pool exhausted toast: show once per entry into PLAYING (all modes)
     if (next === STATES.PLAYING && prev !== STATES.PLAYING) {
       this._maybeShowPoolExhaustedToast();
@@ -24253,6 +24261,13 @@ ${questionAudioHtml}
       node.classList.add('wt-toast--visible');
       node.setAttribute('aria-hidden', 'false');
     }
+
+    // A notification discovered during a run is intentionally deferred until
+    // the player returns to the landing screen.
+    window.__WT_SHOW_PENDING_UPDATE__ = function () {
+      const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
+      if (pending) showUpdateToast(pending);
+    };
 
     function setWaitingWorker(worker) {
       if (!worker) return;
