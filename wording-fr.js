@@ -281,9 +281,9 @@
 
     leaderboard: {
       cardTitle: 'CETTE SEMAINE',
-      cardSubDefault: 'Meilleurs scores de la semaine.',
-      cardSubJoined: 'Meilleurs scores de la semaine.',
-      cardCtaJoin: 'Choisir un pseudo',
+      cardSubDefault: 'Voyez où votre score se place cette semaine.',
+      cardSubJoined: 'Voyez votre classement cette semaine.',
+      cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
       cardCtaEdit: 'Modifier mon pseudo',
       lastUpdatedTemplate: '',
@@ -292,10 +292,8 @@
       loading: 'Chargement du classement...',
       empty: 'Aucun score public pour le moment.',
       modalTitle: 'Classement',
-      modalBodyDefault:
-        'Le classement de la semaine est réinitialisé chaque lundi.',
-      modalBodyJoined:
-        'Le classement de la semaine est réinitialisé chaque lundi.',
+      modalBodyDefault: 'Remise à zéro : {localTime}',
+      modalBodyJoined: 'Remise à zéro : {localTime}',
       rankingTab: 'Classement',
       profileTab: 'Mon pseudo',
       weeklyTitle: 'Cette semaine',
@@ -305,7 +303,7 @@
       joinCta: 'Rejoindre le classement',
       endJoinTitle: 'Ajouter ce score au classement',
       endJoinBody:
-        'Choisissez un pseudo pour envoyer cette partie dans le classement public.',
+        'Choisissez un pseudo pour voir où se place ce score cette semaine.',
       updateCta: 'Mettre à jour le pseudo',
       editProfileCta: 'Modifier mon pseudo',
       leaveCta: 'Quitter le classement',
@@ -316,7 +314,7 @@
       saveOkToast: 'Pseudo enregistré.',
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
-        'Pseudo enregistré sur cet appareil. La synchronisation en ligne pourra être ajoutée plus tard.',
+        'Votre pseudo n’a pas pu être enregistré en ligne. Réessayez.',
       rankToastWeekly: 'Cette semaine : #{rank}.',
       scoreRejectedToast:
         "Cette partie n'a pas été ajoutée au classement public cette fois."

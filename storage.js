@@ -203,6 +203,7 @@
         deviceUuid: '',
         nickname: '',
         optIn: false,
+        playerId: 0,
         updatedAt: 0
       },
 
@@ -1230,6 +1231,7 @@
       deviceUuid: String(lb.deviceUuid || '').trim(),
       nickname: String(lb.nickname || '').trim(),
       optIn: lb.optIn === true,
+      playerId: clampNonNegativeInt(lb.playerId),
       updatedAt: clampNonNegativeInt(lb.updatedAt)
     };
   };
@@ -1251,9 +1253,9 @@
     return next;
   };
 
-  StorageManager.prototype.saveLeaderboardProfile = function (nickname, optIn) {
+  StorageManager.prototype.saveLeaderboardProfile = function (nickname, optIn, playerId) {
     if (!this.data)
-      return { ok: false, nickname: '', optIn: false, deviceUuid: '' };
+      return { ok: false, nickname: '', optIn: false, playerId: 0, deviceUuid: '' };
 
     if (!this.data.leaderboard || typeof this.data.leaderboard !== 'object') {
       this.data.leaderboard = deepCopy(this.defaultData.leaderboard);
@@ -1263,6 +1265,9 @@
     this.data.leaderboard.deviceUuid = this.ensureLeaderboardDeviceUuid();
     this.data.leaderboard.nickname = nextNickname;
     this.data.leaderboard.optIn = optIn === true;
+    this.data.leaderboard.playerId = optIn === true
+      ? clampNonNegativeInt(playerId)
+      : 0;
     this.data.leaderboard.updatedAt = now();
     this._save();
 
@@ -1270,6 +1275,7 @@
       ok: true,
       nickname: nextNickname,
       optIn: this.data.leaderboard.optIn === true,
+      playerId: clampNonNegativeInt(this.data.leaderboard.playerId),
       deviceUuid: String(this.data.leaderboard.deviceUuid || '').trim()
     };
   };
