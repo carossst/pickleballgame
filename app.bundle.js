@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.11",
+    version: "4.3.12",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -16081,6 +16081,17 @@ void (function () {
 
   UI.prototype.setState = function (next) {
     const prev = this.state;
+
+    // A waiting service-worker update must never cover an active run. Keep this
+    // guard in the UI transition as well as in the update manager so an older
+    // waiting worker cannot re-show the toast during PLAYING, END, or PAYWALL.
+    if (next !== STATES.LANDING) {
+      const updateToast = document.getElementById('update-toast');
+      if (updateToast) {
+        updateToast.classList.remove('wt-toast--visible');
+        updateToast.setAttribute('aria-hidden', 'true');
+      }
+    }
 
     // Automatic cleanup by state transition.
     // This is the single gate for timers, overlays, and ephemeral flags tied to the previous screen.
