@@ -16,11 +16,12 @@
         if (!root) return;
 
         // Upgrade-safe guard:
-        // - If footer already exists BUT is missing the Press link, we re-inject.
-        // - If Press exists, we keep current DOM (do not overwrite).
+        // - If footer already exists BUT is missing the Press or Poster link, re-inject.
+        // - If both exist, keep current DOM (do not overwrite).
         if (hasNonEmptyContent(root)) {
             const hasPress = !!(root.querySelector && root.querySelector("#wt-press-link"));
-            if (hasPress) return;
+            const hasPoster = !!(root.querySelector && root.querySelector("#wt-poster-link"));
+            if (hasPress && hasPoster) return;
         }
 
         root.innerHTML = `
@@ -53,6 +54,9 @@
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-press-link" class="wt-footer-link" href="./press.html" target="_blank" rel="noopener"
               data-wt-wording="footer.press"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-poster-link" class="wt-footer-link" href="./poster/"
+              data-wt-wording="footer.poster"></a>
           </div>
         </div>
       </div>

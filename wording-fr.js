@@ -142,6 +142,7 @@
       privacy: 'Confidentialité',
       terms: 'Conditions',
       press: 'Presse',
+      poster: 'Affiche',
 
       links: {
         bonjourPickleball: {

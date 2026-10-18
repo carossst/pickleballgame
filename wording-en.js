@@ -140,6 +140,7 @@
       privacy: 'Privacy',
       terms: 'Terms',
       press: 'Press',
+      poster: 'Poster',
 
       // Locale-aware links (consumed via data-wt-href in markup if needed).
       links: {
