@@ -34,3 +34,21 @@ test("critical PWA assets are published", async ({ request }) => {
     expect(response.ok(), path).toBeTruthy();
   }
 });
+
+test("poster route renders a QR code and fits one printed A4 page", async ({ page }) => {
+  const response = await page.goto("/poster", { waitUntil: "domcontentloaded" });
+  expect(response && response.ok()).toBeTruthy();
+  await expect(page.locator("#poster-qr svg")).toBeVisible();
+  await expect(page.locator('[data-action="print-poster"]')).toBeVisible();
+
+  await page.emulateMedia({ media: "print" });
+  await expect(page.locator('[data-action="print-poster"]')).toBeHidden();
+  const poster = page.locator("#poster");
+  const box = await poster.boundingBox();
+  expect(box).toBeTruthy();
+  expect(box.width).toBeGreaterThan(700);
+  expect(box.height).toBeGreaterThan(1000);
+
+  const pdf = await page.pdf({ format: "A4", printBackground: true });
+  expect((pdf.toString("latin1").match(/\/Type \/Page\b/g) || []).length).toBe(1);
+});

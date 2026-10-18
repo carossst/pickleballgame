@@ -95,6 +95,7 @@ These are known tradeoffs we are keeping on purpose.
 - [manifest.json](./manifest.json): PWA manifest
 - [manifest.fr.json](./manifest.fr.json): French PWA manifest
 - [success.html](./success.html): post-checkout success / unlock page
+- [poster.html](./poster.html): printable A4 club/court poster with a local QR code
 
 ## CSS Guardrails
 
@@ -149,6 +150,11 @@ Then open:
 ```text
 http://localhost:8080
 ```
+
+### Print the poster
+
+Open [`/poster`](./poster) (or [`poster.html`](./poster.html)), then select **Print poster**.
+The page is laid out for one A4 portrait sheet; the QR code is generated in the browser and points to the public quiz URL.
 
 Avoid opening `index.html` directly with `file://` if you want fetch, service worker, and PWA behavior to work normally.
 

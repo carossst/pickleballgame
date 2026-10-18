@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable Pickleball Rules Quiz poster for clubs and courts.">
+    <title>Pickleball Rules Quiz Poster</title>
+    <link rel="icon" href="../icons/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="../poster.css">
+  </head>
+  <body>
+    <div class="poster-tools" role="toolbar" aria-label="Poster actions">
+      <a class="poster-tool-link" href="../">Back to quiz</a>
+      <button class="poster-print-button" type="button" data-action="print-poster">Print poster</button>
+    </div>
+
+    <main id="poster" class="poster" aria-labelledby="poster-title">
+      <div class="poster-topline">
+        <span class="poster-mark" aria-hidden="true">PRQ</span>
+        <span class="poster-kicker" data-poster="eyebrow"></span>
+      </div>
+      <header class="poster-header">
+        <p class="poster-overline" data-poster="overline"></p>
+        <h1 id="poster-title" data-poster="title"></h1>
+        <p class="poster-hook" data-poster="hook"></p>
+      </header>
+      <section class="poster-offer" aria-label="What the quiz includes">
+        <ul class="poster-bullets" data-poster-list="bullets"></ul>
+      </section>
+      <section class="poster-cta" aria-labelledby="poster-cta-title">
+        <div>
+          <p id="poster-cta-title" class="poster-cta-title" data-poster="cta"></p>
+          <p class="poster-url" data-poster="url"></p>
+        </div>
+        <div class="poster-qr-wrap">
+          <div id="poster-qr" class="poster-qr" aria-label="QR code to play Pickleball Rules Quiz"></div>
+          <span class="poster-qr-caption" data-poster="scanHint"></span>
+        </div>
+      </section>
+      <footer class="poster-footer">
+        <p data-poster="footer"></p>
+      </footer>
+    </main>
+
+    <script src="../poster-qr-vendor.js"></script>
+    <script src="../poster.js"></script>
+  </body>
+</html>

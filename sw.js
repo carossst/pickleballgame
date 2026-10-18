@@ -46,6 +46,11 @@ const ASSETS_TO_CACHE = [
   "./privacy.html",
   "./terms.html",
   "./press.html",
+  "./poster.html",
+  "./poster/index.html",
+  "./poster.css",
+  "./poster.js",
+  "./poster-qr-vendor.js",
   "./style.css",
   "./app.bundle.js",
   "./config.js",
@@ -161,6 +166,11 @@ function getOfflineDocumentFallback(pathname) {
       return "./terms.html";
     case "/press.html":
       return "./press.html";
+    case "/poster":
+    case "/poster.html":
+      return "./poster.html";
+    case "/poster/":
+      return "./poster/index.html";
     case "/404.html":
       return "./404.html";
     default:
@@ -200,6 +210,9 @@ function isNetworkFirstAppShellRequest(req, url) {
     path === "/privacy.html" ||
     path === "/terms.html" ||
     path === "/press.html"
+    || path === "/poster"
+    || path === "/poster.html"
+    || path === "/poster/"
   ) {
     return true;
   }
