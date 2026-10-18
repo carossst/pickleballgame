@@ -172,7 +172,7 @@ const renderPage = (q) => {
       candidate.theme === q.theme &&
       (candidate.status === "ready" || candidate.status === "live") &&
       candidate.content
-  );
+  ).slice(0, 3);
   const relatedBlock = parentTheme || relatedQuestions.length
     ? `                    <h2 class="wt-h2">More from this topic</h2>\n` +
       (parentTheme

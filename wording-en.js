@@ -38,9 +38,9 @@
     // Page-level meta (title + description) for static pages.
     // Hydrated via <title data-wt-wording="..."> and <meta data-wt-meta-description="...">.
     meta: {
-      indexTitle: 'Pickleball Rules Quiz',
+      indexTitle: 'Pickleball Rules Quiz: Test Your Pickleball Knowledge',
       indexDescription:
-        'Know the rules. Play with confidence. A fast true-or-false pickleball rules game about serving, faults, scoring, line calls, and rule changes.',
+        'A fast true or false quiz on serving, scoring, faults, kitchen rules and line calls. Know the rules and play with confidence.',
       successTitle: 'Full Access Ready - Pickleball Rules Quiz',
       successDescription:
         'Payment successful. Your Pickleball Rules Quiz device unlock code is ready.',
