@@ -8,14 +8,14 @@
     copy: {
       en: {
         eyebrow: 'For clubs and courts',
-        overline: 'Learn the rules. Play with confidence.',
+        overline: 'Know the rules. Play with confidence.',
         title: 'Pickleball Rules Quiz',
-        hook: 'Think you know pickleball? Prove it.',
+        hook: 'A fast true or false quiz about real pickleball situations.',
         bullets: [
           'Try 2 games free',
-          '200 true-or-false rules questions',
-          'Covers serving, scoring, faults, and line calls',
-          'Full access: $6.99 one-time',
+          '200 rules questions based on the 2026 USA Pickleball rulebook',
+          'Serving, scoring, faults, kitchen rules and line calls',
+          'Full access: $6.99 one time',
           'No subscription'
         ],
         cta: 'Scan to play',
