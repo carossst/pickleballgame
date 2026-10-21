@@ -347,6 +347,7 @@
       model.hasProfile ? w.cardSubJoined || '' : w.cardSubDefault || ''
     ).trim();
     const viewLabel = String(w.cardCtaView || '').trim();
+    const shareLabel = String(w.cardCtaShare || '').trim();
     const joinLabel = String(w.cardCtaJoin || '').trim();
     const editLabel = String(w.cardCtaEdit || w.profileTab || '').trim();
     const loadingLabel = String(w.loading || '').trim();
@@ -399,6 +400,7 @@
         ${rowsHtml}
         <div class="wt-landing-stat__actions">
           ${viewLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">${escapeHtml(viewLabel)}</button>` : ``}
+          ${shareLabel && typeof navigator !== 'undefined' && typeof navigator.share === 'function' ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="share-leaderboard">${escapeHtml(shareLabel)}</button>` : ``}
           ${model.hasProfile && editLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(editLabel)}</button>` : ``}
           ${!model.hasProfile && joinLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(joinLabel)}</button>` : ``}
         </div>

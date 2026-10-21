@@ -283,7 +283,9 @@
       cardSubJoined: 'See where your score ranks this week.',
       cardCtaJoin: 'Join leaderboard',
       cardCtaView: 'View leaderboard',
+      cardCtaShare: 'Share leaderboard',
       cardCtaEdit: 'Edit nickname',
+      shareText: 'See this week’s Pickleball Rules Quiz leaderboard: {url}',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       weeklyResetLine: 'Weekly reset: {localTime}.',
@@ -1035,10 +1037,12 @@ Thanks!`
 
     share: {
       ctaLabel: 'Copy challenge',
+      nativeLabel: 'Share challenge',
       emailLabel: 'Email challenge',
       emailSubject: 'Try Pickleball Rules Quiz',
       previewLabel: 'Challenge preview',
       toastCopied: 'Copied.',
+      toastShared: 'Shared.',
       template: `Think you know pickleball?
 Try this one:
 {funFact}

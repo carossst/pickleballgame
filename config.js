@@ -620,6 +620,7 @@
     // Share
     share: {
       enabled: true,
+      referralParam: "ref",
 
     },
 

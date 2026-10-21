@@ -67,6 +67,15 @@
     return 'direct';
   }
 
+  function hasReferral() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return Boolean(String(params.get('ref') || '').trim());
+    } catch (_) {
+      return false;
+    }
+  }
+
   function isPremium(storage) {
     try {
       if (storage && typeof storage.isPremium === 'function') {
@@ -204,7 +213,8 @@
     const out = {
       lang: getLocale(),
       entry_source: getEntrySource(),
-      premium: isPremium(storage)
+      premium: isPremium(storage),
+      referral: hasReferral() ? 'present' : 'none'
     };
 
     const freeRunsUsed = getFreeRunsUsed(storage);
@@ -244,6 +254,7 @@
     buildEventPath,
     buildEventTitle,
     getEntrySource,
+    hasReferral,
     getLocale,
     inferPageContext,
     inferUiContext,

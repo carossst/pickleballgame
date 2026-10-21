@@ -286,7 +286,9 @@
       cardSubJoined: 'Voyez votre classement cette semaine.',
       cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
+      cardCtaShare: 'Partager le classement',
       cardCtaEdit: 'Modifier mon pseudo',
+      shareText: 'Voir le classement Quiz Pickleball de cette semaine : {url}',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       weeklyResetLine: 'Remise à zéro : {localTime}',
@@ -1063,10 +1065,12 @@ Merci !`
 
     share: {
       ctaLabel: 'Copier le message',
+      nativeLabel: 'Partager le défi',
       emailLabel: "Préparer l'e-mail",
       emailSubject: 'Essaie Quiz Pickleball',
       previewLabel: 'Aperçu du message',
       toastCopied: 'Copié.',
+      toastShared: 'Partagé.',
       template: `Je viens de découvrir Quiz Pickleball.
 Essayez celle-ci :
 {funFact}

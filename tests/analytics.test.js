@@ -121,6 +121,7 @@ test('analytics infers UI context from locale, source, and storage', () => {
   expect(props).toEqual({
     lang: 'fr',
     entry_source: 'seo',
+    referral: 'none',
     premium: true,
     free_runs_used: 3,
     mode: 'RUN'

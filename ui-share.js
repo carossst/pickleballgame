@@ -17,6 +17,16 @@
     const w = ui.wording || {};
     const share = w.share || {};
 
+    function referralToken(value) {
+      const input = String(value || '');
+      let hash = 2166136261;
+      for (let i = 0; i < input.length; i += 1) {
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(36).slice(0, 10);
+    }
+
     function pickTemplate(templates, seed) {
       const list = Array.isArray(templates) ? templates.map((x) => String(x || "").trim()).filter(Boolean) : [];
       if (!list.length) return "";
@@ -45,6 +55,14 @@
         const shareUrl = new URL(url);
         if (!localizedUrl) {
           shareUrl.searchParams.set("lang", locale);
+        }
+        shareUrl.searchParams.set('wt-source', 'share');
+        const referralParam = String(cfg?.share?.referralParam || '').trim();
+        const deviceUuid = ui.storage && typeof ui.storage.ensureLeaderboardDeviceUuid === 'function'
+          ? String(ui.storage.ensureLeaderboardDeviceUuid() || '').trim()
+          : '';
+        if (referralParam && deviceUuid) {
+          shareUrl.searchParams.set(referralParam, referralToken(deviceUuid));
         }
         url = shareUrl.toString();
       }
@@ -171,9 +189,42 @@
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   }
 
+  async function shareNative(ui, helpers) {
+    const { toastNow } = helpers || {};
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
+      return { ok: false, reason: 'UNAVAILABLE' };
+    }
+
+    const text = String(getShareText(ui, helpers) || '').trim();
+    if (!text) return { ok: false, reason: 'EMPTY' };
+
+    try {
+      await navigator.share({
+        title: String(ui.config?.identity?.appName || '').trim(),
+        text
+      });
+      if (ui.storage && typeof ui.storage.markShareClicked === 'function') {
+        ui.storage.markShareClicked();
+      }
+      if (window.WT_Analytics?.trackFunnel) {
+        window.WT_Analytics.trackFunnel(
+          'share_native',
+          window.WT_Analytics.inferUiContext(ui, { share_channel: 'native' })
+        );
+      }
+      const message = String(ui.wording?.share?.toastShared || '').trim();
+      if (message && typeof toastNow === 'function') toastNow(ui.config, message);
+      return { ok: true };
+    } catch (error) {
+      if (error && error.name === 'AbortError') return { ok: false, reason: 'CANCELLED' };
+      return { ok: false, reason: 'FAILED' };
+    }
+  }
+
   window.WT_UI_Share = {
     getShareText,
     copy,
-    sendEmail
+    sendEmail,
+    shareNative
   };
 })();

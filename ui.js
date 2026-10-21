@@ -2659,6 +2659,7 @@ void (function () {
       'start-practice',
       'open-paywall',
       'copy-share',
+      'share-native',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -2738,6 +2739,10 @@ void (function () {
 
         case 'open-leaderboard':
           self.openLeaderboardModal();
+          break;
+
+        case 'share-leaderboard':
+          void self.shareLeaderboard();
           break;
 
         case 'open-leaderboard-profile':
@@ -2946,6 +2951,10 @@ void (function () {
 
         case 'copy-share':
           self.copyShareText();
+          break;
+
+        case 'share-native':
+          void self.shareNative();
           break;
 
         case 'send-share-email':
@@ -7615,6 +7624,38 @@ ${audioSettingsHtml}
     return window.WT_UI_Share.sendEmail(this, { clampInt });
   };
 
+  UI.prototype.shareNative = function () {
+    if (!window.WT_UI_Share || typeof window.WT_UI_Share.shareNative !== 'function') {
+      return Promise.resolve({ ok: false, reason: 'UNAVAILABLE' });
+    }
+    return window.WT_UI_Share.shareNative(this, { clampInt, toastNow });
+  };
+
+  UI.prototype.shareLeaderboard = async function () {
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') return;
+    const wording = this.wording?.leaderboard || {};
+    const base = String(this.config?.identity?.appUrl || '').trim();
+    if (!base) return;
+
+    try {
+      const url = new URL(base);
+      url.searchParams.set('wt-source', 'leaderboard');
+      const text = String(wording.shareText || '').replace('{url}', url.toString());
+      await navigator.share({
+        title: String(this.config?.identity?.appName || '').trim(),
+        text
+      });
+      if (window.WT_Analytics?.trackFunnel) {
+        window.WT_Analytics.trackFunnel(
+          'leaderboard_share',
+          window.WT_Analytics.inferUiContext(this, { share_channel: 'native' })
+        );
+      }
+    } catch (_) {
+      /* cancelled or unavailable */
+    }
+  };
+
   UI.prototype.dismissShareBonusOffer = function () {
     this._runtime = this._runtime || {};
     if (this._runtime.shareBonusDismissed === true) return;
@@ -9739,16 +9780,23 @@ ${audioSettingsHtml}
     const share = w.share || {};
     const title = String(shareTitle || '').trim();
     const ctaLabel = String(share.ctaLabel || '').trim();
+    const nativeLabel = String(share.nativeLabel || '').trim();
     const emailLabel = String(share.emailLabel || '').trim();
     const emailSubject = String(share.emailSubject || '').trim();
     const shareAria = String(w.system?.shareAria || '').trim();
     const text = String(getShareText ? getShareText() : '').trim();
 
     const canCopy = !!(ctaLabel && text);
+    const canNative = !!(
+      nativeLabel &&
+      text &&
+      typeof navigator !== 'undefined' &&
+      typeof navigator.share === 'function'
+    );
     const canEmail = !!(emailLabel && emailSubject && text);
 
     if (!title && !text) return '';
-    if (!canCopy && !canEmail && !text) return '';
+    if (!canCopy && !canNative && !canEmail && !text) return '';
 
     return `
       <details class="wt-accordion">
@@ -9760,9 +9808,19 @@ ${audioSettingsHtml}
           ${text ? `<p class="wt-muted wt-text-wrap-anywhere">${escapeHtml(text)}</p>` : ``}
 
           ${
-            canCopy || canEmail
+            canCopy || canNative || canEmail
               ? `
             <div class="wt-actions">
+              ${
+                canNative
+                  ? `
+                <button type="button" class="wt-btn wt-btn--primary" data-action="share-native">
+                  ${escapeHtml(nativeLabel)}
+                </button>
+              `
+                  : ``
+              }
+
               ${
                 canCopy
                   ? `

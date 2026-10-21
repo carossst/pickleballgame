@@ -624,6 +624,7 @@
     // Share
     share: {
       enabled: true,
+      referralParam: "ref",
 
     },
 
@@ -1200,7 +1201,9 @@
       cardSubJoined: 'See where your score ranks this week.',
       cardCtaJoin: 'Join leaderboard',
       cardCtaView: 'View leaderboard',
+      cardCtaShare: 'Share leaderboard',
       cardCtaEdit: 'Edit nickname',
+      shareText: 'See this week’s Pickleball Rules Quiz leaderboard: {url}',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       weeklyResetLine: 'Weekly reset: {localTime}.',
@@ -1952,10 +1955,12 @@ Thanks!`
 
     share: {
       ctaLabel: 'Copy challenge',
+      nativeLabel: 'Share challenge',
       emailLabel: 'Email challenge',
       emailSubject: 'Try Pickleball Rules Quiz',
       previewLabel: 'Challenge preview',
       toastCopied: 'Copied.',
+      toastShared: 'Shared.',
       template: `Think you know pickleball?
 Try this one:
 {funFact}
@@ -2369,7 +2374,9 @@ Thanks!`
       cardSubJoined: 'Voyez votre classement cette semaine.',
       cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
+      cardCtaShare: 'Partager le classement',
       cardCtaEdit: 'Modifier mon pseudo',
+      shareText: 'Voir le classement Quiz Pickleball de cette semaine : {url}',
       lastUpdatedTemplate: '',
       nextRefreshTemplate: '',
       weeklyResetLine: 'Remise à zéro : {localTime}',
@@ -3146,10 +3153,12 @@ Merci !`
 
     share: {
       ctaLabel: 'Copier le message',
+      nativeLabel: 'Partager le défi',
       emailLabel: "Préparer l'e-mail",
       emailSubject: 'Essaie Quiz Pickleball',
       previewLabel: 'Aperçu du message',
       toastCopied: 'Copié.',
+      toastShared: 'Partagé.',
       template: `Je viens de découvrir Quiz Pickleball.
 Essayez celle-ci :
 {funFact}
@@ -3597,6 +3606,15 @@ Merci !`
     return 'direct';
   }
 
+  function hasReferral() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return Boolean(String(params.get('ref') || '').trim());
+    } catch (_) {
+      return false;
+    }
+  }
+
   function isPremium(storage) {
     try {
       if (storage && typeof storage.isPremium === 'function') {
@@ -3734,7 +3752,8 @@ Merci !`
     const out = {
       lang: getLocale(),
       entry_source: getEntrySource(),
-      premium: isPremium(storage)
+      premium: isPremium(storage),
+      referral: hasReferral() ? 'present' : 'none'
     };
 
     const freeRunsUsed = getFreeRunsUsed(storage);
@@ -3774,6 +3793,7 @@ Merci !`
     buildEventPath,
     buildEventTitle,
     getEntrySource,
+    hasReferral,
     getLocale,
     inferPageContext,
     inferUiContext,
@@ -10061,6 +10081,16 @@ ${(() => {
     const w = ui.wording || {};
     const share = w.share || {};
 
+    function referralToken(value) {
+      const input = String(value || '');
+      let hash = 2166136261;
+      for (let i = 0; i < input.length; i += 1) {
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(36).slice(0, 10);
+    }
+
     function pickTemplate(templates, seed) {
       const list = Array.isArray(templates) ? templates.map((x) => String(x || "").trim()).filter(Boolean) : [];
       if (!list.length) return "";
@@ -10089,6 +10119,14 @@ ${(() => {
         const shareUrl = new URL(url);
         if (!localizedUrl) {
           shareUrl.searchParams.set("lang", locale);
+        }
+        shareUrl.searchParams.set('wt-source', 'share');
+        const referralParam = String(cfg?.share?.referralParam || '').trim();
+        const deviceUuid = ui.storage && typeof ui.storage.ensureLeaderboardDeviceUuid === 'function'
+          ? String(ui.storage.ensureLeaderboardDeviceUuid() || '').trim()
+          : '';
+        if (referralParam && deviceUuid) {
+          shareUrl.searchParams.set(referralParam, referralToken(deviceUuid));
         }
         url = shareUrl.toString();
       }
@@ -10215,10 +10253,43 @@ ${(() => {
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   }
 
+  async function shareNative(ui, helpers) {
+    const { toastNow } = helpers || {};
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
+      return { ok: false, reason: 'UNAVAILABLE' };
+    }
+
+    const text = String(getShareText(ui, helpers) || '').trim();
+    if (!text) return { ok: false, reason: 'EMPTY' };
+
+    try {
+      await navigator.share({
+        title: String(ui.config?.identity?.appName || '').trim(),
+        text
+      });
+      if (ui.storage && typeof ui.storage.markShareClicked === 'function') {
+        ui.storage.markShareClicked();
+      }
+      if (window.WT_Analytics?.trackFunnel) {
+        window.WT_Analytics.trackFunnel(
+          'share_native',
+          window.WT_Analytics.inferUiContext(ui, { share_channel: 'native' })
+        );
+      }
+      const message = String(ui.wording?.share?.toastShared || '').trim();
+      if (message && typeof toastNow === 'function') toastNow(ui.config, message);
+      return { ok: true };
+    } catch (error) {
+      if (error && error.name === 'AbortError') return { ok: false, reason: 'CANCELLED' };
+      return { ok: false, reason: 'FAILED' };
+    }
+  }
+
   window.WT_UI_Share = {
     getShareText,
     copy,
-    sendEmail
+    sendEmail,
+    shareNative
   };
 })();
 
@@ -11484,6 +11555,7 @@ ${(() => {
       model.hasProfile ? w.cardSubJoined || '' : w.cardSubDefault || ''
     ).trim();
     const viewLabel = String(w.cardCtaView || '').trim();
+    const shareLabel = String(w.cardCtaShare || '').trim();
     const joinLabel = String(w.cardCtaJoin || '').trim();
     const editLabel = String(w.cardCtaEdit || w.profileTab || '').trim();
     const loadingLabel = String(w.loading || '').trim();
@@ -11536,6 +11608,7 @@ ${(() => {
         ${rowsHtml}
         <div class="wt-landing-stat__actions">
           ${viewLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">${escapeHtml(viewLabel)}</button>` : ``}
+          ${shareLabel && typeof navigator !== 'undefined' && typeof navigator.share === 'function' ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="share-leaderboard">${escapeHtml(shareLabel)}</button>` : ``}
           ${model.hasProfile && editLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(editLabel)}</button>` : ``}
           ${!model.hasProfile && joinLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard-profile">${escapeHtml(joinLabel)}</button>` : ``}
         </div>
@@ -14826,6 +14899,7 @@ void (function () {
       'start-practice',
       'open-paywall',
       'copy-share',
+      'share-native',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -14905,6 +14979,10 @@ void (function () {
 
         case 'open-leaderboard':
           self.openLeaderboardModal();
+          break;
+
+        case 'share-leaderboard':
+          void self.shareLeaderboard();
           break;
 
         case 'open-leaderboard-profile':
@@ -15113,6 +15191,10 @@ void (function () {
 
         case 'copy-share':
           self.copyShareText();
+          break;
+
+        case 'share-native':
+          void self.shareNative();
           break;
 
         case 'send-share-email':
@@ -19782,6 +19864,38 @@ ${audioSettingsHtml}
     return window.WT_UI_Share.sendEmail(this, { clampInt });
   };
 
+  UI.prototype.shareNative = function () {
+    if (!window.WT_UI_Share || typeof window.WT_UI_Share.shareNative !== 'function') {
+      return Promise.resolve({ ok: false, reason: 'UNAVAILABLE' });
+    }
+    return window.WT_UI_Share.shareNative(this, { clampInt, toastNow });
+  };
+
+  UI.prototype.shareLeaderboard = async function () {
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') return;
+    const wording = this.wording?.leaderboard || {};
+    const base = String(this.config?.identity?.appUrl || '').trim();
+    if (!base) return;
+
+    try {
+      const url = new URL(base);
+      url.searchParams.set('wt-source', 'leaderboard');
+      const text = String(wording.shareText || '').replace('{url}', url.toString());
+      await navigator.share({
+        title: String(this.config?.identity?.appName || '').trim(),
+        text
+      });
+      if (window.WT_Analytics?.trackFunnel) {
+        window.WT_Analytics.trackFunnel(
+          'leaderboard_share',
+          window.WT_Analytics.inferUiContext(this, { share_channel: 'native' })
+        );
+      }
+    } catch (_) {
+      /* cancelled or unavailable */
+    }
+  };
+
   UI.prototype.dismissShareBonusOffer = function () {
     this._runtime = this._runtime || {};
     if (this._runtime.shareBonusDismissed === true) return;
@@ -21906,16 +22020,23 @@ ${audioSettingsHtml}
     const share = w.share || {};
     const title = String(shareTitle || '').trim();
     const ctaLabel = String(share.ctaLabel || '').trim();
+    const nativeLabel = String(share.nativeLabel || '').trim();
     const emailLabel = String(share.emailLabel || '').trim();
     const emailSubject = String(share.emailSubject || '').trim();
     const shareAria = String(w.system?.shareAria || '').trim();
     const text = String(getShareText ? getShareText() : '').trim();
 
     const canCopy = !!(ctaLabel && text);
+    const canNative = !!(
+      nativeLabel &&
+      text &&
+      typeof navigator !== 'undefined' &&
+      typeof navigator.share === 'function'
+    );
     const canEmail = !!(emailLabel && emailSubject && text);
 
     if (!title && !text) return '';
-    if (!canCopy && !canEmail && !text) return '';
+    if (!canCopy && !canNative && !canEmail && !text) return '';
 
     return `
       <details class="wt-accordion">
@@ -21927,9 +22048,19 @@ ${audioSettingsHtml}
           ${text ? `<p class="wt-muted wt-text-wrap-anywhere">${escapeHtml(text)}</p>` : ``}
 
           ${
-            canCopy || canEmail
+            canCopy || canNative || canEmail
               ? `
             <div class="wt-actions">
+              ${
+                canNative
+                  ? `
+                <button type="button" class="wt-btn wt-btn--primary" data-action="share-native">
+                  ${escapeHtml(nativeLabel)}
+                </button>
+              `
+                  : ``
+              }
+
               ${
                 canCopy
                   ? `
