@@ -987,12 +987,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "In doubles, both players on a team serve before a side out is declared.",
-          "explanationShort": "Each server serves until their team loses a rally.\nA side out follows the second server's lost rally.\n2026 USA Pickleball Official Rulebook, Rule 5.B."
+          "question": "Except at the start of a game, both players on a doubles team serve before a side out is declared.",
+          "explanationShort": "Except at the start of a game, each server serves until their team loses a rally.\nThe starting team has only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 5.B."
         },
         "fr": {
-          "question": "En double, les deux joueurs d'une équipe servent avant le changement de service.",
-          "explanationShort": "Chaque serveur sert jusqu'à ce que son équipe perde un échange.\nLe service passe à l'équipe adverse après l'échange perdu par le second serveur.\nRèglement officiel USA Pickleball 2026, règle 5.B."
+          "question": "Sauf au début d'une partie, les deux joueurs d'une équipe de double servent avant le changement de service.",
+          "explanationShort": "Sauf au début d'une partie, chaque serveur sert jusqu'à ce que son équipe perde un échange.\nL'équipe qui commence n'a qu'un serveur avant le premier changement de service.\nRèglement officiel USA Pickleball 2026, règle 5.B."
         }
       }
     },

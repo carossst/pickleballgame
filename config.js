@@ -126,8 +126,8 @@
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
       // Ordered so true/false never repeats more than twice in a row.
       cardIdsByRun: {
-        1: [23, 26, 105, 113, 50, 143, 144, 77, 62, 48],
-        2: [44, 124, 66, 98, 109, 150, 3, 22, 131, 21, 16, 96]
+        1: [23, 156, 105, 50, 26, 143, 62, 113, 144, 48],
+        2: [44, 155, 66, 124, 98, 109, 150, 22, 131, 3, 21, 16]
       }
     },
 
