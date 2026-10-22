@@ -37,6 +37,10 @@
 
     const identity = cfg.identity || {};
     const appName = String(identity.appName || "").trim();
+    const lastRun = (ui._runtime && ui._runtime.lastRun) ? ui._runtime.lastRun : {};
+    const challengeIds = Array.isArray(lastRun.runItemIds)
+      ? lastRun.runItemIds.map((id) => Number(id)).filter((id) => Number.isInteger(id) && id >= 0).slice(0, 50)
+      : [];
     let url = String(identity.appUrl || "").trim();
     try {
       const locale = window.WT_I18N && typeof window.WT_I18N.getLocale === "function"
@@ -64,14 +68,13 @@
         if (referralParam && deviceUuid) {
           shareUrl.searchParams.set(referralParam, referralToken(deviceUuid));
         }
+        if (challengeIds.length >= 2) shareUrl.searchParams.set('challenge', challengeIds.join('.'));
         url = shareUrl.toString();
       }
     } catch (_) { /* silent */ }
 
     const poolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
     const maxChances = clampInt(cfg?.game?.maxChances, 1, 99);
-    const lastRun = (ui._runtime && ui._runtime.lastRun) ? ui._runtime.lastRun : {};
-
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
     const scoreChallengeTpl = (bestScoreFP > 10)

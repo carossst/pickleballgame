@@ -7621,7 +7621,20 @@ Merci !`
         ? runStartNumberRaw
         : null;
 
-      const deck = bonusMode
+      const fixedIds = Array.isArray(p.fixedIds)
+        ? p.fixedIds.map(safeIdNum).filter((id) => id != null)
+        : [];
+      const fixedDeck = !bonusMode && !mistakesOnly && fixedIds.length > 0;
+      const deck = fixedDeck
+        ? (() => {
+            const normalized = normalizePool(items);
+            const allowed = new Set(fixedIds);
+            return {
+              ids: fixedIds.filter((id, index) => allowed.has(id) && fixedIds.indexOf(id) === index && normalized.byId[String(id)]),
+              byId: normalized.byId
+            };
+          })()
+        : bonusMode
         ? buildSeenDeck({ items, statsByItem, config })
         : buildDeck({ items, statsByItem, mistakesOnly, config, runStartNumber });
 
@@ -7631,6 +7644,7 @@ Merci !`
         statsByItem,
         getStatsByItem,
         config,
+        fixedDeck,
 
 
         byId: deck.byId || {},
@@ -7904,6 +7918,10 @@ Merci !`
 
       // RUN: rebuild a fresh deck at the end (reshuffle)
       if (this.run.mode === MODES.RUN) {
+        if (this.run.fixedDeck === true) {
+          this.run.done = true;
+          return;
+        }
         if (typeof this.run.getStatsByItem !== "function") {
           throw new Error("WT_Game.GameEngine._advanceAfterAnswer(): getStatsByItem is missing.");
         }
@@ -10101,6 +10119,10 @@ ${(() => {
 
     const identity = cfg.identity || {};
     const appName = String(identity.appName || "").trim();
+    const lastRun = (ui._runtime && ui._runtime.lastRun) ? ui._runtime.lastRun : {};
+    const challengeIds = Array.isArray(lastRun.runItemIds)
+      ? lastRun.runItemIds.map((id) => Number(id)).filter((id) => Number.isInteger(id) && id >= 0).slice(0, 50)
+      : [];
     let url = String(identity.appUrl || "").trim();
     try {
       const locale = window.WT_I18N && typeof window.WT_I18N.getLocale === "function"
@@ -10128,14 +10150,13 @@ ${(() => {
         if (referralParam && deviceUuid) {
           shareUrl.searchParams.set(referralParam, referralToken(deviceUuid));
         }
+        if (challengeIds.length >= 2) shareUrl.searchParams.set('challenge', challengeIds.join('.'));
         url = shareUrl.toString();
       }
     } catch (_) { /* silent */ }
 
     const poolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
     const maxChances = clampInt(cfg?.game?.maxChances, 1, 99);
-    const lastRun = (ui._runtime && ui._runtime.lastRun) ? ui._runtime.lastRun : {};
-
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
     const scoreChallengeTpl = (bestScoreFP > 10)
@@ -13118,27 +13139,51 @@ void (function () {
     return `${minutes}m`;
   }
 
+  function getCommonDayKey(date = new Date()) {
+    return [
+      date.getUTCFullYear(),
+      String(date.getUTCMonth() + 1).padStart(2, '0'),
+      String(date.getUTCDate()).padStart(2, '0')
+    ].join('-');
+  }
+
+  function getCommonChallengeIds(items, dayKey, count = 10) {
+    const list = Array.isArray(items) ? items : [];
+    const keyed = list
+      .map((item) => {
+        const id = Number(item?.id);
+        if (!Number.isInteger(id) || id < 0) return null;
+        let hash = 2166136261;
+        const seed = `${dayKey}:${id}`;
+        for (let i = 0; i < seed.length; i += 1) {
+          hash ^= seed.charCodeAt(i);
+          hash = Math.imul(hash, 16777619);
+        }
+        return { id, hash: hash >>> 0 };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.hash - b.hash || a.id - b.id);
+    return keyed.slice(0, clampInt(count, 1, 50)).map((entry) => entry.id);
+  }
+
+  function getQueryList(name) {
+    try {
+      const value = new URLSearchParams(window.location.search).get(name) || '';
+      return value.split('.').map((item) => Number(item)).filter((id) => Number.isInteger(id) && id >= 0).slice(0, 50);
+    } catch (_) {
+      return [];
+    }
+  }
+
   function getDailyChallengeModel(cfg, wording, bestScoreFP, storage) {
     const safeBest = clampInt(bestScoreFP, 0, 99999);
     const tier = getRunTierInfo(cfg, wording, safeBest);
 
     const nowDate = new Date();
-    const localDayKey = [
-      nowDate.getFullYear(),
-      String(nowDate.getMonth() + 1).padStart(2, '0'),
-      String(nowDate.getDate()).padStart(2, '0')
-    ].join('-');
+    const localDayKey = getCommonDayKey(nowDate);
 
-    const dayStartMs = new Date(
-      nowDate.getFullYear(),
-      nowDate.getMonth(),
-      nowDate.getDate()
-    ).getTime();
-    const dayEndMs = new Date(
-      nowDate.getFullYear(),
-      nowDate.getMonth(),
-      nowDate.getDate() + 1
-    ).getTime();
+    const dayStartMs = Date.UTC(nowDate.getUTCFullYear(), nowDate.getUTCMonth(), nowDate.getUTCDate());
+    const dayEndMs = dayStartMs + 24 * 60 * 60 * 1000;
     const fallbackScore = 3;
     const candidateTargetScore =
       tier.nextTarget != null
@@ -15078,6 +15123,8 @@ void (function () {
 
           // CTA inside modal: close first to avoid overlay sticking.
           self.closeModal();
+          self._runtime = self._runtime || {};
+          self._runtime.pendingRunKind = action === 'start-daily-challenge' ? 'DAILY' : '';
           self.startRun(false);
           break;
         }
@@ -17884,6 +17931,14 @@ ${audioSettingsHtml}
       : [];
     const eligible = srcItems.slice();
 
+    const requestedRunKind = String(this._runtime?.pendingRunKind || '').trim().toUpperCase();
+    const challengeIds = getQueryList('challenge');
+    const fixedIds = requestedRunKind === 'DAILY'
+      ? getCommonChallengeIds(eligible, getCommonDayKey(), 10)
+      : challengeIds.length >= 2
+        ? challengeIds
+        : [];
+
     const state = this.game.start({
       items: eligible,
       statsByItem,
@@ -17892,6 +17947,7 @@ ${audioSettingsHtml}
 
       // game.js contract: "RUN" | "PRACTICE" | "BONUS"
       mode: mistakesOnly === true ? MODES.PRACTICE : MODES.RUN,
+      fixedIds,
 
       // Free RUN only: lets game.js prepend curated opening cards for the first free runs.
       // Null for premium and PRACTICE, so the engine keeps the normal deck.
@@ -17902,6 +17958,10 @@ ${audioSettingsHtml}
     this._runtime.runMistakeIds = [];
     this._runtime.currentRunNumber = currentRunNumber;
     this._runtime.runMode = mistakesOnly === true ? MODES.PRACTICE : MODES.RUN;
+    this._runtime.challengeKind = fixedIds.length
+      ? (requestedRunKind === 'DAILY' ? 'DAILY' : 'FRIEND')
+      : '';
+    this._runtime.pendingRunKind = '';
     this._runtime.lastAnswer = null;
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;

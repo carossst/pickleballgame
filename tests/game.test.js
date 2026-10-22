@@ -152,3 +152,28 @@ test('BONUS ends at deck end and does not reshuffle', () => {
   expect(result.state.poolReshuffled).toBe(false);
   expect(result.state.mode).toBe('BONUS');
 });
+
+test('fixed RUN decks preserve challenge order and end without reshuffling', () => {
+  const WT_Game = createGameApi();
+  const engine = new WT_Game.GameEngine();
+  const items = [
+    { id: 1, correctAnswer: true, explanationShort: 'one' },
+    { id: 2, correctAnswer: true, explanationShort: 'two' }
+  ];
+
+  engine.start({
+    items,
+    statsByItem: {},
+    getStatsByItem: () => ({}),
+    config: makeRunConfig(),
+    mode: 'RUN',
+    fixedIds: [2, 1]
+  });
+
+  expect(engine.getCurrent().id).toBe(2);
+  engine.answer(true);
+  expect(engine.getCurrent().id).toBe(1);
+  const result = engine.answer(true);
+  expect(result.done).toBe(true);
+  expect(engine.getTotal()).toBe(2);
+});
