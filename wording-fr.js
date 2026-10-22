@@ -97,6 +97,7 @@
       notNow: 'Plus tard',
       continue: 'Suivant',
       readLonger: 'Lire encore',
+      reviewLastFeedback: 'Revoir la dernière réponse',
       tapToContinue: '',
 
       youChosePrefix: 'Vous avez choisi :',

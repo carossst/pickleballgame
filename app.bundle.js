@@ -1016,6 +1016,7 @@
       notNow: 'Not now',
       continue: 'Next',
       readLonger: 'Keep reading',
+      reviewLastFeedback: 'Review last answer',
       tapToContinue: '',
 
       youChosePrefix: 'You chose:',
@@ -2185,6 +2186,7 @@ Thanks!`
       notNow: 'Plus tard',
       continue: 'Suivant',
       readLonger: 'Lire encore',
+      reviewLastFeedback: 'Revoir la dernière réponse',
       tapToContinue: '',
 
       youChosePrefix: 'Vous avez choisi :',
@@ -14858,6 +14860,8 @@ void (function () {
       feedbackRevealTimerId: null,
       feedbackAutoAdvanceTimerId: null,
       feedbackAutoAdvancePaused: false,
+      reviewingFeedback: false,
+      lastFeedbackReview: null,
       frozenItem: null,
       finishAfterFeedback: false,
       autoGameOverAfterFeedback: false,
@@ -15003,6 +15007,10 @@ void (function () {
       switch (action) {
         case 'continue':
           self.continueAfterFeedback();
+          break;
+
+        case 'review-feedback':
+          self.reviewLastFeedback();
           break;
 
         case 'pause-feedback':
@@ -17963,6 +17971,8 @@ ${audioSettingsHtml}
       : '';
     this._runtime.pendingRunKind = '';
     this._runtime.lastAnswer = null;
+    this._runtime.reviewingFeedback = false;
+    this._runtime.lastFeedbackReview = null;
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;
     this._runtime.gameOverPending = false;
@@ -18329,6 +18339,8 @@ ${audioSettingsHtml}
     this._runtime.runAnswerLog = [];
     this._runtime.runMode = MODES.BONUS;
     this._runtime.lastAnswer = null;
+    this._runtime.reviewingFeedback = false;
+    this._runtime.lastFeedbackReview = null;
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;
     this._runtime.gameOverPending = false;
@@ -19313,7 +19325,29 @@ ${audioSettingsHtml}
       return;
     }
 
+    if (this._runtime.reviewingFeedback === true) {
+      if (this._runtime.feedbackAutoAdvanceTimerId) {
+        clearRuntimeTimer(this, 'feedbackAutoAdvanceTimerId');
+      }
+      this._runtime.feedbackPending = false;
+      this._runtime.feedbackReveal = true;
+      this._runtime.feedbackAutoAdvancePaused = false;
+      this._runtime.reviewingFeedback = false;
+      this._runtime.lastAnswer = null;
+      this._runtime.frozenItem = null;
+      this._runtime.answerLocked = false;
+      this.render();
+      return;
+    }
+
     const shouldFinish = this._runtime.finishAfterFeedback === true;
+
+    if (!shouldFinish && this._runtime.frozenItem && this._runtime.lastAnswer) {
+      this._runtime.lastFeedbackReview = {
+        item: this._runtime.frozenItem,
+        answer: { ...this._runtime.lastAnswer }
+      };
+    }
 
     // leaving feedback: cancel any pending (not-yet-shown) toast to avoid cross-state surprises
     cancelScheduledToast();
@@ -19329,6 +19363,7 @@ ${audioSettingsHtml}
     this._runtime.feedbackPending = false;
     this._runtime.feedbackReveal = true;
     this._runtime.feedbackAutoAdvancePaused = false;
+    this._runtime.reviewingFeedback = false;
     this._runtime.lastAnswer = null;
     this._runtime.frozenItem = null;
     this._runtime.finishAfterFeedback = false;
@@ -19350,6 +19385,24 @@ ${audioSettingsHtml}
     }
 
     this._runtime.currentQuestionShownAt = Date.now();
+    this.render();
+  };
+
+  UI.prototype.reviewLastFeedback = function () {
+    if (this.state !== STATES.PLAYING) return;
+    const review = this._runtime?.lastFeedbackReview;
+    if (!review || !review.item || !review.answer) return;
+
+    if (this._runtime.feedbackAutoAdvanceTimerId) {
+      clearRuntimeTimer(this, 'feedbackAutoAdvanceTimerId');
+    }
+    this._runtime.reviewingFeedback = true;
+    this._runtime.feedbackPending = true;
+    this._runtime.feedbackReveal = true;
+    this._runtime.feedbackAutoAdvancePaused = true;
+    this._runtime.frozenItem = review.item;
+    this._runtime.lastAnswer = { ...review.answer };
+    this._runtime.answerLocked = true;
     this.render();
   };
 
@@ -23198,6 +23251,20 @@ ${questionAudioHtml}
 
     const trueLabel = String(ui.trueLabel || '').trim();
     const falseLabel = String(ui.falseLabel || '').trim();
+    const reviewLastFeedbackLabel = String(
+      wAll.system?.reviewLastFeedback || ''
+    ).trim();
+    const reviewLastFeedbackHtml =
+      modeNow !== 'BONUS' &&
+      this._runtime?.feedbackPending !== true &&
+      this._runtime?.lastFeedbackReview &&
+      reviewLastFeedbackLabel
+        ? `
+        <button type="button" class="wt-text-action wt-review-feedback" data-action="review-feedback">
+          ${escapeHtml(reviewLastFeedbackLabel)}
+        </button>
+      `
+        : '';
 
     // Default: show question with True/False buttons
     // Secret bonus fall adds semantic wrappers only (CSS decides fixed/no-scroll layout).
@@ -23265,6 +23332,8 @@ ${questionAudioHtml}
         </div>
       `
       }
+
+      ${reviewLastFeedbackHtml}
 
 
 

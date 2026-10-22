@@ -98,6 +98,7 @@
       notNow: 'Not now',
       continue: 'Next',
       readLonger: 'Keep reading',
+      reviewLastFeedback: 'Review last answer',
       tapToContinue: '',
 
       youChosePrefix: 'You chose:',
