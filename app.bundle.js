@@ -368,9 +368,11 @@
       // Applies to RUN, PRACTICE, and BONUS. UI-only, no storage writes.
       choiceSelectFeedbackMs: 260,
 
-      // Feedback stays readable, then advances without requiring a second tap.
+      // Feedback stays readable for four seconds, then advances without requiring a second tap.
       // The visible Next button remains available immediately for fast play.
-      feedbackAutoAdvanceMs: 3200,
+      feedbackAutoAdvanceMs: 4000,
+      feedbackAutoAdvanceAfterIntroMs: 3200,
+      feedbackAutoAdvanceIntroCount: 3,
 
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.
@@ -2352,7 +2354,7 @@ Thanks!`
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
         "Débloquez des parties illimitées, les 200 questions, les explications après chaque réponse et le Mode Erreurs pour continuer à progresser.",
-      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
       postPaywallSbTitle: 'Le défi du jour est actif',
@@ -2372,7 +2374,7 @@ Thanks!`
 
     leaderboard: {
       cardTitle: 'CETTE SEMAINE',
-      cardSubDefault: 'Voyez où votre score se place cette semaine.',
+      cardSubDefault: 'Voyez où votre score se situe cette semaine.',
       cardSubJoined: 'Voyez votre classement cette semaine.',
       cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
@@ -2756,7 +2758,7 @@ Thanks!`
 
       endTitle: '',
       endLine: 'Continuez.',
-      allFixedLine: 'Vous avez tout bouclé.',
+      allFixedLine: 'Vous avez tout revu.',
       celebrationAllCleared: 'BELLE FINITION',
       labelByTier: {
         last: 'LA DERNIÈRE',
@@ -2764,8 +2766,8 @@ Thanks!`
         firm: 'ÇA REVIENT',
         direct: 'TENEZ BON'
       },
-      endLineAllFixed: 'Vous avez tout bouclé.',
-      endLineZero: 'Ces questions demandent un autre passage.',
+      endLineAllFixed: 'Vous avez tout revu.',
+      endLineZero: 'Ces règles méritent une nouvelle lecture.',
       endStatsLineAllFixed: 'Vous avez corrigé {fixed}.',
       endLineByTier: {
         last: 'Belle récupération.',
@@ -2787,7 +2789,7 @@ Thanks!`
       playingProgressLine: '{current}/{total}',
 
       startRunChancesOverlayPractice:
-        "Uniquement vos questions ratées.\nJusqu'à 10 par partie.\nCorrigez-la et elle sort. Ratez-la et elle revient.",
+        "Uniquement vos questions ratées.\nJusqu'à 10 par partie.\nRépondez juste et la question sort. Ratez-la et elle revient.",
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       ctaPracticeAgain: 'Refaire le Mode Erreurs',
 
@@ -2855,7 +2857,7 @@ Thanks!`
         none: 'Quelques questions vous échappent encore.',
         start: 'Vous prenez vos repères.',
         building: 'Vous commencez à comprendre ces règles.',
-        strong: 'Vous connaissez plus de règles maintenant.',
+        strong: 'Vous connaissez maintenant davantage de règles.',
         elite: 'Vous connaissez bien ces règles.',
         legendary: 'Vous connaissez vraiment ces règles.'
       },
@@ -2919,22 +2921,22 @@ Thanks!`
       playAgain: 'Rejouer',
       nextChallengeCta: 'Défi suivant',
 
-      practiceCta: 'Travailler mes erreurs',
-      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      practiceCta: 'Revoir mes erreurs',
+      practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
       focusedRunPracticeLine:
         'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain. Prochain objectif : {target}+.',
       focusedRunPaywallLine:
         'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
       mistakePracticePromptTitle:
-        'Vous avez raté {count} piège{pluralS} de règle.',
+        'Vous avez raté {count} question{pluralS}.',
       mistakePracticePromptBody:
         'Le Mode Erreurs les transforme en courte révision avant de rejouer.',
-      mistakePracticePromptCta: 'Travailler mes erreurs',
+      mistakePracticePromptCta: 'Revoir mes erreurs',
       mistakePracticePromptUnlockCta: 'Débloquer le Mode Erreurs',
 
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
-      practiceCtaCountPremium: 'Travailler mes erreurs',
+      practiceCtaCountPremium: 'Revoir mes erreurs',
       shareTitle: 'Partager le jeu'
     },
 
@@ -2942,12 +2944,12 @@ Thanks!`
       headline: 'Continuez à jouer. Jouez en confiance.',
       headlineLastFree: 'Vos parties gratuites sont terminées. Continuez avec le jeu complet.',
       mistakeHeadlineTemplate:
-        'Corrigez les {mistakes} piège{pluralS} de règle que vous venez de rater.',
+        'Revoyez les {mistakes} question{pluralS} ratée{pluralS}.',
 
       progressLine1:
         'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
       mistakeLineTemplate:
-        'Vous avez raté {mistakes} piège{pluralS} de règle. Le Mode Erreurs les transforme en révision ciblée.',
+        'Vous avez raté {mistakes} question{pluralS}. Le Mode Erreurs les transforme en révision ciblée.',
       progressLine2: '',
 
       payOnceLine: "Payez une fois. Pas d'abonnement.",
@@ -2957,13 +2959,13 @@ Thanks!`
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
         '**Travaillez les erreurs que vous venez de faire**',
-        '**Débloquez les 200 pièges de règles**',
+        '**Débloquez les 200 questions sur les règles**',
         '**Parties illimitées**'
       ],
 
       lockedPreviewTitle: "Verrouillé après l'aperçu",
       lockedPreviewItems: [
-        'Fautes de cuisine',
+        'Règles de la zone de non volée',
         'Règles de service',
         'Balles sur les lignes',
         'Pièges de score'
@@ -14987,6 +14989,27 @@ void (function () {
             score
           })
         );
+
+        const freeRunsUsed = Number(
+          self.storage && typeof self.storage.getRunsUsed === 'function'
+            ? self.storage.getRunsUsed()
+            : NaN
+        );
+        if (
+          !isPremiumNow(self.storage) &&
+          freeRunsUsed === 1 &&
+          (action === 'start-run' || action === 'play-again')
+        ) {
+          window.WT_Analytics.trackFunnel(
+            'second_run_return',
+            window.WT_Analytics.inferUiContext(self, {
+              from_state: 'end',
+              mode,
+              run_type: runType || '',
+              action
+            })
+          );
+        }
       } catch (_) {
         /* silent */
       }
@@ -19226,7 +19249,21 @@ ${audioSettingsHtml}
       );
     };
 
-    const autoAdvanceMsRaw = Number(this.config?.ui?.feedbackAutoAdvanceMs);
+    const introCountRaw = Number(
+      this.config?.ui?.feedbackAutoAdvanceIntroCount
+    );
+    const introCount =
+      Number.isFinite(introCountRaw) && introCountRaw >= 1 && introCountRaw <= 99
+        ? Math.floor(introCountRaw)
+        : 3;
+    const answeredCount = Array.isArray(this._runtime?.runItemIds)
+      ? this._runtime.runItemIds.length
+      : 0;
+    const configuredAutoAdvanceMs =
+      answeredCount <= introCount
+        ? this.config?.ui?.feedbackAutoAdvanceMs
+        : this.config?.ui?.feedbackAutoAdvanceAfterIntroMs;
+    const autoAdvanceMsRaw = Number(configuredAutoAdvanceMs);
     const autoAdvanceMs =
       Number.isFinite(autoAdvanceMsRaw) &&
       autoAdvanceMsRaw >= 1800 &&
@@ -21843,7 +21880,9 @@ ${audioSettingsHtml}
       items.push(`<div class="wt-mistake-item">${pairHtml}${explHtml}</div>`);
     }
 
-    const openAttr = vars && Number(vars.backlog) > 0 ? ' open' : '';
+    // The end screen is the natural review moment: keep the missed questions
+    // and their explanations visible instead of making users discover them.
+    const openAttr = ' open';
     return `
   <details class="wt-accordion"${openAttr}>
     <summary class="wt-accordion-toggle">${renderIcon('chevron-right')}<span>${escapeHtml(label)}</span></summary>

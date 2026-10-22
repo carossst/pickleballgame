@@ -1236,7 +1236,7 @@
     },
     {
       "id": 61,
-      "correctAnswer": false,
+      "correctAnswer": true,
       "tags": [
         "Score & Readiness",
         "Hard",
@@ -1244,12 +1244,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "In doubles, the first score call of the game is 'zero - zero - one.'",
-          "explanationShort": "The first doubles score call is 'zero-zero-two.'\nThe opening team gets only one server before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
+          "question": "In doubles, the third number in the score identifies the server number.",
+          "explanationShort": "The third number identifies whether the first or second server is serving.\nThe opening team is announced as server two before the first side out.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
         },
         "fr": {
-          "question": "En double, la première annonce de score de la partie est « zéro-zéro-un ».",
-          "explanationShort": "La première annonce en double est « zéro-zéro-deux ».\nL'équipe qui ouvre n'a qu'un serveur avant le premier changement de service.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
+          "question": "En double, le troisième nombre du score indique le numéro du serveur.",
+          "explanationShort": "Le troisième nombre indique si c'est le premier ou le second serveur qui sert.\nL'équipe qui ouvre est annoncée comme serveur deux avant le premier changement de service.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
         }
       }
     },
@@ -3925,12 +3925,12 @@
       ],
       "i18n": {
         "en": {
-          "question": "In standard doubles, the score is called as three numbers.",
-          "explanationShort": "Server's score, then receiver's, then the server number.\nExample: 'four-two-one' = server team 4, receivers 2.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
+          "question": "At the start of a standard doubles game, the score is called 'zero-zero-two.'",
+          "explanationShort": "The opening team has only one server before the first side out.\nThe final number identifies that starting server as server two.\n2026 USA Pickleball Official Rulebook, Rule 6.B.2."
         },
         "fr": {
-          "question": "En double standard, le score est annoncé sous forme de trois nombres.",
-          "explanationShort": "Le score de l'équipe au service, puis celui de l'équipe qui reçoit, puis le numéro du serveur.\nExemple : « quatre-deux-un » = équipe au service à 4, receveurs à 2.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
+          "question": "Au début d'une partie de double standard, le score est annoncé « zéro-zéro-deux ».",
+          "explanationShort": "L'équipe qui ouvre n'a qu'un serveur avant le premier changement de service.\nLe dernier nombre identifie ce serveur comme le serveur deux.\nRèglement officiel USA Pickleball 2026, règle 6.B.2."
         }
       }
     },

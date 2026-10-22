@@ -364,9 +364,11 @@
       // Applies to RUN, PRACTICE, and BONUS. UI-only, no storage writes.
       choiceSelectFeedbackMs: 260,
 
-      // Feedback stays readable, then advances without requiring a second tap.
+      // Feedback stays readable for four seconds, then advances without requiring a second tap.
       // The visible Next button remains available immediately for fast play.
-      feedbackAutoAdvanceMs: 3200,
+      feedbackAutoAdvanceMs: 4000,
+      feedbackAutoAdvanceAfterIntroMs: 3200,
+      feedbackAutoAdvanceIntroCount: 3,
 
       // END (RUN): "Record moment" window (UI-only).
       // If > 0, END temporarily shows WT_WORDING.end.newBest instead of the scoreLine when newBest=true.

@@ -263,7 +263,7 @@
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:
         "Débloquez des parties illimitées, les 200 questions, les explications après chaque réponse et le Mode Erreurs pour continuer à progresser.",
-      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
       postPaywallCta: "Débloquer l'accès complet",
 
       postPaywallSbTitle: 'Le défi du jour est actif',
@@ -283,7 +283,7 @@
 
     leaderboard: {
       cardTitle: 'CETTE SEMAINE',
-      cardSubDefault: 'Voyez où votre score se place cette semaine.',
+      cardSubDefault: 'Voyez où votre score se situe cette semaine.',
       cardSubJoined: 'Voyez votre classement cette semaine.',
       cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
@@ -667,7 +667,7 @@
 
       endTitle: '',
       endLine: 'Continuez.',
-      allFixedLine: 'Vous avez tout bouclé.',
+      allFixedLine: 'Vous avez tout revu.',
       celebrationAllCleared: 'BELLE FINITION',
       labelByTier: {
         last: 'LA DERNIÈRE',
@@ -675,8 +675,8 @@
         firm: 'ÇA REVIENT',
         direct: 'TENEZ BON'
       },
-      endLineAllFixed: 'Vous avez tout bouclé.',
-      endLineZero: 'Ces questions demandent un autre passage.',
+      endLineAllFixed: 'Vous avez tout revu.',
+      endLineZero: 'Ces règles méritent une nouvelle lecture.',
       endStatsLineAllFixed: 'Vous avez corrigé {fixed}.',
       endLineByTier: {
         last: 'Belle récupération.',
@@ -698,7 +698,7 @@
       playingProgressLine: '{current}/{total}',
 
       startRunChancesOverlayPractice:
-        "Uniquement vos questions ratées.\nJusqu'à 10 par partie.\nCorrigez-la et elle sort. Ratez-la et elle revient.",
+        "Uniquement vos questions ratées.\nJusqu'à 10 par partie.\nRépondez juste et la question sort. Ratez-la et elle revient.",
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       ctaPracticeAgain: 'Refaire le Mode Erreurs',
 
@@ -766,7 +766,7 @@
         none: 'Quelques questions vous échappent encore.',
         start: 'Vous prenez vos repères.',
         building: 'Vous commencez à comprendre ces règles.',
-        strong: 'Vous connaissez plus de règles maintenant.',
+        strong: 'Vous connaissez maintenant davantage de règles.',
         elite: 'Vous connaissez bien ces règles.',
         legendary: 'Vous connaissez vraiment ces règles.'
       },
@@ -830,22 +830,22 @@
       playAgain: 'Rejouer',
       nextChallengeCta: 'Défi suivant',
 
-      practiceCta: 'Travailler mes erreurs',
-      practiceCtaTemplate: 'Travailler vos {count} erreur{pluralS}',
+      practiceCta: 'Revoir mes erreurs',
+      practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
       focusedRunPracticeLine:
         'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain. Prochain objectif : {target}+.',
       focusedRunPaywallLine:
         'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
       mistakePracticePromptTitle:
-        'Vous avez raté {count} piège{pluralS} de règle.',
+        'Vous avez raté {count} question{pluralS}.',
       mistakePracticePromptBody:
         'Le Mode Erreurs les transforme en courte révision avant de rejouer.',
-      mistakePracticePromptCta: 'Travailler mes erreurs',
+      mistakePracticePromptCta: 'Revoir mes erreurs',
       mistakePracticePromptUnlockCta: 'Débloquer le Mode Erreurs',
 
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
-      practiceCtaCountPremium: 'Travailler mes erreurs',
+      practiceCtaCountPremium: 'Revoir mes erreurs',
       shareTitle: 'Partager le jeu'
     },
 
@@ -853,12 +853,12 @@
       headline: 'Continuez à jouer. Jouez en confiance.',
       headlineLastFree: 'Vos parties gratuites sont terminées. Continuez avec le jeu complet.',
       mistakeHeadlineTemplate:
-        'Corrigez les {mistakes} piège{pluralS} de règle que vous venez de rater.',
+        'Revoyez les {mistakes} question{pluralS} ratée{pluralS}.',
 
       progressLine1:
         'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
       mistakeLineTemplate:
-        'Vous avez raté {mistakes} piège{pluralS} de règle. Le Mode Erreurs les transforme en révision ciblée.',
+        'Vous avez raté {mistakes} question{pluralS}. Le Mode Erreurs les transforme en révision ciblée.',
       progressLine2: '',
 
       payOnceLine: "Payez une fois. Pas d'abonnement.",
@@ -868,13 +868,13 @@
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
         '**Travaillez les erreurs que vous venez de faire**',
-        '**Débloquez les 200 pièges de règles**',
+        '**Débloquez les 200 questions sur les règles**',
         '**Parties illimitées**'
       ],
 
       lockedPreviewTitle: "Verrouillé après l'aperçu",
       lockedPreviewItems: [
-        'Fautes de cuisine',
+        'Règles de la zone de non volée',
         'Règles de service',
         'Balles sur les lignes',
         'Pièges de score'

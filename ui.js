@@ -2724,6 +2724,27 @@ void (function () {
             score
           })
         );
+
+        const freeRunsUsed = Number(
+          self.storage && typeof self.storage.getRunsUsed === 'function'
+            ? self.storage.getRunsUsed()
+            : NaN
+        );
+        if (
+          !isPremiumNow(self.storage) &&
+          freeRunsUsed === 1 &&
+          (action === 'start-run' || action === 'play-again')
+        ) {
+          window.WT_Analytics.trackFunnel(
+            'second_run_return',
+            window.WT_Analytics.inferUiContext(self, {
+              from_state: 'end',
+              mode,
+              run_type: runType || '',
+              action
+            })
+          );
+        }
       } catch (_) {
         /* silent */
       }
@@ -6963,7 +6984,21 @@ ${audioSettingsHtml}
       );
     };
 
-    const autoAdvanceMsRaw = Number(this.config?.ui?.feedbackAutoAdvanceMs);
+    const introCountRaw = Number(
+      this.config?.ui?.feedbackAutoAdvanceIntroCount
+    );
+    const introCount =
+      Number.isFinite(introCountRaw) && introCountRaw >= 1 && introCountRaw <= 99
+        ? Math.floor(introCountRaw)
+        : 3;
+    const answeredCount = Array.isArray(this._runtime?.runItemIds)
+      ? this._runtime.runItemIds.length
+      : 0;
+    const configuredAutoAdvanceMs =
+      answeredCount <= introCount
+        ? this.config?.ui?.feedbackAutoAdvanceMs
+        : this.config?.ui?.feedbackAutoAdvanceAfterIntroMs;
+    const autoAdvanceMsRaw = Number(configuredAutoAdvanceMs);
     const autoAdvanceMs =
       Number.isFinite(autoAdvanceMsRaw) &&
       autoAdvanceMsRaw >= 1800 &&
@@ -9580,7 +9615,9 @@ ${audioSettingsHtml}
       items.push(`<div class="wt-mistake-item">${pairHtml}${explHtml}</div>`);
     }
 
-    const openAttr = vars && Number(vars.backlog) > 0 ? ' open' : '';
+    // The end screen is the natural review moment: keep the missed questions
+    // and their explanations visible instead of making users discover them.
+    const openAttr = ' open';
     return `
   <details class="wt-accordion"${openAttr}>
     <summary class="wt-accordion-toggle">${renderIcon('chevron-right')}<span>${escapeHtml(label)}</span></summary>
