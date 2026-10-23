@@ -1026,7 +1026,7 @@
         ],
         "quizTeaser": [
           "In doubles, the score is called as two numbers.",
-          "In doubles, the first score call of the game is 'zero - zero - one.'",
+          "In doubles, the third number in the score identifies the server number.",
           "In standard scoring, the receiving team can score by winning a rally."
         ],
         "faq": [
@@ -1160,7 +1160,7 @@
           }
         ],
         "quizTeaser": [
-          "In doubles, both players on a team serve before a side out is declared.",
+          "Except at the start of a game, both players on a doubles team serve before a side out is declared.",
           "In doubles, the starting server's position is on the right side when the team's score is zero or even.",
           "In standard scoring, the receiving team can score by winning a rally."
         ],
