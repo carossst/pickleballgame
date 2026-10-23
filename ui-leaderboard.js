@@ -761,7 +761,9 @@
         });
         const responseJson = await res.json().catch(() => null);
         if (!res.ok || responseJson?.ok !== true) {
-          throw new Error(`HTTP ${res.status}`);
+          const saveError = new Error(`HTTP ${res.status}`);
+          saveError.status = res.status;
+          throw saveError;
         }
         if (ui?.storage && typeof ui.storage.saveLeaderboardProfile === 'function') {
           ui.storage.saveLeaderboardProfile(
@@ -770,7 +772,7 @@
             clampInt(responseJson.player_id, 0, 999999999)
           );
         }
-      } catch (_) {
+      } catch (error) {
         try {
           if (saveBtn) {
             saveBtn.setAttribute('aria-busy', 'false');
@@ -780,7 +782,11 @@
           /* silent */
         }
         if (typeof toastNow === 'function') {
-          toastNow(ui.config, String(w.remoteSaveErrorToast || '').trim(), {
+          const status = Number(error?.status || 0);
+          const message = status === 429
+            ? String(w.remoteSaveRateLimitedToast || w.remoteSaveErrorToast || '').trim()
+            : String(w.remoteSaveErrorToast || '').trim();
+          toastNow(ui.config, message, {
             variant: 'danger'
           });
         }

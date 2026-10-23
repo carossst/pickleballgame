@@ -188,22 +188,17 @@ Le frontend principal sait deja:
 - quitter le classement via `DELETE /player`
 - preparer un payload complet pour `POST /score`
 
-Mais par securite:
-
-- `config.leaderboard.submitScores = false`
+La configuration actuelle utilise `config.leaderboard.submitScores = true`.
 
 Donc:
 
 - lecture live: oui
-- creation/mise a jour pseudo: oui
-- soumission des scores: backend pret, frontend encore desactive volontairement
+- creation et mise a jour du pseudo: oui
+- soumission des scores: active, avec recalcul cote Worker
 
 Le Worker recalcule maintenant le score serveur pour `POST /score`.
-Active `submitScores` seulement quand:
-
-- le Worker est deploye
-- `apiBaseUrl` est renseigne
-- tu as verifie les soumissions/rejets/rangs sur un environnement de test
+Avant chaque changement de contenu, verifier la version et les soumissions
+sur un environnement de test, puis regenerer `src/content-key.js`.
 
 ## Regle du leaderboard hebdo
 
@@ -243,11 +238,8 @@ C'est maintenant fait dans le Worker:
 - `scoreFP` recalcule a partir du mapping `id -> correctAnswer`
 - soumissions invalides rejetees avec `409/422`
 
-Ce qu'il reste a faire avant go-live:
-
-- renseigner `config.leaderboard.apiBaseUrl`
-- passer `config.leaderboard.submitScores` a `true`
-- verifier les toasts de rang et de rejet en situation reelle
+Avant chaque mise a jour du Worker, verifier les toasts de rang et de rejet
+en situation reelle, ainsi que l'alignement de `contentVersion`.
 
 ## Design minimal des payloads
 

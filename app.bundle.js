@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.15",
+    version: "4.3.16",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1236,6 +1236,8 @@
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
         'Could not save your nickname online. Please try again.',
+      remoteSaveRateLimitedToast:
+        'Too many attempts. Please wait a moment and try again.',
       rankToastWeekly: 'This week: #{rank}.',
       scoreRejectedToast:
         'This score was not added to the public leaderboard this time.'
@@ -2410,6 +2412,8 @@ Thanks!`
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
         'Votre pseudo n’a pas pu être enregistré en ligne. Réessayez.',
+      remoteSaveRateLimitedToast:
+        'Trop de tentatives. Attendez un moment puis réessayez.',
       rankToastWeekly: 'Cette semaine : #{rank}.',
       scoreRejectedToast:
         "Cette partie n'a pas été ajoutée au classement public cette fois."
@@ -9587,9 +9591,6 @@ Merci !`
     // the old phase / "first pass" summary was informative but too dashboard-like
     // and competed with the level card + Daily. Keep the level badge only.
 
-    let dailyChallengeIncomplete = false;
-    let dailyChallengePlayable = false;
-    let dailyChallengeShouldLead = false;
     let bestScoreFP = 0;
     try {
       bestScoreFP = (ui.storage && typeof ui.storage.getPersonalBest === "function")
@@ -9661,7 +9662,6 @@ Merci !`
           : 0;
         const dailyBestScoreFP = clampInt(bestScoreFP || fallbackBestScoreFP, 0, 99999);
         const dailyModel = getDailyChallengeModel(cfg, w, dailyBestScoreFP, ui.storage);
-        dailyChallengePlayable = dailyModel.challengePlayable === true;
         const dailyBadge = String(landing.dailyChallengeBadge || "").trim();
         const dailyTitleTpl = String(landing.dailyChallengeTitleTemplate || "").trim();
         const dailyCompletedTpl = String(landing.dailyChallengeCompletedTemplate || "").trim();
@@ -9707,9 +9707,6 @@ Merci !`
         if (rewardLine) dailyLines.push(rewardLine);
         dailySub = dailyLines.map((line) => String(line || "").trim()).filter(Boolean).join("\n");
 
-        dailyChallengeIncomplete = !dailyModel.completedToday || !!dailyModel.rewardPendingReplay;
-        dailyChallengeShouldLead =
-          dailyChallengeIncomplete && dailyChallengePlayable && !!dailyCta;
         if (dailyBadge || dailySub) {
           dailyChallengeCardHtml = renderLandingStatsCard({
             label: dailyBadge,
@@ -9741,12 +9738,10 @@ Merci !`
     const playLabel = seoContext
       ? String(landing.seoBridgeCta || "").trim() || playLabelBase
       : playLabelBase;
-    const primaryPlayAction = dailyChallengeShouldLead
-      ? "start-daily-challenge"
-      : "start-run";
-    const primaryPlayLabel = dailyChallengeShouldLead
-      ? String(landing.dailyChallengeCta || "").trim() || playLabel
-      : playLabel;
+    // Keep one clear entry point in the hero. Daily Challenge remains a
+    // progress goal below, so it does not compete with the first-play CTA.
+    const primaryPlayAction = "start-run";
+    const primaryPlayLabel = playLabel;
 
     let seoBridgeHtml = "";
     if (seoContext) {
@@ -9931,11 +9926,8 @@ Merci !`
 
 
 ${landingHeaderRowHtml}
-  ${landingUrgencyHtml}
   ${tagline ? `<p class="wt-meta wt-tagline">${renderTextWithStrong(tagline)}</p>` : ``}
   <p class="wt-sub wt-landing-subtitle">${subtitleHtml}</p>
-  ${proofLine && !isPostPaywallVariant ? `<p class="wt-landing-proof">${escapeHtml(proofLine)}</p>` : ``}
-  ${seoBridgeHtml}
 
 <div class="wt-actions">
 
@@ -10003,7 +9995,10 @@ ${(() => {
 
     </div>
 
+    ${proofLine && !isPostPaywallVariant ? `<p class="wt-landing-proof">${escapeHtml(proofLine)}</p>` : ``}
     ${((!premium && !isPostPaywallVariant && landing.microFun) ? `<p class="wt-sub wt-muted wt-landing-followup">${escapeHtml(String(landing.microFun || "").trim())}</p>` : ``)}
+    ${seoBridgeHtml}
+    ${landingUrgencyHtml}
 
     ${(() => {
       const shareBonusEligible = !!(
@@ -10042,19 +10037,6 @@ ${(() => {
 
     ${postBlock}
 
-    ${isPostPaywallVariant ? `` : postCompletionHtml}
-
-    ${showLandingInstallPrompt ? `
-      <p class="wt-sub wt-muted wt-landing-trust">${escapeHtml(microTrust)}</p>
-      ${installCtaLabel ? `
-        <div class="wt-actions wt-actions--stack">
-          <button class="wt-btn wt-btn--secondary" data-action="install-app">
-            ${escapeHtml(installCtaLabel)}
-          </button>
-        </div>
-      ` : ``}
-    ` : ``}
-
     ${hasDashboard && !isPostPaywallVariant ? `
       <section class="wt-landing-dashboard">
         ${welcomeBackHtml ? `
@@ -10074,6 +10056,19 @@ ${(() => {
       <section class="wt-landing-leaderboard-section">
         ${leaderboardLandingHtml}
       </section>
+    ` : ``}
+
+    ${isPostPaywallVariant ? `` : postCompletionHtml}
+
+    ${showLandingInstallPrompt ? `
+      <p class="wt-sub wt-muted wt-landing-trust">${escapeHtml(microTrust)}</p>
+      ${installCtaLabel ? `
+        <div class="wt-actions wt-actions--stack">
+          <button class="wt-btn wt-btn--secondary" data-action="install-app">
+            ${escapeHtml(installCtaLabel)}
+          </button>
+        </div>
+      ` : ``}
     ` : ``}
 
 </div>
@@ -11994,7 +11989,9 @@ ${(() => {
         });
         const responseJson = await res.json().catch(() => null);
         if (!res.ok || responseJson?.ok !== true) {
-          throw new Error(`HTTP ${res.status}`);
+          const saveError = new Error(`HTTP ${res.status}`);
+          saveError.status = res.status;
+          throw saveError;
         }
         if (ui?.storage && typeof ui.storage.saveLeaderboardProfile === 'function') {
           ui.storage.saveLeaderboardProfile(
@@ -12003,7 +12000,7 @@ ${(() => {
             clampInt(responseJson.player_id, 0, 999999999)
           );
         }
-      } catch (_) {
+      } catch (error) {
         try {
           if (saveBtn) {
             saveBtn.setAttribute('aria-busy', 'false');
@@ -12013,7 +12010,11 @@ ${(() => {
           /* silent */
         }
         if (typeof toastNow === 'function') {
-          toastNow(ui.config, String(w.remoteSaveErrorToast || '').trim(), {
+          const status = Number(error?.status || 0);
+          const message = status === 429
+            ? String(w.remoteSaveRateLimitedToast || w.remoteSaveErrorToast || '').trim()
+            : String(w.remoteSaveErrorToast || '').trim();
+          toastNow(ui.config, message, {
             variant: 'danger'
           });
         }
@@ -24603,10 +24604,9 @@ ${questionAudioHtml}
       }
 
       // Mark update ready so UI can decide when to apply it (user-controlled).
-      // Persist the seen key immediately. If iOS/PWA keeps the same waiting worker
-      // across reloads, the user is not asked again and again.
+      // The seen key is persisted only when the user applies the update. If the
+      // toast is ignored, it must remain discoverable on the next visit.
       window.__WT_SW_UPDATE_READY__ = true;
-      markUpdateToastSeen(waitingKey);
 
       const text = node.querySelector('[data-wt-update-text]');
       if (text) text.textContent = msg;
@@ -24705,6 +24705,7 @@ ${questionAudioHtml}
 
       try {
         armFallbackReload();
+        markUpdateToastSeen(getWaitingWorkerKey(waiting));
         waiting.postMessage({ type: 'SKIP_WAITING' });
       } catch (_) {
         try {

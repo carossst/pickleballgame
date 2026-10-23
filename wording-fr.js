@@ -319,6 +319,8 @@
       leftToast: 'Vous avez quitté le classement sur cet appareil.',
       remoteSaveErrorToast:
         'Votre pseudo n’a pas pu être enregistré en ligne. Réessayez.',
+      remoteSaveRateLimitedToast:
+        'Trop de tentatives. Attendez un moment puis réessayez.',
       rankToastWeekly: 'Cette semaine : #{rank}.',
       scoreRejectedToast:
         "Cette partie n'a pas été ajoutée au classement public cette fois."

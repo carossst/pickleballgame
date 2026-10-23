@@ -316,6 +316,8 @@
       leftToast: 'You left the leaderboard on this device.',
       remoteSaveErrorToast:
         'Could not save your nickname online. Please try again.',
+      remoteSaveRateLimitedToast:
+        'Too many attempts. Please wait a moment and try again.',
       rankToastWeekly: 'This week: #{rank}.',
       scoreRejectedToast:
         'This score was not added to the public leaderboard this time.'

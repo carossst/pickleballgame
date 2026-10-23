@@ -286,10 +286,9 @@
       }
 
       // Mark update ready so UI can decide when to apply it (user-controlled).
-      // Persist the seen key immediately. If iOS/PWA keeps the same waiting worker
-      // across reloads, the user is not asked again and again.
+      // The seen key is persisted only when the user applies the update. If the
+      // toast is ignored, it must remain discoverable on the next visit.
       window.__WT_SW_UPDATE_READY__ = true;
-      markUpdateToastSeen(waitingKey);
 
       const text = node.querySelector('[data-wt-update-text]');
       if (text) text.textContent = msg;
@@ -388,6 +387,7 @@
 
       try {
         armFallbackReload();
+        markUpdateToastSeen(getWaitingWorkerKey(waiting));
         waiting.postMessage({ type: 'SKIP_WAITING' });
       } catch (_) {
         try {
