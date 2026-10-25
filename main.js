@@ -259,18 +259,22 @@
       }
     }
 
-    function showUpdateToast(message) {
-      const msg = String(message || '').trim();
+    function getUpdateToastMessage() {
+      return String(getActiveWording()?.system?.updateAvailable || '').trim();
+    }
+
+    function showUpdateToast() {
+      const msg = getUpdateToastMessage();
       if (!msg) return;
 
       const uiState = String(window.WT_APP?.ui?.state || '').trim();
       // Never interrupt an active question or feedback screen. When the UI state
       // is not known yet, stay silent as well; the next page load can surface it.
       if (uiState !== 'LANDING') {
-        window.__WT_SW_PENDING_UPDATE_TOAST__ = msg;
+        window.__WT_SW_PENDING_UPDATE_TOAST__ = true;
         return;
       }
-      window.__WT_SW_PENDING_UPDATE_TOAST__ = '';
+      window.__WT_SW_PENDING_UPDATE_TOAST__ = false;
 
       // KISS: reuse the existing #update-toast shell from index.html
       const node = document.getElementById('update-toast');
@@ -297,11 +301,18 @@
       node.setAttribute('aria-hidden', 'false');
     }
 
+    window.__WT_REFRESH_UPDATE_TOAST__ = function () {
+      const node = document.getElementById('update-toast');
+      if (!node || !node.classList.contains('wt-toast--visible')) return;
+      const text = node.querySelector('[data-wt-update-text]');
+      const msg = getUpdateToastMessage();
+      if (text && msg) text.textContent = msg;
+    };
+
     // A notification discovered during a run is intentionally deferred until
     // the player returns to the landing screen.
     window.__WT_SHOW_PENDING_UPDATE__ = function () {
-      const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
-      if (pending) showUpdateToast(pending);
+      if (window.__WT_SW_PENDING_UPDATE_TOAST__ === true) showUpdateToast();
     };
 
     function setWaitingWorker(worker) {
@@ -448,10 +459,7 @@
             navigator.serviceWorker.controller
           ) {
             setWaitingWorker(registration.waiting);
-            const msg = String(
-              window.WT_WORDING?.system?.updateAvailable || ''
-            ).trim();
-            if (msg) showUpdateToast(msg);
+            showUpdateToast();
           }
 
           // Auto-update check
@@ -482,10 +490,7 @@
                   navigator.serviceWorker.controller
                 ) {
                   setWaitingWorker(newWorker);
-                  const msg = String(
-                    window.WT_WORDING?.system?.updateAvailable || ''
-                  ).trim();
-                  if (msg) showUpdateToast(msg);
+                  showUpdateToast();
                 }
               });
             });
@@ -782,6 +787,14 @@
 
               if (typeof ui.render === 'function') {
                 ui.render();
+              }
+
+              try {
+                if (typeof window.__WT_REFRESH_UPDATE_TOAST__ === 'function') {
+                  window.__WT_REFRESH_UPDATE_TOAST__();
+                }
+              } catch (_) {
+                /* silent */
               }
 
               try {

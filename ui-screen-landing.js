@@ -120,7 +120,13 @@
       throw new Error("WT_UI_Landing helpers missing");
     }
 
-    const w = ui.wording || {};
+    // Re-read the active wording at render time. This prevents a stale UI
+    // reference from leaking the previous locale into a newly rendered card.
+    const activeWording = (typeof window !== "undefined" && window.WT_WORDING && typeof window.WT_WORDING === "object")
+      ? window.WT_WORDING
+      : (ui.wording || {});
+    if (ui.wording !== activeWording) ui.wording = activeWording;
+    const w = activeWording;
     const landing = w.landing || {};
     const cfg = ui.config || {};
     const poolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
@@ -524,6 +530,7 @@
       ? false
       : (Number.isFinite(runPlays) && runPlays >= landingAfterRuns);
     const canShowChest =
+      cfg?.secretBonus?.enabled === true &&
       Number.isFinite(windowMs) && windowMs > 0 &&
       meetsRunGate;
 

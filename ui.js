@@ -3477,6 +3477,7 @@ void (function () {
       if (self.state !== STATES.END && self.state !== STATES.LANDING) return;
 
       const cfg = self.config || {};
+      if (cfg?.secretBonus?.enabled !== true) return;
       const windowMs = Number(cfg?.secretBonus?.tapWindowMs);
       const tapsRequired = Number(cfg?.secretBonus?.tapsRequired);
       // No fallback: invalid config => feature off
@@ -6045,6 +6046,7 @@ ${audioSettingsHtml}
 
   UI.prototype.startSecretBonusRun = function () {
     const cfg = this.config || {};
+    if (cfg?.secretBonus?.enabled !== true) return;
     const premium = isPremiumNow(this.storage);
     const ticketGate = consumeRapidFireTicketOrBlock(this.storage);
     if (!ticketGate.ok) {

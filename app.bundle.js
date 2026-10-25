@@ -9367,7 +9367,13 @@ Merci !`
       throw new Error("WT_UI_Landing helpers missing");
     }
 
-    const w = ui.wording || {};
+    // Re-read the active wording at render time. This prevents a stale UI
+    // reference from leaking the previous locale into a newly rendered card.
+    const activeWording = (typeof window !== "undefined" && window.WT_WORDING && typeof window.WT_WORDING === "object")
+      ? window.WT_WORDING
+      : (ui.wording || {});
+    if (ui.wording !== activeWording) ui.wording = activeWording;
+    const w = activeWording;
     const landing = w.landing || {};
     const cfg = ui.config || {};
     const poolSize = clampInt(cfg?.game?.poolSize, 1, 9999);
@@ -9771,6 +9777,7 @@ Merci !`
       ? false
       : (Number.isFinite(runPlays) && runPlays >= landingAfterRuns);
     const canShowChest =
+      cfg?.secretBonus?.enabled === true &&
       Number.isFinite(windowMs) && windowMs > 0 &&
       meetsRunGate;
 
@@ -15743,6 +15750,7 @@ void (function () {
       if (self.state !== STATES.END && self.state !== STATES.LANDING) return;
 
       const cfg = self.config || {};
+      if (cfg?.secretBonus?.enabled !== true) return;
       const windowMs = Number(cfg?.secretBonus?.tapWindowMs);
       const tapsRequired = Number(cfg?.secretBonus?.tapsRequired);
       // No fallback: invalid config => feature off
@@ -18311,6 +18319,7 @@ ${audioSettingsHtml}
 
   UI.prototype.startSecretBonusRun = function () {
     const cfg = this.config || {};
+    if (cfg?.secretBonus?.enabled !== true) return;
     const premium = isPremiumNow(this.storage);
     const ticketGate = consumeRapidFireTicketOrBlock(this.storage);
     if (!ticketGate.ok) {
@@ -24577,18 +24586,22 @@ ${questionAudioHtml}
       }
     }
 
-    function showUpdateToast(message) {
-      const msg = String(message || '').trim();
+    function getUpdateToastMessage() {
+      return String(getActiveWording()?.system?.updateAvailable || '').trim();
+    }
+
+    function showUpdateToast() {
+      const msg = getUpdateToastMessage();
       if (!msg) return;
 
       const uiState = String(window.WT_APP?.ui?.state || '').trim();
       // Never interrupt an active question or feedback screen. When the UI state
       // is not known yet, stay silent as well; the next page load can surface it.
       if (uiState !== 'LANDING') {
-        window.__WT_SW_PENDING_UPDATE_TOAST__ = msg;
+        window.__WT_SW_PENDING_UPDATE_TOAST__ = true;
         return;
       }
-      window.__WT_SW_PENDING_UPDATE_TOAST__ = '';
+      window.__WT_SW_PENDING_UPDATE_TOAST__ = false;
 
       // KISS: reuse the existing #update-toast shell from index.html
       const node = document.getElementById('update-toast');
@@ -24615,11 +24628,18 @@ ${questionAudioHtml}
       node.setAttribute('aria-hidden', 'false');
     }
 
+    window.__WT_REFRESH_UPDATE_TOAST__ = function () {
+      const node = document.getElementById('update-toast');
+      if (!node || !node.classList.contains('wt-toast--visible')) return;
+      const text = node.querySelector('[data-wt-update-text]');
+      const msg = getUpdateToastMessage();
+      if (text && msg) text.textContent = msg;
+    };
+
     // A notification discovered during a run is intentionally deferred until
     // the player returns to the landing screen.
     window.__WT_SHOW_PENDING_UPDATE__ = function () {
-      const pending = String(window.__WT_SW_PENDING_UPDATE_TOAST__ || '').trim();
-      if (pending) showUpdateToast(pending);
+      if (window.__WT_SW_PENDING_UPDATE_TOAST__ === true) showUpdateToast();
     };
 
     function setWaitingWorker(worker) {
@@ -24766,10 +24786,7 @@ ${questionAudioHtml}
             navigator.serviceWorker.controller
           ) {
             setWaitingWorker(registration.waiting);
-            const msg = String(
-              window.WT_WORDING?.system?.updateAvailable || ''
-            ).trim();
-            if (msg) showUpdateToast(msg);
+            showUpdateToast();
           }
 
           // Auto-update check
@@ -24800,10 +24817,7 @@ ${questionAudioHtml}
                   navigator.serviceWorker.controller
                 ) {
                   setWaitingWorker(newWorker);
-                  const msg = String(
-                    window.WT_WORDING?.system?.updateAvailable || ''
-                  ).trim();
-                  if (msg) showUpdateToast(msg);
+                  showUpdateToast();
                 }
               });
             });
@@ -25100,6 +25114,14 @@ ${questionAudioHtml}
 
               if (typeof ui.render === 'function') {
                 ui.render();
+              }
+
+              try {
+                if (typeof window.__WT_REFRESH_UPDATE_TOAST__ === 'function') {
+                  window.__WT_REFRESH_UPDATE_TOAST__();
+                }
+              } catch (_) {
+                /* silent */
               }
 
               try {
