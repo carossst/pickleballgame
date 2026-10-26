@@ -13,6 +13,7 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:smoke": "playwright test e2e/smoke.pw.js --config=playwright.config.cjs",
+    "test:critical": "playwright test e2e/critical-flows.pw.js --config=playwright.config.cjs",
     "test:a11y": "playwright test e2e/accessibility.pw.js --config=playwright.config.cjs",
     "format:check": "prettier --check package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\"",
     "format:write": "prettier --write package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\""
