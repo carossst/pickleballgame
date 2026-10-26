@@ -24,6 +24,22 @@ for (const spec of pages) {
     await expect(page.locator('html')).toHaveAttribute('lang', spec.lang);
     expect(pageErrors).toEqual([]);
   });
+
+  test(`${spec.lang} fresh profile keeps the Daily Challenge behind first play`, async ({
+    page
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
+    await page.goto(spec.path, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#app')).toContainText(spec.landing, {
+      timeout: 15000
+    });
+    await expect(
+      page.locator('[data-action="start-daily-challenge"]')
+    ).toHaveCount(0);
+  });
 }
 
 test('language switch navigates to the French entry page', async ({ page }) => {
