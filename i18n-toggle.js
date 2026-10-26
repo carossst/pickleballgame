@@ -147,12 +147,12 @@
       class="wt-locale-swap"
       href="${href}"
       data-wt-locale-swap-to="${other}"
-      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
+      aria-label="${aria}: ${label}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
     }
     return `<button type="button"
       class="wt-locale-swap"
       data-wt-locale-swap-to="${other}"
-      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></button>`;
+      aria-label="${aria}: ${label}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></button>`;
   }
 
   function buildDropdownHtml(active) {

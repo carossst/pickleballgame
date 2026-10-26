@@ -842,7 +842,7 @@
       mistakeHeadlineTemplate: 'Fix the {mistakes} rule trap{pluralS} you just missed.',
 
       progressLine1:
-        "You've seen {seen} questions. {remaining} more are waiting in the full set.",
+        "You've seen {seen} {questionWord}. {remaining} more are waiting in the full set.",
       mistakeLineTemplate:
         'You missed {mistakes} rule trap{pluralS}. Mistakes Mode turns them into focused practice.',
       progressLine2: '',

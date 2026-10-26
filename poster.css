@@ -84,7 +84,7 @@ body {
   place-items: center;
   border-radius: 50%;
   color: #fff;
-  background: var(--poster-accent);
+  background: var(--poster-accent-dark);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.08em;

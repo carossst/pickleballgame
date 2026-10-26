@@ -106,6 +106,48 @@ test('paywall personalizes progress copy when the last run had mistakes', () => 
   expect(html).not.toContain('Default progress line.');
 });
 
+test('paywall uses singular question copy when one question was seen', () => {
+  const paywall = loadPaywallModule();
+  const html = paywall.render(
+    {
+      config: {
+        currency: 'USD',
+        earlyPriceCents: 499,
+        standardPriceCents: 699,
+        game: { poolSize: 200 }
+      },
+      wording: {
+        system: { notNow: 'Not now' },
+        landing: {},
+        howto: {},
+        paywall: {
+          headline: 'Unlock',
+          progressLine1:
+            "You've seen {seen} {questionWord}. {remaining} more are waiting.",
+          standardLabel: 'Standard',
+          ctaStandard: 'Unlock'
+        }
+      },
+      storage: {
+        getSeenItemIds() {
+          return [1];
+        },
+        getRunsUsed() {
+          return 1;
+        },
+        getCounters() {
+          return { runCompletes: 1 };
+        }
+      },
+      _runtime: { lastRun: { scoreFP: 1, mistakeIds: [] } }
+    },
+    buildHelpers()
+  );
+
+  expect(html).toContain('You&#39;ve seen 1 question. 199 more are waiting.');
+  expect(html).not.toContain('1 questions');
+});
+
 test('paywall renders conversion reassurance, locked preview, and not-ready action', () => {
   const paywall = loadPaywallModule();
   const html = paywall.render(

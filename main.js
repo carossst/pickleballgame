@@ -256,6 +256,8 @@
       if (node && node.classList) {
         node.classList.remove('wt-toast--visible');
         node.setAttribute('aria-hidden', 'true');
+        const action = node.querySelector('[data-action="apply-update"]');
+        if (action) action.setAttribute('disabled', '');
       }
     }
 
@@ -296,6 +298,8 @@
 
       const text = node.querySelector('[data-wt-update-text]');
       if (text) text.textContent = msg;
+      const action = node.querySelector('[data-action="apply-update"]');
+      if (action) action.removeAttribute('disabled');
 
       node.classList.add('wt-toast--visible');
       node.setAttribute('aria-hidden', 'false');

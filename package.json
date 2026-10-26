@@ -10,13 +10,17 @@
     "build:assets": "npm run generate:bundle && npm run generate:css",
     "publish:seo": "npm run generate:seo-pages && npm run generate:sitemap",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:smoke": "playwright test --config=playwright.config.cjs",
+    "test:smoke": "playwright test e2e/smoke.pw.js --config=playwright.config.cjs",
+    "test:a11y": "playwright test e2e/accessibility.pw.js --config=playwright.config.cjs",
     "format:check": "prettier --check package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\"",
     "format:write": "prettier --write package.json vitest.config.cjs .prettierrc.json \"logic/**/*.js\" \"tests/**/*.js\""
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.60.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "prettier": "^3.8.3",
     "vitest": "^4.1.7"
   }

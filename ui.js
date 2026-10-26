@@ -10943,17 +10943,12 @@ ${questionAudioHtml}
         youChosePrefix && pickedLabel ? `${youChosePrefix} ${pickedLabel}` : '';
 
       const continueCta = String(wAll.system?.continue || '').trim();
-      const readLongerCta = String(wAll.system?.readLonger || '').trim();
       const tapToContinue = String(wAll.system?.tapToContinue || '').trim();
       const autoGameOverAfterFeedback =
         this._runtime?.autoGameOverAfterFeedback === true;
       const feedbackActionAttr = autoGameOverAfterFeedback
         ? ` data-action="continue"`
         : '';
-      const canPauseAutoAdvance =
-        !autoGameOverAfterFeedback &&
-        this._runtime?.feedbackAutoAdvancePaused !== true &&
-        !!readLongerCta;
 
       // Stable explanation for the frozen item during feedback (KISS)
       const stableExplanation = String(ans.feedbackLine || '').trim();
@@ -11002,11 +10997,6 @@ ${questionAudioHtml}
           ${escapeHtml(continueCta)}
         </button>
       </div>
-      ${canPauseAutoAdvance ? `
-        <button type="button" class="wt-text-action wt-feedback-read-longer" data-action="pause-feedback">
-          ${escapeHtml(readLongerCta)}
-        </button>
-      ` : ``}
     `
                 : ``
             }
@@ -11036,7 +11026,7 @@ ${questionAudioHtml}
       this._runtime?.lastFeedbackReview &&
       reviewLastFeedbackLabel
         ? `
-        <button type="button" class="wt-text-action wt-review-feedback" data-action="review-feedback">
+        <button type="button" class="wt-btn wt-btn--secondary wt-review-feedback" data-action="review-feedback">
           ${escapeHtml(reviewLastFeedbackLabel)}
         </button>
       `

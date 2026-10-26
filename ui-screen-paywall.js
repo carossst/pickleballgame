@@ -202,7 +202,14 @@
 
     const progressLine1 =
       (progressLine1Tpl && Number.isFinite(payRunCount))
-        ? fillTemplate(progressLine1Tpl, { seen, poolSize, remaining, score: lastRunScore, runs: payRunCount })
+        ? fillTemplate(progressLine1Tpl, {
+          seen,
+          poolSize,
+          remaining,
+          score: lastRunScore,
+          runs: payRunCount,
+          questionWord: seen === 1 ? "question" : "questions"
+        })
         : "";
 
     const mistakeLineTpl = String(pay.mistakeLineTemplate || "").trim();
@@ -436,7 +443,7 @@
       ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
       ${(waitlistOnPaywall && notReadyCta) ? `<p class="wt-paywall-linkline">${notReadyLine ? `<span class="wt-muted">${escapeHtml(notReadyLine)}</span> ` : ``}<button class="wt-text-action" data-action="open-waitlist">${escapeHtml(notReadyCta)}</button></p>` : ``}
 
-      ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
+      ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-text-action wt-paywall-redeem__button" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 
       ${checkoutNote ? `<p class="wt-muted wt-note wt-note--checkout">${escapeHtml(checkoutNote)}</p>` : ``}
       ${deviceNote ? `<p class="wt-muted wt-note wt-note--device">${escapeHtml(deviceNote)}</p>` : ``}

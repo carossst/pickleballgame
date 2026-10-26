@@ -4538,9 +4538,43 @@ arcade" feel; deviation from --fs-* scale is expected. */
   margin-top: var(--space-10);
 }
 
+.wt-paywall-redeem__button {
+  font-size: var(--fs-sm);
+  line-height: 1.35;
+}
+
 .wt-paywall-linkline {
   margin: var(--space-8) 0 0;
   text-align: center;
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 480px) {
+  .wt-card--paywall {
+    padding-inline: var(--gap-3);
+  }
+
+  .wt-card--paywall .wt-paywall-hero .wt-h1 {
+    margin-top: var(--space-8);
+  }
+
+  .wt-card--paywall .wt-paywall-summary {
+    gap: var(--space-6);
+    margin-top: var(--space-10);
+  }
+
+  .wt-card--paywall .wt-paywall-summary__item {
+    padding: var(--space-8) var(--space-10);
+    font-size: var(--fs-xs);
+  }
+
+  .wt-card--paywall .wt-paywall-section {
+    margin-top: var(--space-10);
+  }
+
+  .wt-card--paywall .wt-paywall-redeem {
+    margin-top: var(--space-8);
+  }
 }
 
 .wt-hero-kpi--modal {
@@ -4833,10 +4867,10 @@ arcade" feel; deviation from --fs-* scale is expected. */
   margin-top: var(--space-18);
 }
 
-.wt-feedback-read-longer {
+.wt-review-feedback {
   display: block;
+  width: min(100%, 34rem);
   margin: var(--space-10) auto 0;
-  font-size: var(--fs-small);
 }
 
 .wt-card > .wt-explanation + .wt-actions:not(.wt-actions--feedback) {

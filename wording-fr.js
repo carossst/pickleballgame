@@ -858,7 +858,7 @@
         'Revoyez les {mistakes} question{pluralS} ratée{pluralS}.',
 
       progressLine1:
-        'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
+        'Vous avez vu {seen} {questionWord}. Il en reste {remaining} dans le quiz complet.',
       mistakeLineTemplate:
         'Vous avez raté {mistakes} question{pluralS}. Le Mode Erreurs les transforme en révision ciblée.',
       progressLine2: '',

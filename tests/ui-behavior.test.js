@@ -360,6 +360,38 @@ test('feedback shows a compact learning line from playing wording fallback', () 
   expect(html).toContain('Trap spotted for next time.');
 });
 
+test('next question keeps a persistent review button instead of timed keep-reading', () => {
+  const ui = createPlayingUi({
+    runCompletes: 1,
+    usedAudio: false,
+    autoRead: false
+  });
+
+  ui.wording.system.reviewLastFeedback = 'Review last answer';
+  ui.wording.system.readLonger = 'Keep reading';
+  ui._runtime.lastFeedbackReview = {
+    item: {
+      id: 1,
+      question: 'Was the serve legal?',
+      assertion: 'Choose true or false.',
+      correctAnswer: true
+    },
+    answer: {
+      isCorrect: false,
+      pickedAnswer: false,
+      correctAnswer: true,
+      feedbackLine: 'The serve must land diagonally crosscourt.'
+    }
+  };
+
+  const html = ui._renderPlaying();
+
+  expect(html).toContain('data-action="review-feedback"');
+  expect(html).toContain('wt-btn wt-btn--secondary wt-review-feedback');
+  expect(html).not.toContain('data-action="pause-feedback"');
+  expect(html).not.toContain('wt-feedback-read-longer');
+});
+
 test('claimShareBonus grants via native share and rerenders once', async () => {
   const { UI, context } = loadUiModule();
   let shareGranted = false;

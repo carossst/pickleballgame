@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.16",
+    version: "4.3.17",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1762,7 +1762,7 @@
       mistakeHeadlineTemplate: 'Fix the {mistakes} rule trap{pluralS} you just missed.',
 
       progressLine1:
-        "You've seen {seen} questions. {remaining} more are waiting in the full set.",
+        "You've seen {seen} {questionWord}. {remaining} more are waiting in the full set.",
       mistakeLineTemplate:
         'You missed {mistakes} rule trap{pluralS}. Mistakes Mode turns them into focused practice.',
       progressLine2: '',
@@ -2951,7 +2951,7 @@ Thanks!`
         'Revoyez les {mistakes} question{pluralS} ratée{pluralS}.',
 
       progressLine1:
-        'Vous avez vu {seen} questions. Il en reste {remaining} dans le quiz complet.',
+        'Vous avez vu {seen} {questionWord}. Il en reste {remaining} dans le quiz complet.',
       mistakeLineTemplate:
         'Vous avez raté {mistakes} question{pluralS}. Le Mode Erreurs les transforme en révision ciblée.',
       progressLine2: '',
@@ -8202,7 +8202,14 @@ Merci !`
 
     const progressLine1 =
       (progressLine1Tpl && Number.isFinite(payRunCount))
-        ? fillTemplate(progressLine1Tpl, { seen, poolSize, remaining, score: lastRunScore, runs: payRunCount })
+        ? fillTemplate(progressLine1Tpl, {
+          seen,
+          poolSize,
+          remaining,
+          score: lastRunScore,
+          runs: payRunCount,
+          questionWord: seen === 1 ? "question" : "questions"
+        })
         : "";
 
     const mistakeLineTpl = String(pay.mistakeLineTemplate || "").trim();
@@ -8436,7 +8443,7 @@ Merci !`
       ${notNowLabel ? `<p class="wt-paywall-linkline"><button class="wt-text-action" data-action="go-home">${escapeHtml(notNowLabel)}</button></p>` : ``}
       ${(waitlistOnPaywall && notReadyCta) ? `<p class="wt-paywall-linkline">${notReadyLine ? `<span class="wt-muted">${escapeHtml(notReadyLine)}</span> ` : ``}<button class="wt-text-action" data-action="open-waitlist">${escapeHtml(notReadyCta)}</button></p>` : ``}
 
-      ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-btn wt-btn--ghost" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
+      ${redeemLabel ? `<p class="wt-muted wt-paywall-redeem"><button class="wt-text-action wt-paywall-redeem__button" data-action="redeem-code">${escapeHtml(redeemLabel)}</button></p>` : ``}
 
       ${checkoutNote ? `<p class="wt-muted wt-note wt-note--checkout">${escapeHtml(checkoutNote)}</p>` : ``}
       ${deviceNote ? `<p class="wt-muted wt-note wt-note--device">${escapeHtml(deviceNote)}</p>` : ``}
@@ -23216,17 +23223,12 @@ ${questionAudioHtml}
         youChosePrefix && pickedLabel ? `${youChosePrefix} ${pickedLabel}` : '';
 
       const continueCta = String(wAll.system?.continue || '').trim();
-      const readLongerCta = String(wAll.system?.readLonger || '').trim();
       const tapToContinue = String(wAll.system?.tapToContinue || '').trim();
       const autoGameOverAfterFeedback =
         this._runtime?.autoGameOverAfterFeedback === true;
       const feedbackActionAttr = autoGameOverAfterFeedback
         ? ` data-action="continue"`
         : '';
-      const canPauseAutoAdvance =
-        !autoGameOverAfterFeedback &&
-        this._runtime?.feedbackAutoAdvancePaused !== true &&
-        !!readLongerCta;
 
       // Stable explanation for the frozen item during feedback (KISS)
       const stableExplanation = String(ans.feedbackLine || '').trim();
@@ -23275,11 +23277,6 @@ ${questionAudioHtml}
           ${escapeHtml(continueCta)}
         </button>
       </div>
-      ${canPauseAutoAdvance ? `
-        <button type="button" class="wt-text-action wt-feedback-read-longer" data-action="pause-feedback">
-          ${escapeHtml(readLongerCta)}
-        </button>
-      ` : ``}
     `
                 : ``
             }
@@ -23309,7 +23306,7 @@ ${questionAudioHtml}
       this._runtime?.lastFeedbackReview &&
       reviewLastFeedbackLabel
         ? `
-        <button type="button" class="wt-text-action wt-review-feedback" data-action="review-feedback">
+        <button type="button" class="wt-btn wt-btn--secondary wt-review-feedback" data-action="review-feedback">
           ${escapeHtml(reviewLastFeedbackLabel)}
         </button>
       `
@@ -24077,12 +24074,12 @@ ${questionAudioHtml}
       class="wt-locale-swap"
       href="${href}"
       data-wt-locale-swap-to="${other}"
-      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
+      aria-label="${aria}: ${label}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></a>`;
     }
     return `<button type="button"
       class="wt-locale-swap"
       data-wt-locale-swap-to="${other}"
-      aria-label="${aria}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></button>`;
+      aria-label="${aria}: ${label}">${getGlobeIconHtml()}<span class="wt-locale-swap__label">${label}</span></button>`;
   }
 
   function buildDropdownHtml(active) {
@@ -24583,6 +24580,8 @@ ${questionAudioHtml}
       if (node && node.classList) {
         node.classList.remove('wt-toast--visible');
         node.setAttribute('aria-hidden', 'true');
+        const action = node.querySelector('[data-action="apply-update"]');
+        if (action) action.setAttribute('disabled', '');
       }
     }
 
@@ -24623,6 +24622,8 @@ ${questionAudioHtml}
 
       const text = node.querySelector('[data-wt-update-text]');
       if (text) text.textContent = msg;
+      const action = node.querySelector('[data-action="apply-update"]');
+      if (action) action.removeAttribute('disabled');
 
       node.classList.add('wt-toast--visible');
       node.setAttribute('aria-hidden', 'false');
