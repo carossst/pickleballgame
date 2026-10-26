@@ -10269,6 +10269,10 @@ ${audioSettingsHtml}
     if (!mastered && focusedAction && focusedLabel) {
       primaryAction = focusedAction;
       primaryLabel = focusedLabel;
+      if (focusedAction === 'start-run' && canPractice && !runsExhausted) {
+        secondaryAction = 'start-practice';
+        secondaryLabel = String(practiceCta || '').trim();
+      }
     } else if (mastered) {
       primaryAction = 'start-secret-bonus';
       primaryLabel = String(postW.masteredCtaBonus || '').trim();
@@ -10365,7 +10369,7 @@ ${audioSettingsHtml}
 
     if (!primaryLabel || !primaryAction) return masteredHtml || ``;
 
-    if (forceSinglePrimary === true) {
+    if (forceSinglePrimary === true && !secondaryAction) {
       secondaryAction = '';
       secondaryLabel = '';
     }

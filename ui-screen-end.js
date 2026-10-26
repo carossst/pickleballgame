@@ -495,21 +495,13 @@
       lastRunMistakeCount > 0 &&
       !poolCompleteCelebration
     );
-    const focusedRunCanPractice = !!(
-      focusedRunEnd &&
-      !runsExhausted &&
-      canPractice &&
-      cfg?.mistakesOnly?.enabled === true
-    );
     const focusedEndPrimaryAction = focusedRunEnd
-      ? (runsExhausted ? "open-paywall" : focusedRunCanPractice ? "start-practice" : "start-run")
+      ? (runsExhausted ? "open-paywall" : "start-run")
       : "";
     const focusedEndPrimaryLabel = focusedRunEnd
       ? (runsExhausted
         ? upgradeCta
-        : focusedRunCanPractice
-          ? String(end.practiceCta || practiceCta || "").trim()
-          : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
+        : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
       : "";
     const focusedRunCopyTpl = focusedRunEnd
       ? String((runsExhausted ? end.focusedRunPaywallLine : end.focusedRunPracticeLine) || end.focusedRunLine || "").trim()

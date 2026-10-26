@@ -8968,21 +8968,13 @@ Merci !`
       lastRunMistakeCount > 0 &&
       !poolCompleteCelebration
     );
-    const focusedRunCanPractice = !!(
-      focusedRunEnd &&
-      !runsExhausted &&
-      canPractice &&
-      cfg?.mistakesOnly?.enabled === true
-    );
     const focusedEndPrimaryAction = focusedRunEnd
-      ? (runsExhausted ? "open-paywall" : focusedRunCanPractice ? "start-practice" : "start-run")
+      ? (runsExhausted ? "open-paywall" : "start-run")
       : "";
     const focusedEndPrimaryLabel = focusedRunEnd
       ? (runsExhausted
         ? upgradeCta
-        : focusedRunCanPractice
-          ? String(end.practiceCta || practiceCta || "").trim()
-          : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
+        : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
       : "";
     const focusedRunCopyTpl = focusedRunEnd
       ? String((runsExhausted ? end.focusedRunPaywallLine : end.focusedRunPracticeLine) || end.focusedRunLine || "").trim()
@@ -22549,6 +22541,10 @@ ${audioSettingsHtml}
     if (!mastered && focusedAction && focusedLabel) {
       primaryAction = focusedAction;
       primaryLabel = focusedLabel;
+      if (focusedAction === 'start-run' && canPractice && !runsExhausted) {
+        secondaryAction = 'start-practice';
+        secondaryLabel = String(practiceCta || '').trim();
+      }
     } else if (mastered) {
       primaryAction = 'start-secret-bonus';
       primaryLabel = String(postW.masteredCtaBonus || '').trim();
@@ -22645,7 +22641,7 @@ ${audioSettingsHtml}
 
     if (!primaryLabel || !primaryAction) return masteredHtml || ``;
 
-    if (forceSinglePrimary === true) {
+    if (forceSinglePrimary === true && !secondaryAction) {
       secondaryAction = '';
       secondaryLabel = '';
     }

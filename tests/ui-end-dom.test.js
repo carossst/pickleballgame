@@ -44,7 +44,7 @@ function buildHelpers(overrides) {
         return '<div>share</div>';
       },
       buildEndActionsHtml(args) {
-        return `<div data-flags="incomplete:${args.dailyChallengeIncomplete}|replay:${args.dailyChallengeNeedsReplayReward}|cta:${args.dailyChallengeCta}|focused:${args.focusedEndPrimaryAction || ''}|single:${args.forceSinglePrimary === true}">${args.focusedEndPrimaryLabel || ''}</div>`;
+        return `<div data-flags="incomplete:${args.dailyChallengeIncomplete}|replay:${args.dailyChallengeNeedsReplayReward}|cta:${args.dailyChallengeCta}|focused:${args.focusedEndPrimaryAction || ''}|single:${args.forceSinglePrimary === true}|secondary:${args.canPractice ? args.practiceCta || '' : ''}">${args.focusedEndPrimaryLabel || ''}</div>`;
       },
       getRunTierInfo() {
         return { currentLabel: 'Solid', nextTarget: 12, nextLabel: 'Strong' };
@@ -174,7 +174,7 @@ test('END render flags daily replay reward for free RUN 1 success case', () => {
   );
 
   expect(html).toContain(
-    'data-flags="incomplete:true|replay:true|cta:Retry daily|focused:|single:false"'
+    'data-flags="incomplete:true|replay:true|cta:Retry daily|focused:|single:false|secondary:"'
   );
   expect(html).toContain('data-daily-line="Cleared preview 12"');
 });
@@ -387,9 +387,9 @@ test('END render keeps a RUN with mistakes focused on one next action', () => {
   expect(html).toContain(
     'This challenge ended after 2 mistakes. Practice them before the next run.'
   );
-  expect(html).toContain('focused:start-practice');
+  expect(html).toContain('focused:start-run');
   expect(html).toContain('single:true');
-  expect(html).toContain('Practice my mistakes');
+  expect(html).toContain('secondary:Practice my mistakes');
   expect(html).not.toContain('<div>share</div>');
   expect(html).not.toContain('<div>mistakes</div>');
 });
