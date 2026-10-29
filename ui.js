@@ -2713,6 +2713,12 @@ void (function () {
           ? clampInt(lastRun.mistakeIds.length, 0, 999)
           : 0;
         const score = clampInt(lastRun.scoreFP, 0, 99999);
+        const comboContext = mode === MODES.RUN ? {
+          combo_reached: Number(lastRun.comboActivations || 0) > 0,
+          combo_activations: Number(lastRun.comboActivations || 0),
+          bonus_points: Number(lastRun.bonusPoints || 0),
+          max_correct_streak: Number(lastRun.maxCorrectStreak || 0)
+        } : {};
 
         window.WT_Analytics.trackFunnel(
           'end_action_click',
@@ -2721,7 +2727,8 @@ void (function () {
             mode,
             run_type: runType,
             mistakes_count: mistakeCount,
-            score
+            score,
+            ...comboContext
           })
         );
 
@@ -2741,7 +2748,8 @@ void (function () {
               from_state: 'end',
               mode,
               run_type: runType || '',
-              action
+              action,
+              ...comboContext
             })
           );
         }
@@ -5240,13 +5248,10 @@ ${audioSettingsHtml}
         mp.momentumLevel = Math.min(maxSegments, Math.max(target, current + 1));
       }
     } else {
-      const maxSegments = getMomentumSegments(cfg) || 6;
-      const currentLevel = clampInt(mp.momentumLevel, 0, maxSegments);
-
       mp.correctStreak = 0;
       mp.flowTierShown = 0;
 
-      mp.momentumLevel = getMomentumDropLevel(cfg, currentLevel);
+      mp.momentumLevel = 0;
     }
 
     // Danger overlays are handled centrally (no micro-pic overlay on chance loss)
@@ -6294,6 +6299,20 @@ ${audioSettingsHtml}
       this.game && typeof this.game.answer === 'function'
         ? this.game.answer(picked)
         : null;
+    try {
+      if (res?.isCorrect === true && res.state?.mode === MODES.RUN &&
+          res.state.correctStreak === 4 && window.WT_Analytics) {
+        window.WT_Analytics.trackFunnel('combo_unlocked',
+          window.WT_Analytics.inferUiContext(this, {
+            mode: MODES.RUN,
+            run_type: this._runtime.runType || '',
+            combo_activations: res.state.comboActivations,
+            bonus_points: res.state.bonusPoints,
+            score: res.state.scoreFP,
+            threshold: 4
+          }));
+      }
+    } catch (_) { /* Analytics must not interrupt gameplay. */ }
     // Flag a short-lived pulse when a chance is lost (CSS owns the actual animation)
     let chanceLost = false;
     let nowChancesLeft = null;
@@ -7505,6 +7524,9 @@ ${audioSettingsHtml}
       maxChances,
       chancesLeft,
       newBest,
+      correctCount: Number(gameState.correctCount || 0),
+      bonusPoints: Number(gameState.bonusPoints || 0),
+      comboActivations: Number(gameState.comboActivations || 0),
       bestScoreFP,
       maxCorrectStreak: finalMaxStreak,
       mistakeIds: Array.isArray(this._runtime.runMistakeIds)
@@ -7537,7 +7559,13 @@ ${audioSettingsHtml}
           'run_complete',
           window.WT_Analytics.inferUiContext(this, {
             mode,
-            run_type: this._runtime.lastRun.runType || ''
+            run_type: this._runtime.lastRun.runType || '',
+            ...(mode === MODES.RUN ? {
+              combo_reached: Number(gameState.comboActivations || 0) > 0,
+              combo_activations: Number(gameState.comboActivations || 0),
+              bonus_points: Number(gameState.bonusPoints || 0),
+              max_correct_streak: finalMaxStreak
+            } : {})
           })
         );
       }
@@ -10521,7 +10549,9 @@ ${audioSettingsHtml}
 
     // HUD deltas (arcade): +1 on score flash, +1 mistake on mistake pulse
     // Copy visible => WT_WORDING.ui (pas WT_CONFIG)
-    const scoreDeltaText = String(ui?.scoreGainedDeltaText || '').trim();
+    const scoreDeltaText = modeNow === 'RUN' && Number(gameState.correctCount || 0) > 4 && Number(this._runtime?.microPics?.correctStreak || 0) > 4
+      ? '+2'
+      : String(ui?.scoreGainedDeltaText || '').trim();
     const scoreDeltaHtml =
       scoreFlashOn && scoreDeltaText
         ? `<span class="wt-pill__delta wt-pill__delta--score" aria-hidden="true">${escapeHtml(scoreDeltaText)}</span>`
@@ -10646,7 +10676,7 @@ ${audioSettingsHtml}
     const momentumHtml = momentumState
       ? `
         <div class="wt-momentum-wrap">
-          <div class="wt-momentum" aria-label="${escapeHtml(fillTemplate(String(wAll?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
+          <div class="wt-momentum" title="${escapeHtml(String(wAll.system?.comboRule || ''))}" aria-label="${escapeHtml(fillTemplate(String(wAll?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
             ${Array(momentumState.segments)
               .fill(null)
               .map(
@@ -10657,9 +10687,9 @@ ${audioSettingsHtml}
               .join('')}
           </div>
           ${
-            momentumState.streak > momentumState.segments
+            momentumState.streak >= momentumState.segments
               ? `
-            <span class="wt-momentum__combo" aria-hidden="true">${momentumState.streak}</span>
+            <span class="wt-momentum__combo" aria-label="${escapeHtml(String(wAll.system?.doublePoints || ''))}">×2</span>
           `
               : ``
           }

@@ -134,7 +134,10 @@
         'Contenu indisponible. Vérifiez votre connexion et rechargez la page.',
       fatalDataLoadFailed:
         'Impossible de charger les données du jeu. Vérifiez votre connexion puis actualisez la page.',
-      momentumAria: 'Progression {filled}/{segments}'
+      momentumAria: 'Progression vers les points doubles {filled}/{segments}',
+      doublePoints: 'Points doubles actifs jusqu’à la prochaine erreur',
+      comboSummary: '{correct} bonnes réponses · {bonus} points bonus',
+      comboRule: '4 bonnes réponses de suite activent les points doubles jusqu’à la prochaine erreur.'
     },
 
     footer: {
@@ -334,6 +337,7 @@
       run1Lines: [
         'Vous voyez les règles du pickleball une par une.\nDécidez si chacune est vraie ou fausse.',
         'Bonne réponse : +1 point.',
+        '4 bonnes réponses de suite activent les points doubles jusqu’à la prochaine erreur.',
         'Mauvaise réponse : +1 erreur.',
         'Après {maxChances} erreurs, la partie est terminée.',
         "L'objectif ici, c'est d'apprendre les règles une par une."

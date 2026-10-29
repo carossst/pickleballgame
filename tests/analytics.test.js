@@ -93,6 +93,24 @@ test('analytics includes end action in funnel event paths', () => {
   ).toBe('event/end-action-click/run/action-start-practice/src-seo/free/en');
 });
 
+test('combo cohorts are filterable paths and numeric metrics stay in titles', () => {
+  const { analytics } = loadAnalytics();
+  for (const reached of [true, false]) {
+    const props = {
+      mode: 'RUN',
+      combo_reached: reached,
+      combo_activations: reached ? 1 : 0,
+      bonus_points: reached ? 2 : 0
+    };
+    expect(analytics.buildEventPath('run_complete', props)).toBe(
+      `event/run-complete/run/combo-${reached ? 'reached' : 'not-reached'}`
+    );
+    expect(analytics.buildEventTitle('run_complete', props)).toContain(
+      `combo_activations=${props.combo_activations}`
+    );
+  }
+});
+
 test('analytics infers UI context from locale, source, and storage', () => {
   const { analytics } = loadAnalytics({
     window: {

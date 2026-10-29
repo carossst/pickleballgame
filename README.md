@@ -267,6 +267,28 @@ Preview is visual only. It does not write fake progression into storage.
 
 ## End Screen Notes
 
+### Double points
+
+In RUN, four consecutive correct answers fill the green meter. Starting with the
+fifth, correct answers earn two points until the next mistake. A mistake resets
+the meter but preserves earned points. PRACTICE and Rapid Fire keep one point per
+correct answer. The end screen separates correct answers from bonus points.
+
+This scoring change uses leaderboard content version `2026-10-28-combo4`.
+Deploy the updated leaderboard Worker together with the frontend; mismatched
+versions reject score submissions. Existing leaderboard records and personal bests
+are retained and were earned with the previous scoring rules.
+
+Combo analytics: `combo_unlocked` fires when a RUN reaches four consecutive
+correct answers, including a new activation after a mistake. `run_complete`,
+`end_action_click`, and `second_run_return` include `combo_reached`,
+`combo_activations`, `bonus_points`, and `max_correct_streak` for RUN.
+Filter GoatCounter paths by `event/combo-unlocked`, or by `combo-reached` and
+`combo-not-reached` to compare completed runs and replay clicks. Numeric values
+are included in event titles for diagnostics; titles are not per-run records
+and cannot be summed as custom metrics. GoatCounter session deduplication also
+means activation event counts are not an exact count of every reactivation.
+
 - The main game end screen stays intentionally compact: score, verdict, progress lens, CTA, and recap when useful
 - secondary end-screen signals are intentionally limited to learning/business context such as tag insight, full access best-score context, and free games left
 - `best streak` is treated as an in-game momentum signal, not a core end-screen signal

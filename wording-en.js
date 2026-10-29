@@ -132,7 +132,10 @@
         'Content not available. Please check your connection and reload.',
       fatalDataLoadFailed:
         'Unable to load game data. Please check your connection and refresh.',
-      momentumAria: 'Momentum {filled}/{segments}'
+      momentumAria: 'Double points progress {filled}/{segments}',
+      doublePoints: 'Double points active until your next mistake',
+      comboSummary: '{correct} correct answers · {bonus} bonus points',
+      comboRule: '4 correct answers in a row unlock double points until your next mistake.'
     },
 
     footer: {
@@ -331,6 +334,7 @@
       run1Lines: [
         "You'll see pickleball rules one by one.\nDecide whether each one is true or false.",
         'Correct answer: +1 point.',
+        '4 correct in a row unlock double points until your next mistake.',
         'Wrong answer: +1 mistake.',
         'After {maxChances} mistakes, the game ends.',
         'Think You Know Pickleball? Prove It.'

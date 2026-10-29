@@ -120,6 +120,10 @@
       if (priceKey) parts.push(`price-${priceKey}`);
     }
 
+    if (typeof p.combo_reached === 'boolean') {
+      parts.push(p.combo_reached ? 'combo-reached' : 'combo-not-reached');
+    }
+
     if (p.entry_source) {
       const entrySource = slugify(p.entry_source);
       if (entrySource) parts.push(`src-${entrySource}`);

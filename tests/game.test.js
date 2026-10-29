@@ -36,6 +36,86 @@ function makeRunConfig(overrides) {
   );
 }
 
+test('RUN doubles points after four correct answers and resets after a mistake', () => {
+  const engine = new (createGameApi().GameEngine)();
+  engine.start({
+    items: Array.from({ length: 20 }, (_, i) => ({
+      id: i + 1,
+      correctAnswer: true
+    })),
+    statsByItem: {},
+    getStatsByItem: () => ({}),
+    config: makeRunConfig(),
+    mode: 'RUN'
+  });
+  for (let i = 0; i < 4; i++) engine.answer(true);
+  expect(engine.getState()).toMatchObject({
+    scoreFP: 4,
+    scoreMultiplier: 2,
+    comboActivations: 1
+  });
+  engine.answer(true);
+  expect(engine.getState()).toMatchObject({
+    scoreFP: 6,
+    correctCount: 5,
+    comboActivations: 1,
+    bonusPoints: 1
+  });
+  engine.answer(false);
+  expect(engine.getState().scoreMultiplier).toBe(1);
+  engine.answer(true);
+  expect(engine.getState()).toMatchObject({
+    scoreFP: 7,
+    correctCount: 6,
+    bonusPoints: 1
+  });
+  for (let i = 0; i < 3; i++) engine.answer(true);
+  expect(engine.getState().comboActivations).toBe(2);
+  engine.start({
+    items: [{ id: 1, correctAnswer: true }],
+    statsByItem: {},
+    getStatsByItem: () => ({}),
+    config: makeRunConfig(),
+    mode: 'RUN'
+  });
+  expect(engine.getState()).toMatchObject({
+    scoreFP: 0,
+    scoreMultiplier: 1,
+    comboActivations: 0,
+    bonusPoints: 0
+  });
+});
+
+test.each(['PRACTICE', 'BONUS'])(
+  '%s keeps one point per correct answer beyond six',
+  (mode) => {
+    const engine = new (createGameApi().GameEngine)();
+    const items = Array.from({ length: 9 }, (_, i) => ({
+      id: i + 1,
+      correctAnswer: true
+    }));
+    const statsByItem = Object.fromEntries(
+      items.map((item) => [
+        item.id,
+        { seenCount: 1, lastWrongAt: 2, lastCorrectAt: 0 }
+      ])
+    );
+    engine.start({
+      items,
+      statsByItem,
+      getStatsByItem: () => statsByItem,
+      config: makeRunConfig(),
+      mode
+    });
+    for (let i = 0; i < 7; i++) engine.answer(true);
+    expect(engine.getState()).toMatchObject({
+      scoreFP: 7,
+      bonusPoints: 0,
+      scoreMultiplier: 1
+    });
+  }
+);
+
 test('buildSeenDeck keeps only seen items', () => {
   const WT_Game = createGameApi();
   const deck = WT_Game.buildSeenDeck({

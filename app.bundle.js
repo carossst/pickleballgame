@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.17",
+    version: "4.3.20",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -344,22 +344,18 @@
       // Pulses (HUD) + extension window for last-chance overlay
       gameplayPulseMs: 450,
 
-      // Momentum meter (HUD, UI-only)
+      // RUN double-points meter: four consecutive correct answers charge it.
       momentumMeter: {
         enabled: true,
         mode: "RUN",
-        segments: 6,
+        segments: 4,
         thresholds: {
           s1: 1,
           s2: 2,
           s3: 3,
-          s4: 4,
-          s5: 5,
-          s6: 6
+          s4: 4
         },
         dropTiers: [
-          { minLevel: 6, dropTo: 3 },
-          { minLevel: 4, dropTo: 2 },
           { minLevel: 0, dropTo: 0 }
         ]
       },
@@ -434,7 +430,7 @@
       cacheTtlMs: 60 * 1000,
       requestTimeoutMs: 4000,
       submitScores: true,
-      contentVersion: "2026-05-23",
+      contentVersion: "2026-10-28-combo4",
       nicknameMinLen: 3,
       nicknameMaxLen: 24,
       nicknameRegexSource: "^[\\p{L}\\p{N}][\\p{L}\\p{N} _-]{2,23}$",
@@ -1052,7 +1048,10 @@
         'Content not available. Please check your connection and reload.',
       fatalDataLoadFailed:
         'Unable to load game data. Please check your connection and refresh.',
-      momentumAria: 'Momentum {filled}/{segments}'
+      momentumAria: 'Double points progress {filled}/{segments}',
+      doublePoints: 'Double points active until your next mistake',
+      comboSummary: '{correct} correct answers · {bonus} bonus points',
+      comboRule: '4 correct answers in a row unlock double points until your next mistake.'
     },
 
     footer: {
@@ -1251,6 +1250,7 @@
       run1Lines: [
         "You'll see pickleball rules one by one.\nDecide whether each one is true or false.",
         'Correct answer: +1 point.',
+        '4 correct in a row unlock double points until your next mistake.',
         'Wrong answer: +1 mistake.',
         'After {maxChances} mistakes, the game ends.',
         'Think You Know Pickleball? Prove It.'
@@ -2227,7 +2227,10 @@ Thanks!`
         'Contenu indisponible. Vérifiez votre connexion et rechargez la page.',
       fatalDataLoadFailed:
         'Impossible de charger les données du jeu. Vérifiez votre connexion puis actualisez la page.',
-      momentumAria: 'Progression {filled}/{segments}'
+      momentumAria: 'Progression vers les points doubles {filled}/{segments}',
+      doublePoints: 'Points doubles actifs jusqu’à la prochaine erreur',
+      comboSummary: '{correct} bonnes réponses · {bonus} points bonus',
+      comboRule: '4 bonnes réponses de suite activent les points doubles jusqu’à la prochaine erreur.'
     },
 
     footer: {
@@ -2427,6 +2430,7 @@ Thanks!`
       run1Lines: [
         'Vous voyez les règles du pickleball une par une.\nDécidez si chacune est vraie ou fausse.',
         'Bonne réponse : +1 point.',
+        '4 bonnes réponses de suite activent les points doubles jusqu’à la prochaine erreur.',
         'Mauvaise réponse : +1 erreur.',
         'Après {maxChances} erreurs, la partie est terminée.',
         "L'objectif ici, c'est d'apprendre les règles une par une."
@@ -3665,6 +3669,10 @@ Merci !`
     if (p.price_key) {
       const priceKey = slugify(p.price_key);
       if (priceKey) parts.push(`price-${priceKey}`);
+    }
+
+    if (typeof p.combo_reached === 'boolean') {
+      parts.push(p.combo_reached ? 'combo-reached' : 'combo-not-reached');
     }
 
     if (p.entry_source) {
@@ -7749,6 +7757,11 @@ Merci !`
         mode: this.run.mode,
         done: !!this.run.done,
         scoreFP: Number.isFinite(this.run.scoreFP) ? Number(this.run.scoreFP) : 0,
+        correctCount: Number(this.run.correctCount || 0),
+        bonusPoints: Number(this.run.bonusPoints || 0),
+        comboActivations: Number(this.run.comboActivations || 0),
+        correctStreak: Number(this.run.correctStreak || 0),
+        scoreMultiplier: this.run.mode === MODES.RUN && Number(this.run.correctStreak || 0) >= 4 ? 2 : 1,
         chancesLeft: (this.run.chancesLeft == null) ? null : Number(this.run.chancesLeft || 0),
         maxChances: (this.run.maxChances == null) ? null : Number(this.run.maxChances),
         idx,
@@ -7789,6 +7802,7 @@ Merci !`
       // Fail-closed: content bug should not corrupt the run.
       // Treat as a wrong answer: consume 1 chance, and end if it hits 0.
       if (idNum == null || correct == null) {
+        this.run.correctStreak = 0;
         if (this.run.chancesLeft != null) {
           const left = Number(this.run.chancesLeft || 0);
           this.run.chancesLeft = Math.max(0, left - 1);
@@ -7847,8 +7861,17 @@ Merci !`
 
       // scoring commun à tous les modes (BONUS / RUN / PRACTICE)
       if (isCorrect) {
-        this.run.scoreFP = Number(this.run.scoreFP || 0) + 1;
+        // Four correct answers charge the meter; the fifth earns double points.
+        const points = this.run.mode === MODES.RUN && Number(this.run.correctStreak || 0) >= 4 ? 2 : 1;
+        this.run.correctStreak = Number(this.run.correctStreak || 0) + 1;
+        if (this.run.mode === MODES.RUN && this.run.correctStreak === 4) {
+          this.run.comboActivations = Number(this.run.comboActivations || 0) + 1;
+        }
+        this.run.correctCount = Number(this.run.correctCount || 0) + 1;
+        this.run.bonusPoints = Number(this.run.bonusPoints || 0) + points - 1;
+        this.run.scoreFP = Number(this.run.scoreFP || 0) + points;
       } else {
+        this.run.correctStreak = 0;
         // Track mistake for this run (END screen)
         try {
           if (idNum != null && Array.isArray(this.run.runMistakeIds) && !this.run.runMistakeIds.includes(idNum)) this.run.runMistakeIds.push(idNum);
@@ -9185,6 +9208,7 @@ Merci !`
   ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
+    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-muted">${escapeHtml(fillTemplate(w.system?.comboSummary || '', { correct: lastRun.correctCount, bonus: lastRun.bonusPoints }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
   </div>
@@ -14985,6 +15009,12 @@ void (function () {
           ? clampInt(lastRun.mistakeIds.length, 0, 999)
           : 0;
         const score = clampInt(lastRun.scoreFP, 0, 99999);
+        const comboContext = mode === MODES.RUN ? {
+          combo_reached: Number(lastRun.comboActivations || 0) > 0,
+          combo_activations: Number(lastRun.comboActivations || 0),
+          bonus_points: Number(lastRun.bonusPoints || 0),
+          max_correct_streak: Number(lastRun.maxCorrectStreak || 0)
+        } : {};
 
         window.WT_Analytics.trackFunnel(
           'end_action_click',
@@ -14993,7 +15023,8 @@ void (function () {
             mode,
             run_type: runType,
             mistakes_count: mistakeCount,
-            score
+            score,
+            ...comboContext
           })
         );
 
@@ -15013,7 +15044,8 @@ void (function () {
               from_state: 'end',
               mode,
               run_type: runType || '',
-              action
+              action,
+              ...comboContext
             })
           );
         }
@@ -17512,13 +17544,10 @@ ${audioSettingsHtml}
         mp.momentumLevel = Math.min(maxSegments, Math.max(target, current + 1));
       }
     } else {
-      const maxSegments = getMomentumSegments(cfg) || 6;
-      const currentLevel = clampInt(mp.momentumLevel, 0, maxSegments);
-
       mp.correctStreak = 0;
       mp.flowTierShown = 0;
 
-      mp.momentumLevel = getMomentumDropLevel(cfg, currentLevel);
+      mp.momentumLevel = 0;
     }
 
     // Danger overlays are handled centrally (no micro-pic overlay on chance loss)
@@ -18566,6 +18595,20 @@ ${audioSettingsHtml}
       this.game && typeof this.game.answer === 'function'
         ? this.game.answer(picked)
         : null;
+    try {
+      if (res?.isCorrect === true && res.state?.mode === MODES.RUN &&
+          res.state.correctStreak === 4 && window.WT_Analytics) {
+        window.WT_Analytics.trackFunnel('combo_unlocked',
+          window.WT_Analytics.inferUiContext(this, {
+            mode: MODES.RUN,
+            run_type: this._runtime.runType || '',
+            combo_activations: res.state.comboActivations,
+            bonus_points: res.state.bonusPoints,
+            score: res.state.scoreFP,
+            threshold: 4
+          }));
+      }
+    } catch (_) { /* Analytics must not interrupt gameplay. */ }
     // Flag a short-lived pulse when a chance is lost (CSS owns the actual animation)
     let chanceLost = false;
     let nowChancesLeft = null;
@@ -19777,6 +19820,9 @@ ${audioSettingsHtml}
       maxChances,
       chancesLeft,
       newBest,
+      correctCount: Number(gameState.correctCount || 0),
+      bonusPoints: Number(gameState.bonusPoints || 0),
+      comboActivations: Number(gameState.comboActivations || 0),
       bestScoreFP,
       maxCorrectStreak: finalMaxStreak,
       mistakeIds: Array.isArray(this._runtime.runMistakeIds)
@@ -19809,7 +19855,13 @@ ${audioSettingsHtml}
           'run_complete',
           window.WT_Analytics.inferUiContext(this, {
             mode,
-            run_type: this._runtime.lastRun.runType || ''
+            run_type: this._runtime.lastRun.runType || '',
+            ...(mode === MODES.RUN ? {
+              combo_reached: Number(gameState.comboActivations || 0) > 0,
+              combo_activations: Number(gameState.comboActivations || 0),
+              bonus_points: Number(gameState.bonusPoints || 0),
+              max_correct_streak: finalMaxStreak
+            } : {})
           })
         );
       }
@@ -22793,7 +22845,9 @@ ${audioSettingsHtml}
 
     // HUD deltas (arcade): +1 on score flash, +1 mistake on mistake pulse
     // Copy visible => WT_WORDING.ui (pas WT_CONFIG)
-    const scoreDeltaText = String(ui?.scoreGainedDeltaText || '').trim();
+    const scoreDeltaText = modeNow === 'RUN' && Number(gameState.correctCount || 0) > 4 && Number(this._runtime?.microPics?.correctStreak || 0) > 4
+      ? '+2'
+      : String(ui?.scoreGainedDeltaText || '').trim();
     const scoreDeltaHtml =
       scoreFlashOn && scoreDeltaText
         ? `<span class="wt-pill__delta wt-pill__delta--score" aria-hidden="true">${escapeHtml(scoreDeltaText)}</span>`
@@ -22918,7 +22972,7 @@ ${audioSettingsHtml}
     const momentumHtml = momentumState
       ? `
         <div class="wt-momentum-wrap">
-          <div class="wt-momentum" aria-label="${escapeHtml(fillTemplate(String(wAll?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
+          <div class="wt-momentum" title="${escapeHtml(String(wAll.system?.comboRule || ''))}" aria-label="${escapeHtml(fillTemplate(String(wAll?.system?.momentumAria || 'Momentum {filled}/{segments}'), { filled: momentumState.filled, segments: momentumState.segments }))}">
             ${Array(momentumState.segments)
               .fill(null)
               .map(
@@ -22929,9 +22983,9 @@ ${audioSettingsHtml}
               .join('')}
           </div>
           ${
-            momentumState.streak > momentumState.segments
+            momentumState.streak >= momentumState.segments
               ? `
-            <span class="wt-momentum__combo" aria-hidden="true">${momentumState.streak}</span>
+            <span class="wt-momentum__combo" aria-label="${escapeHtml(String(wAll.system?.doublePoints || ''))}">×2</span>
           `
               : ``
           }

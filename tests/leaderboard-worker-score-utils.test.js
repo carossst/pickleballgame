@@ -1,6 +1,17 @@
 'use strict';
 
 let scoreUtils;
+
+test('server doubles only answers after four consecutive successes and resets on mistakes', async () => {
+  const { computeServerScore } =
+    await import('../leaderboard-worker/src/score-utils.js');
+  const key = new Map(Array.from({ length: 10 }, (_, i) => [i + 1, true]));
+  const answers = Array.from({ length: 10 }, (_, i) => ({
+    id: i + 1,
+    answer: i !== 8
+  }));
+  expect(computeServerScore(answers, key)).toBe(13);
+});
 let contentKey;
 
 beforeAll(async () => {

@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.17",
+    version: "4.3.20",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -340,22 +340,18 @@
       // Pulses (HUD) + extension window for last-chance overlay
       gameplayPulseMs: 450,
 
-      // Momentum meter (HUD, UI-only)
+      // RUN double-points meter: four consecutive correct answers charge it.
       momentumMeter: {
         enabled: true,
         mode: "RUN",
-        segments: 6,
+        segments: 4,
         thresholds: {
           s1: 1,
           s2: 2,
           s3: 3,
-          s4: 4,
-          s5: 5,
-          s6: 6
+          s4: 4
         },
         dropTiers: [
-          { minLevel: 6, dropTo: 3 },
-          { minLevel: 4, dropTo: 2 },
           { minLevel: 0, dropTo: 0 }
         ]
       },
@@ -430,7 +426,7 @@
       cacheTtlMs: 60 * 1000,
       requestTimeoutMs: 4000,
       submitScores: true,
-      contentVersion: "2026-05-23",
+      contentVersion: "2026-10-28-combo4",
       nicknameMinLen: 3,
       nicknameMaxLen: 24,
       nicknameRegexSource: "^[\\p{L}\\p{N}][\\p{L}\\p{N} _-]{2,23}$",

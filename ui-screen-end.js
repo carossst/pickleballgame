@@ -712,6 +712,7 @@
   ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
+    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-muted">${escapeHtml(fillTemplate(w.system?.comboSummary || '', { correct: lastRun.correctCount, bonus: lastRun.bonusPoints }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
   </div>
