@@ -56,7 +56,7 @@
               data-wt-wording="footer.press"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-poster-link" class="wt-footer-link" href="./poster/"
-              data-wt-wording="footer.poster"></a>
+              data-wt-wording="footer.poster" data-wt-href="footer.links.poster.href"></a>
           </div>
         </div>
       </div>

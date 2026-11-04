@@ -154,7 +154,7 @@ http://localhost:8080
 ### Print the poster
 
 Open [`/poster`](./poster) (or [`poster.html`](./poster.html)), then select **Print poster**.
-The page is laid out for one A4 portrait sheet; the QR code is generated in the browser and points to the public quiz URL.
+The French footer opens [`/poster/?lang=fr`](./poster/?lang=fr), with translated copy and a QR code pointing to the French quiz. The page is laid out for one A4 portrait sheet; the QR code is generated in the browser and points to the matching public quiz URL.
 
 Avoid opening `index.html` directly with `file://` if you want fetch, service worker, and PWA behavior to work normally.
 

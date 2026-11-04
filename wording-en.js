@@ -151,6 +151,9 @@
         bonjourPickleball: {
           label: 'Bonjour Pickleball',
           href: 'https://www.bonjourpickleball.fr/pickleball-france-trip/'
+        },
+        poster: {
+          href: './poster/'
         }
       }
     },

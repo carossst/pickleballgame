@@ -109,3 +109,18 @@ test('poster route renders a QR code and fits one printed A4 page', async ({
     1
   );
 });
+
+test('French poster is localized and links back to the French quiz', async ({
+  page
+}) => {
+  const response = await page.goto('/poster/?lang=fr', {
+    waitUntil: 'domcontentloaded'
+  });
+  expect(response && response.ok()).toBeTruthy();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(page.locator('#poster')).toContainText('Quiz des règles du pickleball');
+  await expect(page.locator('[data-poster="print"]')).toHaveText("Imprimer l'affiche");
+  await expect(page.locator('[data-poster="back"]')).toHaveAttribute('href', '../fr.html');
+  await expect(page.locator('[data-poster="url"]')).toHaveText('www.pickleballrulesquiz.com/fr.html');
+  await expect(page.locator('#poster-qr svg')).toBeVisible();
+});

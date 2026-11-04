@@ -3,8 +3,11 @@
   'use strict';
 
   const POSTER_CONFIG = {
-    locale: 'en',
-    url: 'https://www.pickleballrulesquiz.com/',
+    locale: new URLSearchParams(window.location.search).get('lang') === 'fr' ? 'fr' : 'en',
+    urls: {
+      en: 'https://www.pickleballrulesquiz.com/',
+      fr: 'https://www.pickleballrulesquiz.com/fr.html'
+    },
     copy: {
       en: {
         eyebrow: 'For clubs and courts',
@@ -20,13 +23,45 @@
         ],
         cta: 'Scan to play',
         scanHint: 'Scan with your phone',
-        footer: 'Based on the USA Pickleball rulebook'
+        footer: 'Based on the USA Pickleball rulebook',
+        back: 'Back to quiz',
+        print: 'Print poster',
+        actionsLabel: 'Poster actions',
+        offerLabel: 'What the quiz includes',
+        qrLabel: 'QR code to play Pickleball Rules Quiz',
+        description: 'Printable Pickleball Rules Quiz poster for clubs and courts.'
+      },
+      fr: {
+        eyebrow: 'Pour les clubs et les terrains',
+        overline: 'Connaissez les règles. Jouez en confiance.',
+        title: 'Quiz des règles du pickleball',
+        hook: 'Un quiz rapide en vrai ou faux sur les situations réelles du pickleball.',
+        bullets: [
+          '2 parties gratuites',
+          '200 questions sur les règles, basées sur le règlement USA Pickleball 2026',
+          'Service, score, fautes, zone de non-volée et lignes',
+          'Accès complet : 6,99 $ US en paiement unique',
+          'Sans abonnement'
+        ],
+        cta: 'Scannez pour jouer',
+        scanHint: 'Scannez avec votre téléphone',
+        footer: 'Basé sur le règlement USA Pickleball',
+        back: 'Retour au quiz',
+        print: "Imprimer l'affiche",
+        actionsLabel: "Actions de l'affiche",
+        offerLabel: 'Ce que le quiz comprend',
+        qrLabel: 'QR code pour jouer au quiz des règles du pickleball',
+        description: 'Affiche imprimable du quiz des règles du pickleball pour les clubs et les terrains.'
       }
     }
   };
 
   function getCopy() {
     return POSTER_CONFIG.copy[POSTER_CONFIG.locale] || POSTER_CONFIG.copy.en;
+  }
+
+  function getUrl() {
+    return POSTER_CONFIG.urls[POSTER_CONFIG.locale] || POSTER_CONFIG.urls.en;
   }
 
   function setText(selector, value) {
@@ -39,26 +74,45 @@
     if (!target || typeof qrcode !== 'function') return;
 
     const qr = qrcode(4, 'M');
-    qr.addData(POSTER_CONFIG.url);
+    const copy = getCopy();
+    qr.addData(getUrl());
     qr.make();
-    target.innerHTML = qr.createSvgTag(4, 0, 'QR code to play Pickleball Rules Quiz');
+    target.innerHTML = qr.createSvgTag(4, 0, copy.qrLabel);
     const svg = target.querySelector('svg');
     if (svg) {
       svg.setAttribute('role', 'img');
-      svg.setAttribute('aria-label', 'QR code to play Pickleball Rules Quiz');
+      svg.setAttribute('aria-label', copy.qrLabel);
     }
   }
 
   function init() {
     const copy = getCopy();
+    const url = getUrl();
+    document.documentElement.lang = POSTER_CONFIG.locale;
+    document.title = POSTER_CONFIG.locale === 'fr'
+      ? 'Affiche du quiz des règles du pickleball'
+      : 'Pickleball Rules Quiz Poster';
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.setAttribute('content', copy.description);
     setText('[data-poster="eyebrow"]', copy.eyebrow);
     setText('[data-poster="overline"]', copy.overline);
     setText('[data-poster="title"]', copy.title);
     setText('[data-poster="hook"]', copy.hook);
     setText('[data-poster="cta"]', copy.cta);
-    setText('[data-poster="url"]', POSTER_CONFIG.url.replace(/^https?:\/\//, ''));
+    setText('[data-poster="url"]', url.replace(/^https?:\/\//, ''));
     setText('[data-poster="scanHint"]', copy.scanHint);
     setText('[data-poster="footer"]', copy.footer);
+    setText('[data-poster="back"]', copy.back);
+    setText('[data-poster="print"]', copy.print);
+
+    const backLink = document.querySelector('[data-poster="back"]');
+    if (backLink) backLink.setAttribute('href', POSTER_CONFIG.locale === 'fr' ? '../fr.html' : '../');
+    const tools = document.querySelector('.poster-tools');
+    if (tools) tools.setAttribute('aria-label', copy.actionsLabel);
+    const offer = document.querySelector('.poster-offer');
+    if (offer) offer.setAttribute('aria-label', copy.offerLabel);
+    const qr = document.getElementById('poster-qr');
+    if (qr) qr.setAttribute('aria-label', copy.qrLabel);
 
     const bulletList = document.querySelector('[data-poster-list="bullets"]');
     if (bulletList) {

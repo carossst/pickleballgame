@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.20",
+    version: "4.3.21",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1067,6 +1067,9 @@
         bonjourPickleball: {
           label: 'Bonjour Pickleball',
           href: 'https://www.bonjourpickleball.fr/pickleball-france-trip/'
+        },
+        poster: {
+          href: './poster/'
         }
       }
     },
@@ -2245,6 +2248,9 @@ Thanks!`
         bonjourPickleball: {
           label: 'Bonjour Pickleball',
           href: 'https://bonjourpickleball.fr/'
+        },
+        poster: {
+          href: './poster/?lang=fr'
         }
       }
     },
@@ -23884,7 +23890,7 @@ ${questionAudioHtml}
               data-wt-wording="footer.press"></a>
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-poster-link" class="wt-footer-link" href="./poster/"
-              data-wt-wording="footer.poster"></a>
+              data-wt-wording="footer.poster" data-wt-href="footer.links.poster.href"></a>
           </div>
         </div>
       </div>

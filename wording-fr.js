@@ -152,6 +152,9 @@
         bonjourPickleball: {
           label: 'Bonjour Pickleball',
           href: 'https://bonjourpickleball.fr/'
+        },
+        poster: {
+          href: './poster/?lang=fr'
         }
       }
     },
