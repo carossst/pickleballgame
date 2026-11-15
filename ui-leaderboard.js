@@ -305,6 +305,12 @@
     const bucket = getRuntimeBucket(ui);
     ensureFresh(ui);
 
+    // An almost empty board reads as "nobody plays": keep the landing card
+    // hidden until the week has enough real scores to be worth showing.
+    const minRows = clampInt(cfg?.landingCardMinRows, 0, 10);
+    const weeklyCount = Array.isArray(bucket?.weekly) ? bucket.weekly.length : 0;
+    if (weeklyCount < minRows) return null;
+
     const previewCount = clampInt(cfg?.cardPreviewCount, 1, 10);
     const profile =
       ui?.storage && typeof ui.storage.getLeaderboardProfile === 'function'

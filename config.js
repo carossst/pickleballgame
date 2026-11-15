@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.21",
+    version: "4.3.22",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -423,6 +423,8 @@
       showAfterRunCompletes: 1,
       topN: 10,
       cardPreviewCount: 3,
+      // Landing card stays hidden until this many scores exist this week
+      landingCardMinRows: 3,
       cacheTtlMs: 60 * 1000,
       requestTimeoutMs: 4000,
       submitScores: true,
