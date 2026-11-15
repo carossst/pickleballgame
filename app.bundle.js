@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.22",
+    version: "4.3.24",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -956,9 +956,9 @@
     // Page-level meta (title + description) for static pages.
     // Hydrated via <title data-wt-wording="..."> and <meta data-wt-meta-description="...">.
     meta: {
-      indexTitle: 'Pickleball Rules Quiz: Test Your Pickleball Knowledge',
+      indexTitle: 'Pickleball Rules Challenge: Test Your Pickleball Knowledge',
       indexDescription:
-        'A fast true or false quiz on serving, scoring, faults, kitchen rules and line calls. Know the rules and play with confidence.',
+        'Can you get five tricky pickleball calls right? Test real game situations, learn the rule, and play with confidence.',
       successTitle: 'Full Access Ready - Pickleball Rules Quiz',
       successDescription:
         'Payment successful. Your Pickleball Rules Quiz device unlock code is ready.',
@@ -1122,10 +1122,10 @@
     },
 
     landing: {
-      title: 'Pickleball Rules Quiz',
-      tagline: '**Know the rules. Play with confidence.**',
+      title: 'Pickleball Rules Challenge',
+      tagline: '**Can you get 5 tricky pickleball calls right?**',
       subtitle:
-        'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
+        'Test real game situations, learn the rule, and see where you stand.\nServing, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
       proofLine: '200 questions · 3 mistakes end the run · Practice what you miss',
       microTrust: 'Install it after your first game.',
@@ -2136,9 +2136,9 @@ Thanks!`
     },
 
     meta: {
-      indexTitle: 'Quiz Pickleball',
+      indexTitle: 'Défi des règles du pickleball : testez vos connaissances',
       indexDescription:
-        'Mieux connaître les règles, c’est mieux jouer. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne, changements de règles.',
+        'Saurez-vous trancher 5 situations pièges au pickleball ? Testez des situations réelles, apprenez la règle et jouez avec confiance.',
       successTitle: 'Accès complet activé - Quiz Pickleball',
       successDescription:
         'Paiement réussi. Votre code de déverrouillage Quiz Pickleball est prêt.',
@@ -2304,10 +2304,10 @@ Thanks!`
     },
 
     landing: {
-      title: 'Quiz Pickleball',
-      tagline: '**Mieux connaître les règles, c’est mieux jouer.**',
+      title: 'Défi des règles du pickleball',
+      tagline: '**Saurez-vous trancher 5 situations pièges au pickleball ?**',
       subtitle:
-        'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
+        'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.\nService, fautes, score, annonces de ligne et changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
       proofLine: '200 questions · 3 erreurs terminent la partie · Travaillez ce qui manque',
       microTrust: 'Installez-la après votre première partie.',

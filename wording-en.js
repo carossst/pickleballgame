@@ -38,9 +38,9 @@
     // Page-level meta (title + description) for static pages.
     // Hydrated via <title data-wt-wording="..."> and <meta data-wt-meta-description="...">.
     meta: {
-      indexTitle: 'Pickleball Rules Quiz: Test Your Pickleball Knowledge',
+      indexTitle: 'Pickleball Rules Challenge: Test Your Pickleball Knowledge',
       indexDescription:
-        'A fast true or false quiz on serving, scoring, faults, kitchen rules and line calls. Know the rules and play with confidence.',
+        'Can you get five tricky pickleball calls right? Test real game situations, learn the rule, and play with confidence.',
       successTitle: 'Full Access Ready - Pickleball Rules Quiz',
       successDescription:
         'Payment successful. Your Pickleball Rules Quiz device unlock code is ready.',
@@ -204,10 +204,10 @@
     },
 
     landing: {
-      title: 'Pickleball Rules Quiz',
-      tagline: '**Know the rules. Play with confidence.**',
+      title: 'Pickleball Rules Challenge',
+      tagline: '**Can you get 5 tricky pickleball calls right?**',
       subtitle:
-        'A fast true-or-false pickleball rules game.\nQuestions about serving, faults, scoring, line calls, and rule changes.',
+        'Test real game situations, learn the rule, and see where you stand.\nServing, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
       proofLine: '200 questions · 3 mistakes end the run · Practice what you miss',
       microTrust: 'Install it after your first game.',
