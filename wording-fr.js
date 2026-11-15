@@ -38,9 +38,9 @@
     },
 
     meta: {
-      indexTitle: 'Quiz Pickleball',
+      indexTitle: 'Défi des règles du pickleball : testez vos connaissances',
       indexDescription:
-        'Mieux connaître les règles, c’est mieux jouer. Un jeu rapide de vrai ou faux sur les règles : service, fautes, score, annonces de ligne, changements de règles.',
+        'Saurez-vous trancher 5 situations pièges au pickleball ? Testez des situations réelles, apprenez la règle et jouez avec confiance.',
       successTitle: 'Accès complet activé - Quiz Pickleball',
       successDescription:
         'Paiement réussi. Votre code de déverrouillage Quiz Pickleball est prêt.',
@@ -206,10 +206,10 @@
     },
 
     landing: {
-      title: 'Quiz Pickleball',
-      tagline: '**Mieux connaître les règles, c’est mieux jouer.**',
+      title: 'Défi des règles du pickleball',
+      tagline: '**Saurez-vous trancher 5 situations pièges au pickleball ?**',
       subtitle:
-        'Un jeu rapide de vrai ou faux sur les règles du pickleball.\nDes questions sur le service, les fautes, le score, les annonces de ligne et les changements de règles.',
+        'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.\nService, fautes, score, annonces de ligne et changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
       proofLine: '200 questions · 3 erreurs terminent la partie · Travaillez ce qui manque',
       microTrust: 'Installez-la après votre première partie.',
