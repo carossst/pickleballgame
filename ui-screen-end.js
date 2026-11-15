@@ -495,6 +495,9 @@
       lastRunMistakeCount > 0 &&
       !poolCompleteCelebration
     );
+    // Last free game: the screen has one job (upgrade, or share for one more
+    // game). Secondary blocks are dropped so those two offers stay readable.
+    const slimExhaustedEnd = !!(isRun && !premium && runsExhausted && !poolCompleteCelebration);
     const focusedEndPrimaryAction = focusedRunEnd
       ? (runsExhausted ? "open-paywall" : "start-run")
       : "";
@@ -615,7 +618,7 @@
         `
         : "";
 
-    const shareHtml = focusedRunEnd ? "" : buildEndShareBlock({
+    const shareHtml = (focusedRunEnd || (slimExhaustedEnd && shareBonusOfferHtml)) ? "" : buildEndShareBlock({
       shareEnabled,
       w,
       shareTitle,
@@ -640,6 +643,7 @@
     const leaderboardJoinCta = String(leaderboardW.joinCta || "").trim();
     const leaderboardJoinHtml =
       !focusedRunEnd &&
+      !slimExhaustedEnd &&
       isRun &&
       scoreFP > 0 &&
       !hasLeaderboardProfile &&
@@ -758,7 +762,7 @@
 
   ${shareHtml}
 
-  ${focusedRunEnd ? "" : mistakesRecapHtml}
+  ${(focusedRunEnd || slimExhaustedEnd) ? "" : mistakesRecapHtml}
 
   ${leaderboardJoinHtml}
 

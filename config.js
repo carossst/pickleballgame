@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.25",
+    version: "4.3.26",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -393,7 +393,7 @@
       // enabled: show the urgency banner during EARLY phase
       // pulseBelowMs: add a stronger pulse when remaining time is low
       paywallUrgency: {
-        enabled: false,
+        enabled: true,
         pulseBelowMs: 5 * 60 * 1000 // 5 minutes
       },
 
@@ -495,8 +495,10 @@
       // END: show chest after N completed runs (0 = always show on END)
       // LANDING: show chest after N completed runs (0 = always show on LANDING)
       gates: {
-        endAfterRuns: 0,
-        landingAfterRuns: 1
+        // Rapid Fire only uses questions already seen: wait for two games so
+        // the pool is big enough to make a round worth a ticket.
+        endAfterRuns: 2,
+        landingAfterRuns: 2
       },
 
       // Gesture: single tap (simple, no “secret handshake”)
