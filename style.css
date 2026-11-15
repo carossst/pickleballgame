@@ -5252,3 +5252,149 @@ arcade" feel; deviation from --fs-* scale is expected. */
     margin-top: var(--space-8);
   }
 }
+
+/* ==========================================
+   COURT SKIN
+   Visual layer only: makes the landing and the question screen read as a
+   game played on a pickleball court. No markup or behavior depends on it.
+============================================ */
+:root {
+  --court-blue: 11 78 124;
+  --court-green: 21 128 61;
+  --court-ball: 222 240 60;
+}
+
+/* Landing: court banner across the top of the card */
+.wt-card--landing::before {
+  content: "";
+  display: block;
+  height: 112px;
+  margin: calc(-1 * var(--wt-card-pad)) calc(-1 * var(--wt-card-pad)) var(--space-12);
+  border-radius: var(--r-card) var(--r-card) 0 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 112' preserveAspectRatio='xMidYMid slice'%3E%3Crect width='400' height='112' fill='%2315803d'/%3E%3Crect x='40' y='14' width='320' height='84' fill='%230b4e7c' stroke='%23fff' stroke-width='3'/%3E%3Crect x='150' y='14' width='100' height='84' fill='%231d6fa5' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M40 56H150M250 56H360' stroke='%23fff' stroke-width='3'/%3E%3Cpath d='M200 6V106' stroke='%23fff' stroke-width='4' stroke-dasharray='3 3'/%3E%3C/svg%3E")
+    center / cover no-repeat,
+    rgb(var(--court-green));
+}
+
+/* Landing: ball bouncing over the net */
+.wt-card--landing::after {
+  content: "";
+  position: absolute;
+  top: 44px;
+  left: 28%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.7) 0 12%, transparent 13%),
+    radial-gradient(circle, rgb(0 0 0 / 0.18) 0 1.5px, transparent 2px) 0 0 / 7px 7px,
+    rgb(var(--court-ball));
+  box-shadow: 0 6px 8px rgb(0 0 0 / 0.25);
+  pointer-events: none;
+  animation: wt-court-rally 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes wt-court-rally {
+  0% { left: 22%; top: 60px; }
+  50% { top: 18px; }
+  100% { left: 72%; top: 60px; }
+}
+
+.wt-card--landing .wt-actions .wt-btn--primary {
+  min-height: 60px;
+  font-size: var(--fs-lg, 20px);
+  box-shadow: 0 5px 0 rgb(var(--court-blue) / 0.55), 0 12px 24px rgb(var(--court-blue) / 0.25);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+
+.wt-card--landing .wt-actions .wt-btn--primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 rgb(var(--court-blue) / 0.55);
+}
+
+/* Question: the statement sits on the court */
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-container:not([data-wt-mode='bonus']) .wt-terms-box:not(.wt-terms-box--successflash):not(.wt-terms-box--mistakeflash) {
+  background: rgb(var(--court-blue));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 6px rgb(var(--court-green)), 0 14px 28px rgb(var(--court-blue) / 0.25);
+  margin: var(--space-12) 6px var(--space-16);
+  padding: var(--gap-3);
+  text-align: center;
+  animation: wt-court-serve 260ms ease-out;
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-terms-box .wt-term-word {
+  color: #fff;
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-terms-box--mistakeflash {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 0 0 6px rgb(var(--danger) / 0.45);
+  animation: none;
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-terms-box--successflash {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 0 0 6px rgb(var(--success) / 0.45);
+  animation: none;
+}
+
+@keyframes wt-court-serve {
+  from { transform: translateY(10px) scale(0.97); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* Answers: two big paddles side by side */
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice:not(.wt-choice--flash-ok):not(.wt-choice--flash-bad) {
+  min-height: 76px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 0;
+  border-radius: 18px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  transition: transform 80ms ease, box-shadow 80ms ease, filter 80ms ease;
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice--same:not(.wt-choice--flash-ok):not(.wt-choice--flash-bad) {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 5px 0 rgb(15 90 43);
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice--diff:not(.wt-choice--flash-ok):not(.wt-choice--flash-bad) {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 5px 0 rgb(127 20 20);
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice .wt-choice-icon,
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice * {
+  color: #fff;
+  opacity: 1;
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice:hover {
+  filter: brightness(1.08);
+}
+
+body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-choices .wt-choice:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-card--landing::after,
+  body.wt-state--playing .wt-container:not([data-wt-mode='bonus']) .wt-terms-box {
+    animation: none;
+  }
+}
