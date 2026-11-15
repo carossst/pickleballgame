@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.23",
+    version: "4.3.24",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -427,6 +427,8 @@
       showAfterRunCompletes: 1,
       topN: 10,
       cardPreviewCount: 3,
+      // Landing card stays hidden until this many scores exist this week
+      landingCardMinRows: 3,
       cacheTtlMs: 60 * 1000,
       requestTimeoutMs: 4000,
       submitScores: true,
@@ -11568,6 +11570,12 @@ ${(() => {
 
     const bucket = getRuntimeBucket(ui);
     ensureFresh(ui);
+
+    // An almost empty board reads as "nobody plays": keep the landing card
+    // hidden until the week has enough real scores to be worth showing.
+    const minRows = clampInt(cfg?.landingCardMinRows, 0, 10);
+    const weeklyCount = Array.isArray(bucket?.weekly) ? bucket.weekly.length : 0;
+    if (weeklyCount < minRows) return null;
 
     const previewCount = clampInt(cfg?.cardPreviewCount, 1, 10);
     const profile =
