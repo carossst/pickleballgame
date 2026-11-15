@@ -92,6 +92,27 @@
     return poolAll;
   }
 
+  // Free runs can be capped to a fixed number of questions so every player
+  // reaches the end screen (config.curatedFreeRuns.maxQuestionsByRun).
+  // Returns 0 when the run is not capped.
+  function getFreeRunQuestionCap(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true) return 0;
+
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || Math.floor(runNum) !== runNum || runNum < 1) return 0;
+
+    const byRun = (cfr.maxQuestionsByRun && typeof cfr.maxQuestionsByRun === "object")
+      ? cfr.maxQuestionsByRun
+      : null;
+    if (!byRun) return 0;
+
+    const cap = Number(byRun[String(runNum)]);
+    return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -443,8 +464,13 @@
       const fixedIds = Array.isArray(p.fixedIds)
         ? p.fixedIds.map(safeIdNum).filter((id) => id != null)
         : [];
-      const fixedDeck = !bonusMode && !mistakesOnly && fixedIds.length > 0;
-      const deck = fixedDeck
+      const hasFixedIds = !bonusMode && !mistakesOnly && fixedIds.length > 0;
+      const questionCap = (effectiveMode === MODES.RUN && !hasFixedIds)
+        ? getFreeRunQuestionCap(config, runStartNumber)
+        : 0;
+      // A capped run behaves like a fixed deck: it ends when the deck ends.
+      const fixedDeck = hasFixedIds || questionCap > 0;
+      const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
             const allowed = new Set(fixedIds);
@@ -456,6 +482,9 @@
         : bonusMode
         ? buildSeenDeck({ items, statsByItem, config })
         : buildDeck({ items, statsByItem, mistakesOnly, config, runStartNumber });
+      if (questionCap > 0 && Array.isArray(deck.ids)) {
+        deck.ids = deck.ids.slice(0, questionCap);
+      }
 
       this.run = {
         mode: effectiveMode,

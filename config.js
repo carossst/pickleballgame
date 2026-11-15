@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.24",
+    version: "4.3.25",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -121,6 +121,12 @@
     curatedFreeRuns: {
       enabled: true,
       runCount: 2,
+      // Question cap per free run (the run also ends at maxChances mistakes).
+      // Run 1 matches the landing promise: "5 tricky calls".
+      maxQuestionsByRun: {
+        1: 5,
+        2: 10
+      },
       // Curated opening for the free runs. Design goal: run 1 = a welcoming
       // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
@@ -387,7 +393,7 @@
       // enabled: show the urgency banner during EARLY phase
       // pulseBelowMs: add a stronger pulse when remaining time is low
       paywallUrgency: {
-        enabled: true,
+        enabled: false,
         pulseBelowMs: 5 * 60 * 1000 // 5 minutes
       },
 

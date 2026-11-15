@@ -213,6 +213,39 @@ test('curated free runs preserve configured question order', () => {
   expect(run2.ids.slice(0, 3)).toEqual([6, 5, 4]);
 });
 
+test('free runs end after the configured question cap', () => {
+  const WT_Game = createGameApi();
+  const items = [1, 2, 3, 4, 5, 6].map((id) => ({
+    id,
+    correctAnswer: true,
+    explanationShort: 'ok'
+  }));
+  const config = makeRunConfig({
+    curatedFreeRuns: {
+      enabled: true,
+      runCount: 2,
+      cardIdsByRun: { 1: [3, 1, 2] },
+      maxQuestionsByRun: { 1: 2 }
+    }
+  });
+  const play = (runStartNumber) => {
+    const engine = new WT_Game.GameEngine();
+    engine.start({
+      items,
+      statsByItem: {},
+      getStatsByItem: () => ({}),
+      config,
+      mode: 'RUN',
+      runStartNumber
+    });
+    engine.answer(true);
+    return engine.answer(true);
+  };
+
+  expect(play(1).done).toBe(true);
+  expect(play(3).done).toBe(false);
+});
+
 test('BONUS ends at deck end and does not reshuffle', () => {
   const WT_Game = createGameApi();
   const engine = new WT_Game.GameEngine();

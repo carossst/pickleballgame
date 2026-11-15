@@ -38,7 +38,7 @@
     // Page-level meta (title + description) for static pages.
     // Hydrated via <title data-wt-wording="..."> and <meta data-wt-meta-description="...">.
     meta: {
-      indexTitle: 'Pickleball Rules Challenge: Test Your Pickleball Knowledge',
+      indexTitle: 'Pickleball Rules Quiz: Test Your Pickleball Knowledge',
       indexDescription:
         'Can you get five tricky pickleball calls right? Test real game situations, learn the rule, and play with confidence.',
       successTitle: 'Full Access Ready - Pickleball Rules Quiz',
@@ -204,7 +204,7 @@
     },
 
     landing: {
-      title: 'Pickleball Rules Challenge',
+      title: 'Pickleball Rules Quiz',
       tagline: '**Can you get 5 tricky pickleball calls right?**',
       subtitle:
         'Test real game situations, learn the rule, and see where you stand.\nServing, faults, scoring, line calls, and rule changes.',
@@ -256,7 +256,7 @@
       dailyChallengeCompletedTemplate:
         'Daily challenge complete.\nNext challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
-        'Earn 1 Rapid Fire ticket.',
+        'Earn 1 ticket for Rapid Fire, the faster bonus mode.',
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
@@ -827,9 +827,9 @@
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       focusedRunPracticeLine:
-        'This challenge ended after {count} mistakes. Practice them before the next run. Next goal: score {target}+.',
+        'You made {count} mistake{pluralS} in this challenge. Practice before your next game. Next goal: score {target}+.',
       focusedRunPaywallLine:
-        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges. Next goal: score {target}+.',
+        'You made {count} mistake{pluralS} in this challenge. Full access unlocks unlimited practice and challenges. Next goal: score {target}+.',
       mistakePracticePromptTitle:
         'You missed {count} rule trap{pluralS}.',
       mistakePracticePromptBody:
@@ -856,8 +856,8 @@
 
       payOnceLine: 'Pay once. No subscription.',
 
-      valueTitle: 'What you get',
-      trustTitle: 'Simple unlock',
+      valueTitle: '',
+      trustTitle: '',
       compactTitle: 'What unlocks',
       compactBullets: [
         '**Practice the mistakes you just made**',
@@ -865,23 +865,10 @@
         '**Unlimited games**'
       ],
 
-      lockedPreviewTitle: 'Locked after the preview',
-      lockedPreviewItems: [
-        'Kitchen faults',
-        'Serve rules',
-        'Line calls',
-        'Scoring traps'
-      ],
+      lockedPreviewTitle: '',
+      lockedPreviewItems: [],
 
-      valueBullets: [
-        '**All 200 questions in the game**',
-        '**Unlimited games** across the full game',
-        '**Record your score and keep improving your best**',
-        '**See the best scores on the public leaderboard**',
-        '**A mix of easy, intermediate, and hard questions**',
-        '**Explanations after every answer**',
-        '**Unlimited Mistakes Mode** to fix what you missed'
-      ],
+      valueBullets: [],
 
       bridgeTitle: 'Keep playing. Build confidence.',
       bridgeBody:
@@ -889,21 +876,10 @@
       bridgeBodyLastFreeMiss:
         "You've seen how the game works. Unlock full access to keep playing, review mistakes, and return for the daily challenge.",
 
-      trustLine: '**One-time unlock**',
-      trustBullets: [
-        '**Pay once**, no subscription',
-        '**No account** or email needed',
-        '**Keep your code** as a backup if you switch device or clear browser data',
-        '**Works offline** after first load',
-        '**Secure payment** through Stripe'
-      ],
-      reassuranceTitle: 'Quick, low-friction checkout',
-      reassuranceItems: [
-        '**One-time payment**',
-        '**Instant access**',
-        '**Secure checkout by Stripe**',
-        '**No account required**'
-      ],
+      trustLine: '',
+      trustBullets: [],
+      reassuranceTitle: '',
+      reassuranceItems: [],
 
       socialProofTitle: 'What players say',
       socialProofQuotes: [
