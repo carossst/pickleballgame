@@ -1792,3 +1792,14 @@ body.wt-state--end .wt-footer {
 .wt-card--question-feedback .wt-feedback:active {
   transform: none;
 }
+
+/* Home: crawlable links to rules topic pages (hidden during a game) */
+.wt-seo-links {
+  margin-top: var(--space-6);
+  padding: 0 var(--space-4);
+}
+
+body.wt-state--playing .wt-seo-links,
+body.wt-state--end .wt-seo-links {
+  display: none;
+}

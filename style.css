@@ -2728,6 +2728,17 @@ body.wt-state--end .wt-footer {
   transform: none;
 }
 
+/* Home: crawlable links to rules topic pages (hidden during a game) */
+.wt-seo-links {
+  margin-top: var(--space-6);
+  padding: 0 var(--space-4);
+}
+
+body.wt-state--playing .wt-seo-links,
+body.wt-state--end .wt-seo-links {
+  display: none;
+}
+
 /* ===== styles/i18n-toggle.css ===== */
 /* i18n-toggle.css — Fixed top-right locale swap button
  *

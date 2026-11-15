@@ -290,7 +290,7 @@ ${faqHtml}
 ${bottomCta}
 
 ${relatedBlock}
-
+${otherTopicsBlock(q.theme)}
                     <div class="wt-divider"></div>
 
                     <p class="wt-muted">
@@ -458,7 +458,7 @@ ${sections}
 ${themeFaqBlock}${goDeeper}
 ${bottomCta}
 
-                    <div class="wt-divider"></div>
+${otherTopicsBlock(t.slug)}                    <div class="wt-divider"></div>
 
                     <p class="wt-muted">
                         ${esc(t.content.sourceNote)}
@@ -474,6 +474,41 @@ ${bottomCta}
 };
 
 // Fail-loud quality gate: count visible words in the rendered page.
+// Cross-links between live theme hubs: every generated page links to every
+// other live hub, so no hub is an orphan and link equity flows from each page.
+function otherTopicsBlock(currentThemeSlug) {
+  const others = (seo.themes || []).filter(
+    (t) => t.status === "live" && t.slug !== currentThemeSlug
+  );
+  if (!others.length) return "";
+  return (
+    `                    <h2 class="wt-h2">Other rules topics</h2>\n` +
+    `                    <p>\n` +
+    others
+      .map((t) => `                        <a href="/quiz/${t.slug}/">${esc(t.h1)}</a>`)
+      .join(" ·\n") +
+    `\n                    </p>\n\n`
+  );
+}
+
+// Static, crawlable links on the home page (between the seo-links markers).
+function updateHomeLinks() {
+  const file = path.join(ROOT, "index.html");
+  const html = fs.readFileSync(file, "utf8");
+  const re = /(<!-- seo-links:start -->)[\s\S]*?(<!-- seo-links:end -->)/;
+  if (!re.test(html)) {
+    console.warn("index.html: seo-links markers not found, home links not updated");
+    return;
+  }
+  const links = (seo.themes || [])
+    .filter((t) => t.status === "live")
+    .map((t) => `        <a class="wt-footer-link" href="/quiz/${t.slug}/">${esc(t.h1)}</a>`)
+    .join("\n");
+  const out = html.replace(re, `$1\n${links}\n        $2`);
+  if (out !== html) fs.writeFileSync(file, out, "utf8");
+  console.log("updated: index.html home topic links");
+}
+
 const MIN_WORDS = Number(seo?.defaults?.minWordCount || 450);
 const visibleWordCount = (html) => {
   let body = html.replace(/[\s\S]*?<body[^>]*>/, "").replace(/<\/body>[\s\S]*/, "");
@@ -570,6 +605,8 @@ for (const t of seo.themes || []) {
   built++;
   console.log(`built: quiz/${t.slug}/index.html (${words} words)`);
 }
+
+updateHomeLinks();
 
 if (failures.length) {
   console.error(`\nFAILED — pages below the ${MIN_WORDS}-word minimum were NOT built:`);
