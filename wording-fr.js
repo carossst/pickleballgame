@@ -520,11 +520,10 @@
       startRunTypePractice: 'Mode Erreurs',
 
       startRunChancesOverlay:
-        'Bonne réponse : +1 point.\nMauvaise réponse : +1 erreur.\nLa partie se termine après {maxChances} erreurs.',
+        'La partie se termine après {maxChances} erreurs.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
-      dailyChallengeStartOverlayLabel: 'Le défi du jour est actif',
-      dailyChallengeStartOverlayLineTemplate:
-        '{targetScore}+ = +1 jeton Mode Rapide',
+      dailyChallengeStartOverlayLabel: '',
+      dailyChallengeStartOverlayLineTemplate: '',
 
       lastChanceOverlay: "Plus qu'une erreur autorisée.",
       gameOverOverlay: 'Partie terminée.',

@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.25",
+    version: "4.3.26",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -397,7 +397,7 @@
       // enabled: show the urgency banner during EARLY phase
       // pulseBelowMs: add a stronger pulse when remaining time is low
       paywallUrgency: {
-        enabled: false,
+        enabled: true,
         pulseBelowMs: 5 * 60 * 1000 // 5 minutes
       },
 
@@ -499,8 +499,10 @@
       // END: show chest after N completed runs (0 = always show on END)
       // LANDING: show chest after N completed runs (0 = always show on LANDING)
       gates: {
-        endAfterRuns: 0,
-        landingAfterRuns: 1
+        // Rapid Fire only uses questions already seen: wait for two games so
+        // the pool is big enough to make a round worth a ticket.
+        endAfterRuns: 2,
+        landingAfterRuns: 2
       },
 
       // Gesture: single tap (simple, no “secret handshake”)
@@ -1438,11 +1440,10 @@
       startRunTypePractice: 'Mistakes Mode',
 
       startRunChancesOverlay:
-        'Correct: +1 point.\nWrong: +1 mistake.\nGame ends after {maxChances} mistakes.',
+        'Game ends after {maxChances} mistakes.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
-      dailyChallengeStartOverlayLabel: "Today's challenge is live",
-      dailyChallengeStartOverlayLineTemplate:
-        '{targetScore}+ = +1 Rapid Fire ticket',
+      dailyChallengeStartOverlayLabel: '',
+      dailyChallengeStartOverlayLineTemplate: '',
 
       lastChanceOverlay: 'One mistake left.',
       gameOverOverlay: 'Game over.',
@@ -2600,11 +2601,10 @@ Thanks!`
       startRunTypePractice: 'Mode Erreurs',
 
       startRunChancesOverlay:
-        'Bonne réponse : +1 point.\nMauvaise réponse : +1 erreur.\nLa partie se termine après {maxChances} erreurs.',
+        'La partie se termine après {maxChances} erreurs.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
-      dailyChallengeStartOverlayLabel: 'Le défi du jour est actif',
-      dailyChallengeStartOverlayLineTemplate:
-        '{targetScore}+ = +1 jeton Mode Rapide',
+      dailyChallengeStartOverlayLabel: '',
+      dailyChallengeStartOverlayLineTemplate: '',
 
       lastChanceOverlay: "Plus qu'une erreur autorisée.",
       gameOverOverlay: 'Partie terminée.',
@@ -8986,6 +8986,9 @@ Merci !`
       lastRunMistakeCount > 0 &&
       !poolCompleteCelebration
     );
+    // Last free game: the screen has one job (upgrade, or share for one more
+    // game). Secondary blocks are dropped so those two offers stay readable.
+    const slimExhaustedEnd = !!(isRun && !premium && runsExhausted && !poolCompleteCelebration);
     const focusedEndPrimaryAction = focusedRunEnd
       ? (runsExhausted ? "open-paywall" : "start-run")
       : "";
@@ -9106,7 +9109,7 @@ Merci !`
         `
         : "";
 
-    const shareHtml = focusedRunEnd ? "" : buildEndShareBlock({
+    const shareHtml = (focusedRunEnd || (slimExhaustedEnd && shareBonusOfferHtml)) ? "" : buildEndShareBlock({
       shareEnabled,
       w,
       shareTitle,
@@ -9131,6 +9134,7 @@ Merci !`
     const leaderboardJoinCta = String(leaderboardW.joinCta || "").trim();
     const leaderboardJoinHtml =
       !focusedRunEnd &&
+      !slimExhaustedEnd &&
       isRun &&
       scoreFP > 0 &&
       !hasLeaderboardProfile &&
@@ -9249,7 +9253,7 @@ Merci !`
 
   ${shareHtml}
 
-  ${focusedRunEnd ? "" : mistakesRecapHtml}
+  ${(focusedRunEnd || slimExhaustedEnd) ? "" : mistakesRecapHtml}
 
   ${leaderboardJoinHtml}
 

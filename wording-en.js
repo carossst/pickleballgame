@@ -514,11 +514,10 @@
       startRunTypePractice: 'Mistakes Mode',
 
       startRunChancesOverlay:
-        'Correct: +1 point.\nWrong: +1 mistake.\nGame ends after {maxChances} mistakes.',
+        'Game ends after {maxChances} mistakes.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
-      dailyChallengeStartOverlayLabel: "Today's challenge is live",
-      dailyChallengeStartOverlayLineTemplate:
-        '{targetScore}+ = +1 Rapid Fire ticket',
+      dailyChallengeStartOverlayLabel: '',
+      dailyChallengeStartOverlayLineTemplate: '',
 
       lastChanceOverlay: 'One mistake left.',
       gameOverOverlay: 'Game over.',
