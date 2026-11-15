@@ -415,7 +415,12 @@
       // Product choice:
       // the Daily Challenge appears only after at least one completed RUN.
       // Before that, the landing should stay focused on the core loop and first-play clarity.
-      if (Number.isFinite(runCompletes) && runCompletes >= 1) {
+      // It also waits for a return visit on a later day: on day one it only adds
+      // weight to the landing. Fail-open when the first-seen date is unknown.
+      const firstSeenAt = Number(ui.storage?.data?.analytics?.firstSeenAt);
+      const isReturnDay = !(Number.isFinite(firstSeenAt) && firstSeenAt > 0) ||
+        new Date(firstSeenAt).toDateString() !== new Date().toDateString();
+      if (Number.isFinite(runCompletes) && runCompletes >= 1 && isReturnDay) {
         const fallbackBestScoreFP = (ui.storage && typeof ui.storage.getPersonalBest === "function")
           ? clampInt(ui.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
           : 0;

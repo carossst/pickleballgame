@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.24",
+    version: "4.3.25",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -125,6 +125,12 @@
     curatedFreeRuns: {
       enabled: true,
       runCount: 2,
+      // Question cap per free run (the run also ends at maxChances mistakes).
+      // Run 1 matches the landing promise: "5 tricky calls".
+      maxQuestionsByRun: {
+        1: 5,
+        2: 10
+      },
       // Curated opening for the free runs. Design goal: run 1 = a welcoming
       // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
@@ -391,7 +397,7 @@
       // enabled: show the urgency banner during EARLY phase
       // pulseBelowMs: add a stronger pulse when remaining time is low
       paywallUrgency: {
-        enabled: true,
+        enabled: false,
         pulseBelowMs: 5 * 60 * 1000 // 5 minutes
       },
 
@@ -956,7 +962,7 @@
     // Page-level meta (title + description) for static pages.
     // Hydrated via <title data-wt-wording="..."> and <meta data-wt-meta-description="...">.
     meta: {
-      indexTitle: 'Pickleball Rules Challenge: Test Your Pickleball Knowledge',
+      indexTitle: 'Pickleball Rules Quiz: Test Your Pickleball Knowledge',
       indexDescription:
         'Can you get five tricky pickleball calls right? Test real game situations, learn the rule, and play with confidence.',
       successTitle: 'Full Access Ready - Pickleball Rules Quiz',
@@ -1122,7 +1128,7 @@
     },
 
     landing: {
-      title: 'Pickleball Rules Challenge',
+      title: 'Pickleball Rules Quiz',
       tagline: '**Can you get 5 tricky pickleball calls right?**',
       subtitle:
         'Test real game situations, learn the rule, and see where you stand.\nServing, faults, scoring, line calls, and rule changes.',
@@ -1174,7 +1180,7 @@
       dailyChallengeCompletedTemplate:
         'Daily challenge complete.\nNext challenge at {resetTime}.',
       dailyChallengeRewardTemplate:
-        'Earn 1 Rapid Fire ticket.',
+        'Earn 1 ticket for Rapid Fire, the faster bonus mode.',
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
@@ -1745,9 +1751,9 @@
       practiceCta: 'Practice my mistakes',
       practiceCtaTemplate: 'Practice your {count} mistake{pluralS}',
       focusedRunPracticeLine:
-        'This challenge ended after {count} mistakes. Practice them before the next run. Next goal: score {target}+.',
+        'You made {count} mistake{pluralS} in this challenge. Practice before your next game. Next goal: score {target}+.',
       focusedRunPaywallLine:
-        'This challenge ended after {count} mistakes. Full access unlocks unlimited practice and challenges. Next goal: score {target}+.',
+        'You made {count} mistake{pluralS} in this challenge. Full access unlocks unlimited practice and challenges. Next goal: score {target}+.',
       mistakePracticePromptTitle:
         'You missed {count} rule trap{pluralS}.',
       mistakePracticePromptBody:
@@ -1774,8 +1780,8 @@
 
       payOnceLine: 'Pay once. No subscription.',
 
-      valueTitle: 'What you get',
-      trustTitle: 'Simple unlock',
+      valueTitle: '',
+      trustTitle: '',
       compactTitle: 'What unlocks',
       compactBullets: [
         '**Practice the mistakes you just made**',
@@ -1783,23 +1789,10 @@
         '**Unlimited games**'
       ],
 
-      lockedPreviewTitle: 'Locked after the preview',
-      lockedPreviewItems: [
-        'Kitchen faults',
-        'Serve rules',
-        'Line calls',
-        'Scoring traps'
-      ],
+      lockedPreviewTitle: '',
+      lockedPreviewItems: [],
 
-      valueBullets: [
-        '**All 200 questions in the game**',
-        '**Unlimited games** across the full game',
-        '**Record your score and keep improving your best**',
-        '**See the best scores on the public leaderboard**',
-        '**A mix of easy, intermediate, and hard questions**',
-        '**Explanations after every answer**',
-        '**Unlimited Mistakes Mode** to fix what you missed'
-      ],
+      valueBullets: [],
 
       bridgeTitle: 'Keep playing. Build confidence.',
       bridgeBody:
@@ -1807,21 +1800,10 @@
       bridgeBodyLastFreeMiss:
         "You've seen how the game works. Unlock full access to keep playing, review mistakes, and return for the daily challenge.",
 
-      trustLine: '**One-time unlock**',
-      trustBullets: [
-        '**Pay once**, no subscription',
-        '**No account** or email needed',
-        '**Keep your code** as a backup if you switch device or clear browser data',
-        '**Works offline** after first load',
-        '**Secure payment** through Stripe'
-      ],
-      reassuranceTitle: 'Quick, low-friction checkout',
-      reassuranceItems: [
-        '**One-time payment**',
-        '**Instant access**',
-        '**Secure checkout by Stripe**',
-        '**No account required**'
-      ],
+      trustLine: '',
+      trustBullets: [],
+      reassuranceTitle: '',
+      reassuranceItems: [],
 
       socialProofTitle: 'What players say',
       socialProofQuotes: [
@@ -2357,7 +2339,7 @@ Thanks!`
       dailyChallengeCompletedTemplate:
         "Défi du jour réussi.\nProchain défi à {resetTime}.",
       dailyChallengeRewardTemplate:
-        'Gagnez 1 jeton Mode Rapide.',
+        'Gagnez 1 jeton pour le Mode Rapide, le mode bonus plus intense.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -2940,9 +2922,9 @@ Thanks!`
       practiceCta: 'Revoir mes erreurs',
       practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
       focusedRunPracticeLine:
-        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain. Prochain objectif : {target}+.',
+        'Vous avez fait {count} erreur{pluralS} dans ce défi. Révisez avant la prochaine partie. Prochain objectif : {target}+.',
       focusedRunPaywallLine:
-        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
+        'Vous avez fait {count} erreur{pluralS} dans ce défi. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
       mistakePracticePromptTitle:
         'Vous avez raté {count} question{pluralS}.',
       mistakePracticePromptBody:
@@ -2970,8 +2952,8 @@ Thanks!`
 
       payOnceLine: "Payez une fois. Pas d'abonnement.",
 
-      valueTitle: 'Ce que vous obtenez',
-      trustTitle: 'Déverrouillage simple',
+      valueTitle: '',
+      trustTitle: '',
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
         '**Travaillez les erreurs que vous venez de faire**',
@@ -2979,23 +2961,10 @@ Thanks!`
         '**Parties illimitées**'
       ],
 
-      lockedPreviewTitle: "Verrouillé après l'aperçu",
-      lockedPreviewItems: [
-        'Règles de la zone de non volée',
-        'Règles de service',
-        'Balles sur les lignes',
-        'Pièges de score'
-      ],
+      lockedPreviewTitle: '',
+      lockedPreviewItems: [],
 
-      valueBullets: [
-        '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**Parties illimitées** sur tout le jeu',
-        '**Enregistrez votre score et faites progresser votre meilleur résultat**',
-        '**Voyez les meilleurs scores du classement**',
-        '**Un mélange de questions faciles, intermédiaires et difficiles**',
-        '**Explications après chaque réponse**',
-        '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
-      ],
+      valueBullets: [],
 
       bridgeTitle: 'Continuez à jouer. Prenez confiance.',
       bridgeBody:
@@ -3003,21 +2972,10 @@ Thanks!`
       bridgeBodyLastFreeMiss:
         'Vous avez vu comment fonctionne le jeu. Débloquez le plein accès pour continuer, revoir vos erreurs et revenir pour le défi du jour.',
 
-      trustLine: '**Déverrouillage unique**',
-      trustBullets: [
-        "**Paiement unique**, pas d'abonnement",
-        "**Pas de compte** ni d'e-mail requis",
-        "**Gardez votre code** comme sauvegarde si vous changez d'appareil ou effacez vos données",
-        '**Fonctionne hors ligne** après le premier chargement',
-        '**Paiement sécurisé** via Stripe'
-      ],
-      reassuranceTitle: 'Paiement rapide, sans friction',
-      reassuranceItems: [
-        '**Paiement unique**',
-        '**Accès instantané**',
-        '**Paiement sécurisé via Stripe**',
-        '**Pas de compte requis**'
-      ],
+      trustLine: '',
+      trustBullets: [],
+      reassuranceTitle: '',
+      reassuranceItems: [],
 
       socialProofTitle: 'Leurs retours après quelques parties',
       socialProofQuotes: [
@@ -7297,6 +7255,27 @@ Merci !`
     return poolAll;
   }
 
+  // Free runs can be capped to a fixed number of questions so every player
+  // reaches the end screen (config.curatedFreeRuns.maxQuestionsByRun).
+  // Returns 0 when the run is not capped.
+  function getFreeRunQuestionCap(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true) return 0;
+
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || Math.floor(runNum) !== runNum || runNum < 1) return 0;
+
+    const byRun = (cfr.maxQuestionsByRun && typeof cfr.maxQuestionsByRun === "object")
+      ? cfr.maxQuestionsByRun
+      : null;
+    if (!byRun) return 0;
+
+    const cap = Number(byRun[String(runNum)]);
+    return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -7648,8 +7627,13 @@ Merci !`
       const fixedIds = Array.isArray(p.fixedIds)
         ? p.fixedIds.map(safeIdNum).filter((id) => id != null)
         : [];
-      const fixedDeck = !bonusMode && !mistakesOnly && fixedIds.length > 0;
-      const deck = fixedDeck
+      const hasFixedIds = !bonusMode && !mistakesOnly && fixedIds.length > 0;
+      const questionCap = (effectiveMode === MODES.RUN && !hasFixedIds)
+        ? getFreeRunQuestionCap(config, runStartNumber)
+        : 0;
+      // A capped run behaves like a fixed deck: it ends when the deck ends.
+      const fixedDeck = hasFixedIds || questionCap > 0;
+      const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
             const allowed = new Set(fixedIds);
@@ -7661,6 +7645,9 @@ Merci !`
         : bonusMode
         ? buildSeenDeck({ items, statsByItem, config })
         : buildDeck({ items, statsByItem, mistakesOnly, config, runStartNumber });
+      if (questionCap > 0 && Array.isArray(deck.ids)) {
+        deck.ids = deck.ids.slice(0, questionCap);
+      }
 
       this.run = {
         mode: effectiveMode,
@@ -9693,7 +9680,12 @@ Merci !`
       // Product choice:
       // the Daily Challenge appears only after at least one completed RUN.
       // Before that, the landing should stay focused on the core loop and first-play clarity.
-      if (Number.isFinite(runCompletes) && runCompletes >= 1) {
+      // It also waits for a return visit on a later day: on day one it only adds
+      // weight to the landing. Fail-open when the first-seen date is unknown.
+      const firstSeenAt = Number(ui.storage?.data?.analytics?.firstSeenAt);
+      const isReturnDay = !(Number.isFinite(firstSeenAt) && firstSeenAt > 0) ||
+        new Date(firstSeenAt).toDateString() !== new Date().toDateString();
+      if (Number.isFinite(runCompletes) && runCompletes >= 1 && isReturnDay) {
         const fallbackBestScoreFP = (ui.storage && typeof ui.storage.getPersonalBest === "function")
           ? clampInt(ui.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
           : 0;

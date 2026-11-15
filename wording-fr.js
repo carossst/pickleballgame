@@ -259,7 +259,7 @@
       dailyChallengeCompletedTemplate:
         "Défi du jour réussi.\nProchain défi à {resetTime}.",
       dailyChallengeRewardTemplate:
-        'Gagnez 1 jeton Mode Rapide.',
+        'Gagnez 1 jeton pour le Mode Rapide, le mode bonus plus intense.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -842,9 +842,9 @@
       practiceCta: 'Revoir mes erreurs',
       practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
       focusedRunPracticeLine:
-        'Ce défi se termine après {count} erreurs. Travaillez-les avant le prochain. Prochain objectif : {target}+.',
+        'Vous avez fait {count} erreur{pluralS} dans ce défi. Révisez avant la prochaine partie. Prochain objectif : {target}+.',
       focusedRunPaywallLine:
-        'Ce défi se termine après {count} erreurs. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
+        'Vous avez fait {count} erreur{pluralS} dans ce défi. Le plein accès débloque l’entraînement et les défis illimités. Prochain objectif : {target}+.',
       mistakePracticePromptTitle:
         'Vous avez raté {count} question{pluralS}.',
       mistakePracticePromptBody:
@@ -872,8 +872,8 @@
 
       payOnceLine: "Payez une fois. Pas d'abonnement.",
 
-      valueTitle: 'Ce que vous obtenez',
-      trustTitle: 'Déverrouillage simple',
+      valueTitle: '',
+      trustTitle: '',
       compactTitle: 'Ce qui se débloque',
       compactBullets: [
         '**Travaillez les erreurs que vous venez de faire**',
@@ -881,23 +881,10 @@
         '**Parties illimitées**'
       ],
 
-      lockedPreviewTitle: "Verrouillé après l'aperçu",
-      lockedPreviewItems: [
-        'Règles de la zone de non volée',
-        'Règles de service',
-        'Balles sur les lignes',
-        'Pièges de score'
-      ],
+      lockedPreviewTitle: '',
+      lockedPreviewItems: [],
 
-      valueBullets: [
-        '**Les 200 questions du jeu sur les règles du pickleball**',
-        '**Parties illimitées** sur tout le jeu',
-        '**Enregistrez votre score et faites progresser votre meilleur résultat**',
-        '**Voyez les meilleurs scores du classement**',
-        '**Un mélange de questions faciles, intermédiaires et difficiles**',
-        '**Explications après chaque réponse**',
-        '**Mode Erreurs illimité** pour corriger ce qui vous a manqué'
-      ],
+      valueBullets: [],
 
       bridgeTitle: 'Continuez à jouer. Prenez confiance.',
       bridgeBody:
@@ -905,21 +892,10 @@
       bridgeBodyLastFreeMiss:
         'Vous avez vu comment fonctionne le jeu. Débloquez le plein accès pour continuer, revoir vos erreurs et revenir pour le défi du jour.',
 
-      trustLine: '**Déverrouillage unique**',
-      trustBullets: [
-        "**Paiement unique**, pas d'abonnement",
-        "**Pas de compte** ni d'e-mail requis",
-        "**Gardez votre code** comme sauvegarde si vous changez d'appareil ou effacez vos données",
-        '**Fonctionne hors ligne** après le premier chargement',
-        '**Paiement sécurisé** via Stripe'
-      ],
-      reassuranceTitle: 'Paiement rapide, sans friction',
-      reassuranceItems: [
-        '**Paiement unique**',
-        '**Accès instantané**',
-        '**Paiement sécurisé via Stripe**',
-        '**Pas de compte requis**'
-      ],
+      trustLine: '',
+      trustBullets: [],
+      reassuranceTitle: '',
+      reassuranceItems: [],
 
       socialProofTitle: 'Leurs retours après quelques parties',
       socialProofQuotes: [

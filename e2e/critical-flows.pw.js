@@ -73,6 +73,16 @@ test('four green bars activate double points and a mistake clears them', async (
       count: (event) => window.comboTestEvents.push(event)
     };
   });
+  // Free runs are capped to a few questions; this flow needs a longer run,
+  // so the cap is removed from the served config for this test only.
+  await page.route('**/app.bundle.js*', async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(
+      /maxQuestionsByRun:\s*\{[^}]*\}/,
+      'maxQuestionsByRun: {}'
+    );
+    await route.fulfill({ response, body });
+  });
   await page.route('**/content.json', async (route) => {
     const response = await route.fetch();
     const content = await response.json();
