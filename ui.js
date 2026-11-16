@@ -6694,6 +6694,8 @@ ${audioSettingsHtml}
     const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
     if (runMode === MODES.BONUS) {
+      this._rfOnAnswer(choiceBool, res);
+
       // Terms-box visual feedback (BONUS): stash verdict, apply after render.
       const bonusFlashClass =
         res.isCorrect === true
@@ -8582,6 +8584,39 @@ ${audioSettingsHtml}
     }
   };
 
+  // Rapid Fire: paddle return and power-ups after an answer (state only; sync() draws it).
+  UI.prototype._rfOnAnswer = function (choiceBool, res) {
+    try {
+      if (!window.WT_RFX || !this._runtime) return;
+      const rf = (this._runtime.rf = this._runtime.rf || {});
+      const now = Date.now();
+      rf.paddle = { side: choiceBool === true ? 'left' : 'right', t: now };
+      if (res && res.isCorrect === true && this.game) {
+        const st = this.game.getState();
+        const power = window.WT_RFX.powerFor({
+          streak: st.correctStreak,
+          chancesLeft: st.chancesLeft,
+          maxChances: st.maxChances
+        });
+        if (power === 'life' && typeof this.game.grantChance === 'function') {
+          if (!this.game.grantChance()) return;
+        }
+        if (power === 'slow') rf.slowUntil = now + window.WT_RFX.SLOW_MS;
+        if (power) rf.power = { kind: power, t: now };
+      }
+      // Draw at once: the next render can come later than the 450 ms paddle move.
+      const lane = this.appEl ? this.appEl.querySelector('[data-wt-bonus-lane]') : null;
+      const chip = this.appEl ? this.appEl.querySelector('[data-wt-bonus-chip]') : null;
+      window.WT_RFX.sync(lane, rf, {
+        lang: String(document.documentElement.lang || '').slice(0, 2),
+        chipEl: chip,
+        boss: rf.bossNow === true
+      });
+    } catch (_) {
+      /* effects are optional */
+    }
+  };
+
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
 
@@ -8712,6 +8747,23 @@ ${audioSettingsHtml}
       );
       sbf.speed01PerSec = speedPct / 100;
 
+      // Rapid Fire effects: a new run starts clean, then waves and the boss are announced.
+      try {
+        if (servedSoFar === 0) this._runtime.rf = {};
+        const rfNow = Date.now();
+        const wave = window.WT_RFX ? window.WT_RFX.waveFor(servedSoFar) : 0;
+        if (wave > 0) this._runtime.rf.wave = { n: wave, t: rfNow };
+        const total =
+          this.game && typeof this.game.getTotal === 'function'
+            ? this.game.getTotal()
+            : 0;
+        const boss = window.WT_RFX ? window.WT_RFX.isBoss(servedSoFar, total) : false;
+        this._runtime.rf.bossNow = boss;
+        if (boss) this._runtime.rf.boss = { t: rfNow };
+      } catch (_) {
+        /* effects are optional */
+      }
+
       // Reset transform immediately
       try {
         sbf.chipEl.style.transform = 'translate3d(0px, 0px, 0px)';
@@ -8734,6 +8786,18 @@ ${audioSettingsHtml}
           });
         }
       } catch (_) {}
+    }
+
+    try {
+      if (window.WT_RFX && this._runtime.rf) {
+        window.WT_RFX.sync(lane, this._runtime.rf, {
+          lang: String(document.documentElement.lang || '').slice(0, 2),
+          chipEl: chip,
+          boss: this._runtime.rf.bossNow === true
+        });
+      }
+    } catch (_) {
+      /* effects are optional */
     }
 
     if (sbf.running === true) return;
@@ -8825,9 +8889,12 @@ ${audioSettingsHtml}
 
     // Speed is set once per item in _secretBonusFallStartOrSync (items-served progression).
     // Clamp to max to fail-safe if config changed mid-run.
+    const rfFactor = window.WT_RFX
+      ? window.WT_RFX.speedFactor(this._runtime.rf, Date.now())
+      : 1;
     const speed01 = Math.min(
       maxSpeed01,
-      Math.max(0, Number(sbf.speed01PerSec || 0))
+      Math.max(0, Number(sbf.speed01PerSec || 0) * rfFactor)
     );
     if (!Number.isFinite(speed01) || speed01 <= 0) {
       this._secretBonusFallStop();

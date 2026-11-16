@@ -39,6 +39,13 @@ Les titres du panneau de début indiquent le nombre de questions (« Your first 
 - La source est lue par `analytics.js` (`wt-source`) et apparaît dans GoatCounter sous `src-club-<nom>`. Un lien vers une page `/quiz/<thème>/` perd l'étiquette (son bouton Play met `wt-source=seo`) : utiliser les liens directs de la page `/clubs/`.
 - Si un thème est ajouté dans `seo-pages.json`, l'ajouter aussi dans `THEMES` de `club-link.js` (un test compare les deux).
 
+## Rapid Fire arcade : fait
+- Look « terrain de nuit » (variables de couleur redéfinies sous `.wt-container[data-wt-mode='bonus']` dans `styles/screens.css`, section RAPID FIRE ARCADE).
+- `rapidfire-fx.js` : raquette qui glisse sous la réponse choisie, bannière « VAGUE n » toutes les 5 questions, capsules bonus (RALENTI à 5 bonnes réponses d'affilée, +1 VIE à 8 si une vie a été perdue), question « boss » en dernier (paquet de 5 minimum). Les effets sont redessinés par `sync()` après chaque rendu depuis `this._runtime.rf` : ne pas les ajouter à la main sur le DOM, ils disparaîtraient au rendu suivant.
+- `game.js` : `grantChance()` rend une vie (mode Rapid Fire seulement) ; `buildSeenDeck` met en dernier une question « 2026 Changes » ou « Hard ».
+- Ces effets ne changent pas les points. Les scores du Rapid Fire ne sont pas validés par le Worker du classement, mais vérifier si ce n'est plus vrai avant d'ajouter des effets qui touchent au score.
+- Pistes non faites : une vraie capsule à attraper, un boss à points doublés, un son dédié aux vagues.
+
 ## Hors code (à signaler à la propriétaire, ne pas faire soi-même)
 
 - Search Console : soumettre `sitemap.xml`, regarder combien de pages `/rules/` et `/quiz/` sont indexées.
