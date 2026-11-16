@@ -101,9 +101,10 @@
     if (!button) return;
     button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     button.setAttribute('data-state', enabled ? 'on' : 'off');
-    const label = enabled ? 'Sound on' : 'Sound off';
     const fr = /^fr/i.test(document.documentElement.lang || '');
-    const text = fr ? (enabled ? 'Son activé' : 'Son coupé') : label;
+    const text = fr
+      ? enabled ? 'Effets sonores activés' : 'Effets sonores coupés'
+      : enabled ? 'Sound effects on' : 'Sound effects off';
     button.setAttribute('aria-label', text);
     button.setAttribute('title', text);
   }
@@ -114,12 +115,12 @@
     button.type = 'button';
     button.id = 'wt-sfx-toggle';
     button.className = 'wt-sfx-toggle';
+    // A music note, not a speaker: the speaker on the question card reads the question aloud.
     button.innerHTML =
       '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">' +
-      '<path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>' +
-      '<g class="wt-sfx-waves" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-      '<path d="M16 9.5a4 4 0 0 1 0 5"/><path d="M18.5 7a7.5 7.5 0 0 1 0 10"/></g>' +
-      '<path class="wt-sfx-mute" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+      '<path d="M9 17V5l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+      '<circle cx="6.5" cy="17.5" r="2.8" fill="currentColor"/><circle cx="16.5" cy="15.5" r="2.8" fill="currentColor"/>' +
+      '<path class="wt-sfx-mute" d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>' +
       '</svg>';
     button.addEventListener('click', () => {
       setEnabled(!enabled);

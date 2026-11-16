@@ -47,6 +47,14 @@ Les titres du panneau de début indiquent le nombre de questions (« Your first 
 - Ces effets ne changent pas les points. Les scores du Rapid Fire ne sont pas validés par le Worker du classement, mais vérifier si ce n'est plus vrai avant d'ajouter des effets qui touchent au score.
 - Pistes non faites : une vraie capsule à attraper, un boss à points doublés, un son dédié aux vagues.
 
+## Suite de l'audit (fait)
+- Première partie gratuite sans élimination : `config.js` → `curatedFreeRuns.noEliminationRuns: [1]` (le moteur, `game.js` `isNoEliminationRun`, n'applique cela que si la partie a un plafond de questions, sinon elle ne finirait jamais). Le bouton « Mistakes » du HUD est masqué dans cette partie ; le texte du panneau de début est `ui.startRunNoEliminationOverlay`.
+- Le bouton de son est une note de musique (le haut-parleur de la carte question lit la question à voix haute).
+- Les événements `paywall_view`, `paywall_dismiss`, `checkout_start` et `unlock_success` existent déjà (`ui.js`, `ui-checkout.js`) : les chercher dans GoatCounter.
+- Test e2e du Rapid Fire (`e2e/critical-flows.pw.js`) : raquette, mauvaise réponse, capsule +1 VIE. Les tests de captures d'écran pixel par pixel n'ont pas été ajoutés (rendu différent entre ce conteneur et la CI) ; les tests vérifient plutôt couleurs et dimensions.
+- **Pas fait : minification du bundle.** Elle demande d'ajouter `esbuild` en dépendance de développement (`npm install -D esbuild`, puis `scripts/generate-app-bundle.mjs` à adapter ; la CI vérifie que `app.bundle.js` est identique à la génération). À faire quand la propriétaire l'autorise.
+- **Pas fait : paiement.** Le déverrouillage premium accepte un code au bon format et `success.html` en fabrique un : à reprendre avant de promouvoir le jeu (codes émis par le serveur après paiement Stripe).
+
 ## Hors code (à signaler à la propriétaire, ne pas faire soi-même)
 
 - Search Console : soumettre `sitemap.xml`, regarder combien de pages `/rules/` et `/quiz/` sont indexées.
