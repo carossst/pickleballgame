@@ -1837,8 +1837,7 @@ body:has(.wt-card--paywall) .wt-seo-links {
   cursor: pointer;
 }
 
-.wt-sfx-toggle[data-state='on'] .wt-sfx-mute,
-.wt-sfx-toggle[data-state='off'] .wt-sfx-waves {
+.wt-sfx-toggle[data-state='on'] .wt-sfx-mute {
   display: none;
 }
 

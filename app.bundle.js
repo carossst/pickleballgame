@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.42",
+    version: "4.3.44",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -131,6 +131,9 @@
         1: 5,
         2: 10
       },
+      // No mistake limit in these runs (they still end at their question cap), so a
+      // new player sees every explanation of the first game.
+      noEliminationRuns: [1],
       // Curated opening for the free runs. Design goal: run 1 = a welcoming
       // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
@@ -1441,6 +1444,7 @@
 
       startRunChancesOverlay:
         'Game ends after {maxChances} mistakes.',
+      startRunNoEliminationOverlay: 'Mistakes do not end this game.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -2601,6 +2605,7 @@ Thanks!`
 
       startRunChancesOverlay:
         'La partie se termine après {maxChances} erreurs.',
+      startRunNoEliminationOverlay: 'Les erreurs ne mettent pas fin à cette partie.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -7275,6 +7280,19 @@ Merci !`
     return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
   }
 
+  // Free runs listed in curatedFreeRuns.noEliminationRuns have no mistake limit:
+  // the player always sees every explanation of the run (the first game).
+  function isNoEliminationRun(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true || !Array.isArray(cfr.noEliminationRuns)) return false;
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || runNum < 1) return false;
+    // Only when the run really has a question cap: otherwise it would never end.
+    return getFreeRunQuestionCap(config, runNum) > 0 && cfr.noEliminationRuns.includes(runNum);
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -7647,6 +7665,7 @@ Merci !`
         : 0;
       // A capped run behaves like a fixed deck: it ends when the deck ends.
       const fixedDeck = hasFixedIds || questionCap > 0;
+      const noElimination = effectiveMode === MODES.RUN && !hasFixedIds && isNoEliminationRun(config, runStartNumber);
       const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
@@ -7676,8 +7695,8 @@ Merci !`
         ids: Array.isArray(deck.ids) ? deck.ids.slice() : [],
         idx: 0,
         // Chances: RUN + BONUS use maxChances; PRACTICE has no chances (revision mode)
-        maxChances: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
-        chancesLeft: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
+        maxChances: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
+        chancesLeft: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
 
         // Single score across all modes (KISS)
         scoreFP: 0,
@@ -12450,9 +12469,10 @@ ${(() => {
     if (!button) return;
     button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     button.setAttribute('data-state', enabled ? 'on' : 'off');
-    const label = enabled ? 'Sound on' : 'Sound off';
     const fr = /^fr/i.test(document.documentElement.lang || '');
-    const text = fr ? (enabled ? 'Son activé' : 'Son coupé') : label;
+    const text = fr
+      ? enabled ? 'Effets sonores activés' : 'Effets sonores coupés'
+      : enabled ? 'Sound effects on' : 'Sound effects off';
     button.setAttribute('aria-label', text);
     button.setAttribute('title', text);
   }
@@ -12463,12 +12483,12 @@ ${(() => {
     button.type = 'button';
     button.id = 'wt-sfx-toggle';
     button.className = 'wt-sfx-toggle';
+    // A music note, not a speaker: the speaker on the question card reads the question aloud.
     button.innerHTML =
       '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">' +
-      '<path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>' +
-      '<g class="wt-sfx-waves" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
-      '<path d="M16 9.5a4 4 0 0 1 0 5"/><path d="M18.5 7a7.5 7.5 0 0 1 0 10"/></g>' +
-      '<path class="wt-sfx-mute" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+      '<path d="M9 17V5l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+      '<circle cx="6.5" cy="17.5" r="2.8" fill="currentColor"/><circle cx="16.5" cy="15.5" r="2.8" fill="currentColor"/>' +
+      '<path class="wt-sfx-mute" d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>' +
       '</svg>';
     button.addEventListener('click', () => {
       setEnabled(!enabled);
@@ -15163,9 +15183,11 @@ void (function () {
     const isPractice = String(runType || '').trim() === 'PRACTICE';
     const msg = isPractice
       ? String(wording?.practice?.startRunChancesOverlayPractice || '').trim()
-      : Number.isFinite(maxChances)
-        ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
-        : '';
+      : gs.maxChances == null
+        ? String(wording?.ui?.startRunNoEliminationOverlay || '').trim()
+        : Number.isFinite(maxChances)
+          ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
+          : '';
     if (!msg) return;
 
     // Controller priority: run-start is a blocking overlay, below chance/game-over.

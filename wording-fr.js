@@ -521,6 +521,7 @@
 
       startRunChancesOverlay:
         'La partie se termine après {maxChances} erreurs.',
+      startRunNoEliminationOverlay: 'Les erreurs ne mettent pas fin à cette partie.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',

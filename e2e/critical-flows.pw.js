@@ -157,6 +157,139 @@ test('rule explanation shows a court diagram for tagged questions', async ({
   await expect(page.locator('.wt-explanation .wt-court-diagram')).toBeVisible();
 });
 
+test('first free game shows every explanation even when all answers are wrong', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  await startFreshRun(page);
+  await expect(page.locator('.wt-hud-metric--mistakes')).toHaveCount(0);
+  for (let i = 0; i < 5; i++) {
+    await page.locator('[data-action="answer-false"]').click();
+    await expect(page.locator('.wt-feedback--bad')).toBeVisible();
+    await expect(page.locator('.wt-explanation')).toBeVisible();
+    await page.locator('button[data-action="continue"]').click();
+  }
+  await expect(page.locator('.wt-card--end')).toBeVisible();
+});
+
+test('Rapid Fire: paddle, wave banner and life capsule', async ({ page }) => {
+  test.setTimeout(90000);
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  // Open Rapid Fire right away: the button normally waits for two games.
+  await page.route('**/app.bundle.js*', async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text())
+      .replace(/endAfterRuns:\s*2/, 'endAfterRuns: 0')
+      .replace(/landingAfterRuns:\s*2/, 'landingAfterRuns: 0');
+    await route.fulfill({ response, body });
+  });
+  // startFreshRun clears storage on every load, which would also wipe the game
+  // state before the reload below: clear it once per tab instead.
+  await page.addInitScript(() => {
+    if (!window.sessionStorage.getItem('wt-e2e-cleared')) {
+      window.localStorage.clear();
+      window.sessionStorage.setItem('wt-e2e-cleared', '1');
+    }
+  });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page
+    .getByRole('button', { name: 'Start', exact: true })
+    .click({ timeout: 15000 });
+  await expect(page.locator('[data-action="answer-true"]')).toBeVisible({
+    timeout: 15000
+  });
+  for (let i = 0; i < 6; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1500 })
+      .catch(() => {});
+  }
+  await expect(page.locator('.wt-card--end')).toBeVisible();
+  // Rapid Fire only uses questions already seen: mark a pool of them as seen.
+  await page.evaluate(() => {
+    for (const key of Object.keys(window.localStorage)) {
+      try {
+        const json = JSON.parse(window.localStorage.getItem(key));
+        const holder =
+          json &&
+          (json.statsByItem
+            ? json
+            : json.data && json.data.statsByItem
+              ? json.data
+              : null);
+        if (!holder) continue;
+        for (let id = 1; id <= 14; id++) {
+          holder.statsByItem[id] = Object.assign({}, holder.statsByItem[id], {
+            seenCount: 1
+          });
+        }
+        window.localStorage.setItem(key, JSON.stringify(json));
+        return;
+      } catch (_) {}
+    }
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page
+    .locator('[data-wt-secret="chest"]:visible')
+    .first()
+    .click({ timeout: 15000 });
+  await page
+    .locator('#modal [data-action="enter-secret-bonus"]')
+    .click({ timeout: 8000 });
+  await expect(page.locator('[data-wt-bonus-lane]')).toBeVisible({
+    timeout: 8000
+  });
+  await page.waitForTimeout(800);
+  await page.mouse.click(640, 330); // dismisses the start panel
+  await expect(page.locator('[data-action="answer-true"]')).toBeVisible();
+
+  let step = 0;
+  const answer = async (name) => {
+    step += 1;
+    try {
+      await page.locator(`[data-action="${name}"]`).click({ timeout: 4000 });
+      await page.waitForTimeout(450); // answers are locked for a moment after each click
+    } catch (error) {
+      const text = (await page.locator('body').innerText())
+        .replace(/\s+/g, ' ')
+        .slice(0, 300);
+      throw new Error(`answer ${step} (${name}) failed; page: ${text}`);
+    }
+  };
+  // The paddle move lasts under half a second: check it right after the click.
+  await page.locator('[data-action="answer-true"]').click();
+  await expect(page.locator('.wt-rf-paddle.is-hit-left')).toBeVisible();
+  await page.waitForTimeout(450);
+  step += 1;
+  await answer('answer-true');
+  await answer('answer-false'); // one mistake
+  await expect(page.locator('.wt-hud-metric--mistakes')).toContainText('1/3');
+  for (let i = 0; i < 8; i++) await answer('answer-true');
+  await expect(page.locator('.wt-rf-capsule')).toContainText('+1 LIFE');
+  await expect(page.locator('.wt-hud-metric--mistakes')).toContainText('0/3');
+});
+
 test('question statement is readable: text contrasts with its box', async ({
   page
 }) => {
