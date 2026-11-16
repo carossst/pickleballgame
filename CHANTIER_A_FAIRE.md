@@ -31,8 +31,8 @@ Vérifier aussi que l'habillage « terrain » ne revient pas dans ce mode (il es
 ### 3. Vérifier visuellement la largeur bureau
 L'habillage « terrain » (fin de `styles/screens.css`, section « COURT SKIN ») n'a été regardé qu'en largeur téléphone (390 px). Regarder à 1280 px : accueil, question, feedback, paywall. Corriger seulement si quelque chose déborde.
 
-### 4. Partage du score (croissance)
-L'écran de fin n'a pas de partage simple du type « J'ai fait 4/5, et toi ? ». Voir `ui-share.js` et `ui-screen-end.js` (`buildEndShareBlock`). Ajouter un texte de partage qui contient le score et le lien. Ne pas remettre de blocs supplémentaires sur l'écran de la dernière partie gratuite (déjà allégé).
+### 4. Partage du score : fait
+Le partage existait déjà (`ui-share.js` : partage natif, copie, e-mail, lien avec `challenge=` et référent). Deux défauts corrigés : il était masqué sur l'écran de fin le plus courant (partie gratuite perdue), et le texte ne mentionnait le score que si le meilleur score dépassait 10. Maintenant un lien « Challenge a friend » est visible sur cet écran, et le texte dit « I scored {score}. Can you beat me? ». Reste possible : un texte de partage plus accrocheur, ou une image de score.
 
 ### 5. Panneau « Last free game »
 `startRunTypeLastFree` dit « Make it count » mais ne dit pas combien de questions restent. Une ligne du type « 10 questions » suffit. Les parties gratuites sont plafonnées par `config.js` → `curatedFreeRuns.maxQuestionsByRun` (1 : 5 questions, 2 : 10).

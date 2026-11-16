@@ -625,6 +625,14 @@
       getShareText: ui._getShareText ? ui._getShareText.bind(ui) : null
     });
 
+    // The common end screen (free run lost, not exhausted) hides the collapsed
+    // share accordion; keep one visible link so the score can still be shared.
+    const focusedShareLabel = String(shareTitle || "").trim();
+    const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button></p>`
+      : "";
+
     const leaderboardW = w.leaderboard || {};
     let hasLeaderboardProfile = false;
     try {
@@ -756,6 +764,8 @@
       forceSinglePrimary: focusedRunEnd
     })}
   </div>
+
+  ${focusedShareHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}

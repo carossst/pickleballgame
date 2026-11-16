@@ -63,6 +63,30 @@ test('success page creates a valid local unlock code', async ({ page }) => {
   await expect(page.locator('#code')).toHaveText(/^PRQ-\d{4}-\d{4}$/);
 });
 
+test('free run end screen offers a visible way to share the score', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await startFreshRun(page);
+  for (let i = 0; i < 15; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1000 })
+      .catch(() => {});
+  }
+  await expect(page.locator('.wt-card--end')).toBeVisible();
+  await expect(
+    page
+      .locator('[data-action="share-native"], [data-action="copy-share"]')
+      .first()
+  ).toBeVisible();
+});
+
 test('question statement is readable: text contrasts with its box', async ({
   page
 }) => {
