@@ -1,23 +1,20 @@
 /* Rapid Fire effects: a paddle that returns the ball, wave banners, power-up
-   capsules and a boss question. Only visual or speed effects; the score rules
-   are untouched. State lives in the UI runtime, and sync() redraws the effects
+   capsules and a boss question. Visual effects and a bonus life only: the score
+   rules and the fall speed are untouched. State lives in the UI runtime, and sync() redraws the effects
    from that state after every render so a re-render cannot drop them. */
 (() => {
   'use strict';
 
   const WAVE_EVERY = 5; // questions per wave
-  const SLOW_STREAK = 5;
   const LIFE_STREAK = 8;
-  const SLOW_MS = 5000;
   const PADDLE_MS = 450;
   const BANNER_MS = 1400;
   const CAPSULE_MS = 1200;
-  const SLOW_FACTOR = 0.6;
   const MIN_BOSS_DECK = 5;
 
   const TEXT = {
-    en: { wave: 'WAVE', boss: 'BOSS', slow: 'SLOW', life: '+1 LIFE' },
-    fr: { wave: 'VAGUE', boss: 'BOSS', slow: 'RALENTI', life: '+1 VIE' }
+    en: { wave: 'WAVE', boss: 'BOSS', life: '+1 LIFE' },
+    fr: { wave: 'VAGUE', boss: 'BOSS', life: '+1 VIE' }
   };
 
   // served = questions already served before the one that is about to fall.
@@ -27,22 +24,16 @@
   }
 
   // Power-up earned by a correct answer that makes this streak ("" = none).
+  // Only a life: the fall speed is the owner's tuning and is never changed here.
   function powerFor(info) {
     const i = info || {};
     const streak = Math.floor(Number(i.streak) || 0);
     const lost = Number(i.chancesLeft) < Number(i.maxChances);
-    if (streak === LIFE_STREAK) return lost ? 'life' : 'slow';
-    if (streak === SLOW_STREAK) return 'slow';
-    return '';
+    return streak === LIFE_STREAK && lost ? 'life' : '';
   }
 
   function isBoss(index, total) {
     return Number(total) >= MIN_BOSS_DECK && Number(index) === Number(total) - 1;
-  }
-
-  // Speed multiplier while a slow power-up is active.
-  function speedFactor(rf, now) {
-    return rf && Number(rf.slowUntil) > now ? SLOW_FACTOR : 1;
   }
 
   function el(parent, className, text) {
@@ -90,5 +81,5 @@
     }
   }
 
-  window.WT_RFX = { waveFor, powerFor, isBoss, speedFactor, sync, SLOW_MS };
+  window.WT_RFX = { waveFor, powerFor, isBoss, sync };
 })();

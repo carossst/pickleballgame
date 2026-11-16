@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.41",
+    version: "4.3.42",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -525,7 +525,7 @@
         tuningVersion: 2,
 
         // Speed in % of lane height per second
-        initialSpeed: 15,       // départ modéré (10 = 8 s avant la ligne, trop lent)
+        initialSpeed: 10,       // très lent au départ (réglage de la propriétaire : ne pas modifier)
         maxSpeed: 20,           // plafond confortable
         speedIncrement: 0.4,    // rampe étirée (cap ~25 items)
 

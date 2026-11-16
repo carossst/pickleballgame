@@ -41,8 +41,9 @@ Les titres du panneau de début indiquent le nombre de questions (« Your first 
 
 ## Rapid Fire arcade : fait
 - Look « terrain de nuit » (variables de couleur redéfinies sous `.wt-container[data-wt-mode='bonus']` dans `styles/screens.css`, section RAPID FIRE ARCADE).
-- `rapidfire-fx.js` : raquette qui glisse sous la réponse choisie, bannière « VAGUE n » toutes les 5 questions, capsules bonus (RALENTI à 5 bonnes réponses d'affilée, +1 VIE à 8 si une vie a été perdue), question « boss » en dernier (paquet de 5 minimum). Les effets sont redessinés par `sync()` après chaque rendu depuis `this._runtime.rf` : ne pas les ajouter à la main sur le DOM, ils disparaîtraient au rendu suivant.
+- `rapidfire-fx.js` : raquette qui glisse sous la réponse choisie, bannière « VAGUE n » toutes les 5 questions, capsule bonus +1 VIE après 8 bonnes réponses d'affilée si une vie a été perdue, question « boss » en dernier (paquet de 5 minimum). Les effets sont redessinés par `sync()` après chaque rendu depuis `this._runtime.rf` : ne pas les ajouter à la main sur le DOM, ils disparaîtraient au rendu suivant.
 - `game.js` : `grantChance()` rend une vie (mode Rapid Fire seulement) ; `buildSeenDeck` met en dernier une question « 2026 Changes » ou « Hard ».
+- **Ne pas toucher à la vitesse de chute** (`secretBonus.fall` dans `config.js`, `initialSpeed: 10` etc.) : c'est un réglage de la propriétaire, fait avec soin. Un ralentissement bonus a été essayé puis retiré pour cette raison.
 - Ces effets ne changent pas les points. Les scores du Rapid Fire ne sont pas validés par le Worker du classement, mais vérifier si ce n'est plus vrai avant d'ajouter des effets qui touchent au score.
 - Pistes non faites : une vraie capsule à attraper, un boss à points doublés, un son dédié aux vagues.
 

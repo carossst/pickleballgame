@@ -8601,7 +8601,6 @@ ${audioSettingsHtml}
         if (power === 'life' && typeof this.game.grantChance === 'function') {
           if (!this.game.grantChance()) return;
         }
-        if (power === 'slow') rf.slowUntil = now + window.WT_RFX.SLOW_MS;
         if (power) rf.power = { kind: power, t: now };
       }
       // Draw at once: the next render can come later than the 450 ms paddle move.
@@ -8889,12 +8888,9 @@ ${audioSettingsHtml}
 
     // Speed is set once per item in _secretBonusFallStartOrSync (items-served progression).
     // Clamp to max to fail-safe if config changed mid-run.
-    const rfFactor = window.WT_RFX
-      ? window.WT_RFX.speedFactor(this._runtime.rf, Date.now())
-      : 1;
     const speed01 = Math.min(
       maxSpeed01,
-      Math.max(0, Number(sbf.speed01PerSec || 0) * rfFactor)
+      Math.max(0, Number(sbf.speed01PerSec || 0))
     );
     if (!Number.isFinite(speed01) || speed01 <= 0) {
       this._secretBonusFallStop();

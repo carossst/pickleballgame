@@ -5703,12 +5703,6 @@ body:has(.wt-container[data-wt-mode='bonus'][data-wt-state='playing']) {
   animation: wt-rf-capsule 1200ms ease-in both;
 }
 
-.wt-rf-capsule--slow {
-  color: #082f49;
-  background: linear-gradient(#bae6fd, #38bdf8);
-  box-shadow: 0 0 14px #38bdf8;
-}
-
 @keyframes wt-rf-capsule {
   0% { top: 4%; opacity: 1; }
   85% { top: 86%; opacity: 1; }

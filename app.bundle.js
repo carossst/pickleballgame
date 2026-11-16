@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.41",
+    version: "4.3.42",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -529,7 +529,7 @@
         tuningVersion: 2,
 
         // Speed in % of lane height per second
-        initialSpeed: 15,       // départ modéré (10 = 8 s avant la ligne, trop lent)
+        initialSpeed: 10,       // très lent au départ (réglage de la propriétaire : ne pas modifier)
         maxSpeed: 20,           // plafond confortable
         speedIncrement: 0.4,    // rampe étirée (cap ~25 items)
 
@@ -12770,25 +12770,22 @@ ${(() => {
 
 /* ===== rapidfire-fx.js ===== */
 /* Rapid Fire effects: a paddle that returns the ball, wave banners, power-up
-   capsules and a boss question. Only visual or speed effects; the score rules
-   are untouched. State lives in the UI runtime, and sync() redraws the effects
+   capsules and a boss question. Visual effects and a bonus life only: the score
+   rules and the fall speed are untouched. State lives in the UI runtime, and sync() redraws the effects
    from that state after every render so a re-render cannot drop them. */
 (() => {
   'use strict';
 
   const WAVE_EVERY = 5; // questions per wave
-  const SLOW_STREAK = 5;
   const LIFE_STREAK = 8;
-  const SLOW_MS = 5000;
   const PADDLE_MS = 450;
   const BANNER_MS = 1400;
   const CAPSULE_MS = 1200;
-  const SLOW_FACTOR = 0.6;
   const MIN_BOSS_DECK = 5;
 
   const TEXT = {
-    en: { wave: 'WAVE', boss: 'BOSS', slow: 'SLOW', life: '+1 LIFE' },
-    fr: { wave: 'VAGUE', boss: 'BOSS', slow: 'RALENTI', life: '+1 VIE' }
+    en: { wave: 'WAVE', boss: 'BOSS', life: '+1 LIFE' },
+    fr: { wave: 'VAGUE', boss: 'BOSS', life: '+1 VIE' }
   };
 
   // served = questions already served before the one that is about to fall.
@@ -12798,22 +12795,16 @@ ${(() => {
   }
 
   // Power-up earned by a correct answer that makes this streak ("" = none).
+  // Only a life: the fall speed is the owner's tuning and is never changed here.
   function powerFor(info) {
     const i = info || {};
     const streak = Math.floor(Number(i.streak) || 0);
     const lost = Number(i.chancesLeft) < Number(i.maxChances);
-    if (streak === LIFE_STREAK) return lost ? 'life' : 'slow';
-    if (streak === SLOW_STREAK) return 'slow';
-    return '';
+    return streak === LIFE_STREAK && lost ? 'life' : '';
   }
 
   function isBoss(index, total) {
     return Number(total) >= MIN_BOSS_DECK && Number(index) === Number(total) - 1;
-  }
-
-  // Speed multiplier while a slow power-up is active.
-  function speedFactor(rf, now) {
-    return rf && Number(rf.slowUntil) > now ? SLOW_FACTOR : 1;
   }
 
   function el(parent, className, text) {
@@ -12861,7 +12852,7 @@ ${(() => {
     }
   }
 
-  window.WT_RFX = { waveFor, powerFor, isBoss, speedFactor, sync, SLOW_MS };
+  window.WT_RFX = { waveFor, powerFor, isBoss, sync };
 })();
 
 /* ===== ui.js ===== */
@@ -21468,7 +21459,6 @@ ${audioSettingsHtml}
         if (power === 'life' && typeof this.game.grantChance === 'function') {
           if (!this.game.grantChance()) return;
         }
-        if (power === 'slow') rf.slowUntil = now + window.WT_RFX.SLOW_MS;
         if (power) rf.power = { kind: power, t: now };
       }
       // Draw at once: the next render can come later than the 450 ms paddle move.
@@ -21756,12 +21746,9 @@ ${audioSettingsHtml}
 
     // Speed is set once per item in _secretBonusFallStartOrSync (items-served progression).
     // Clamp to max to fail-safe if config changed mid-run.
-    const rfFactor = window.WT_RFX
-      ? window.WT_RFX.speedFactor(this._runtime.rf, Date.now())
-      : 1;
     const speed01 = Math.min(
       maxSpeed01,
-      Math.max(0, Number(sbf.speed01PerSec || 0) * rfFactor)
+      Math.max(0, Number(sbf.speed01PerSec || 0))
     );
     if (!Number.isFinite(speed01) || speed01 <= 0) {
       this._secretBonusFallStop();
