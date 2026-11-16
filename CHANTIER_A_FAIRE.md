@@ -24,10 +24,9 @@ Le joueur doit vivre le ×2 avant le paywall. Aujourd'hui il faut 4 bonnes répo
 - Tests à adapter : `e2e/critical-flows.pw.js` (test « four green bars… », attend 4 segments et un score de 6) et `tests/game.test.js` (premier test).
 - Événement analytics `combo-unlocked` : le titre contient `threshold=4`.
 
-### 2. Rapid Fire (mode bonus)
-- Le début est lent : `config.js` → `secretBonus.fall.initialSpeed: 10` (la première question met environ 8 s à atteindre la ligne). Essayer 14 à 16, vérifier à la main que 3 erreurs restent possibles.
-- Le panneau d'entrée (`secretBonus.startOverlayLine1..3` dans les wordings) fait 5 lignes. En ramener à 3 et retirer « 0 ticket left. Cost: 1 ticket. » qui s'affiche juste après avoir payé le jeton.
-- Vérifier que l'habillage « terrain » ne revient pas dans ce mode (il est limité à `.wt-container[data-wt-state='playing']:not([data-wt-mode='bonus'])` dans `styles/screens.css`).
+### 2. Rapid Fire (mode bonus) : fait, reste à regarder la difficulté
+Fait : `secretBonus.fall.initialSpeed` passé de 10 à 15 (la première question mettait environ 8 s à atteindre la ligne), panneau d'entrée réduit à 3 lignes (plus de ligne « pool » ni « ticket left »). Reste : jouer une manche à la main et vérifier que la rampe n'est pas trop raide (`maxSpeed: 20` est atteint plus vite avec un départ à 15). Ajuster `speedIncrement` ou `maxSpeed` si besoin.
+Vérifier aussi que l'habillage « terrain » ne revient pas dans ce mode (il est limité à `.wt-container[data-wt-state='playing']:not([data-wt-mode='bonus'])` dans `styles/screens.css`). Attention : un test e2e (`question statement is readable`) vérifie la couleur du texte de la question, mais seulement en mode RUN.
 
 ### 3. Vérifier visuellement la largeur bureau
 L'habillage « terrain » (fin de `styles/screens.css`, section « COURT SKIN ») n'a été regardé qu'en largeur téléphone (390 px). Regarder à 1280 px : accueil, question, feedback, paywall. Corriger seulement si quelque chose déborde.
