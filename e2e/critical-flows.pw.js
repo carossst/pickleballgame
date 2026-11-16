@@ -63,6 +63,21 @@ test('success page creates a valid local unlock code', async ({ page }) => {
   await expect(page.locator('#code')).toHaveText(/^PRQ-\d{4}-\d{4}$/);
 });
 
+test('question statement is readable: text contrasts with its box', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await startFreshRun(page);
+  const colors = await page.evaluate(() => {
+    const box = getComputedStyle(document.querySelector('.wt-terms-box'));
+    const word = getComputedStyle(document.querySelector('.wt-term-word'));
+    return { background: box.backgroundColor, text: word.color };
+  });
+  expect(colors.background).not.toBe(colors.text);
+  expect(colors.background).not.toBe('rgba(0, 0, 0, 0)');
+  expect(colors.background).not.toBe('rgb(255, 255, 255)');
+});
+
 test('four green bars activate double points and a mistake clears them', async ({
   page
 }) => {
