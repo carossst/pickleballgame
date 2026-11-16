@@ -1,71 +1,67 @@
-# Reste à faire (pour un modèle léger)
+# Reprise du projet (pour une nouvelle conversation)
 
-Contexte : le site (`pickleballrulesquiz.com`) a environ 100 visites par mois et aucune vente. Le diagnostic est : trop peu de trafic, parties jamais terminées, écrans trop chargés. Les gros changements de parcours sont faits et fusionnés (PR 7, 8, 9). Cette liste contient ce qui reste. Chaque tâche est autonome et petite. Une tâche = une branche = une PR en brouillon, fusionnée quand la CI est verte.
+État au 16 novembre 2026. Ce fichier suffit pour reprendre le travail sans l'historique. Les détails techniques des modules sont dans `IMPLEMENTATION_MEMORY.md`.
 
-## Règles du dépôt à respecter
+## Le projet en bref
 
-- Pas de build : HTML/CSS/JS pur. Mais `app.bundle.js` et `style.css` sont **générés** : ne jamais les éditer à la main.
-  - après un changement de JS : `npm run generate:bundle`
+`pickleballrulesquiz.com` : un jeu web de questions vrai ou faux sur les règles du pickleball (200 questions, anglais et français), de Carole (Bonjour Pickleball). Accès libre à 2 parties, puis paiement unique (4,99 $ pendant 15 minutes, puis 6,99 $). Environ 100 visites par mois et aucune vente : le vrai blocage est le trafic, pas le jeu. Statistiques dans GoatCounter (`caroles.goatcounter.com`), que l'agent ne peut pas lire : demander à la propriétaire de coller les chiffres.
+
+## Décisions de la propriétaire (ne pas rouvrir sans son accord)
+
+- **Seuil du ×2 : 4 bonnes réponses d'affilée.** Le Worker du classement (`leaderboard-worker/src/index.js`, `computeServerScore`) recalcule les scores avec cette règle et est déployé à part (Cloudflare) : changer le client seul casserait la validation des scores.
+- **Vitesse de chute du Rapid Fire intouchable** (`config.js` → `secretBonus.fall` : `initialSpeed: 10`, `maxSpeed: 20`, `speedIncrement: 0.4`, `dangerThreshold: 0.86`). Réglage long et soigné de la propriétaire. Une erreur passée l'avait modifié : ne jamais y retoucher, ni par un ralentissement bonus.
+- **Paiement reporté.** Le code de déverrouillage est accepté s'il a le format `PRQ-xxxx-xxxx` et `success.html` en fabrique un : contournable. À corriger avant de promouvoir le jeu (codes émis par le serveur après un paiement Stripe), mais la propriétaire a dit « on verra plus tard ».
+- **Prix et compte à rebours :** deux prix (4,99 puis 6,99) avec compte à rebours de 15 minutes. Gardés.
+- **Témoignages du paywall :** réels (seuls les prénoms ont été changés).
+- **Noms :** titre anglais « Pickleball Rules Quiz » (l'accroche est « Can you get 5 tricky pickleball calls right? ») ; nom français « Défi des règles du pickleball ».
+- **Pas de pages SEO en français**, pour ne pas concurrencer bonjourpickleball.fr.
+- **Les questions viennent du règlement officiel USA Pickleball 2026, jamais d'une rédaction de mémoire.** Chaque question cite la règle exacte (forme existante : « 2026 USA Pickleball Official Rulebook, Rule 11.A. »).
+- **Fusions :** ne fusionner une PR que lorsque la propriétaire dit « fusionne la N » (CI verte). Réponses en français, courtes, économes en jetons ; ne jamais annoncer « fait » sans l'avoir vérifié.
+
+## Règles de travail techniques
+
+- Pas de build : HTML/CSS/JS pur. `app.bundle.js` et `style.css` sont **générés**, ne jamais les éditer à la main :
+  - après un changement de JS (y compris l'ajout d'un fichier à `scripts/generate-app-bundle.mjs`) : `npm run generate:bundle`
   - après un changement dans `styles/*.css` : `npm run generate:css`
   - après un changement de `seo-pages.json` : `npm run publish:seo`
-- Si un fichier de l'app change, passer `version` dans `config.js` (ligne ~54) au numéro suivant (actuellement `4.3.27`), sinon le cache du service worker garde l'ancienne version.
-- Vérifications avant de pousser : `npm test`, `npm run format:check` (Prettier ne couvre que `tests/`, `logic/` et quelques fichiers de config), puis les tests Playwright.
-- Playwright : le navigateur est dans `/opt/pw-browsers/chromium`. Créer un fichier de config temporaire qui reprend `playwright.config.cjs` avec `use.launchOptions.executablePath = "/opt/pw-browsers/chromium"`, lancer `npx playwright test --config=<ce fichier> --trace off`, puis supprimer le fichier et faire `git checkout -- test-results && git clean -fdq test-results`.
-- Le texte visible vient de `wording-en.js` et `wording-fr.js` (toujours modifier les deux). Ne pas écrire de texte en dur dans `ui*.js`.
-- Ne jamais mettre le nom du modèle dans les commits ni les PR.
+- Changer un fichier de l'app ou `sw.js` : passer `version` dans `config.js` au numéro suivant (actuellement `4.3.44`), sinon le cache du service worker garde l'ancienne version. La CI régénère le bundle et le CSS et échoue s'ils diffèrent.
+- Avant de pousser : `npm test`, `npm run format:check` (Prettier ne couvre que `tests/`, `logic/` et quelques fichiers de config : `npx prettier --write tests e2e` si besoin), puis les tests Playwright.
+- Playwright : navigateur dans `/opt/pw-browsers/chromium`. Créer une config temporaire qui reprend `playwright.config.cjs` avec `use.launchOptions.executablePath = "/opt/pw-browsers/chromium"`, lancer `npx playwright test --config=<ce fichier> --trace off`, supprimer le fichier, puis `git checkout -- test-results && git clean -fdq test-results`. Les tests e2e effacent le stockage à chaque chargement (`startFreshRun`) : pour tester un rechargement, effacer une seule fois par onglet.
+- Le texte visible vient de `wording-en.js` et `wording-fr.js` (toujours les deux). `tests/wording-contract.test.js` vérifie des textes exacts.
+- Branche de développement : `claude/conversion-game-design-qy5zx7`. Chaque PR est ouverte depuis cette branche, après avoir repris `origin/main` ; **ne jamais réinitialiser la branche (`checkout -B`) avec des commits non fusionnés** (cela a déjà fait perdre une correction).
+- Fusion : l'outil demande le SHA complet de 40 caractères ; vérifier que la CI porte bien sur le dernier commit de la PR (les notifications de CI peuvent concerner un commit plus ancien).
+- Ne jamais mettre le nom du modèle dans les commits ni les PR. Les ajouts de dépendances (`npm install`) sont bloqués dans l'environnement de l'agent : à demander à la propriétaire.
+- **Leçon des trois derniers défauts visuels : tout état ajouté en JS après un rendu (classe, élément) est perdu au rendu suivant.** Soit le recréer depuis l'état à chaque rendu (voir `rapidfire-fx.js` `sync()`), soit le déduire du DOM stable en CSS (`:has(.wt-feedback--ok)`). Les tests e2e vérifient couleurs et dimensions, pas les pixels.
 
-## À faire, par ordre de priorité
+## Ce qui existe (fait et fusionné)
 
-### 1. Rush ×2 : décision prise, seuil gardé à 4
-La propriétaire a choisi de garder 4 bonnes réponses d'affilée. **Ne pas modifier le seuil** : le Worker du classement (`leaderboard-worker/src/index.js`, fonction `computeServerScore`, et `tests/leaderboard-worker-score-utils.test.js`) recalcule les scores avec la règle « ×2 après 4 réussites d'affilée », et il est déployé à part (Cloudflare), pas par ce dépôt. Si seul le client changeait, les scores envoyés ne correspondraient plus au calcul serveur. Conséquence connue : dans une première partie de 5 questions, le ×2 ne peut tomber que sur la dernière réponse. À reconsidérer seulement si le classement prend de l'ampleur ; il faudrait alors changer ensemble `game.js` (seuil codé en dur, lignes ~596 et ~697), `config.js` (`ui.momentumMeter`), le Worker, les wordings `system.comboRule` (EN/FR), les tests, puis redéployer le Worker.
+Parcours : accroche et accueil « terrain », première partie de 5 questions sans élimination, deuxième de 10 (3 erreurs), paywall allégé (3 avantages, prix, compte à rebours), écran de fin allégé, lien de partage avec le score, carte de score en image, défi du jour seulement à partir de la deuxième visite, classement masqué tant qu'il a moins de 3 scores.
+Jeu : habillage terrain (question bleue, Vrai vert, Faux rouge), couleur du verdict conservée pendant le feedback, schémas de terrain dans les explications (8 thèmes), son et vibration (son coupé par défaut, bouton en note de musique en haut à droite).
+Rapid Fire : look « terrain de nuit », raquette, bannière de vague toutes les 5 questions, capsule +1 vie après 8 bonnes réponses d'affilée, question « boss » en dernier. Les points et la vitesse sont inchangés.
+Clubs et coachs : page `/clubs/` et poster personnalisé (`/poster/?club=Nom` ou `?coach=Nom`), liens étiquetés `club-<nom>` / `coach-<nom>` qui apparaissent dans GoatCounter sous `src-club-<nom>`. Un lien vers une page `/quiz/<thème>/` perd l'étiquette (son bouton Play met `wt-source=seo`) : utiliser les liens directs de `/clubs/`. Tout thème ajouté dans `seo-pages.json` doit l'être aussi dans `THEMES` de `club-link.js` (un test compare).
+SEO : l'accueil et chaque page ont des liens vers les 8 thèmes ; 5 pages restent en `noindex` (statut `ready`) en attendant la relecture de la propriétaire.
+Événements GoatCounter déjà envoyés : `landing_view`, `run_start`, `run_complete`, `paywall_view`, `paywall_dismiss`, `checkout_start`, `unlock_success`, `end_action_click` (dont le partage), `combo_unlocked`.
 
-### 2. Rapid Fire (mode bonus) : fait, reste à regarder la difficulté
-Fait : `secretBonus.fall.initialSpeed` passé de 10 à 15 (la première question mettait environ 8 s à atteindre la ligne), panneau d'entrée réduit à 3 lignes (plus de ligne « pool » ni « ticket left »). Reste : jouer une manche à la main et vérifier que la rampe n'est pas trop raide (`maxSpeed: 20` est atteint plus vite avec un départ à 15). Ajuster `speedIncrement` ou `maxSpeed` si besoin.
-Vérifier aussi que l'habillage « terrain » ne revient pas dans ce mode (il est limité à `.wt-container[data-wt-state='playing']:not([data-wt-mode='bonus'])` dans `styles/screens.css`). Attention : un test e2e (`question statement is readable`) vérifie la couleur du texte de la question, mais seulement en mode RUN.
+## À faire (par ordre)
 
-### 3. Largeur bureau : fait
-Vérifié à 1280 px (accueil, question, feedback, fin de partie, panneau de début). Seul défaut : la rangée de liens SEO de l'accueil s'étirait sur une ligne ; elle passe maintenant à la ligne (`styles/components.css`). Paywall regardé aussi à 1280 px : propre (la rangée de liens SEO y est masquée, elle ne sert qu'à l'accueil).
+1. **Nouvelles questions sur la zone de non-volée** (8 sur 200 aujourd'hui, alors que c'est la règle la plus recherchée). Il faut que la propriétaire fournisse le texte du règlement 2026 : ne rien rédiger de mémoire. Étapes : (a) extraire des énoncés vrai/faux du règlement avec leur citation exacte ; (b) les ajouter à `content.json` (ids 201 et suivants, tags `Non-Volley Zone`, difficulté, `Singles`, `Doubles`, textes EN et FR, `explanationShort` avec la citation) et mettre à jour `totalItems` et `breakdown` ; (c) augmenter `game.poolSize` dans `config.js` et tous les « 200 questions » (accueil, wording, poster, JSON-LD de `index.html`, pages SEO, `llms.txt`) ; (d) le Worker du classement valide les réponses avec sa propre copie du contenu : lancer `npm run generate:leaderboard-key` et **redéployer le Worker avant la mise en ligne**, sinon les parties contenant ces questions sont rejetées ; (e) ajouter les ids au thème dans `seo-pages.json` et lancer `npm run publish:seo` ; (f) relancer tous les tests (certains contrôlent les totaux).
+2. **Scinder `ui.js`** (11 269 lignes, 75 méthodes ; les plus longues : `_bindEvents` 939 lignes, `answer` 847, `_renderPlaying` 708). À faire progressivement, une extraction par PR, sans changement de comportement, en gardant le modèle existant (fichiers `ui-*.js` en globales `WT_*`, ordre dans `scripts/generate-app-bundle.mjs`, ajout à la liste du service worker si besoin). Ordre conseillé : la logique de chute du Rapid Fire (`_secretBonusFall*`, environ 600 lignes, autonome) ; puis le rendu de l'écran de jeu ; puis les fenêtres et panneaux ; en dernier `_bindEvents`. Filet de sécurité : les tests unitaires et e2e existants. Bénéfice principal : des fichiers plus petits sont plus faciles et moins coûteux à modifier sans casser.
+3. **Collecte de l'e-mail et du prénom** : conception proposée dans la conversation, décisions à prendre par la propriétaire (outil d'e-mail et liste, texte de consentement, contrepartie). Aujourd'hui seul existe un formulaire d'attente par `mailto:` (`email.js`, `waitlist` dans `config.js`), qui n'enregistre rien côté serveur. Avant de l'activer : mettre à jour `privacy.html` (section « Emails and optional forms »), double confirmation d'inscription par l'outil d'e-mail, aucune case précochée.
+4. **Minification du bundle** (872 Ko, 196 Ko compressé) : demande d'ajouter `esbuild` en dépendance de développement (`npm install -D esbuild`, bloqué pour l'agent) puis d'adapter `scripts/generate-app-bundle.mjs` ; la CI vérifie que le bundle commité est identique à la génération.
+5. **Paiement** (reporté, voir plus haut).
+6. **Rapid Fire, pistes non faites** : une vraie capsule à attraper, un boss à points doublés (le Worker ne valide pas les scores du Rapid Fire aujourd'hui, à revérifier avant), un son pour les vagues. Ne pas toucher à la vitesse.
+7. **Contenu régulier** : toutes les questions sont vues après une quinzaine de parties ; prévoir une cadence de nouveautés (par exemple 10 par mois, toujours tirées du règlement).
 
-### 4. Partage du score : fait
-Le partage existait déjà (`ui-share.js` : partage natif, copie, e-mail, lien avec `challenge=` et référent). Deux défauts corrigés : il était masqué sur l'écran de fin le plus courant (partie gratuite perdue), et le texte ne mentionnait le score que si le meilleur score dépassait 10. Maintenant un lien « Challenge a friend » est visible sur cet écran, et le texte dit « I scored {score}. Can you beat me? ». Reste possible : un texte de partage plus accrocheur, ou une image de score.
-
-### 5. Panneau des parties gratuites : fait
-Les titres du panneau de début indiquent le nombre de questions (« Your first free game: 5 questions », « Last free game: 10 questions. Make it count », et en français). Ces nombres sont écrits dans `wording-en.js` / `wording-fr.js` et doivent rester égaux à `config.js` → `curatedFreeRuns.maxQuestionsByRun`. Un test (`tests/wording-contract.test.js`) échoue s'ils divergent.
-
-## Clubs et coachs : fait
-- `club-link.js` (partagé) fabrique les liens : étiquette `club-<nom>` ou `coach-<nom>` (accents retirés, 40 caractères max), adresses du site EN/FR, liens par thème, adresse du poster. Testé dans `tests/club-link.test.js`.
-- Le poster accepte `/poster/?club=Nom` ou `?coach=Nom` : il affiche « Offert par Nom » et met l'étiquette dans le QR code (`poster.js`). Le QR est en taille automatique quand il y a une étiquette ; la version 4 fixe ne contient pas une adresse étiquetée.
-- La page `/clubs/` (`clubs/index.html`, `clubs.js`, `clubs.css`) génère lien, lien du poster, message WhatsApp, QR téléchargeable et liens par thème à partir d'un nom. Rien n'est stocké ni envoyé. Page en `noindex`.
-- La source est lue par `analytics.js` (`wt-source`) et apparaît dans GoatCounter sous `src-club-<nom>`. Un lien vers une page `/quiz/<thème>/` perd l'étiquette (son bouton Play met `wt-source=seo`) : utiliser les liens directs de la page `/clubs/`.
-- Si un thème est ajouté dans `seo-pages.json`, l'ajouter aussi dans `THEMES` de `club-link.js` (un test compare les deux).
-
-## Rapid Fire arcade : fait
-- Look « terrain de nuit » (variables de couleur redéfinies sous `.wt-container[data-wt-mode='bonus']` dans `styles/screens.css`, section RAPID FIRE ARCADE).
-- `rapidfire-fx.js` : raquette qui glisse sous la réponse choisie, bannière « VAGUE n » toutes les 5 questions, capsule bonus +1 VIE après 8 bonnes réponses d'affilée si une vie a été perdue, question « boss » en dernier (paquet de 5 minimum). Les effets sont redessinés par `sync()` après chaque rendu depuis `this._runtime.rf` : ne pas les ajouter à la main sur le DOM, ils disparaîtraient au rendu suivant.
-- `game.js` : `grantChance()` rend une vie (mode Rapid Fire seulement) ; `buildSeenDeck` met en dernier une question « 2026 Changes » ou « Hard ».
-- **Ne pas toucher à la vitesse de chute** (`secretBonus.fall` dans `config.js`, `initialSpeed: 10` etc.) : c'est un réglage de la propriétaire, fait avec soin. Un ralentissement bonus a été essayé puis retiré pour cette raison.
-- Ces effets ne changent pas les points. Les scores du Rapid Fire ne sont pas validés par le Worker du classement, mais vérifier si ce n'est plus vrai avant d'ajouter des effets qui touchent au score.
-- Pistes non faites : une vraie capsule à attraper, un boss à points doublés, un son dédié aux vagues.
-
-## Suite de l'audit (fait)
-- Première partie gratuite sans élimination : `config.js` → `curatedFreeRuns.noEliminationRuns: [1]` (le moteur, `game.js` `isNoEliminationRun`, n'applique cela que si la partie a un plafond de questions, sinon elle ne finirait jamais). Le bouton « Mistakes » du HUD est masqué dans cette partie ; le texte du panneau de début est `ui.startRunNoEliminationOverlay`.
-- Le bouton de son est une note de musique (le haut-parleur de la carte question lit la question à voix haute).
-- Les événements `paywall_view`, `paywall_dismiss`, `checkout_start` et `unlock_success` existent déjà (`ui.js`, `ui-checkout.js`) : les chercher dans GoatCounter.
-- Test e2e du Rapid Fire (`e2e/critical-flows.pw.js`) : raquette, mauvaise réponse, capsule +1 VIE. Les tests de captures d'écran pixel par pixel n'ont pas été ajoutés (rendu différent entre ce conteneur et la CI) ; les tests vérifient plutôt couleurs et dimensions.
-- **Pas fait : minification du bundle.** Elle demande d'ajouter `esbuild` en dépendance de développement (`npm install -D esbuild`, puis `scripts/generate-app-bundle.mjs` à adapter ; la CI vérifie que `app.bundle.js` est identique à la génération). À faire quand la propriétaire l'autorise.
-- **Pas fait : paiement.** Le déverrouillage premium accepte un code au bon format et `success.html` en fabrique un : à reprendre avant de promouvoir le jeu (codes émis par le serveur après paiement Stripe).
-
-## Hors code (à signaler à la propriétaire, ne pas faire soi-même)
+## Hors code (pour la propriétaire)
 
 - Search Console : soumettre `sitemap.xml`, regarder combien de pages `/rules/` et `/quiz/` sont indexées.
-- 5 pages SEO sont en statut `ready` (donc `noindex`) dans `seo-pages.json` et attendent sa relecture. Quand elle les valide : `"status": "live"` puis `npm run publish:seo`.
-- Aucune page SEO en français, volontairement, pour ne pas concurrencer bonjourpickleball.fr.
-- Distribution : encart quiz dans les articles de bonjourpickleball.fr, groupes Facebook et Reddit pickleball (54 % de l'audience est américaine), poster QR.
-- GoatCounter (`caroles.goatcounter.com`) : le compte n'est pas accessible depuis l'agent. Demander les lignes `paywall` et `checkout` des 30 derniers jours pour savoir où les joueurs s'arrêtent.
-- Le prix passe de 4,99 $ à 6,99 $ après 15 minutes (compte à rebours affiché sur le paywall). C'est un choix de la propriétaire, ne pas le changer.
+- Relire les 5 pages SEO en `noindex` ; si elles conviennent : `"status": "live"` dans `seo-pages.json` puis `npm run publish:seo`.
+- Distribution : encart quiz dans les articles de bonjourpickleball.fr, groupes Facebook et Reddit pickleball (54 % de l'audience est américaine), poster QR dans les clubs, liens `/clubs/` pour chaque club ou coach.
+- Dans 7 à 10 jours, coller dans la conversation les lignes GoatCounter (`run_start`, `run_complete`, `paywall_view`, `checkout_start`, référents, `src-club-`) pour mesurer l'effet des changements.
+- Jouer une manche de Rapid Fire sur téléphone et dire si l'ensemble paraît juste.
 
 ## Pièges connus
 
-- `config.js` contient `seedScores` (faux scores du classement) uniquement sur `localhost`. En production le classement vide est masqué (`leaderboard.landingCardMinRows: 3`).
-- `tests/wording-contract.test.js` vérifie des textes exacts : si un wording change, ce test peut échouer.
-- La CI exécute `npm run format:check` : une ligne trop longue dans `tests/` fait échouer la CI. Lancer `npx prettier --write tests` avant de pousser.
+- `config.js` contient `seedScores` (faux scores du classement) uniquement sur `localhost`.
+- Le fichier `IMPLEMENTATION_MEMORY.md` cite `REGRESSION_GUARDRAILS.md`, qui n'existe pas dans le dépôt.
+- La CI : tests unitaires, couverture, `format:check`, bundle et CSS régénérés, pages SEO régénérées, tests Playwright (smoke, parcours critiques, accessibilité). Une ligne trop longue dans `tests/` ou `e2e/` fait échouer le formatage.

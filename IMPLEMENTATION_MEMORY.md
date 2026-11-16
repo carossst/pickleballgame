@@ -31,8 +31,8 @@ Do not use it for:
   - content/page generation rules
 - `IMPLEMENTATION_MEMORY.md`
   - technical memory and non-obvious implementation contracts
-- `coding/CHANTIER_A_FAIRE.md`
-  - current priorities and recommended order of work
+- `CHANTIER_A_FAIRE.md`
+  - project handoff: owner decisions, working rules, state, open work (in French)
 
 ## Project Shape
 
@@ -240,3 +240,18 @@ Do not update it for:
 - small copy changes
 - routine content additions
 - ephemeral debugging notes
+
+## Modules added in November 2026
+
+All are classic browser scripts exposing a `window.WT_*` global. Those marked "bundle" are listed in `scripts/generate-app-bundle.mjs` (order matters, before `ui.js`) and need a `config.js` version bump when changed.
+
+- `sfx.js` (bundle): `WT_SFX.play('correct' | 'wrong')`. Web Audio synthesis, no audio files. Sound is off by default (`localStorage` key `wt-sfx`), vibration is Android only and skipped for reduced motion. It mounts its own fixed button `#wt-sfx-toggle` (top-right, music-note icon). Called from `UI.prototype.answer`.
+- `court-diagram.js` (bundle): `WT_Court.svgFor(tags, lang)` returns an inline SVG chosen from the question tags (first matching entry of `TOPIC_BY_TAG`). Inserted in the feedback explanation by `ui.js`.
+- `score-card.js` (bundle): `WT_ScoreCard.share({ score, text, lang })` draws a 1080x1350 canvas image, shares it as a file when `navigator.canShare` allows and downloads it otherwise. Triggered by the `share-card` action (end screens, `ui-screen-end.js`).
+- `rapidfire-fx.js` (bundle): paddle, wave banner, life capsule, boss chip. State is in `this._runtime.rf`; `WT_RFX.sync()` redraws the effects after every render and from `UI.prototype._rfOnAnswer`. Pure helpers `waveFor`, `powerFor`, `isBoss` are unit tested. It never touches the fall speed or the points. `GameEngine.grantChance()` (`game.js`) gives a life back in Rapid Fire only; `buildSeenDeck` puts a `2026 Changes` (else `Hard`) question last when the deck has at least 5 questions.
+- `club-link.js` (not in the bundle; loaded by `/poster/`, `/poster.html` and `/clubs/`; precached in `sw.js`): `WT_ClubLink` builds tagged links (`club-<name>` / `coach-<name>`, accents removed, 40 characters), theme links and the poster link. `analytics.js` copies `wt-source` into every GoatCounter event as `src-<tag>`.
+- `clubs/index.html`, `clubs.js`, `clubs.css`: the clubs and coaches page (`noindex`). `poster.js` accepts `?club=` or `?coach=`: it shows the name and puts the tag in the QR code (automatic QR size when tagged, a fixed version 4 cannot hold it).
+- `game.js` free runs: `curatedFreeRuns.maxQuestionsByRun` caps a free run (it then behaves like a fixed deck) and `noEliminationRuns` removes the mistake limit for the listed runs (engine state `chancesLeft: null`, as in Mistakes Mode). The start overlay uses `ui.startRunNoEliminationOverlay` in that case.
+- Styles: the court skin and the Rapid Fire arcade look are at the end of `styles/screens.css`; the sound button and the diagram at the end of `styles/components.css`.
+
+Contract worth remembering: anything added to the DOM after a render is lost at the next render. The feedback colour is keyed on `.wt-feedback--ok / --bad` in CSS for that reason.
