@@ -50,6 +50,7 @@ const ASSETS_TO_CACHE = [
   "./poster/index.html",
   "./poster.css",
   "./poster.js",
+  "./club-link.js",
   "./poster-qr-vendor.js",
   "./style.css",
   "./app.bundle.js",

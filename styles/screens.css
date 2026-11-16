@@ -2453,7 +2453,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 /* Question: the statement sits on the court */
-body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-terms-box:not(.wt-terms-box--successflash):not(.wt-terms-box--mistakeflash) {
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-terms-box {
   background: rgb(var(--court-blue));
   border: 3px solid #fff;
   box-shadow: 0 0 0 6px rgb(var(--court-green)), 0 14px 28px rgb(var(--court-blue) / 0.25);
@@ -2560,4 +2560,78 @@ body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode=
   background: rgb(var(--success-dark));
   border-color: rgb(var(--success-dark));
   color: #fff;
+}
+
+/* Feedback screen: keep the verdict colour on the statement box.
+   A re-render during the feedback screen drops the flash classes, so the box
+   went back to blue after about half a second. Key the colour on the feedback
+   block itself instead. */
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-card:has(.wt-feedback--ok) .wt-terms-box.wt-terms-box {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 0 0 6px rgb(var(--success) / 0.45);
+  animation: none;
+}
+
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-card:has(.wt-feedback--bad) .wt-terms-box.wt-terms-box {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 0 0 6px rgb(var(--danger) / 0.45);
+  animation: none;
+}
+
+/* Rapid Fire: same colours as the normal game (blue statement, green True,
+   red False) so the two modes look like one game. Colours only: the layout of
+   the falling lane is untouched. */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box {
+  background: rgb(var(--court-blue));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 4px rgb(var(--court-green)), 0 10px 22px rgb(var(--court-blue) / 0.3);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-term-word {
+  color: #fff;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box.wt-terms-box--successflash {
+  background: rgb(var(--success-dark));
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box.wt-terms-box--mistakeflash {
+  background: rgb(var(--danger-dark));
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice {
+  border: 0;
+  color: #fff;
+  font-weight: 800;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice * {
+  color: #fff;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 5px 0 rgb(15 90 43);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 5px 0 rgb(127 20 20);
+}
+
+/* Rapid Fire: keep the answer colours when the pointer rests on a button */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:hover,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:active,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:focus-visible {
+  background: rgb(var(--success-dark));
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:hover,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:active,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:focus-visible {
+  background: rgb(var(--danger-dark));
+  color: #fff;
+  filter: brightness(1.08);
 }

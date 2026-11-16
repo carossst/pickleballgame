@@ -838,7 +838,8 @@
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
       practiceCtaCountPremium: 'Practice my mistakes',
-      shareTitle: 'Challenge a friend'
+      shareTitle: 'Challenge a friend',
+      shareCardCta: 'Share my score card'
     },
 
     paywall: {

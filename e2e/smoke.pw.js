@@ -118,9 +118,52 @@ test('French poster is localized and links back to the French quiz', async ({
   });
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('#poster')).toContainText('Quiz des règles du pickleball');
-  await expect(page.locator('[data-poster="print"]')).toHaveText("Imprimer l'affiche");
-  await expect(page.locator('[data-poster="back"]')).toHaveAttribute('href', '../fr.html');
-  await expect(page.locator('[data-poster="url"]')).toHaveText('www.pickleballrulesquiz.com/fr.html');
+  await expect(page.locator('#poster')).toContainText(
+    'Défi des règles du pickleball'
+  );
+  await expect(page.locator('[data-poster="print"]')).toHaveText(
+    "Imprimer l'affiche"
+  );
+  await expect(page.locator('[data-poster="back"]')).toHaveAttribute(
+    'href',
+    '../fr.html'
+  );
+  await expect(page.locator('[data-poster="url"]')).toHaveText(
+    'www.pickleballrulesquiz.com/fr.html'
+  );
   await expect(page.locator('#poster-qr svg')).toBeVisible();
+});
+
+test('poster for a club shows its name and tags the QR code', async ({
+  page
+}) => {
+  await page.goto('/poster/?club=%C3%89vry%20Pickle', {
+    waitUntil: 'domcontentloaded'
+  });
+  await expect(page.locator('#poster')).toContainText(
+    'Brought to you by Évry Pickle'
+  );
+  await expect(page.locator('#poster-qr')).toHaveAttribute(
+    'data-url',
+    'https://www.pickleballrulesquiz.com/?wt-source=club-evry-pickle'
+  );
+  await expect(page.locator('#poster-qr svg')).toBeVisible();
+});
+
+test('clubs page builds tagged links from a club name', async ({ page }) => {
+  await page.goto('/clubs/?lang=en', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#clubs-results')).toBeHidden();
+  await page.locator('#club-name').fill('Évry Pickle');
+  await expect(page.locator('#clubs-results')).toBeVisible();
+  await expect(page.locator('#clubs-results')).toContainText(
+    'club-evry-pickle'
+  );
+  await expect(page.locator('#clubs-qr')).toHaveAttribute(
+    'data-url',
+    'https://www.pickleballrulesquiz.com/?wt-source=club-evry-pickle'
+  );
+  await page.locator('#club-kind').selectOption('coach');
+  await expect(page.locator('#clubs-results')).toContainText(
+    'coach-evry-pickle'
+  );
 });
