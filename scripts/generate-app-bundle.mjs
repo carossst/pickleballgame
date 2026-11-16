@@ -26,6 +26,7 @@ const SOURCES = [
   "ui-checkout.js",
   "ui-growth.js",
   "ui-leaderboard.js",
+  "sfx.js",
   "ui.js",
   "pwa.js",
   "email.js",

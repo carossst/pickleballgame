@@ -2752,6 +2752,43 @@ body:has(.wt-card--paywall) .wt-seo-links {
   display: none;
 }
 
+/* Sound toggle: small fixed button in the top-right corner, off by default */
+.wt-sfx-toggle {
+  position: fixed;
+  top: 4px;
+  right: 4px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  background: rgb(var(--surface));
+  color: rgb(var(--text-strong));
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+  cursor: pointer;
+}
+
+.wt-sfx-toggle[data-state='on'] .wt-sfx-mute,
+.wt-sfx-toggle[data-state='off'] .wt-sfx-waves {
+  display: none;
+}
+
+.wt-sfx-toggle[data-state='on'] {
+  background: rgb(var(--success-dark));
+  color: #fff;
+  border-color: rgb(var(--success-dark));
+}
+
+@media print {
+  .wt-sfx-toggle {
+    display: none;
+  }
+}
+
 /* ===== styles/i18n-toggle.css ===== */
 /* i18n-toggle.css — Fixed top-right locale swap button
  *

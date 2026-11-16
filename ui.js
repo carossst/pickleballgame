@@ -6626,6 +6626,12 @@ ${audioSettingsHtml}
       feedbackLine: String(res.feedbackLine || '').trim()
     };
 
+    try {
+      if (window.WT_SFX) window.WT_SFX.play(res.isCorrect === true ? 'correct' : 'wrong');
+    } catch (_) {
+      /* sound is optional */
+    }
+
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)
     try {
       const liveEl = document.getElementById('answer-feedback');
