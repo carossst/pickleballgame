@@ -1,0 +1,54 @@
+# Reste à faire (pour un modèle léger)
+
+Contexte : le site (`pickleballrulesquiz.com`) a environ 100 visites par mois et aucune vente. Le diagnostic est : trop peu de trafic, parties jamais terminées, écrans trop chargés. Les gros changements de parcours sont faits et fusionnés (PR 7, 8, 9). Cette liste contient ce qui reste. Chaque tâche est autonome et petite. Une tâche = une branche = une PR en brouillon, fusionnée quand la CI est verte.
+
+## Règles du dépôt à respecter
+
+- Pas de build : HTML/CSS/JS pur. Mais `app.bundle.js` et `style.css` sont **générés** : ne jamais les éditer à la main.
+  - après un changement de JS : `npm run generate:bundle`
+  - après un changement dans `styles/*.css` : `npm run generate:css`
+  - après un changement de `seo-pages.json` : `npm run publish:seo`
+- Si un fichier de l'app change, passer `version` dans `config.js` (ligne ~54) au numéro suivant (actuellement `4.3.27`), sinon le cache du service worker garde l'ancienne version.
+- Vérifications avant de pousser : `npm test`, `npm run format:check` (Prettier ne couvre que `tests/`, `logic/` et quelques fichiers de config), puis les tests Playwright.
+- Playwright : le navigateur est dans `/opt/pw-browsers/chromium`. Créer un fichier de config temporaire qui reprend `playwright.config.cjs` avec `use.launchOptions.executablePath = "/opt/pw-browsers/chromium"`, lancer `npx playwright test --config=<ce fichier> --trace off`, puis supprimer le fichier et faire `git checkout -- test-results && git clean -fdq test-results`.
+- Le texte visible vient de `wording-en.js` et `wording-fr.js` (toujours modifier les deux). Ne pas écrire de texte en dur dans `ui*.js`.
+- Ne jamais mettre le nom du modèle dans les commits ni les PR.
+
+## À faire, par ordre de priorité
+
+### 1. Seuil du rush à 3 bonnes réponses pour les parties gratuites
+Le joueur doit vivre le ×2 avant le paywall. Aujourd'hui il faut 4 bonnes réponses d'affilée, et la première partie ne fait que 5 questions.
+- `game.js` ligne ~596 : `Number(this.run.correctStreak || 0) >= 4` est codé en dur. Le rendre configurable (ex. `config.game.comboThreshold`, 4 par défaut) et lui donner une valeur plus basse pour les parties gratuites (`runStartNumber` 1 et 2).
+- `config.js` : `ui.momentumMeter` a `segments: 4` et `thresholds s1..s4`. La barre doit avoir autant de segments que le seuil. `ui.js` utilise `momentumState.streak >= momentumState.segments` pour afficher le badge ×2.
+- Textes `system.comboRule` dans les deux fichiers de wording : « 4 correct answers… » doit suivre le seuil.
+- Tests à adapter : `e2e/critical-flows.pw.js` (test « four green bars… », attend 4 segments et un score de 6) et `tests/game.test.js` (premier test).
+- Événement analytics `combo-unlocked` : le titre contient `threshold=4`.
+
+### 2. Rapid Fire (mode bonus)
+- Le début est lent : `config.js` → `secretBonus.fall.initialSpeed: 10` (la première question met environ 8 s à atteindre la ligne). Essayer 14 à 16, vérifier à la main que 3 erreurs restent possibles.
+- Le panneau d'entrée (`secretBonus.startOverlayLine1..3` dans les wordings) fait 5 lignes. En ramener à 3 et retirer « 0 ticket left. Cost: 1 ticket. » qui s'affiche juste après avoir payé le jeton.
+- Vérifier que l'habillage « terrain » ne revient pas dans ce mode (il est limité à `.wt-container[data-wt-state='playing']:not([data-wt-mode='bonus'])` dans `styles/screens.css`).
+
+### 3. Vérifier visuellement la largeur bureau
+L'habillage « terrain » (fin de `styles/screens.css`, section « COURT SKIN ») n'a été regardé qu'en largeur téléphone (390 px). Regarder à 1280 px : accueil, question, feedback, paywall. Corriger seulement si quelque chose déborde.
+
+### 4. Partage du score (croissance)
+L'écran de fin n'a pas de partage simple du type « J'ai fait 4/5, et toi ? ». Voir `ui-share.js` et `ui-screen-end.js` (`buildEndShareBlock`). Ajouter un texte de partage qui contient le score et le lien. Ne pas remettre de blocs supplémentaires sur l'écran de la dernière partie gratuite (déjà allégé).
+
+### 5. Panneau « Last free game »
+`startRunTypeLastFree` dit « Make it count » mais ne dit pas combien de questions restent. Une ligne du type « 10 questions » suffit. Les parties gratuites sont plafonnées par `config.js` → `curatedFreeRuns.maxQuestionsByRun` (1 : 5 questions, 2 : 10).
+
+## Hors code (à signaler à la propriétaire, ne pas faire soi-même)
+
+- Search Console : soumettre `sitemap.xml`, regarder combien de pages `/rules/` et `/quiz/` sont indexées.
+- 5 pages SEO sont en statut `ready` (donc `noindex`) dans `seo-pages.json` et attendent sa relecture. Quand elle les valide : `"status": "live"` puis `npm run publish:seo`.
+- Aucune page SEO en français, volontairement, pour ne pas concurrencer bonjourpickleball.fr.
+- Distribution : encart quiz dans les articles de bonjourpickleball.fr, groupes Facebook et Reddit pickleball (54 % de l'audience est américaine), poster QR.
+- GoatCounter (`caroles.goatcounter.com`) : le compte n'est pas accessible depuis l'agent. Demander les lignes `paywall` et `checkout` des 30 derniers jours pour savoir où les joueurs s'arrêtent.
+- Le prix passe de 4,99 $ à 6,99 $ après 15 minutes (compte à rebours affiché sur le paywall). C'est un choix de la propriétaire, ne pas le changer.
+
+## Pièges connus
+
+- `config.js` contient `seedScores` (faux scores du classement) uniquement sur `localhost`. En production le classement vide est masqué (`leaderboard.landingCardMinRows: 3`).
+- `tests/wording-contract.test.js` vérifie des textes exacts : si un wording change, ce test peut échouer.
+- La CI exécute `npm run format:check` : une ligne trop longue dans `tests/` fait échouer la CI. Lancer `npx prettier --write tests` avant de pousser.

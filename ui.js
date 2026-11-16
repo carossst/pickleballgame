@@ -10691,7 +10691,7 @@ ${audioSettingsHtml}
               ? `
             <span class="wt-momentum__combo" aria-label="${escapeHtml(String(wAll.system?.doublePoints || ''))}">×2</span>
           `
-              : ``
+              : `<span class="wt-momentum__goal" aria-hidden="true">×2</span>`
           }
         </div>
       `

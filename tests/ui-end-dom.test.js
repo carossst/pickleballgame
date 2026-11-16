@@ -179,7 +179,7 @@ test('END render flags daily replay reward for free RUN 1 success case', () => {
   expect(html).toContain('data-daily-line="Cleared preview 12"');
 });
 
-test('END render uses last-free daily miss paywall bridge copy when appropriate', () => {
+test('END render keeps the last free end screen free of bridge and daily lines', () => {
   const endModule = loadEndModule();
   const html = endModule.render(
     {
@@ -261,8 +261,10 @@ test('END render uses last-free daily miss paywall bridge copy when appropriate'
     })
   );
 
-  expect(html).toContain('Specific last free miss bridge');
-  expect(html).toContain('data-daily-line="Last free miss 12"');
+  // The last free end screen is deliberately slim: no bridge paragraph and
+  // no daily-challenge micro line next to the upgrade and share offers.
+  expect(html).not.toContain('Specific last free miss bridge');
+  expect(html).not.toContain('data-daily-line="Last free miss 12"');
   expect(html).toContain('One game on the house');
   expect(html).toContain('data-action="claim-share-bonus"');
   expect(html).toContain('data-action="dismiss-share-bonus"');
