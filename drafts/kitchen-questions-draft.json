@@ -1,9 +1,9 @@
 {
  "status": "DRAFT - not live. Written without access to the 2026 rulebook: every statement and every rule citation must be checked by the owner before use.",
- "purpose": "21 extra Non-Volley Zone (kitchen) questions: the theme has only 8 of 200.",
+ "purpose": "20 extra Non-Volley Zone (kitchen) questions: the theme has only 8 of 200.",
  "integrationChecklist": [
   "1. Check every statement against the 2026 USA Pickleball rulebook and replace the [ADD ...] citation lines.",
-  "2. Append the items to content.json (ids 201 to 221) and update totalItems and breakdown.",
+  "2. Append the items to content.json (ids 201 to 220) and update totalItems and breakdown.",
   "3. Raise game.poolSize in config.js (currently 200), and update every place that says 200 questions (landing, paywall wording, poster, JSON-LD in index.html, SEO pages, llms.txt).",
   "4. The leaderboard Worker validates answers against its own copy of the content: run npm run generate:leaderboard-key, then redeploy the Worker, before shipping the new questions, otherwise runs that include them are rejected.",
   "5. Add the new ids to the Non-Volley Zone theme in seo-pages.json (cardIds) and run npm run publish:seo.",
