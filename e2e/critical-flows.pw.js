@@ -87,6 +87,29 @@ test('free run end screen offers a visible way to share the score', async ({
   ).toBeVisible();
 });
 
+test('statement box keeps the verdict colour while the feedback is shown', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  await startFreshRun(page);
+  await page.locator('[data-action="answer-true"]').click();
+  await expect(page.locator('.wt-feedback--ok')).toBeVisible();
+  await page.waitForTimeout(1500);
+  await expect(page.locator('.wt-feedback--ok')).toBeVisible();
+  await expect(page.locator('.wt-terms-box')).toHaveCSS(
+    'background-color',
+    'rgb(21, 128, 61)'
+  );
+});
+
 test('question statement is readable: text contrasts with its box', async ({
   page
 }) => {
