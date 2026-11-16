@@ -11,6 +11,7 @@
     copy: {
       en: {
         eyebrow: 'For clubs and courts',
+        offeredBy: 'Brought to you by',
         overline: 'Can you get 5 tricky pickleball calls right?',
         title: 'Pickleball Rules Quiz',
         hook: 'Test real game situations, learn the rule, and see where you stand.',
@@ -33,6 +34,7 @@
       },
       fr: {
         eyebrow: 'Pour les clubs et les terrains',
+        offeredBy: 'Offert par',
         overline: 'Saurez-vous trancher 5 situations pièges au pickleball ?',
         title: 'Défi des règles du pickleball',
         hook: 'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.',
@@ -64,6 +66,23 @@
     return POSTER_CONFIG.urls[POSTER_CONFIG.locale] || POSTER_CONFIG.urls.en;
   }
 
+  // ?club=Name or ?coach=Name: show the name and put a tracking tag in the QR code.
+  function getSponsor() {
+    const params = new URLSearchParams(window.location.search);
+    const kind = params.get('coach') ? 'coach' : 'club';
+    const name = String(params.get(kind) || '').trim().slice(0, 60);
+    const link = window.WT_ClubLink;
+    const tag = name && link ? link.tag(kind, name) : '';
+    return { name: tag ? name : '', tag };
+  }
+
+  // Address encoded in the QR code (tagged when the poster belongs to a club).
+  function getQrUrl() {
+    const sponsor = getSponsor();
+    if (!sponsor.tag) return getUrl();
+    return window.WT_ClubLink.siteUrl({ lang: POSTER_CONFIG.locale, tag: sponsor.tag });
+  }
+
   function setText(selector, value) {
     const element = document.querySelector(selector);
     if (element) element.textContent = String(value || '');
@@ -73,11 +92,14 @@
     const target = document.getElementById('poster-qr');
     if (!target || typeof qrcode !== 'function') return;
 
-    const qr = qrcode(4, 'M');
     const copy = getCopy();
-    qr.addData(getUrl());
+    const qrUrl = getQrUrl();
+    // Version 4 holds the plain address only; a tagged address needs the automatic size.
+    const qr = qrcode(qrUrl === getUrl() ? 4 : 0, 'M');
+    qr.addData(qrUrl);
     qr.make();
     target.innerHTML = qr.createSvgTag(4, 0, copy.qrLabel);
+    target.setAttribute('data-url', qrUrl);
     const svg = target.querySelector('svg');
     if (svg) {
       svg.setAttribute('role', 'img');
@@ -94,7 +116,11 @@
       : 'Pickleball Rules Quiz Poster';
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute('content', copy.description);
-    setText('[data-poster="eyebrow"]', copy.eyebrow);
+    const sponsor = getSponsor();
+    setText(
+      '[data-poster="eyebrow"]',
+      sponsor.name ? `${copy.offeredBy} ${sponsor.name}` : copy.eyebrow
+    );
     setText('[data-poster="overline"]', copy.overline);
     setText('[data-poster="title"]', copy.title);
     setText('[data-poster="hook"]', copy.hook);

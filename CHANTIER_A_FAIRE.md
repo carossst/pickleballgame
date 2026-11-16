@@ -32,6 +32,13 @@ Le partage existait déjà (`ui-share.js` : partage natif, copie, e-mail, lien a
 ### 5. Panneau des parties gratuites : fait
 Les titres du panneau de début indiquent le nombre de questions (« Your first free game: 5 questions », « Last free game: 10 questions. Make it count », et en français). Ces nombres sont écrits dans `wording-en.js` / `wording-fr.js` et doivent rester égaux à `config.js` → `curatedFreeRuns.maxQuestionsByRun`. Un test (`tests/wording-contract.test.js`) échoue s'ils divergent.
 
+## Clubs et coachs : fait
+- `club-link.js` (partagé) fabrique les liens : étiquette `club-<nom>` ou `coach-<nom>` (accents retirés, 40 caractères max), adresses du site EN/FR, liens par thème, adresse du poster. Testé dans `tests/club-link.test.js`.
+- Le poster accepte `/poster/?club=Nom` ou `?coach=Nom` : il affiche « Offert par Nom » et met l'étiquette dans le QR code (`poster.js`). Le QR est en taille automatique quand il y a une étiquette ; la version 4 fixe ne contient pas une adresse étiquetée.
+- La page `/clubs/` (`clubs/index.html`, `clubs.js`, `clubs.css`) génère lien, lien du poster, message WhatsApp, QR téléchargeable et liens par thème à partir d'un nom. Rien n'est stocké ni envoyé. Page en `noindex`.
+- La source est lue par `analytics.js` (`wt-source`) et apparaît dans GoatCounter sous `src-club-<nom>`. Un lien vers une page `/quiz/<thème>/` perd l'étiquette (son bouton Play met `wt-source=seo`) : utiliser les liens directs de la page `/clubs/`.
+- Si un thème est ajouté dans `seo-pages.json`, l'ajouter aussi dans `THEMES` de `club-link.js` (un test compare les deux).
+
 ## Hors code (à signaler à la propriétaire, ne pas faire soi-même)
 
 - Search Console : soumettre `sitemap.xml`, regarder combien de pages `/rules/` et `/quiz/` sont indexées.
