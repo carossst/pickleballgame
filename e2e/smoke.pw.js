@@ -118,9 +118,18 @@ test('French poster is localized and links back to the French quiz', async ({
   });
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('#poster')).toContainText('Quiz des règles du pickleball');
-  await expect(page.locator('[data-poster="print"]')).toHaveText("Imprimer l'affiche");
-  await expect(page.locator('[data-poster="back"]')).toHaveAttribute('href', '../fr.html');
-  await expect(page.locator('[data-poster="url"]')).toHaveText('www.pickleballrulesquiz.com/fr.html');
+  await expect(page.locator('#poster')).toContainText(
+    'Défi des règles du pickleball'
+  );
+  await expect(page.locator('[data-poster="print"]')).toHaveText(
+    "Imprimer l'affiche"
+  );
+  await expect(page.locator('[data-poster="back"]')).toHaveAttribute(
+    'href',
+    '../fr.html'
+  );
+  await expect(page.locator('[data-poster="url"]')).toHaveText(
+    'www.pickleballrulesquiz.com/fr.html'
+  );
   await expect(page.locator('#poster-qr svg')).toBeVisible();
 });

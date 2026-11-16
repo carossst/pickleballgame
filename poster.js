@@ -11,11 +11,11 @@
     copy: {
       en: {
         eyebrow: 'For clubs and courts',
-        overline: 'Know the rules. Play with confidence.',
+        overline: 'Can you get 5 tricky pickleball calls right?',
         title: 'Pickleball Rules Quiz',
-        hook: 'A fast true or false quiz about real pickleball situations.',
+        hook: 'Test real game situations, learn the rule, and see where you stand.',
         bullets: [
-          'Try 2 games free',
+          'Try 2 games free, no signup',
           '200 rules questions based on the 2026 USA Pickleball rulebook',
           'Serving, scoring, faults, kitchen rules and line calls',
           'Full access: $6.99 one time',
@@ -33,11 +33,11 @@
       },
       fr: {
         eyebrow: 'Pour les clubs et les terrains',
-        overline: 'Connaissez les règles. Jouez en confiance.',
-        title: 'Quiz des règles du pickleball',
-        hook: 'Un quiz rapide en vrai ou faux sur les situations réelles du pickleball.',
+        overline: 'Saurez-vous trancher 5 situations pièges au pickleball ?',
+        title: 'Défi des règles du pickleball',
+        hook: 'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.',
         bullets: [
-          '2 parties gratuites',
+          '2 parties gratuites, sans inscription',
           '200 questions sur les règles, basées sur le règlement USA Pickleball 2026',
           'Service, score, fautes, zone de non-volée et lignes',
           'Accès complet : 6,99 $ US en paiement unique',
@@ -50,8 +50,8 @@
         print: "Imprimer l'affiche",
         actionsLabel: "Actions de l'affiche",
         offerLabel: 'Ce que le quiz comprend',
-        qrLabel: 'QR code pour jouer au quiz des règles du pickleball',
-        description: 'Affiche imprimable du quiz des règles du pickleball pour les clubs et les terrains.'
+        qrLabel: 'QR code pour jouer au défi des règles du pickleball',
+        description: 'Affiche imprimable du défi des règles du pickleball pour les clubs et les terrains.'
       }
     }
   };
