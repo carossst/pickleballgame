@@ -351,7 +351,22 @@
       return { ids: [], byId };
     }
 
-    return { ids: shuffleCopy(seenIds), byId };
+    return { ids: moveBossLast(shuffleCopy(seenIds), byId), byId };
+  }
+
+  // Rapid Fire boss: with enough questions, the last one is a hard or 2026 question.
+  function moveBossLast(ids, byId) {
+    if (ids.length < 5) return ids;
+    const tagsOf = (id) => {
+      const it = byId && byId[String(id)];
+      return Array.isArray(it && it.tags) ? it.tags.map((t) => String(t)) : [];
+    };
+    let pick = ids.findIndex((id) => tagsOf(id).includes('2026 Changes'));
+    if (pick < 0) pick = ids.findIndex((id) => tagsOf(id).includes('Hard'));
+    if (pick < 0) return ids;
+    const out = ids.slice();
+    out.push(out.splice(pick, 1)[0]);
+    return out;
   }
 
   function buildFullPoolDeck(items, config) {
@@ -535,6 +550,16 @@
     getIndex() {
       if (!this.run) return 0;
       return Number(this.run.idx || 0);
+    }
+
+    // Rapid Fire power-up: gives one mistake back (never above the maximum).
+    grantChance() {
+      const r = this.run;
+      if (!r || r.done || r.mode !== MODES.BONUS) return false;
+      if (r.chancesLeft == null || r.maxChances == null) return false;
+      if (Number(r.chancesLeft) >= Number(r.maxChances)) return false;
+      r.chancesLeft = Number(r.chancesLeft) + 1;
+      return true;
     }
 
     getTotal() {

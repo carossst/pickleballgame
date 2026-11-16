@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.39",
+    version: "4.3.42",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -529,7 +529,7 @@
         tuningVersion: 2,
 
         // Speed in % of lane height per second
-        initialSpeed: 15,       // départ modéré (10 = 8 s avant la ligne, trop lent)
+        initialSpeed: 10,       // très lent au départ (réglage de la propriétaire : ne pas modifier)
         maxSpeed: 20,           // plafond confortable
         speedIncrement: 0.4,    // rampe étirée (cap ~25 items)
 
@@ -7513,7 +7513,22 @@ Merci !`
       return { ids: [], byId };
     }
 
-    return { ids: shuffleCopy(seenIds), byId };
+    return { ids: moveBossLast(shuffleCopy(seenIds), byId), byId };
+  }
+
+  // Rapid Fire boss: with enough questions, the last one is a hard or 2026 question.
+  function moveBossLast(ids, byId) {
+    if (ids.length < 5) return ids;
+    const tagsOf = (id) => {
+      const it = byId && byId[String(id)];
+      return Array.isArray(it && it.tags) ? it.tags.map((t) => String(t)) : [];
+    };
+    let pick = ids.findIndex((id) => tagsOf(id).includes('2026 Changes'));
+    if (pick < 0) pick = ids.findIndex((id) => tagsOf(id).includes('Hard'));
+    if (pick < 0) return ids;
+    const out = ids.slice();
+    out.push(out.splice(pick, 1)[0]);
+    return out;
   }
 
   function buildFullPoolDeck(items, config) {
@@ -7697,6 +7712,16 @@ Merci !`
     getIndex() {
       if (!this.run) return 0;
       return Number(this.run.idx || 0);
+    }
+
+    // Rapid Fire power-up: gives one mistake back (never above the maximum).
+    grantChance() {
+      const r = this.run;
+      if (!r || r.done || r.mode !== MODES.BONUS) return false;
+      if (r.chancesLeft == null || r.maxChances == null) return false;
+      if (Number(r.chancesLeft) >= Number(r.maxChances)) return false;
+      r.chancesLeft = Number(r.chancesLeft) + 1;
+      return true;
     }
 
     getTotal() {
@@ -12741,6 +12766,93 @@ ${(() => {
   }
 
   window.WT_ScoreCard = { W, H, draw, toBlob, share, fileName };
+})();
+
+/* ===== rapidfire-fx.js ===== */
+/* Rapid Fire effects: a paddle that returns the ball, wave banners, power-up
+   capsules and a boss question. Visual effects and a bonus life only: the score
+   rules and the fall speed are untouched. State lives in the UI runtime, and sync() redraws the effects
+   from that state after every render so a re-render cannot drop them. */
+(() => {
+  'use strict';
+
+  const WAVE_EVERY = 5; // questions per wave
+  const LIFE_STREAK = 8;
+  const PADDLE_MS = 450;
+  const BANNER_MS = 1400;
+  const CAPSULE_MS = 1200;
+  const MIN_BOSS_DECK = 5;
+
+  const TEXT = {
+    en: { wave: 'WAVE', boss: 'BOSS', life: '+1 LIFE' },
+    fr: { wave: 'VAGUE', boss: 'BOSS', life: '+1 VIE' }
+  };
+
+  // served = questions already served before the one that is about to fall.
+  function waveFor(served) {
+    const n = Math.floor(Number(served) || 0);
+    return n > 0 && n % WAVE_EVERY === 0 ? n / WAVE_EVERY + 1 : 0;
+  }
+
+  // Power-up earned by a correct answer that makes this streak ("" = none).
+  // Only a life: the fall speed is the owner's tuning and is never changed here.
+  function powerFor(info) {
+    const i = info || {};
+    const streak = Math.floor(Number(i.streak) || 0);
+    const lost = Number(i.chancesLeft) < Number(i.maxChances);
+    return streak === LIFE_STREAK && lost ? 'life' : '';
+  }
+
+  function isBoss(index, total) {
+    return Number(total) >= MIN_BOSS_DECK && Number(index) === Number(total) - 1;
+  }
+
+  function el(parent, className, text) {
+    const node = document.createElement('div');
+    node.className = className;
+    if (text != null) node.textContent = text;
+    parent.appendChild(node);
+    return node;
+  }
+
+  // Replays an effect from where it should be now (negative delay), so the
+  // animation continues instead of restarting after a re-render.
+  function resume(node, startedAt, now) {
+    node.style.animationDelay = `-${Math.max(0, now - startedAt)}ms`;
+  }
+
+  // laneEl: the falling lane; rf: effect state; options: { lang, chipEl, boss, now }
+  function sync(laneEl, rf, options) {
+    if (!laneEl || !rf) return;
+    const o = options || {};
+    const now = Number.isFinite(o.now) ? o.now : Date.now();
+    const text = TEXT[o.lang === 'fr' ? 'fr' : 'en'];
+
+    laneEl.querySelectorAll('.wt-rf-fx').forEach((node) => node.remove());
+
+    const paddle = el(laneEl, 'wt-rf-fx wt-rf-paddle');
+    if (rf.paddle && now - rf.paddle.t < PADDLE_MS) {
+      paddle.classList.add(rf.paddle.side === 'right' ? 'is-hit-right' : 'is-hit-left');
+      resume(paddle, rf.paddle.t, now);
+    }
+
+    if (rf.wave && now - rf.wave.t < BANNER_MS) {
+      resume(el(laneEl, 'wt-rf-fx wt-rf-banner', `${text.wave} ${rf.wave.n}`), rf.wave.t, now);
+    }
+    if (rf.boss && now - rf.boss.t < BANNER_MS) {
+      resume(el(laneEl, 'wt-rf-fx wt-rf-banner wt-rf-banner--boss', text.boss), rf.boss.t, now);
+    }
+    if (rf.power && now - rf.power.t < CAPSULE_MS) {
+      const capsule = el(laneEl, `wt-rf-fx wt-rf-capsule wt-rf-capsule--${rf.power.kind}`, text[rf.power.kind]);
+      resume(capsule, rf.power.t, now);
+    }
+
+    if (o.chipEl && o.chipEl.classList) {
+      o.chipEl.classList.toggle('wt-bonus-chip--boss', Boolean(o.boss));
+    }
+  }
+
+  window.WT_RFX = { waveFor, powerFor, isBoss, sync };
 })();
 
 /* ===== ui.js ===== */
@@ -19440,6 +19552,8 @@ ${audioSettingsHtml}
     const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
     if (runMode === MODES.BONUS) {
+      this._rfOnAnswer(choiceBool, res);
+
       // Terms-box visual feedback (BONUS): stash verdict, apply after render.
       const bonusFlashClass =
         res.isCorrect === true
@@ -21328,6 +21442,38 @@ ${audioSettingsHtml}
     }
   };
 
+  // Rapid Fire: paddle return and power-ups after an answer (state only; sync() draws it).
+  UI.prototype._rfOnAnswer = function (choiceBool, res) {
+    try {
+      if (!window.WT_RFX || !this._runtime) return;
+      const rf = (this._runtime.rf = this._runtime.rf || {});
+      const now = Date.now();
+      rf.paddle = { side: choiceBool === true ? 'left' : 'right', t: now };
+      if (res && res.isCorrect === true && this.game) {
+        const st = this.game.getState();
+        const power = window.WT_RFX.powerFor({
+          streak: st.correctStreak,
+          chancesLeft: st.chancesLeft,
+          maxChances: st.maxChances
+        });
+        if (power === 'life' && typeof this.game.grantChance === 'function') {
+          if (!this.game.grantChance()) return;
+        }
+        if (power) rf.power = { kind: power, t: now };
+      }
+      // Draw at once: the next render can come later than the 450 ms paddle move.
+      const lane = this.appEl ? this.appEl.querySelector('[data-wt-bonus-lane]') : null;
+      const chip = this.appEl ? this.appEl.querySelector('[data-wt-bonus-chip]') : null;
+      window.WT_RFX.sync(lane, rf, {
+        lang: String(document.documentElement.lang || '').slice(0, 2),
+        chipEl: chip,
+        boss: rf.bossNow === true
+      });
+    } catch (_) {
+      /* effects are optional */
+    }
+  };
+
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
 
@@ -21458,6 +21604,23 @@ ${audioSettingsHtml}
       );
       sbf.speed01PerSec = speedPct / 100;
 
+      // Rapid Fire effects: a new run starts clean, then waves and the boss are announced.
+      try {
+        if (servedSoFar === 0) this._runtime.rf = {};
+        const rfNow = Date.now();
+        const wave = window.WT_RFX ? window.WT_RFX.waveFor(servedSoFar) : 0;
+        if (wave > 0) this._runtime.rf.wave = { n: wave, t: rfNow };
+        const total =
+          this.game && typeof this.game.getTotal === 'function'
+            ? this.game.getTotal()
+            : 0;
+        const boss = window.WT_RFX ? window.WT_RFX.isBoss(servedSoFar, total) : false;
+        this._runtime.rf.bossNow = boss;
+        if (boss) this._runtime.rf.boss = { t: rfNow };
+      } catch (_) {
+        /* effects are optional */
+      }
+
       // Reset transform immediately
       try {
         sbf.chipEl.style.transform = 'translate3d(0px, 0px, 0px)';
@@ -21480,6 +21643,18 @@ ${audioSettingsHtml}
           });
         }
       } catch (_) {}
+    }
+
+    try {
+      if (window.WT_RFX && this._runtime.rf) {
+        window.WT_RFX.sync(lane, this._runtime.rf, {
+          lang: String(document.documentElement.lang || '').slice(0, 2),
+          chipEl: chip,
+          boss: this._runtime.rf.bossNow === true
+        });
+      }
+    } catch (_) {
+      /* effects are optional */
     }
 
     if (sbf.running === true) return;
