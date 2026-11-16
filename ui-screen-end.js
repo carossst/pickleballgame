@@ -587,7 +587,7 @@
       ? `<p class="wt-muted">${escapeHtml(String(end.modeMissingFallback || "").trim())}</p>`
       : ``;
 
-    const microLinesHtml = focusedRunEnd ? "" : buildEndMicroLines({
+    const microLinesHtml = (focusedRunEnd || slimExhaustedEnd) ? "" : buildEndMicroLines({
       isRun,
       premium,
       end,
@@ -758,7 +758,7 @@
   </div>
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
-  ${runsExhausted && !focusedRunEnd ? paywallBridgeHtml : ``}
+  ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}
 
   ${shareHtml}
 

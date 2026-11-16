@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.26",
+    version: "4.3.27",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -9078,7 +9078,7 @@ Merci !`
       ? `<p class="wt-muted">${escapeHtml(String(end.modeMissingFallback || "").trim())}</p>`
       : ``;
 
-    const microLinesHtml = focusedRunEnd ? "" : buildEndMicroLines({
+    const microLinesHtml = (focusedRunEnd || slimExhaustedEnd) ? "" : buildEndMicroLines({
       isRun,
       premium,
       end,
@@ -9249,7 +9249,7 @@ Merci !`
   </div>
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
-  ${runsExhausted && !focusedRunEnd ? paywallBridgeHtml : ``}
+  ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}
 
   ${shareHtml}
 
@@ -22997,7 +22997,7 @@ ${audioSettingsHtml}
               ? `
             <span class="wt-momentum__combo" aria-label="${escapeHtml(String(wAll.system?.doublePoints || ''))}">×2</span>
           `
-              : ``
+              : `<span class="wt-momentum__goal" aria-hidden="true">×2</span>`
           }
         </div>
       `
