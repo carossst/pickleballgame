@@ -604,10 +604,9 @@
 
       startOverlayLine1: 'Rapid Fire Mode.',
       startOverlayLine2: "Only questions you've already seen.",
-      startOverlayLine3: 'Play more games to grow your pool.',
+      startOverlayLine3: '',
 
-      startOverlayFreeRunsLimitLine:
-        '{tickets} ticket{pluralS} left. Cost: {cost} ticket{costPluralS}.',
+      startOverlayFreeRunsLimitLine: '',
 
       freeLimitReachedTitle: 'No Rapid Fire ticket available.',
       freeLimitReachedBody:

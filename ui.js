@@ -2389,7 +2389,7 @@ void (function () {
       bonusLine3,
       bonusLimitLine,
       ...messageLines
-    ];
+    ].filter(Boolean);
 
     const goalLine1 = String(extra?.goalLine1 || '').trim();
     const goalLine2 = String(extra?.goalLine2 || '').trim();

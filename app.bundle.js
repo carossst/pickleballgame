@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.28",
+    version: "4.3.29",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -529,7 +529,7 @@
         tuningVersion: 2,
 
         // Speed in % of lane height per second
-        initialSpeed: 10,       // très lent au départ
+        initialSpeed: 15,       // départ modéré (10 = 8 s avant la ligne, trop lent)
         maxSpeed: 20,           // plafond confortable
         speedIncrement: 0.4,    // rampe étirée (cap ~25 items)
 
@@ -1530,10 +1530,9 @@
 
       startOverlayLine1: 'Rapid Fire Mode.',
       startOverlayLine2: "Only questions you've already seen.",
-      startOverlayLine3: 'Play more games to grow your pool.',
+      startOverlayLine3: '',
 
-      startOverlayFreeRunsLimitLine:
-        '{tickets} ticket{pluralS} left. Cost: {cost} ticket{costPluralS}.',
+      startOverlayFreeRunsLimitLine: '',
 
       freeLimitReachedTitle: 'No Rapid Fire ticket available.',
       freeLimitReachedBody:
@@ -2699,10 +2698,9 @@ Thanks!`
 
       startOverlayLine1: 'Mode Rapide.',
       startOverlayLine2: 'Uniquement les questions déjà vues.',
-      startOverlayLine3: 'Jouez plus de parties pour agrandir votre sélection.',
+      startOverlayLine3: '',
 
-      startOverlayFreeRunsLimitLine:
-        '{tickets} jeton{pluralS} restant{pluralS}. Coût : {cost} jeton{costPluralS}.',
+      startOverlayFreeRunsLimitLine: '',
 
       freeLimitReachedTitle: 'Aucun jeton Mode Rapide disponible.',
       freeLimitReachedBody:
@@ -14695,7 +14693,7 @@ void (function () {
       bonusLine3,
       bonusLimitLine,
       ...messageLines
-    ];
+    ].filter(Boolean);
 
     const goalLine1 = String(extra?.goalLine1 || '').trim();
     const goalLine2 = String(extra?.goalLine2 || '').trim();

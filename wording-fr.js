@@ -618,10 +618,9 @@
 
       startOverlayLine1: 'Mode Rapide.',
       startOverlayLine2: 'Uniquement les questions déjà vues.',
-      startOverlayLine3: 'Jouez plus de parties pour agrandir votre sélection.',
+      startOverlayLine3: '',
 
-      startOverlayFreeRunsLimitLine:
-        '{tickets} jeton{pluralS} restant{pluralS}. Coût : {cost} jeton{costPluralS}.',
+      startOverlayFreeRunsLimitLine: '',
 
       freeLimitReachedTitle: 'Aucun jeton Mode Rapide disponible.',
       freeLimitReachedBody:
