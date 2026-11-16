@@ -29,7 +29,7 @@ Fait : `secretBonus.fall.initialSpeed` passé de 10 à 15 (la première question
 Vérifier aussi que l'habillage « terrain » ne revient pas dans ce mode (il est limité à `.wt-container[data-wt-state='playing']:not([data-wt-mode='bonus'])` dans `styles/screens.css`). Attention : un test e2e (`question statement is readable`) vérifie la couleur du texte de la question, mais seulement en mode RUN.
 
 ### 3. Largeur bureau : fait
-Vérifié à 1280 px (accueil, question, feedback, fin de partie, panneau de début). Seul défaut : la rangée de liens SEO de l'accueil s'étirait sur une ligne ; elle passe maintenant à la ligne (`styles/components.css`). Le paywall n'a pas été regardé à cette largeur.
+Vérifié à 1280 px (accueil, question, feedback, fin de partie, panneau de début). Seul défaut : la rangée de liens SEO de l'accueil s'étirait sur une ligne ; elle passe maintenant à la ligne (`styles/components.css`). Paywall regardé aussi à 1280 px : propre (la rangée de liens SEO y est masquée, elle ne sert qu'à l'accueil).
 
 ### 4. Partage du score : fait
 Le partage existait déjà (`ui-share.js` : partage natif, copie, e-mail, lien avec `challenge=` et référent). Deux défauts corrigés : il était masqué sur l'écran de fin le plus courant (partie gratuite perdue), et le texte ne mentionnait le score que si le meilleur score dépassait 10. Maintenant un lien « Challenge a friend » est visible sur cet écran, et le texte dit « I scored {score}. Can you beat me? ». Reste possible : un texte de partage plus accrocheur, ou une image de score.
