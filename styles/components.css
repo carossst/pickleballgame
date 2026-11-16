@@ -1811,3 +1811,8 @@ body.wt-state--end .wt-seo-links {
   max-width: 640px;
   margin: 0 auto;
 }
+
+/* The topic links are for the landing page: hide them on the paywall */
+body:has(.wt-card--paywall) .wt-seo-links {
+  display: none;
+}

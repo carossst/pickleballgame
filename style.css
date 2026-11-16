@@ -2747,6 +2747,11 @@ body.wt-state--end .wt-seo-links {
   margin: 0 auto;
 }
 
+/* The topic links are for the landing page: hide them on the paywall */
+body:has(.wt-card--paywall) .wt-seo-links {
+  display: none;
+}
+
 /* ===== styles/i18n-toggle.css ===== */
 /* i18n-toggle.css — Fixed top-right locale swap button
  *
