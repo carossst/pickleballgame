@@ -2789,6 +2789,14 @@ body:has(.wt-card--paywall) .wt-seo-links {
   }
 }
 
+/* Court diagram next to the rule explanation */
+.wt-court-diagram {
+  float: right;
+  width: 72px;
+  height: auto;
+  margin: 0 0 8px 12px;
+}
+
 /* ===== styles/i18n-toggle.css ===== */
 /* i18n-toggle.css — Fixed top-right locale swap button
  *

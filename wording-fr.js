@@ -853,7 +853,8 @@
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
       practiceCtaCountPremium: 'Revoir mes erreurs',
-      shareTitle: 'Partager le jeu'
+      shareTitle: 'Partager le jeu',
+      shareCardCta: 'Partager ma carte de score'
     },
 
     paywall: {

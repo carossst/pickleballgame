@@ -629,8 +629,16 @@
     // share accordion; keep one visible link so the score can still be shared.
     const focusedShareLabel = String(shareTitle || "").trim();
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    const shareCardLabel = String(end.shareCardCta || "").trim();
+    const shareCardHtml = (scoreFP > 0 && shareCardLabel)
+      ? `<span aria-hidden="true"> · </span><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
+      : "";
+    // Other end screens (no mistake, last free game...) get the card link on its own line.
+    const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
+      : "";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button></p>`
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
       : "";
 
     const leaderboardW = w.leaderboard || {};
@@ -766,6 +774,7 @@
   </div>
 
   ${focusedShareHtml}
+  ${shareCardOnlyHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}

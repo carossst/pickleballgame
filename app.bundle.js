@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.36",
+    version: "4.3.38",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1764,7 +1764,8 @@
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
       practiceCtaCountPremium: 'Practice my mistakes',
-      shareTitle: 'Challenge a friend'
+      shareTitle: 'Challenge a friend',
+      shareCardCta: 'Share my score card'
     },
 
     paywall: {
@@ -2932,7 +2933,8 @@ Thanks!`
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
       practiceCtaCountPremium: 'Revoir mes erreurs',
-      shareTitle: 'Partager le jeu'
+      shareTitle: 'Partager le jeu',
+      shareCardCta: 'Partager ma carte de score'
     },
 
     paywall: {
@@ -9117,8 +9119,16 @@ Merci !`
     // share accordion; keep one visible link so the score can still be shared.
     const focusedShareLabel = String(shareTitle || "").trim();
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    const shareCardLabel = String(end.shareCardCta || "").trim();
+    const shareCardHtml = (scoreFP > 0 && shareCardLabel)
+      ? `<span aria-hidden="true"> · </span><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
+      : "";
+    // Other end screens (no mistake, last free game...) get the card link on its own line.
+    const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
+      : "";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button></p>`
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
       : "";
 
     const leaderboardW = w.leaderboard || {};
@@ -9254,6 +9264,7 @@ Merci !`
   </div>
 
   ${focusedShareHtml}
+  ${shareCardOnlyHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}
@@ -12452,6 +12463,286 @@ ${(() => {
   window.WT_SFX = { play, isEnabled, setEnabled };
 })();
 
+/* ===== court-diagram.js ===== */
+/* Small court diagrams shown next to the rule explanation. One drawing per
+   topic, picked from the tags of the question. Pure SVG strings, no images. */
+(() => {
+  'use strict';
+
+  // Tag on the question -> drawing. The first matching entry wins.
+  const TOPIC_BY_TAG = [
+    ['Non-Volley Zone', 'kitchen'],
+    ['Serving Rules', 'serving'],
+    ['Line Calls', 'lines'],
+    ['Faults & Dead Ball', 'faults'],
+    ['Score & Readiness', 'scoring'],
+    ['Court & Equipment', 'court'],
+    ['Rally Situations', 'rally'],
+    ['The Net', 'rally'],
+    ['2026 Changes', 'changes']
+  ];
+
+  const LABELS = {
+    en: {
+      kitchen: 'Court diagram: the non-volley zone (kitchen) is highlighted',
+      serving: 'Court diagram: the serve goes diagonally to the opposite service court',
+      lines: 'Court diagram: a ball touching a line is in',
+      faults: 'Court diagram: the net and the kitchen lines are highlighted',
+      scoring: 'Scoreboard example: server score, receiver score, server number',
+      court: 'Court diagram: 20 feet wide, 44 feet long, kitchen 7 feet',
+      rally: 'Court diagram: a rally across the net',
+      changes: 'Court diagram: 2026 rule changes'
+    },
+    fr: {
+      kitchen: 'Schéma du terrain : la zone de non-volée (cuisine) est en surbrillance',
+      serving: 'Schéma du terrain : le service va en diagonale vers le carré de service opposé',
+      lines: 'Schéma du terrain : une balle qui touche une ligne est bonne',
+      faults: 'Schéma du terrain : le filet et les lignes de la cuisine sont en surbrillance',
+      scoring: 'Exemple de tableau de score : score du serveur, du relanceur, numéro du serveur',
+      court: 'Schéma du terrain : 6,10 m de large, 13,40 m de long, cuisine 2,13 m',
+      rally: 'Schéma du terrain : un échange par-dessus le filet',
+      changes: 'Schéma du terrain : changements de règles 2026'
+    }
+  };
+
+  const COURT = '#0b4e7c';
+  const LINE = '#ffffff';
+  const HI = '#fde047';
+
+  // Top view, 5 units per foot: court x 10..110, y 5..225, net at y 115,
+  // kitchen lines at y 80 and 150, centre line at x 60.
+  function base(extra) {
+    return (
+      `<rect x="0" y="0" width="120" height="230" rx="8" fill="#15803d"/>` +
+      `<rect x="10" y="5" width="100" height="220" fill="${COURT}"/>` +
+      (extra && extra.under ? extra.under : '') +
+      `<g stroke="${LINE}" stroke-width="2" fill="none">` +
+      `<rect x="10" y="5" width="100" height="220"/>` +
+      `<line x1="10" y1="80" x2="110" y2="80"/><line x1="10" y1="150" x2="110" y2="150"/>` +
+      `<line x1="60" y1="5" x2="60" y2="80"/><line x1="60" y1="150" x2="60" y2="225"/></g>` +
+      `<line x1="4" y1="115" x2="116" y2="115" stroke="${LINE}" stroke-width="3" stroke-dasharray="4 3"/>` +
+      (extra && extra.over ? extra.over : '')
+    );
+  }
+
+  const ball = (x, y) =>
+    `<circle cx="${x}" cy="${y}" r="7" fill="#d9f03c" stroke="#fff" stroke-width="1.5"/>`;
+
+  const DRAW = {
+    kitchen: () =>
+      base({
+        under: `<rect x="10" y="80" width="100" height="35" fill="${HI}" opacity="0.6"/><rect x="10" y="115" width="100" height="35" fill="${HI}" opacity="0.6"/>`
+      }),
+    serving: () =>
+      base({
+        under: `<rect x="10" y="5" width="50" height="75" fill="${HI}" opacity="0.55"/>`,
+        over:
+          `<path d="M88 214 L38 44" stroke="${HI}" stroke-width="3" stroke-dasharray="6 4" fill="none"/>` +
+          `<path d="M38 44 l-2 12 m2 -12 l10 6" stroke="${HI}" stroke-width="3" fill="none"/>` +
+          ball(88, 214)
+      }),
+    lines: () =>
+      base({
+        over:
+          `<rect x="10" y="5" width="100" height="220" fill="none" stroke="${HI}" stroke-width="4"/>` +
+          ball(110, 60)
+      }),
+    faults: () =>
+      base({
+        over:
+          `<line x1="4" y1="115" x2="116" y2="115" stroke="${HI}" stroke-width="4"/>` +
+          `<line x1="10" y1="80" x2="110" y2="80" stroke="${HI}" stroke-width="4"/>` +
+          `<line x1="10" y1="150" x2="110" y2="150" stroke="${HI}" stroke-width="4"/>`
+      }),
+    court: () =>
+      base({
+        over:
+          `<g fill="${HI}" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="11" text-anchor="middle">` +
+          `<text x="60" y="200">20 ft</text><text x="60" y="63">7 ft</text>` +
+          `<text x="36" y="118" transform="rotate(-90 36 118)">44 ft</text></g>`
+      }),
+    rally: () =>
+      base({
+        over:
+          `<path d="M38 205 L84 40 L44 190" stroke="${HI}" stroke-width="3" stroke-dasharray="6 4" fill="none"/>` +
+          ball(44, 190)
+      }),
+    changes: () =>
+      base({
+        under: `<rect x="10" y="80" width="100" height="70" fill="${HI}" opacity="0.35"/>`,
+        over: `<text x="60" y="124" fill="#fff" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="26" text-anchor="middle">2026</text>`
+      })
+  };
+
+  function scoreboard() {
+    return (
+      `<rect x="0" y="0" width="120" height="230" rx="8" fill="#15803d"/>` +
+      `<rect x="8" y="70" width="104" height="80" rx="8" fill="#0f172a"/>` +
+      `<text x="60" y="118" fill="#fff" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="26" text-anchor="middle">7-4-2</text>` +
+      `<text x="60" y="140" fill="${HI}" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="9" text-anchor="middle">server · receiver · #</text>`
+    );
+  }
+
+  function topicFor(tags) {
+    const list = Array.isArray(tags) ? tags.map((t) => String(t || '').trim()) : [];
+    for (const [tag, topic] of TOPIC_BY_TAG) {
+      if (list.includes(tag)) return topic;
+    }
+    return '';
+  }
+
+  function svgFor(tags, lang) {
+    const topic = topicFor(tags);
+    if (!topic) return '';
+    const labels = LABELS[lang === 'fr' ? 'fr' : 'en'];
+    const body = topic === 'scoring' ? scoreboard() : DRAW[topic]();
+    return (
+      `<svg class="wt-court-diagram" data-topic="${topic}" viewBox="0 0 120 230" role="img" ` +
+      `aria-label="${labels[topic]}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`
+    );
+  }
+
+  window.WT_Court = { topicFor, svgFor, TOPIC_BY_TAG };
+})();
+
+/* ===== score-card.js ===== */
+/* Score card: a 1080x1350 image of the player's score, drawn on a canvas and
+   shared as a picture (or downloaded when the browser cannot share files). */
+(() => {
+  'use strict';
+
+  const W = 1080;
+  const H = 1350;
+
+  const COPY = {
+    en: { title: 'Pickleball Rules Quiz', points: 'points', cta: 'Can you beat me?', url: 'pickleballrulesquiz.com' },
+    fr: { title: 'Défi des règles du pickleball', points: 'points', cta: 'Tu fais mieux ?', url: 'pickleballrulesquiz.com/fr.html' }
+  };
+
+  function copyFor(lang) {
+    return COPY[lang === 'fr' ? 'fr' : 'en'];
+  }
+
+  // Draws the card on any 2D context (a real canvas or a recording stub in tests).
+  function draw(ctx, options) {
+    const o = options || {};
+    const c = copyFor(o.lang);
+    const score = Math.max(0, Math.floor(Number(o.score) || 0));
+
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(0, 0, W, H);
+
+    // court
+    ctx.fillStyle = '#0b4e7c';
+    ctx.fillRect(90, 130, W - 180, 760);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(90, 130, W - 180, 760);
+    ctx.beginPath();
+    ctx.moveTo(90, 340);
+    ctx.lineTo(W - 90, 340);
+    ctx.moveTo(90, 680);
+    ctx.lineTo(W - 90, 680);
+    ctx.moveTo(W / 2, 130);
+    ctx.lineTo(W / 2, 340);
+    ctx.moveTo(W / 2, 680);
+    ctx.lineTo(W / 2, 890);
+    ctx.stroke();
+    ctx.setLineDash([18, 14]);
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.moveTo(60, 510);
+    ctx.lineTo(W - 60, 510);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // score
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 330px Inter, Arial, sans-serif';
+    ctx.fillText(String(score), W / 2, 520);
+    ctx.font = '700 56px Inter, Arial, sans-serif';
+    ctx.fillStyle = '#fde047';
+    ctx.fillText(c.points.toUpperCase(), W / 2, 600);
+
+    // ball
+    ctx.beginPath();
+    ctx.arc(W - 190, 250, 44, 0, Math.PI * 2);
+    ctx.fillStyle = '#d9f03c';
+    ctx.fill();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    // texts below the court
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 76px Inter, Arial, sans-serif';
+    ctx.fillText(c.cta, W / 2, 1010);
+    ctx.font = '700 52px Inter, Arial, sans-serif';
+    ctx.fillText(c.title, W / 2, 1100);
+    ctx.fillStyle = '#fde047';
+    ctx.font = '700 46px Inter, Arial, sans-serif';
+    ctx.fillText(c.url, W / 2, 1200);
+    if (o.label) {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 44px Inter, Arial, sans-serif';
+      ctx.fillText(String(o.label), W / 2, 90);
+    }
+  }
+
+  function toBlob(options) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('canvas unavailable'));
+        return;
+      }
+      draw(ctx, options);
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('no image'))), 'image/png');
+    });
+  }
+
+  function fileName(score) {
+    return `pickleball-score-${Math.max(0, Math.floor(Number(score) || 0))}.png`;
+  }
+
+  function download(blob, name) {
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(href), 1000);
+  }
+
+  // options: { score, lang, label, text }. Shares the picture when the browser
+  // can share files, otherwise downloads it.
+  async function share(options) {
+    const o = options || {};
+    const blob = await toBlob(o);
+    const name = fileName(o.score);
+    try {
+      const file = new File([blob], name, { type: 'image/png' });
+      const data = { files: [file], text: String(o.text || '') };
+      if (navigator.canShare && navigator.canShare(data) && navigator.share) {
+        await navigator.share(data);
+        return 'shared';
+      }
+    } catch (err) {
+      if (err && err.name === 'AbortError') return 'cancelled';
+    }
+    download(blob, name);
+    return 'downloaded';
+  }
+
+  window.WT_ScoreCard = { W, H, draw, toBlob, share, fileName };
+})();
+
 /* ===== ui.js ===== */
 // ui.js - Quiz UI
 // UI-only: rendering, accessibility, interactions (V2 RUN)
@@ -15141,6 +15432,7 @@ void (function () {
       'open-paywall',
       'copy-share',
       'share-native',
+      'share-card',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -15472,6 +15764,25 @@ void (function () {
         case 'share-native':
           void self.shareNative();
           break;
+
+        case 'share-card': {
+          const cardBtn =
+            event && event.target && event.target.closest
+              ? event.target.closest('[data-action="share-card"]')
+              : null;
+          const cardScore = Number(cardBtn && cardBtn.getAttribute('data-score')) || 0;
+          const cardText = String(self._getShareText ? self._getShareText() : '');
+          if (window.WT_ScoreCard) {
+            void window.WT_ScoreCard
+              .share({
+                score: cardScore,
+                text: cardText,
+                lang: String(document.documentElement.lang || '').slice(0, 2)
+              })
+              .catch(() => {});
+          }
+          break;
+        }
 
         case 'send-share-email':
           self.sendShareViaEmail();
@@ -23449,8 +23760,20 @@ ${questionAudioHtml}
       const stableExplanation = String(ans.feedbackLine || '').trim();
 
       const explanationLabel = String(w.explanationLabel || '').trim();
+      let courtDiagramHtml = '';
+      try {
+        courtDiagramHtml = window.WT_Court
+          ? window.WT_Court.svgFor(
+              extractTagsFromItem(item),
+              String(document.documentElement.lang || '').slice(0, 2)
+            )
+          : '';
+      } catch (_) {
+        courtDiagramHtml = '';
+      }
+
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : '';
 
       return renderShell(`

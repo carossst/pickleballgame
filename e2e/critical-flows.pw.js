@@ -115,6 +115,48 @@ test('statement box keeps the verdict colour while the feedback is shown', async
   );
 });
 
+test('end screen offers the score card and downloads it as an image', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  await startFreshRun(page);
+  for (let i = 0; i < 8; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1500 })
+      .catch(() => {});
+  }
+  const card = page.locator('[data-action="share-card"]');
+  await expect(card).toBeVisible();
+  const download = page.waitForEvent('download');
+  await card.click();
+  expect((await download).suggestedFilename()).toMatch(
+    /^pickleball-score-\d+\.png$/
+  );
+});
+
+test('rule explanation shows a court diagram for tagged questions', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await startFreshRun(page);
+  await page.locator('[data-action="answer-true"]').click();
+  await expect(page.locator('.wt-explanation .wt-court-diagram')).toBeVisible();
+});
+
 test('question statement is readable: text contrasts with its box', async ({
   page
 }) => {
