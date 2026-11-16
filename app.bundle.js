@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.30",
+    version: "4.3.31",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1434,8 +1434,8 @@
       poolReshuffledToast: 'All questions reshuffled. New order.',
       seenProgressTemplate: 'You saw {seen}/{poolSize} questions.',
 
-      startRunTypeFree: 'Your first free game',
-      startRunTypeLastFree: 'Last free game. Make it count',
+      startRunTypeFree: 'Your first free game: 5 questions',
+      startRunTypeLastFree: 'Last free game: 10 questions. Make it count',
       startRunTypeUnlimited: '',
       startRunTypePractice: 'Mistakes Mode',
 
@@ -2593,8 +2593,8 @@ Thanks!`
       poolReshuffledToast: 'Questions mélangées à nouveau. Nouvel ordre.',
       seenProgressTemplate: 'Vous avez vu {seen}/{poolSize} questions.',
 
-      startRunTypeFree: 'Votre première partie gratuite',
-      startRunTypeLastFree: 'Dernière partie gratuite. Donnez le meilleur',
+      startRunTypeFree: 'Votre première partie gratuite : 5 questions',
+      startRunTypeLastFree: 'Dernière partie gratuite : 10 questions. Donnez le meilleur',
       startRunTypeUnlimited: '',
       startRunTypePractice: 'Mode Erreurs',
 

@@ -94,3 +94,16 @@ test('English wording keeps challenge tone but drops maintenance copy and dead l
   expect(en.paywall.bridgeBody).toContain('Unlock unlimited games');
   expect(en.end.shareTitle).toBe('Challenge a friend');
 });
+
+test('free game panel titles state the configured question counts', () => {
+  const config = loadBrowserScript('config.js', {
+    window: { location: { hostname: 'localhost' } }
+  }).window.WT_CONFIG;
+  const caps = config.curatedFreeRuns.maxQuestionsByRun;
+  const wording = loadWording();
+
+  for (const locale of ['en', 'fr']) {
+    expect(wording[locale].ui.startRunTypeFree).toContain(String(caps[1]));
+    expect(wording[locale].ui.startRunTypeLastFree).toContain(String(caps[2]));
+  }
+});

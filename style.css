@@ -2739,6 +2739,14 @@ body.wt-state--end .wt-seo-links {
   display: none;
 }
 
+/* Home topic links: wrap inside the card width on desktop instead of one wide line */
+.wt-seo-links .wt-footer-row--links {
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
 /* ===== styles/i18n-toggle.css ===== */
 /* i18n-toggle.css — Fixed top-right locale swap button
  *

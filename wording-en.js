@@ -508,8 +508,8 @@
       poolReshuffledToast: 'All questions reshuffled. New order.',
       seenProgressTemplate: 'You saw {seen}/{poolSize} questions.',
 
-      startRunTypeFree: 'Your first free game',
-      startRunTypeLastFree: 'Last free game. Make it count',
+      startRunTypeFree: 'Your first free game: 5 questions',
+      startRunTypeLastFree: 'Last free game: 10 questions. Make it count',
       startRunTypeUnlimited: '',
       startRunTypePractice: 'Mistakes Mode',
 

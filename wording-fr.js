@@ -514,8 +514,8 @@
       poolReshuffledToast: 'Questions mélangées à nouveau. Nouvel ordre.',
       seenProgressTemplate: 'Vous avez vu {seen}/{poolSize} questions.',
 
-      startRunTypeFree: 'Votre première partie gratuite',
-      startRunTypeLastFree: 'Dernière partie gratuite. Donnez le meilleur',
+      startRunTypeFree: 'Votre première partie gratuite : 5 questions',
+      startRunTypeLastFree: 'Dernière partie gratuite : 10 questions. Donnez le meilleur',
       startRunTypeUnlimited: '',
       startRunTypePractice: 'Mode Erreurs',
 
