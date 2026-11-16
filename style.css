@@ -5327,7 +5327,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 /* Question: the statement sits on the court */
-body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-terms-box:not(.wt-terms-box--successflash):not(.wt-terms-box--mistakeflash) {
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-terms-box {
   background: rgb(var(--court-blue));
   border: 3px solid #fff;
   box-shadow: 0 0 0 6px rgb(var(--court-green)), 0 14px 28px rgb(var(--court-blue) / 0.25);

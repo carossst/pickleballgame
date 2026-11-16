@@ -102,7 +102,12 @@ test('statement box keeps the verdict colour while the feedback is shown', async
   await startFreshRun(page);
   await page.locator('[data-action="answer-true"]').click();
   await expect(page.locator('.wt-feedback--ok')).toBeVisible();
+  await page.waitForTimeout(150);
+  const heightEarly = (await page.locator('.wt-terms-box').boundingBox())
+    .height;
   await page.waitForTimeout(1500);
+  const heightLate = (await page.locator('.wt-terms-box').boundingBox()).height;
+  expect(heightLate).toBe(heightEarly);
   await expect(page.locator('.wt-feedback--ok')).toBeVisible();
   await expect(page.locator('.wt-terms-box')).toHaveCSS(
     'background-color',
