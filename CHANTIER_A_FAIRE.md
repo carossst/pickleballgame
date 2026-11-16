@@ -16,13 +16,8 @@ Contexte : le site (`pickleballrulesquiz.com`) a environ 100 visites par mois et
 
 ## À faire, par ordre de priorité
 
-### 1. Seuil du rush à 3 bonnes réponses pour les parties gratuites
-Le joueur doit vivre le ×2 avant le paywall. Aujourd'hui il faut 4 bonnes réponses d'affilée, et la première partie ne fait que 5 questions.
-- `game.js` ligne ~596 : `Number(this.run.correctStreak || 0) >= 4` est codé en dur. Le rendre configurable (ex. `config.game.comboThreshold`, 4 par défaut) et lui donner une valeur plus basse pour les parties gratuites (`runStartNumber` 1 et 2).
-- `config.js` : `ui.momentumMeter` a `segments: 4` et `thresholds s1..s4`. La barre doit avoir autant de segments que le seuil. `ui.js` utilise `momentumState.streak >= momentumState.segments` pour afficher le badge ×2.
-- Textes `system.comboRule` dans les deux fichiers de wording : « 4 correct answers… » doit suivre le seuil.
-- Tests à adapter : `e2e/critical-flows.pw.js` (test « four green bars… », attend 4 segments et un score de 6) et `tests/game.test.js` (premier test).
-- Événement analytics `combo-unlocked` : le titre contient `threshold=4`.
+### 1. Rush ×2 : décision prise, seuil gardé à 4
+La propriétaire a choisi de garder 4 bonnes réponses d'affilée. **Ne pas modifier le seuil** : le Worker du classement (`leaderboard-worker/src/index.js`, fonction `computeServerScore`, et `tests/leaderboard-worker-score-utils.test.js`) recalcule les scores avec la règle « ×2 après 4 réussites d'affilée », et il est déployé à part (Cloudflare), pas par ce dépôt. Si seul le client changeait, les scores envoyés ne correspondraient plus au calcul serveur. Conséquence connue : dans une première partie de 5 questions, le ×2 ne peut tomber que sur la dernière réponse. À reconsidérer seulement si le classement prend de l'ampleur ; il faudrait alors changer ensemble `game.js` (seuil codé en dur, lignes ~596 et ~697), `config.js` (`ui.momentumMeter`), le Worker, les wordings `system.comboRule` (EN/FR), les tests, puis redéployer le Worker.
 
 ### 2. Rapid Fire (mode bonus) : fait, reste à regarder la difficulté
 Fait : `secretBonus.fall.initialSpeed` passé de 10 à 15 (la première question mettait environ 8 s à atteindre la ligne), panneau d'entrée réduit à 3 lignes (plus de ligne « pool » ni « ticket left »). Reste : jouer une manche à la main et vérifier que la rampe n'est pas trop raide (`maxSpeed: 20` est atteint plus vite avec un départ à 15). Ajuster `speedIncrement` ou `maxSpeed` si besoin.
