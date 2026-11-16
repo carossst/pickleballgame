@@ -375,3 +375,46 @@ test('grantChance does nothing outside Rapid Fire', () => {
   engine.answer(false);
   expect(engine.grantChance()).toBe(false);
 });
+
+test('the first free run has no mistake limit and ends at its question cap', () => {
+  const WT_Game = createGameApi();
+  const items = [1, 2, 3, 4, 5, 6].map((id) => ({
+    id,
+    correctAnswer: true,
+    explanationShort: 'ok'
+  }));
+  const config = makeRunConfig({
+    curatedFreeRuns: {
+      enabled: true,
+      runCount: 2,
+      cardIdsByRun: {},
+      maxQuestionsByRun: { 1: 4, 2: 4 },
+      noEliminationRuns: [1]
+    }
+  });
+  const play = (runStartNumber) => {
+    const engine = new WT_Game.GameEngine();
+    engine.start({
+      items,
+      statsByItem: {},
+      getStatsByItem: () => ({}),
+      config,
+      mode: 'RUN',
+      runStartNumber
+    });
+    const steps = [];
+    for (let i = 0; i < 6; i++) {
+      const res = engine.answer(false);
+      steps.push(res.done);
+      if (res.done) break;
+    }
+    return { steps, state: engine.getState() };
+  };
+
+  const first = play(1);
+  expect(first.steps).toEqual([false, false, false, true]);
+  expect(first.state.chancesLeft).toBe(null);
+
+  const second = play(2);
+  expect(second.steps).toEqual([false, false, true]);
+});

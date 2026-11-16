@@ -515,6 +515,7 @@
 
       startRunChancesOverlay:
         'Game ends after {maxChances} mistakes.',
+      startRunNoEliminationOverlay: 'Mistakes do not end this game.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',

@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.42",
+    version: "4.3.43",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -131,6 +131,9 @@
         1: 5,
         2: 10
       },
+      // No mistake limit in these runs (they still end at their question cap), so a
+      // new player sees every explanation of the first game.
+      noEliminationRuns: [1],
       // Curated opening for the free runs. Design goal: run 1 = a welcoming
       // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
@@ -1441,6 +1444,7 @@
 
       startRunChancesOverlay:
         'Game ends after {maxChances} mistakes.',
+      startRunNoEliminationOverlay: 'Mistakes do not end this game.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -2601,6 +2605,7 @@ Thanks!`
 
       startRunChancesOverlay:
         'La partie se termine après {maxChances} erreurs.',
+      startRunNoEliminationOverlay: 'Les erreurs ne mettent pas fin à cette partie.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -7275,6 +7280,19 @@ Merci !`
     return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
   }
 
+  // Free runs listed in curatedFreeRuns.noEliminationRuns have no mistake limit:
+  // the player always sees every explanation of the run (the first game).
+  function isNoEliminationRun(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true || !Array.isArray(cfr.noEliminationRuns)) return false;
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || runNum < 1) return false;
+    // Only when the run really has a question cap: otherwise it would never end.
+    return getFreeRunQuestionCap(config, runNum) > 0 && cfr.noEliminationRuns.includes(runNum);
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -7647,6 +7665,7 @@ Merci !`
         : 0;
       // A capped run behaves like a fixed deck: it ends when the deck ends.
       const fixedDeck = hasFixedIds || questionCap > 0;
+      const noElimination = effectiveMode === MODES.RUN && !hasFixedIds && isNoEliminationRun(config, runStartNumber);
       const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
@@ -7676,8 +7695,8 @@ Merci !`
         ids: Array.isArray(deck.ids) ? deck.ids.slice() : [],
         idx: 0,
         // Chances: RUN + BONUS use maxChances; PRACTICE has no chances (revision mode)
-        maxChances: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
-        chancesLeft: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
+        maxChances: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
+        chancesLeft: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
 
         // Single score across all modes (KISS)
         scoreFP: 0,
@@ -15163,9 +15182,11 @@ void (function () {
     const isPractice = String(runType || '').trim() === 'PRACTICE';
     const msg = isPractice
       ? String(wording?.practice?.startRunChancesOverlayPractice || '').trim()
-      : Number.isFinite(maxChances)
-        ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
-        : '';
+      : gs.maxChances == null
+        ? String(wording?.ui?.startRunNoEliminationOverlay || '').trim()
+        : Number.isFinite(maxChances)
+          ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
+          : '';
     if (!msg) return;
 
     // Controller priority: run-start is a blocking overlay, below chance/game-over.

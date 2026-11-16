@@ -113,6 +113,19 @@
     return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
   }
 
+  // Free runs listed in curatedFreeRuns.noEliminationRuns have no mistake limit:
+  // the player always sees every explanation of the run (the first game).
+  function isNoEliminationRun(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true || !Array.isArray(cfr.noEliminationRuns)) return false;
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || runNum < 1) return false;
+    // Only when the run really has a question cap: otherwise it would never end.
+    return getFreeRunQuestionCap(config, runNum) > 0 && cfr.noEliminationRuns.includes(runNum);
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -485,6 +498,7 @@
         : 0;
       // A capped run behaves like a fixed deck: it ends when the deck ends.
       const fixedDeck = hasFixedIds || questionCap > 0;
+      const noElimination = effectiveMode === MODES.RUN && !hasFixedIds && isNoEliminationRun(config, runStartNumber);
       const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
@@ -514,8 +528,8 @@
         ids: Array.isArray(deck.ids) ? deck.ids.slice() : [],
         idx: 0,
         // Chances: RUN + BONUS use maxChances; PRACTICE has no chances (revision mode)
-        maxChances: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
-        chancesLeft: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
+        maxChances: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
+        chancesLeft: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
 
         // Single score across all modes (KISS)
         scoreFP: 0,

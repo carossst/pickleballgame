@@ -157,6 +157,29 @@ test('rule explanation shows a court diagram for tagged questions', async ({
   await expect(page.locator('.wt-explanation .wt-court-diagram')).toBeVisible();
 });
 
+test('first free game shows every explanation even when all answers are wrong', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  await startFreshRun(page);
+  await expect(page.locator('.wt-hud-metric--mistakes')).toHaveCount(0);
+  for (let i = 0; i < 5; i++) {
+    await page.locator('[data-action="answer-false"]').click();
+    await expect(page.locator('.wt-feedback--bad')).toBeVisible();
+    await expect(page.locator('.wt-explanation')).toBeVisible();
+    await page.locator('button[data-action="continue"]').click();
+  }
+  await expect(page.locator('.wt-card--end')).toBeVisible();
+});
+
 test('question statement is readable: text contrasts with its box', async ({
   page
 }) => {
