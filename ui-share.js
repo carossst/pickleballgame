@@ -77,7 +77,7 @@
     const maxChances = clampInt(cfg?.game?.maxChances, 1, 99);
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
-    const scoreChallengeTpl = (bestScoreFP > 10)
+    const scoreChallengeTpl = (scoreFP > 0)
       ? String(share.scoreChallengeWithBest || "").trim()
       : String(share.scoreChallengeWithoutBest || "").trim();
     const scoreChallenge = scoreChallengeTpl

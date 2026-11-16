@@ -1033,8 +1033,7 @@ Try this one:
 
 {scoreChallenge}
 {url}`,
-      scoreChallengeWithBest:
-        "My best score so far is {bestScore}. What's yours?",
+      scoreChallengeWithBest: 'I scored {score}. Can you beat me?',
       scoreChallengeWithoutBest: "What's your best score so far?",
 
       teaserTrap: "Looks obvious... until it isn't.",

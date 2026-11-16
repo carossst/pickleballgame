@@ -1061,7 +1061,7 @@ Essayez celle-ci :
 
 {scoreChallenge}
 {url}`,
-      scoreChallengeWithBest: 'Mon meilleur score pour l’instant : {bestScore}. Tu veux essayer ?',
+      scoreChallengeWithBest: 'J’ai fait {score}. Tu fais mieux ?',
       scoreChallengeWithoutBest: 'Tu veux essayer ?',
 
       teaserTrap: "Ça paraît évident... jusqu'à ce que non.",

@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.29",
+    version: "4.3.30",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1959,8 +1959,7 @@ Try this one:
 
 {scoreChallenge}
 {url}`,
-      scoreChallengeWithBest:
-        "My best score so far is {bestScore}. What's yours?",
+      scoreChallengeWithBest: 'I scored {score}. Can you beat me?',
       scoreChallengeWithoutBest: "What's your best score so far?",
 
       teaserTrap: "Looks obvious... until it isn't.",
@@ -3141,7 +3140,7 @@ Essayez celle-ci :
 
 {scoreChallenge}
 {url}`,
-      scoreChallengeWithBest: 'Mon meilleur score pour l’instant : {bestScore}. Tu veux essayer ?',
+      scoreChallengeWithBest: 'J’ai fait {score}. Tu fais mieux ?',
       scoreChallengeWithoutBest: 'Tu veux essayer ?',
 
       teaserTrap: "Ça paraît évident... jusqu'à ce que non.",
@@ -9114,6 +9113,14 @@ Merci !`
       getShareText: ui._getShareText ? ui._getShareText.bind(ui) : null
     });
 
+    // The common end screen (free run lost, not exhausted) hides the collapsed
+    // share accordion; keep one visible link so the score can still be shared.
+    const focusedShareLabel = String(shareTitle || "").trim();
+    const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button></p>`
+      : "";
+
     const leaderboardW = w.leaderboard || {};
     let hasLeaderboardProfile = false;
     try {
@@ -9245,6 +9252,8 @@ Merci !`
       forceSinglePrimary: focusedRunEnd
     })}
   </div>
+
+  ${focusedShareHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}
@@ -10190,7 +10199,7 @@ ${(() => {
     const maxChances = clampInt(cfg?.game?.maxChances, 1, 99);
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const bestScoreFP = clampInt(lastRun.bestScoreFP, 0, 99999);
-    const scoreChallengeTpl = (bestScoreFP > 10)
+    const scoreChallengeTpl = (scoreFP > 0)
       ? String(share.scoreChallengeWithBest || "").trim()
       : String(share.scoreChallengeWithoutBest || "").trim();
     const scoreChallenge = scoreChallengeTpl
