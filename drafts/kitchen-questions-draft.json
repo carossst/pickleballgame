@@ -1,0 +1,414 @@
+{
+ "status": "DRAFT - not live. Written without access to the 2026 rulebook: every statement and every rule citation must be checked by the owner before use.",
+ "purpose": "21 extra Non-Volley Zone (kitchen) questions: the theme has only 8 of 200.",
+ "integrationChecklist": [
+  "1. Check every statement against the 2026 USA Pickleball rulebook and replace the [ADD ...] citation lines.",
+  "2. Append the items to content.json (ids 201 to 221) and update totalItems and breakdown.",
+  "3. Raise game.poolSize in config.js (currently 200), and update every place that says 200 questions (landing, paywall wording, poster, JSON-LD in index.html, SEO pages, llms.txt).",
+  "4. The leaderboard Worker validates answers against its own copy of the content: run npm run generate:leaderboard-key, then redeploy the Worker, before shipping the new questions, otherwise runs that include them are rejected.",
+  "5. Add the new ids to the Non-Volley Zone theme in seo-pages.json (cardIds) and run npm run publish:seo.",
+  "6. Run the unit and e2e tests: some contract tests check content totals."
+ ],
+ "items": [
+  {
+   "id": 201,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may step into the kitchen to hit a ball that has already bounced there.",
+     "explanationShort": "Le kitchen restriction only applies to volleys. Once the ball has bounced, any player may enter the kitchen to hit it.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un joueur peut entrer dans la cuisine pour frapper une balle qui y a déjà rebondi.",
+     "explanationShort": "La restriction de la cuisine ne concerne que les volées. Une fois que la balle a rebondi, tout joueur peut entrer dans la cuisine pour la frapper.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 202,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "It is a fault to enter the kitchen to hit a ball that has already bounced.",
+     "explanationShort": "Entering the kitchen is legal. The fault only exists when a player volleys while touching the kitchen.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Entrer dans la cuisine pour frapper une balle qui a déjà rebondi est une faute.",
+     "explanationShort": "Entrer dans la cuisine est permis. La faute n’existe que lorsqu’un joueur volleye en touchant la cuisine.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 203,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "The kitchen lines are part of the kitchen.",
+     "explanationShort": "Lines belong to the zone they border: touching a kitchen line while volleying is a kitchen fault.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Les lignes de la cuisine font partie de la cuisine.",
+     "explanationShort": "Les lignes appartiennent à la zone qu’elles délimitent : toucher une ligne de la cuisine en volleyant est une faute.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 204,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "Touching the kitchen line with a foot while volleying is a fault.",
+     "explanationShort": "The kitchen line counts as the kitchen. A foot on it during a volley is a kitchen fault.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Toucher la ligne de la cuisine avec un pied en volleyant est une faute.",
+     "explanationShort": "La ligne de la cuisine compte comme la cuisine. Un pied dessus pendant une volée est une faute de cuisine.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 205,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "The kitchen rule applies only to the team that is receiving.",
+     "explanationShort": "The kitchen rule applies to every player, on both sides of the net, for the whole rally.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "La règle de la cuisine ne s’applique qu’à l’équipe qui reçoit.",
+     "explanationShort": "La règle de la cuisine s’applique à tous les joueurs, des deux côtés du filet, pendant tout l’échange.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 206,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may reach over the kitchen to hit a volley, as long as nothing touches the kitchen.",
+     "explanationShort": "Reaching over is allowed. What matters is that the player, the paddle and anything worn or carried do not touch the kitchen.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un joueur peut tendre le bras au-dessus de la cuisine pour volleyer, tant que rien ne touche la cuisine.",
+     "explanationShort": "Tendre le bras au-dessus est permis. Ce qui compte, c’est que ni le joueur, ni la raquette, ni rien de ce qu’il porte ne touche la cuisine.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 207,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A hat that falls into the kitchen during a volley can cause a kitchen fault.",
+     "explanationShort": "Anything a player wears or carries counts as part of the player for the kitchen rule.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un chapeau qui tombe dans la cuisine pendant une volée peut provoquer une faute de cuisine.",
+     "explanationShort": "Tout ce qu’un joueur porte ou tient compte comme faisant partie du joueur pour la règle de la cuisine.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 208,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player who stumbles into the kitchen after a volley has committed a fault, even if it was not on purpose.",
+     "explanationShort": "The rule does not look at intent. If the volleying player ends up touching the kitchen, it is a fault.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un joueur qui trébuche dans la cuisine après une volée commet une faute, même sans le vouloir.",
+     "explanationShort": "La règle ne tient pas compte de l’intention. Si le joueur qui volleye finit par toucher la cuisine, c’est une faute.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 209,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A serve that lands in the kitchen is a fault.",
+     "explanationShort": "The serve must clear the kitchen and land in the diagonal service court beyond it.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un service qui atterrit dans la cuisine est une faute.",
+     "explanationShort": "Le service doit passer la cuisine et atterrir dans le carré de service en diagonale, au-delà.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 210,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A ball that bounces in the kitchen during a rally is out.",
+     "explanationShort": "The kitchen is part of the court. During a rally a ball that lands there is in play; only the serve may not land in it.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Une balle qui rebondit dans la cuisine pendant un échange est faute.",
+     "explanationShort": "La cuisine fait partie du terrain. Pendant un échange, une balle qui y atterrit est bonne ; seul le service ne doit pas y atterrir.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 211,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may stand in the kitchen while their partner volleys from outside, as long as the two players do not touch.",
+     "explanationShort": "Both players are free to be in the kitchen. The fault comes from volleying while touching the kitchen, or touching a partner who does.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un joueur peut se tenir dans la cuisine pendant que son partenaire volleye de l’extérieur, tant que les deux joueurs ne se touchent pas.",
+     "explanationShort": "Les deux joueurs peuvent être dans la cuisine. La faute vient du fait de volleyer en touchant la cuisine, ou en touchant un partenaire qui la touche.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 212,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "The kitchen is also called the non-volley zone.",
+     "explanationShort": "Kitchen is the nickname of the non-volley zone (NVZ), the area within 7 feet of the net on each side.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "La cuisine est aussi appelée zone de non-volée.",
+     "explanationShort": "Cuisine est le surnom de la zone de non-volée (ZNV), l’espace situé à moins de 2,13 m du filet de chaque côté.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 213,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "The kitchen is 10 feet deep.",
+     "explanationShort": "The kitchen extends 7 feet (2.13 m) from the net on each side.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "La cuisine fait 3 mètres de profondeur.",
+     "explanationShort": "La cuisine s’étend sur 7 pieds (2,13 m) à partir du filet de chaque côté.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 214,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "The kitchen is the same size on both sides of the net.",
+     "explanationShort": "Each side has a kitchen that reaches 7 feet from the net, from sideline to sideline.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "La cuisine a la même taille des deux côtés du filet.",
+     "explanationShort": "Chaque côté a une cuisine de 7 pieds à partir du filet, d’une ligne de côté à l’autre.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 215,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may volley from inside the kitchen if the ball is very low.",
+     "explanationShort": "Height does not matter. A volley may never be hit while touching the kitchen.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un joueur peut volleyer depuis l’intérieur de la cuisine si la balle est très basse.",
+     "explanationShort": "La hauteur n’y change rien. Une volée ne peut jamais être jouée en touchant la cuisine.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 216,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may wait inside the kitchen for a ball to bounce.",
+     "explanationShort": "Standing in the kitchen is allowed. The player simply cannot volley from there.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Un joueur peut attendre dans la cuisine que la balle rebondisse.",
+     "explanationShort": "Se tenir dans la cuisine est permis. Le joueur ne peut simplement pas y volleyer.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 217,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Hard",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A paddle that touches the kitchen right after a volley is a fault, even if both feet stay outside.",
+     "explanationShort": "Anything the player carries counts. After a volley, no part of the player or the paddle may touch the kitchen.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Une raquette qui touche la cuisine juste après une volée est une faute, même si les deux pieds restent à l’extérieur.",
+     "explanationShort": "Tout ce que le joueur tient compte. Après une volée, aucune partie du joueur ni de la raquette ne peut toucher la cuisine.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 218,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A ball that lands on the kitchen line during a rally is out.",
+     "explanationShort": "A ball touching a line is in. During a rally, a ball on the kitchen line is good.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Une balle qui touche la ligne de la cuisine pendant un échange est faute.",
+     "explanationShort": "Une balle qui touche une ligne est bonne. Pendant un échange, une balle sur la ligne de la cuisine est bonne.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 219,
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "Either player of a team can commit a kitchen fault.",
+     "explanationShort": "The rule applies to every player. A fault by one of them is a fault for the team.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Chacun des deux joueurs d’une équipe peut commettre une faute de cuisine.",
+     "explanationShort": "La règle s’applique à chaque joueur. La faute de l’un est une faute pour l’équipe.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  },
+  {
+   "id": 220,
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A volley is a shot hit after the ball has bounced.",
+     "explanationShort": "A volley is a ball hit out of the air, before it bounces. That is why the kitchen rule exists.\n[ADD: 2026 USA Pickleball Official Rulebook, Rule ?]"
+    },
+    "fr": {
+     "question": "Une volée est une frappe effectuée après que la balle a rebondi.",
+     "explanationShort": "Une volée est une balle frappée en l’air, avant qu’elle rebondisse. C’est pour cela que la règle de la cuisine existe.\n[À AJOUTER : Règlement officiel USA Pickleball 2026, règle ?]"
+    }
+   }
+  }
+ ]
+}
