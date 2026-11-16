@@ -2577,3 +2577,61 @@ body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode=
   box-shadow: 0 0 0 6px rgb(var(--danger) / 0.45);
   animation: none;
 }
+
+/* Rapid Fire: same colours as the normal game (blue statement, green True,
+   red False) so the two modes look like one game. Colours only: the layout of
+   the falling lane is untouched. */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box {
+  background: rgb(var(--court-blue));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 4px rgb(var(--court-green)), 0 10px 22px rgb(var(--court-blue) / 0.3);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-term-word {
+  color: #fff;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box.wt-terms-box--successflash {
+  background: rgb(var(--success-dark));
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box.wt-terms-box--mistakeflash {
+  background: rgb(var(--danger-dark));
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice {
+  border: 0;
+  color: #fff;
+  font-weight: 800;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice * {
+  color: #fff;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 5px 0 rgb(15 90 43);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 5px 0 rgb(127 20 20);
+}
+
+/* Rapid Fire: keep the answer colours when the pointer rests on a button */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:hover,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:active,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:focus-visible {
+  background: rgb(var(--success-dark));
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:hover,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:active,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:focus-visible {
+  background: rgb(var(--danger-dark));
+  color: #fff;
+  filter: brightness(1.08);
+}
