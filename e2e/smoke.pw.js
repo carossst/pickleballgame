@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const { readFile } = require('node:fs/promises');
 
 const pages = [
   { path: '/', landing: 'Start', lang: 'en' },
@@ -122,10 +123,19 @@ test('French poster is localized and links back to the French quiz', async ({
   });
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('#poster')).toContainText('Quiz des règles du pickleball');
-  await expect(page.locator('[data-poster="print"]')).toHaveText("Imprimer l'affiche");
-  await expect(page.locator('[data-poster="back"]')).toHaveAttribute('href', '../fr.html');
-  await expect(page.locator('[data-poster="url"]')).toHaveText('www.pickleballrulesquiz.com/fr.html');
+  await expect(page.locator('#poster')).toContainText(
+    'Défi des règles du pickleball'
+  );
+  await expect(page.locator('[data-poster="print"]')).toHaveText(
+    "Imprimer l'affiche"
+  );
+  await expect(page.locator('[data-poster="back"]')).toHaveAttribute(
+    'href',
+    '../fr.html'
+  );
+  await expect(page.locator('[data-poster="url"]')).toHaveText(
+    'www.pickleballrulesquiz.com/fr.html'
+  );
   await expect(page.locator('#poster-qr svg')).toBeVisible();
 });
 
@@ -175,10 +185,106 @@ test('French Instagram share kit uses the French caption and route', async ({
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   await expect(page.locator('[data-share="backLink"]')).toHaveText('Retour au défi');
+  await expect(page.locator('[data-share="backLink"]')).toHaveAttribute('href', './fr.html');
+  await expect(page.locator('[data-share="posterLink"]')).toHaveAttribute('href', './poster/?lang=fr');
   await expect(page.locator('#instagram-caption')).toHaveValue(/2 parties gratuites/);
   await expect(page.locator('#instagram-caption')).toHaveValue(/\/fr\.html\?utm_source=instagram/);
   expect(await page.evaluate(() => window.__canvasText || [])).toContain(
     'Basé sur le règlement USA Pickleball'
   );
   expect(pageErrors).toEqual([]);
+});
+
+test('Instagram kit keeps mobile controls visible and downloads the selected PNG', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/share.html?lang=fr');
+  const canvas = page.locator('#instagram-art');
+  await page.locator('[data-format="story"]').click();
+  await expect(page.locator('[data-format="story"]')).toHaveAttribute('aria-pressed', 'true');
+  const box = await canvas.boundingBox();
+  expect(box.width / box.height).toBeCloseTo(1080 / 1920, 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.locator('[data-action="download-image"]').click()
+  ]);
+  expect(download.suggestedFilename()).toBe('pickleball-rules-challenge-story-fr.png');
+  const png = await readFile(await download.path());
+  expect(png.subarray(1, 4).toString()).toBe('PNG');
+  expect(png.readUInt32BE(16)).toBe(1080);
+  expect(png.readUInt32BE(20)).toBe(1920);
+});
+
+test('Instagram kit reports blocked clipboard access and selects the caption', async ({
+  page
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { value: undefined });
+    document.execCommand = () => false;
+  });
+  await page.goto('/share.html');
+  await page.locator('[data-action="copy-caption"]').click();
+  await expect(page.getByRole('status')).toHaveText('Copy the selected caption manually.');
+  expect(await page.locator('#instagram-caption').evaluate(
+    (field) => field.selectionEnd - field.selectionStart
+  )).toBeGreaterThan(0);
+});
+
+test('an installed quiz can open the French Instagram kit offline', async ({
+  page,
+  context
+}) => {
+  // Local builds normally disable registration to avoid caching development assets.
+  await page.route('**/app.bundle.js', async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(
+      /const isLocalhost = [^;]+;/,
+      'const isLocalhost = false;'
+    );
+    await route.fulfill({ response, body });
+  });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await context.setOffline(true);
+  await page.goto('/share.html?lang=fr');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(page.locator('#instagram-caption')).toHaveValue(/utm_campaign=instagram_challenge/);
+});
+
+test('poster for a club shows its name and tags the QR code', async ({
+  page
+}) => {
+  await page.goto('/poster/?club=%C3%89vry%20Pickle', {
+    waitUntil: 'domcontentloaded'
+  });
+  await expect(page.locator('#poster')).toContainText(
+    'Brought to you by Évry Pickle'
+  );
+  await expect(page.locator('#poster-qr')).toHaveAttribute(
+    'data-url',
+    'https://www.pickleballrulesquiz.com/?wt-source=club-evry-pickle'
+  );
+  await expect(page.locator('#poster-qr svg')).toBeVisible();
+});
+
+test('clubs page builds tagged links from a club name', async ({ page }) => {
+  await page.goto('/clubs/?lang=en', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#clubs-results')).toBeHidden();
+  await page.locator('#club-name').fill('Évry Pickle');
+  await expect(page.locator('#clubs-results')).toBeVisible();
+  await expect(page.locator('#clubs-results')).toContainText(
+    'club-evry-pickle'
+  );
+  await expect(page.locator('#clubs-qr')).toHaveAttribute(
+    'data-url',
+    'https://www.pickleballrulesquiz.com/?wt-source=club-evry-pickle'
+  );
+  await page.locator('#club-kind').selectOption('coach');
+  await expect(page.locator('#clubs-results')).toContainText(
+    'coach-evry-pickle'
+  );
 });

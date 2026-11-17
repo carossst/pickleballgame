@@ -1,0 +1,81 @@
+/* Clubs and coaches page: small additions on top of style.css */
+.clubs-form {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.clubs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 520px) {
+  .clubs-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.clubs-block {
+  margin: 20px 0;
+  padding-top: 16px;
+  border-top: 1px solid rgb(var(--border));
+}
+
+.clubs-block h2 {
+  margin: 0 0 8px;
+}
+
+.clubs-line {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  margin: 8px 0;
+}
+
+.clubs-line .wt-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.clubs-line .wt-btn {
+  flex: 0 0 auto;
+}
+
+.clubs-theme-label {
+  margin: 12px 0 0;
+  font-weight: 600;
+}
+
+.clubs-qr {
+  display: inline-block;
+  width: 180px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid rgb(var(--border));
+  border-radius: 12px;
+}
+
+.clubs-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.clubs-textarea {
+  width: 100%;
+  min-height: 110px;
+  font: inherit;
+}
+
+.clubs-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+}
+
+.clubs-block a.wt-btn {
+  display: inline-block;
+  margin-top: 8px;
+  text-decoration: none;
+}

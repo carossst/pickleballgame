@@ -2305,9 +2305,11 @@ void (function () {
     const isPractice = String(runType || '').trim() === 'PRACTICE';
     const msg = isPractice
       ? String(wording?.practice?.startRunChancesOverlayPractice || '').trim()
-      : Number.isFinite(maxChances)
-        ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
-        : '';
+      : gs.maxChances == null
+        ? String(wording?.ui?.startRunNoEliminationOverlay || '').trim()
+        : Number.isFinite(maxChances)
+          ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
+          : '';
     if (!msg) return;
 
     // Controller priority: run-start is a blocking overlay, below chance/game-over.

@@ -1,4 +1,4 @@
-  UI.prototype._startPaywallTicker = function () {
+UI.prototype._startPaywallTicker = function () {
     if (
       !window.WT_UI_Checkout ||
       typeof window.WT_UI_Checkout.startPaywallTicker !== 'function'
@@ -843,6 +843,38 @@
     }
   };
 
+  // Rapid Fire: paddle return and power-ups after an answer (state only; sync() draws it).
+  UI.prototype._rfOnAnswer = function (choiceBool, res) {
+    try {
+      if (!window.WT_RFX || !this._runtime) return;
+      const rf = (this._runtime.rf = this._runtime.rf || {});
+      const now = Date.now();
+      rf.paddle = { side: choiceBool === true ? 'left' : 'right', t: now };
+      if (res && res.isCorrect === true && this.game) {
+        const st = this.game.getState();
+        const power = window.WT_RFX.powerFor({
+          streak: st.correctStreak,
+          chancesLeft: st.chancesLeft,
+          maxChances: st.maxChances
+        });
+        if (power === 'life' && typeof this.game.grantChance === 'function') {
+          if (!this.game.grantChance()) return;
+        }
+        if (power) rf.power = { kind: power, t: now };
+      }
+      // Draw at once: the next render can come later than the 450 ms paddle move.
+      const lane = this.appEl ? this.appEl.querySelector('[data-wt-bonus-lane]') : null;
+      const chip = this.appEl ? this.appEl.querySelector('[data-wt-bonus-chip]') : null;
+      window.WT_RFX.sync(lane, rf, {
+        lang: String(document.documentElement.lang || '').slice(0, 2),
+        chipEl: chip,
+        boss: rf.bossNow === true
+      });
+    } catch (_) {
+      /* effects are optional */
+    }
+  };
+
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
 
@@ -973,6 +1005,23 @@
       );
       sbf.speed01PerSec = speedPct / 100;
 
+      // Rapid Fire effects: a new run starts clean, then waves and the boss are announced.
+      try {
+        if (servedSoFar === 0) this._runtime.rf = {};
+        const rfNow = Date.now();
+        const wave = window.WT_RFX ? window.WT_RFX.waveFor(servedSoFar) : 0;
+        if (wave > 0) this._runtime.rf.wave = { n: wave, t: rfNow };
+        const total =
+          this.game && typeof this.game.getTotal === 'function'
+            ? this.game.getTotal()
+            : 0;
+        const boss = window.WT_RFX ? window.WT_RFX.isBoss(servedSoFar, total) : false;
+        this._runtime.rf.bossNow = boss;
+        if (boss) this._runtime.rf.boss = { t: rfNow };
+      } catch (_) {
+        /* effects are optional */
+      }
+
       // Reset transform immediately
       try {
         sbf.chipEl.style.transform = 'translate3d(0px, 0px, 0px)';
@@ -995,6 +1044,18 @@
           });
         }
       } catch (_) {}
+    }
+
+    try {
+      if (window.WT_RFX && this._runtime.rf) {
+        window.WT_RFX.sync(lane, this._runtime.rf, {
+          lang: String(document.documentElement.lang || '').slice(0, 2),
+          chipEl: chip,
+          boss: this._runtime.rf.bossNow === true
+        });
+      }
+    } catch (_) {
+      /* effects are optional */
     }
 
     if (sbf.running === true) return;

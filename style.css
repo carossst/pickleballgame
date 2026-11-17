@@ -2752,6 +2752,50 @@ body:has(.wt-card--paywall) .wt-seo-links {
   display: none;
 }
 
+/* Sound toggle: small fixed button in the top-right corner, off by default */
+.wt-sfx-toggle {
+  position: fixed;
+  top: 4px;
+  right: 4px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  background: rgb(var(--surface));
+  color: rgb(var(--text-strong));
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+  cursor: pointer;
+}
+
+.wt-sfx-toggle[data-state='on'] .wt-sfx-mute {
+  display: none;
+}
+
+.wt-sfx-toggle[data-state='on'] {
+  background: rgb(var(--success-dark));
+  color: #fff;
+  border-color: rgb(var(--success-dark));
+}
+
+@media print {
+  .wt-sfx-toggle {
+    display: none;
+  }
+}
+
+/* Court diagram next to the rule explanation */
+.wt-court-diagram {
+  float: right;
+  width: 72px;
+  height: auto;
+  margin: 0 0 8px 12px;
+}
+
 /* ===== styles/i18n-toggle.css ===== */
 /* i18n-toggle.css — Fixed top-right locale swap button
  *
@@ -5327,7 +5371,7 @@ arcade" feel; deviation from --fs-* scale is expected. */
 }
 
 /* Question: the statement sits on the court */
-body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-terms-box:not(.wt-terms-box--successflash):not(.wt-terms-box--mistakeflash) {
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-terms-box {
   background: rgb(var(--court-blue));
   border: 3px solid #fff;
   box-shadow: 0 0 0 6px rgb(var(--court-green)), 0 14px 28px rgb(var(--court-blue) / 0.25);
@@ -5434,4 +5478,255 @@ body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode=
   background: rgb(var(--success-dark));
   border-color: rgb(var(--success-dark));
   color: #fff;
+}
+
+/* Feedback screen: keep the verdict colour on the statement box.
+   A re-render during the feedback screen drops the flash classes, so the box
+   went back to blue after about half a second. Key the colour on the feedback
+   block itself instead. */
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-card:has(.wt-feedback--ok) .wt-terms-box.wt-terms-box {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 0 0 6px rgb(var(--success) / 0.45);
+  animation: none;
+}
+
+body.wt-state--playing .wt-container[data-wt-state='playing']:not([data-wt-mode='bonus']) .wt-card:has(.wt-feedback--bad) .wt-terms-box.wt-terms-box {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 0 0 6px rgb(var(--danger) / 0.45);
+  animation: none;
+}
+
+/* Rapid Fire: same colours as the normal game (blue statement, green True,
+   red False) so the two modes look like one game. Colours only: the layout of
+   the falling lane is untouched. */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box {
+  background: rgb(var(--court-blue));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 4px rgb(var(--court-green)), 0 10px 22px rgb(var(--court-blue) / 0.3);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-term-word {
+  color: #fff;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box.wt-terms-box--successflash {
+  background: rgb(var(--success-dark));
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip .wt-terms-box.wt-terms-box--mistakeflash {
+  background: rgb(var(--danger-dark));
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice {
+  border: 0;
+  color: #fff;
+  font-weight: 800;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice * {
+  color: #fff;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same {
+  background: rgb(var(--success-dark));
+  box-shadow: 0 5px 0 rgb(15 90 43);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff {
+  background: rgb(var(--danger-dark));
+  box-shadow: 0 5px 0 rgb(127 20 20);
+}
+
+/* Rapid Fire: keep the answer colours when the pointer rests on a button */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:hover,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:active,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--same:focus-visible {
+  background: rgb(var(--success-dark));
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:hover,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:active,
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-choices .wt-choice--diff:focus-visible {
+  background: rgb(var(--danger-dark));
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+/* ==========================================
+   RAPID FIRE ARCADE
+   Night-court look, paddle, wave banners, power-up capsules, boss chip.
+============================================ */
+body:has(.wt-container[data-wt-mode='bonus'][data-wt-state='playing']) {
+  background: #07121f;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-state='playing'] {
+  --bg: 7 18 31;
+  --surface: 12 30 52;
+  --surface-muted: 15 38 64;
+  --border: 40 84 128;
+  --text-strong: 240 249 255;
+  --text: 226 232 240;
+  --text-muted: 148 175 205;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-card {
+  background: #0a1c33;
+  border-color: #1d4f7c;
+  box-shadow: 0 0 0 1px #1d4f7c, 0 0 26px rgb(14 165 233 / 0.25);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-lane {
+  background:
+    linear-gradient(rgb(14 165 233 / 0.10) 1px, transparent 1px) 0 0 / 100% 36px,
+    linear-gradient(#08182b, #0b2744);
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-fail-line {
+  border-color: #f43f5e;
+  box-shadow: 0 0 12px #f43f5e;
+}
+
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-fail-label {
+  background: #1c0b17;
+  border-color: #f43f5e;
+  color: #fda4af;
+}
+
+/* Paddle at the bottom of the lane; moves under the chosen answer and sends a ball up. */
+.wt-rf-paddle {
+  position: absolute;
+  bottom: 6px;
+  left: 33%;
+  width: 34%;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(#e0f2fe, #38bdf8);
+  box-shadow: 0 0 12px #38bdf8;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.wt-rf-paddle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: #d9f03c;
+  opacity: 0;
+}
+
+.wt-rf-paddle.is-hit-left {
+  animation: wt-rf-paddle-left 450ms ease-out both;
+}
+
+.wt-rf-paddle.is-hit-right {
+  animation: wt-rf-paddle-right 450ms ease-out both;
+}
+
+.wt-rf-paddle.is-hit-left::after,
+.wt-rf-paddle.is-hit-right::after {
+  animation: wt-rf-ball 450ms ease-out both;
+  animation-delay: inherit;
+}
+
+@keyframes wt-rf-paddle-left {
+  0% { left: 33%; }
+  30%, 70% { left: 6%; }
+  100% { left: 33%; }
+}
+
+@keyframes wt-rf-paddle-right {
+  0% { left: 33%; }
+  30%, 70% { left: 60%; }
+  100% { left: 33%; }
+}
+
+@keyframes wt-rf-ball {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-90px); }
+}
+
+/* Wave and boss banners */
+.wt-rf-banner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 52%;
+  text-align: center;
+  font-weight: 800;
+  font-size: 34px;
+  letter-spacing: 0.08em;
+  color: #fde047;
+  text-shadow: 0 0 14px #facc15, 0 0 30px #f59e0b;
+  pointer-events: none;
+  z-index: 4;
+  animation: wt-rf-banner 1400ms ease-out both;
+}
+
+.wt-rf-banner--boss {
+  color: #fb7185;
+  text-shadow: 0 0 14px #f43f5e, 0 0 30px #e11d48;
+}
+
+@keyframes wt-rf-banner {
+  0% { opacity: 0; transform: scale(0.6); }
+  15% { opacity: 1; transform: scale(1.12); }
+  25% { transform: scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* Power-up capsule falls from the top and is caught by the paddle */
+.wt-rf-capsule {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #052e16;
+  background: linear-gradient(#bbf7d0, #4ade80);
+  box-shadow: 0 0 14px #4ade80;
+  pointer-events: none;
+  z-index: 4;
+  animation: wt-rf-capsule 1200ms ease-in both;
+}
+
+@keyframes wt-rf-capsule {
+  0% { top: 4%; opacity: 1; }
+  85% { top: 86%; opacity: 1; }
+  100% { top: 90%; opacity: 0; }
+}
+
+/* Boss question */
+.wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip--boss .wt-terms-box {
+  box-shadow: 0 0 0 4px #fde047, 0 0 26px #facc15;
+  animation: wt-rf-boss 900ms ease-in-out infinite alternate;
+}
+
+@keyframes wt-rf-boss {
+  from { box-shadow: 0 0 0 4px #fde047, 0 0 14px #facc15; }
+  to { box-shadow: 0 0 0 6px #fb7185, 0 0 34px #f43f5e; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-rf-paddle.is-hit-left,
+  .wt-rf-paddle.is-hit-right,
+  .wt-rf-paddle.is-hit-left::after,
+  .wt-rf-paddle.is-hit-right::after,
+  .wt-rf-banner,
+  .wt-rf-capsule,
+  .wt-container[data-wt-mode='bonus'][data-wt-bonus-layout='fall'] .wt-bonus-chip--boss .wt-terms-box {
+    animation: none;
+  }
 }

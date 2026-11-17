@@ -113,6 +113,19 @@
     return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
   }
 
+  // Free runs listed in curatedFreeRuns.noEliminationRuns have no mistake limit:
+  // the player always sees every explanation of the run (the first game).
+  function isNoEliminationRun(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true || !Array.isArray(cfr.noEliminationRuns)) return false;
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || runNum < 1) return false;
+    // Only when the run really has a question cap: otherwise it would never end.
+    return getFreeRunQuestionCap(config, runNum) > 0 && cfr.noEliminationRuns.includes(runNum);
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -351,7 +364,22 @@
       return { ids: [], byId };
     }
 
-    return { ids: shuffleCopy(seenIds), byId };
+    return { ids: moveBossLast(shuffleCopy(seenIds), byId), byId };
+  }
+
+  // Rapid Fire boss: with enough questions, the last one is a hard or 2026 question.
+  function moveBossLast(ids, byId) {
+    if (ids.length < 5) return ids;
+    const tagsOf = (id) => {
+      const it = byId && byId[String(id)];
+      return Array.isArray(it && it.tags) ? it.tags.map((t) => String(t)) : [];
+    };
+    let pick = ids.findIndex((id) => tagsOf(id).includes('2026 Changes'));
+    if (pick < 0) pick = ids.findIndex((id) => tagsOf(id).includes('Hard'));
+    if (pick < 0) return ids;
+    const out = ids.slice();
+    out.push(out.splice(pick, 1)[0]);
+    return out;
   }
 
   function buildFullPoolDeck(items, config) {
@@ -470,6 +498,7 @@
         : 0;
       // A capped run behaves like a fixed deck: it ends when the deck ends.
       const fixedDeck = hasFixedIds || questionCap > 0;
+      const noElimination = effectiveMode === MODES.RUN && !hasFixedIds && isNoEliminationRun(config, runStartNumber);
       const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
@@ -499,8 +528,8 @@
         ids: Array.isArray(deck.ids) ? deck.ids.slice() : [],
         idx: 0,
         // Chances: RUN + BONUS use maxChances; PRACTICE has no chances (revision mode)
-        maxChances: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
-        chancesLeft: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
+        maxChances: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
+        chancesLeft: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
 
         // Single score across all modes (KISS)
         scoreFP: 0,
@@ -535,6 +564,16 @@
     getIndex() {
       if (!this.run) return 0;
       return Number(this.run.idx || 0);
+    }
+
+    // Rapid Fire power-up: gives one mistake back (never above the maximum).
+    grantChance() {
+      const r = this.run;
+      if (!r || r.done || r.mode !== MODES.BONUS) return false;
+      if (r.chancesLeft == null || r.maxChances == null) return false;
+      if (Number(r.chancesLeft) >= Number(r.maxChances)) return false;
+      r.chancesLeft = Number(r.chancesLeft) + 1;
+      return true;
     }
 
     getTotal() {

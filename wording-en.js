@@ -519,6 +519,7 @@
 
       startRunChancesOverlay:
         'Game ends after {maxChances} mistakes.',
+      startRunNoEliminationOverlay: 'Mistakes do not end this game.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -842,7 +843,8 @@
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
       practiceCtaCountPremium: 'Practice my mistakes',
-      shareTitle: 'Challenge a friend'
+      shareTitle: 'Challenge a friend',
+      shareCardCta: 'Share my score card'
     },
 
     paywall: {

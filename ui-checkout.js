@@ -101,10 +101,6 @@
       return;
     }
 
-    if (ui.storage && typeof ui.storage.markCheckoutStarted === "function") {
-      ui.storage.markCheckoutStarted(priceKey);
-    }
-
     const cfg = ui.config || {};
     const key = String(priceKey || "").toUpperCase();
     const url = (key === "EARLY")
@@ -133,16 +129,24 @@
     try {
       const urlObj = new URL(url);
       const allowedHosts = ["buy.stripe.com", "checkout.stripe.com"];
-      if (!allowedHosts.includes(urlObj.hostname)) {
-        console.error("[WT Security] Invalid Stripe URL hostname:", urlObj.hostname);
+      if (
+        urlObj.protocol !== "https:" ||
+        !allowedHosts.includes(urlObj.hostname) ||
+        urlObj.port || urlObj.username || urlObj.password
+      ) {
+        console.error("[WT Security] Invalid Stripe destination");
         resetCheckoutButton();
         return;
       }
     } catch (_) {
-      console.error("[WT Security] Invalid Stripe URL:", url);
+      console.error("[WT Security] Invalid Stripe URL");
       resetCheckoutButton();
       return;
     }
+
+    try {
+      ui.storage?.markCheckoutStarted?.(key);
+    } catch (_) { /* Checkout can continue without local storage. */ }
 
     if (sourceBtn) {
       sourceBtn.disabled = true;

@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.33",
+    version: "4.3.45",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -127,6 +127,9 @@
         1: 5,
         2: 10
       },
+      // No mistake limit in these runs (they still end at their question cap), so a
+      // new player sees every explanation of the first game.
+      noEliminationRuns: [1],
       // Curated opening for the free runs. Design goal: run 1 = a welcoming
       // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
@@ -525,7 +528,7 @@
         tuningVersion: 2,
 
         // Speed in % of lane height per second
-        initialSpeed: 15,       // départ modéré (10 = 8 s avant la ligne, trop lent)
+        initialSpeed: 10,       // très lent au départ (réglage de la propriétaire : ne pas modifier)
         maxSpeed: 20,           // plafond confortable
         speedIncrement: 0.4,    // rampe étirée (cap ~25 items)
 

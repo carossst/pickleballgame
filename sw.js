@@ -50,6 +50,7 @@ const ASSETS_TO_CACHE = [
   "./poster/index.html",
   "./poster.css",
   "./poster.js",
+  "./club-link.js",
   "./poster-qr-vendor.js",
   "./share.html",
   "./share.css",
@@ -83,7 +84,7 @@ const ASSETS_TO_CACHE = [
   "./icons/og-image-fr.png"
 ];
 
-// Critical assets: if any of these fail to pre-cache, do NOT force-activate immediately.
+// Reject incomplete installs so the active service worker keeps serving its cache.
 // Intentionally excludes non-blocking helpers such as pwa.js and email.js:
 // the core game must still boot even if install or mail flows are unavailable on first load.
 const CRITICAL_ASSETS = [
@@ -116,13 +117,11 @@ self.addEventListener("install", (event) => {
           okByUrl.set(url, false);
         }
       }
-      const criticalOk = CRITICAL_ASSETS.every((u) => okByUrl.get(u) === true);
-      if (criticalOk) {
-        await self.skipWaiting();
+      const missingCritical = CRITICAL_ASSETS.filter((url) => !okByUrl.get(url));
+      if (missingCritical.length) {
+        throw new Error(`Incomplete app cache: ${missingCritical.join(", ")}`);
       }
-    })().catch(() => {
-      // Fail-closed: don't block the existing SW.
-    })
+    })()
   );
 });
 
@@ -224,6 +223,8 @@ function isNetworkFirstAppShellRequest(req, url) {
 
   if (
     path === "/style.css" ||
+    path === "/share.css" ||
+    path === "/share.js" ||
     path === "/app.bundle.js" ||
     path.startsWith("/styles/") ||
     path === "/config.js" ||

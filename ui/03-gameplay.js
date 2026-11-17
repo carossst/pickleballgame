@@ -1,4 +1,4 @@
-  UI.prototype.startRun = function (mistakesOnly) {
+UI.prototype.startRun = function (mistakesOnly) {
     const cfg = this.config || {};
     const moCfg = cfg.mistakesOnly || {};
     const premium = isPremiumNow(this.storage);
@@ -1061,6 +1061,12 @@
       feedbackLine: String(res.feedbackLine || '').trim()
     };
 
+    try {
+      if (window.WT_SFX) window.WT_SFX.play(res.isCorrect === true ? 'correct' : 'wrong');
+    } catch (_) {
+      /* sound is optional */
+    }
+
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)
     try {
       const liveEl = document.getElementById('answer-feedback');
@@ -1103,6 +1109,8 @@
     const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
     if (runMode === MODES.BONUS) {
+      this._rfOnAnswer(choiceBool, res);
+
       // Terms-box visual feedback (BONUS): stash verdict, apply after render.
       const bonusFlashClass =
         res.isCorrect === true

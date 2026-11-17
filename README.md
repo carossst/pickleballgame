@@ -126,10 +126,11 @@ These rules are now part of the working contract for Pickleball.
 
 The source files remain modular for maintenance, while production entry pages use generated assets:
 
-- `app.bundle.js` is generated from the ordered browser scripts with `npm run generate:bundle`
+- Edit the numbered UI sources in `ui/`. They share a single scope and are assembled into `ui.js` by `npm run generate:ui`.
+- `npm run generate:bundle` assembles `ui.js` and then builds `app.bundle.js` from the ordered browser scripts.
 - `style.css` is generated from the modular files under `styles/` with `npm run generate:css`
-- `npm run build:assets` regenerates both files
-- CI fails if either generated asset is stale
+- `npm run build:assets` regenerates all three files.
+- CI fails if any generated asset is stale.
 - browser smoke tests boot both `/` and `/fr.html` and catch blank-screen regressions
 
 The canonical public host is `https://www.pickleballrulesquiz.com`. The non-`www` origin remains accepted by the Worker for backwards compatibility.

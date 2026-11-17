@@ -173,6 +173,19 @@
 
     const panelY = 115 + offset;
     const lime = '#d9fa73';
+    ctx.beginPath();
+    ctx.arc(895, panelY + 605, 72, 0, 2 * Math.PI);
+    ctx.fillStyle = lime;
+    ctx.fill();
+    ctx.fillStyle = '#31523a';
+    for (const [x, y, radius] of [
+      [-28, -22, 9], [5, -37, 8], [39, -15, 8],
+      [-37, 13, 8], [-3, 0, 10], [29, 21, 9], [-13, 36, 8]
+    ]) {
+      ctx.beginPath();
+      ctx.arc(895 + x, panelY + 605 + y, radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
 
     if (brandLogo) {
       ctx.fillStyle = '#fff';

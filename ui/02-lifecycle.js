@@ -1,4 +1,4 @@
-  function UI({ storage, game, config, wording }) {
+function UI({ storage, game, config, wording }) {
     this.storage = storage;
     this.game = game;
     this.config = config || {};
@@ -157,6 +157,7 @@
       'open-paywall',
       'copy-share',
       'share-native',
+      'share-card',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -488,6 +489,25 @@
         case 'share-native':
           void self.shareNative();
           break;
+
+        case 'share-card': {
+          const cardBtn =
+            event && event.target && event.target.closest
+              ? event.target.closest('[data-action="share-card"]')
+              : null;
+          const cardScore = Number(cardBtn && cardBtn.getAttribute('data-score')) || 0;
+          const cardText = String(self._getShareText ? self._getShareText() : '');
+          if (window.WT_ScoreCard) {
+            void window.WT_ScoreCard
+              .share({
+                score: cardScore,
+                text: cardText,
+                lang: String(document.documentElement.lang || '').slice(0, 2)
+              })
+              .catch(() => {});
+          }
+          break;
+        }
 
         case 'send-share-email':
           self.sendShareViaEmail();

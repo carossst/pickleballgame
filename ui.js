@@ -2308,9 +2308,11 @@ void (function () {
     const isPractice = String(runType || '').trim() === 'PRACTICE';
     const msg = isPractice
       ? String(wording?.practice?.startRunChancesOverlayPractice || '').trim()
-      : Number.isFinite(maxChances)
-        ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
-        : '';
+      : gs.maxChances == null
+        ? String(wording?.ui?.startRunNoEliminationOverlay || '').trim()
+        : Number.isFinite(maxChances)
+          ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
+          : '';
     if (!msg) return;
 
     // Controller priority: run-start is a blocking overlay, below chance/game-over.
@@ -2691,6 +2693,7 @@ function UI({ storage, game, config, wording }) {
       'open-paywall',
       'copy-share',
       'share-native',
+      'share-card',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -3022,6 +3025,25 @@ function UI({ storage, game, config, wording }) {
         case 'share-native':
           void self.shareNative();
           break;
+
+        case 'share-card': {
+          const cardBtn =
+            event && event.target && event.target.closest
+              ? event.target.closest('[data-action="share-card"]')
+              : null;
+          const cardScore = Number(cardBtn && cardBtn.getAttribute('data-score')) || 0;
+          const cardText = String(self._getShareText ? self._getShareText() : '');
+          if (window.WT_ScoreCard) {
+            void window.WT_ScoreCard
+              .share({
+                score: cardScore,
+                text: cardText,
+                lang: String(document.documentElement.lang || '').slice(0, 2)
+              })
+              .catch(() => {});
+          }
+          break;
+        }
 
         case 'send-share-email':
           self.sendShareViaEmail();
@@ -6632,6 +6654,12 @@ UI.prototype.startRun = function (mistakesOnly) {
       feedbackLine: String(res.feedbackLine || '').trim()
     };
 
+    try {
+      if (window.WT_SFX) window.WT_SFX.play(res.isCorrect === true ? 'correct' : 'wrong');
+    } catch (_) {
+      /* sound is optional */
+    }
+
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)
     try {
       const liveEl = document.getElementById('answer-feedback');
@@ -6674,6 +6702,8 @@ UI.prototype.startRun = function (mistakesOnly) {
     const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
     if (runMode === MODES.BONUS) {
+      this._rfOnAnswer(choiceBool, res);
+
       // Terms-box visual feedback (BONUS): stash verdict, apply after render.
       const bonusFlashClass =
         res.isCorrect === true
@@ -8563,6 +8593,38 @@ UI.prototype._startPaywallTicker = function () {
     }
   };
 
+  // Rapid Fire: paddle return and power-ups after an answer (state only; sync() draws it).
+  UI.prototype._rfOnAnswer = function (choiceBool, res) {
+    try {
+      if (!window.WT_RFX || !this._runtime) return;
+      const rf = (this._runtime.rf = this._runtime.rf || {});
+      const now = Date.now();
+      rf.paddle = { side: choiceBool === true ? 'left' : 'right', t: now };
+      if (res && res.isCorrect === true && this.game) {
+        const st = this.game.getState();
+        const power = window.WT_RFX.powerFor({
+          streak: st.correctStreak,
+          chancesLeft: st.chancesLeft,
+          maxChances: st.maxChances
+        });
+        if (power === 'life' && typeof this.game.grantChance === 'function') {
+          if (!this.game.grantChance()) return;
+        }
+        if (power) rf.power = { kind: power, t: now };
+      }
+      // Draw at once: the next render can come later than the 450 ms paddle move.
+      const lane = this.appEl ? this.appEl.querySelector('[data-wt-bonus-lane]') : null;
+      const chip = this.appEl ? this.appEl.querySelector('[data-wt-bonus-chip]') : null;
+      window.WT_RFX.sync(lane, rf, {
+        lang: String(document.documentElement.lang || '').slice(0, 2),
+        chipEl: chip,
+        boss: rf.bossNow === true
+      });
+    } catch (_) {
+      /* effects are optional */
+    }
+  };
+
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
 
@@ -8693,6 +8755,23 @@ UI.prototype._startPaywallTicker = function () {
       );
       sbf.speed01PerSec = speedPct / 100;
 
+      // Rapid Fire effects: a new run starts clean, then waves and the boss are announced.
+      try {
+        if (servedSoFar === 0) this._runtime.rf = {};
+        const rfNow = Date.now();
+        const wave = window.WT_RFX ? window.WT_RFX.waveFor(servedSoFar) : 0;
+        if (wave > 0) this._runtime.rf.wave = { n: wave, t: rfNow };
+        const total =
+          this.game && typeof this.game.getTotal === 'function'
+            ? this.game.getTotal()
+            : 0;
+        const boss = window.WT_RFX ? window.WT_RFX.isBoss(servedSoFar, total) : false;
+        this._runtime.rf.bossNow = boss;
+        if (boss) this._runtime.rf.boss = { t: rfNow };
+      } catch (_) {
+        /* effects are optional */
+      }
+
       // Reset transform immediately
       try {
         sbf.chipEl.style.transform = 'translate3d(0px, 0px, 0px)';
@@ -8715,6 +8794,18 @@ UI.prototype._startPaywallTicker = function () {
           });
         }
       } catch (_) {}
+    }
+
+    try {
+      if (window.WT_RFX && this._runtime.rf) {
+        window.WT_RFX.sync(lane, this._runtime.rf, {
+          lang: String(document.documentElement.lang || '').slice(0, 2),
+          chipEl: chip,
+          boss: this._runtime.rf.bossNow === true
+        });
+      }
+    } catch (_) {
+      /* effects are optional */
     }
 
     if (sbf.running === true) return;
@@ -11010,8 +11101,20 @@ ${questionAudioHtml}
       const stableExplanation = String(ans.feedbackLine || '').trim();
 
       const explanationLabel = String(w.explanationLabel || '').trim();
+      let courtDiagramHtml = '';
+      try {
+        courtDiagramHtml = window.WT_Court
+          ? window.WT_Court.svgFor(
+              extractTagsFromItem(item),
+              String(document.documentElement.lang || '').slice(0, 2)
+            )
+          : '';
+      } catch (_) {
+        courtDiagramHtml = '';
+      }
+
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : '';
 
       return renderShell(`

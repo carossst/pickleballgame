@@ -161,7 +161,7 @@ h1 {
 }
 
 .share-status {
-  min-height: 20px;
+  margin: 0;
   color: var(--share-accent);
   font-weight: 800;
 }
@@ -213,7 +213,16 @@ h1 {
 
   .share-layout {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 20px;
+  }
+
+  .share-nav {
+    margin-bottom: 20px;
+  }
+
+  .share-intro {
+    margin: 12px 0 16px;
+    font-size: 16px;
   }
 
 }

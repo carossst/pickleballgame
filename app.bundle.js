@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.33",
+    version: "4.3.45",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -131,6 +131,9 @@
         1: 5,
         2: 10
       },
+      // No mistake limit in these runs (they still end at their question cap), so a
+      // new player sees every explanation of the first game.
+      noEliminationRuns: [1],
       // Curated opening for the free runs. Design goal: run 1 = a welcoming
       // hook (mostly easy/medium, real misconceptions), run 2 = a notch harder
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
@@ -529,7 +532,7 @@
         tuningVersion: 2,
 
         // Speed in % of lane height per second
-        initialSpeed: 15,       // départ modéré (10 = 8 s avant la ligne, trop lent)
+        initialSpeed: 10,       // très lent au départ (réglage de la propriétaire : ne pas modifier)
         maxSpeed: 20,           // plafond confortable
         speedIncrement: 0.4,    // rampe étirée (cap ~25 items)
 
@@ -1445,6 +1448,7 @@
 
       startRunChancesOverlay:
         'Game ends after {maxChances} mistakes.',
+      startRunNoEliminationOverlay: 'Mistakes do not end this game.',
       startOverlayTapAnywhere: 'Tap anywhere to start',
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -1768,7 +1772,8 @@
       bonusCtaPrimary: 'Play Rapid Fire (1 ticket)',
 
       practiceCtaCountPremium: 'Practice my mistakes',
-      shareTitle: 'Challenge a friend'
+      shareTitle: 'Challenge a friend',
+      shareCardCta: 'Share my score card'
     },
 
     paywall: {
@@ -2609,6 +2614,7 @@ Thanks!`
 
       startRunChancesOverlay:
         'La partie se termine après {maxChances} erreurs.',
+      startRunNoEliminationOverlay: 'Les erreurs ne mettent pas fin à cette partie.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -2941,7 +2947,8 @@ Thanks!`
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
       practiceCtaCountPremium: 'Revoir mes erreurs',
-      shareTitle: 'Partager le jeu'
+      shareTitle: 'Partager le jeu',
+      shareCardCta: 'Partager ma carte de score'
     },
 
     paywall: {
@@ -7283,6 +7290,19 @@ Merci !`
     return (Number.isFinite(cap) && Math.floor(cap) === cap && cap >= 1) ? cap : 0;
   }
 
+  // Free runs listed in curatedFreeRuns.noEliminationRuns have no mistake limit:
+  // the player always sees every explanation of the run (the first game).
+  function isNoEliminationRun(config, runStartNumber) {
+    const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
+      ? config.curatedFreeRuns
+      : null;
+    if (!cfr || cfr.enabled !== true || !Array.isArray(cfr.noEliminationRuns)) return false;
+    const runNum = Number(runStartNumber);
+    if (!Number.isFinite(runNum) || runNum < 1) return false;
+    // Only when the run really has a question cap: otherwise it would never end.
+    return getFreeRunQuestionCap(config, runNum) > 0 && cfr.noEliminationRuns.includes(runNum);
+  }
+
   function getCuratedFreeRunOpeningIds(config, byId, statsByItem, runStartNumber) {
     const cfr = (config?.curatedFreeRuns && typeof config.curatedFreeRuns === "object")
       ? config.curatedFreeRuns
@@ -7521,7 +7541,22 @@ Merci !`
       return { ids: [], byId };
     }
 
-    return { ids: shuffleCopy(seenIds), byId };
+    return { ids: moveBossLast(shuffleCopy(seenIds), byId), byId };
+  }
+
+  // Rapid Fire boss: with enough questions, the last one is a hard or 2026 question.
+  function moveBossLast(ids, byId) {
+    if (ids.length < 5) return ids;
+    const tagsOf = (id) => {
+      const it = byId && byId[String(id)];
+      return Array.isArray(it && it.tags) ? it.tags.map((t) => String(t)) : [];
+    };
+    let pick = ids.findIndex((id) => tagsOf(id).includes('2026 Changes'));
+    if (pick < 0) pick = ids.findIndex((id) => tagsOf(id).includes('Hard'));
+    if (pick < 0) return ids;
+    const out = ids.slice();
+    out.push(out.splice(pick, 1)[0]);
+    return out;
   }
 
   function buildFullPoolDeck(items, config) {
@@ -7640,6 +7675,7 @@ Merci !`
         : 0;
       // A capped run behaves like a fixed deck: it ends when the deck ends.
       const fixedDeck = hasFixedIds || questionCap > 0;
+      const noElimination = effectiveMode === MODES.RUN && !hasFixedIds && isNoEliminationRun(config, runStartNumber);
       const deck = hasFixedIds
         ? (() => {
             const normalized = normalizePool(items);
@@ -7669,8 +7705,8 @@ Merci !`
         ids: Array.isArray(deck.ids) ? deck.ids.slice() : [],
         idx: 0,
         // Chances: RUN + BONUS use maxChances; PRACTICE has no chances (revision mode)
-        maxChances: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
-        chancesLeft: (effectiveMode === MODES.PRACTICE) ? null : maxChances,
+        maxChances: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
+        chancesLeft: (effectiveMode === MODES.PRACTICE || noElimination) ? null : maxChances,
 
         // Single score across all modes (KISS)
         scoreFP: 0,
@@ -7705,6 +7741,16 @@ Merci !`
     getIndex() {
       if (!this.run) return 0;
       return Number(this.run.idx || 0);
+    }
+
+    // Rapid Fire power-up: gives one mistake back (never above the maximum).
+    grantChance() {
+      const r = this.run;
+      if (!r || r.done || r.mode !== MODES.BONUS) return false;
+      if (r.chancesLeft == null || r.maxChances == null) return false;
+      if (Number(r.chancesLeft) >= Number(r.maxChances)) return false;
+      r.chancesLeft = Number(r.chancesLeft) + 1;
+      return true;
     }
 
     getTotal() {
@@ -9131,8 +9177,16 @@ Merci !`
     const focusedLocale = String(document.documentElement?.lang || "en").toLowerCase() === "fr" ? "fr" : "en";
     const focusedInstagramHref = focusedLocale === "fr" ? "./share.html?lang=fr" : "./share.html";
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
+    const shareCardLabel = String(end.shareCardCta || "").trim();
+    const shareCardHtml = (scoreFP > 0 && shareCardLabel)
+      ? `<span aria-hidden="true"> · </span><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
+      : "";
+    // Other end screens (no mistake, last free game...) get the card link on its own line.
+    const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
+      : "";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<div class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${focusedInstagramLabel ? ` <a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a>` : ""}</div>`
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
       : "";
 
     const leaderboardW = w.leaderboard || {};
@@ -9268,6 +9322,8 @@ Merci !`
   </div>
 
   ${focusedShareHtml}
+  ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
+  ${shareCardOnlyHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}
@@ -11046,10 +11102,6 @@ ${(() => {
       return;
     }
 
-    if (ui.storage && typeof ui.storage.markCheckoutStarted === "function") {
-      ui.storage.markCheckoutStarted(priceKey);
-    }
-
     const cfg = ui.config || {};
     const key = String(priceKey || "").toUpperCase();
     const url = (key === "EARLY")
@@ -11078,16 +11130,24 @@ ${(() => {
     try {
       const urlObj = new URL(url);
       const allowedHosts = ["buy.stripe.com", "checkout.stripe.com"];
-      if (!allowedHosts.includes(urlObj.hostname)) {
-        console.error("[WT Security] Invalid Stripe URL hostname:", urlObj.hostname);
+      if (
+        urlObj.protocol !== "https:" ||
+        !allowedHosts.includes(urlObj.hostname) ||
+        urlObj.port || urlObj.username || urlObj.password
+      ) {
+        console.error("[WT Security] Invalid Stripe destination");
         resetCheckoutButton();
         return;
       }
     } catch (_) {
-      console.error("[WT Security] Invalid Stripe URL:", url);
+      console.error("[WT Security] Invalid Stripe URL");
       resetCheckoutButton();
       return;
     }
+
+    try {
+      ui.storage?.markCheckoutStarted?.(key);
+    } catch (_) { /* Checkout can continue without local storage. */ }
 
     if (sourceBtn) {
       sourceBtn.disabled = true;
@@ -12322,6 +12382,516 @@ ${(() => {
     mergeLocalPlayer: LeaderboardLogic.mergeLocalPlayer,
     normalizeRows: LeaderboardLogic.normalizeRows
   };
+})();
+
+/* ===== sfx.js ===== */
+/* Answer sounds and vibration. Sound is off by default (many players are in a
+   club or a locker room) and is switched on with the visible button. Vibration
+   is short, Android only, and skipped when the user asks for reduced motion.
+   Sounds are synthesised with the Web Audio API: no audio files to load. */
+(() => {
+  'use strict';
+
+  const KEY = 'wt-sfx';
+  let ctx = null;
+  let enabled = false;
+
+  function readPref() {
+    try {
+      return window.localStorage.getItem(KEY) === 'on';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function writePref(on) {
+    try {
+      window.localStorage.setItem(KEY, on ? 'on' : 'off');
+    } catch (_) {
+      /* private mode: the choice just lasts for this visit */
+    }
+  }
+
+  function audio() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try {
+      ctx = new AC();
+    } catch (_) {
+      ctx = null;
+    }
+    return ctx;
+  }
+
+  // One short note: frequency glide, quick decay.
+  function note(c, type, from, to, start, length, volume) {
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    const t0 = c.currentTime + start;
+    osc.type = type;
+    osc.frequency.setValueAtTime(from, t0);
+    osc.frequency.exponentialRampToValueAtTime(to, t0 + length);
+    gain.gain.setValueAtTime(volume, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + length);
+    osc.connect(gain);
+    gain.connect(c.destination);
+    osc.start(t0);
+    osc.stop(t0 + length + 0.02);
+  }
+
+  function sound(kind) {
+    const c = audio();
+    if (!c) return;
+    if (c.state === 'suspended' && typeof c.resume === 'function') c.resume();
+    if (kind === 'correct') {
+      // paddle on ball: a short, bright "pop"
+      note(c, 'triangle', 620, 980, 0, 0.09, 0.22);
+      note(c, 'sine', 1240, 1500, 0.04, 0.07, 0.08);
+    } else {
+      // dull thud
+      note(c, 'sine', 170, 70, 0, 0.18, 0.3);
+    }
+  }
+
+  function vibrate(kind) {
+    try {
+      if (typeof window.navigator.vibrate !== 'function') return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      window.navigator.vibrate(kind === 'correct' ? 15 : [35, 40, 35]);
+    } catch (_) {
+      /* not supported */
+    }
+  }
+
+  // kind: "correct" or "wrong"
+  function play(kind) {
+    const k = kind === 'correct' ? 'correct' : 'wrong';
+    vibrate(k);
+    if (enabled) sound(k);
+  }
+
+  function isEnabled() {
+    return enabled;
+  }
+
+  function setEnabled(on) {
+    enabled = Boolean(on);
+    writePref(enabled);
+    if (enabled) audio(); // created inside the click that switched sound on
+    syncButton();
+  }
+
+  let button = null;
+
+  function syncButton() {
+    if (!button) return;
+    button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    button.setAttribute('data-state', enabled ? 'on' : 'off');
+    const fr = /^fr/i.test(document.documentElement.lang || '');
+    const text = fr
+      ? enabled ? 'Effets sonores activés' : 'Effets sonores coupés'
+      : enabled ? 'Sound effects on' : 'Sound effects off';
+    button.setAttribute('aria-label', text);
+    button.setAttribute('title', text);
+  }
+
+  function mountButton() {
+    if (!document.body || document.getElementById('wt-sfx-toggle')) return;
+    button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'wt-sfx-toggle';
+    button.className = 'wt-sfx-toggle';
+    // A music note, not a speaker: the speaker on the question card reads the question aloud.
+    button.innerHTML =
+      '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">' +
+      '<path d="M9 17V5l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' +
+      '<circle cx="6.5" cy="17.5" r="2.8" fill="currentColor"/><circle cx="16.5" cy="15.5" r="2.8" fill="currentColor"/>' +
+      '<path class="wt-sfx-mute" d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>' +
+      '</svg>';
+    button.addEventListener('click', () => {
+      setEnabled(!enabled);
+      if (enabled) sound('correct'); // confirms that sound is on
+    });
+    document.body.appendChild(button);
+    syncButton();
+  }
+
+  enabled = readPref();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountButton, { once: true });
+  } else {
+    mountButton();
+  }
+
+  window.WT_SFX = { play, isEnabled, setEnabled };
+})();
+
+/* ===== court-diagram.js ===== */
+/* Small court diagrams shown next to the rule explanation. One drawing per
+   topic, picked from the tags of the question. Pure SVG strings, no images. */
+(() => {
+  'use strict';
+
+  // Tag on the question -> drawing. The first matching entry wins.
+  const TOPIC_BY_TAG = [
+    ['Non-Volley Zone', 'kitchen'],
+    ['Serving Rules', 'serving'],
+    ['Line Calls', 'lines'],
+    ['Faults & Dead Ball', 'faults'],
+    ['Score & Readiness', 'scoring'],
+    ['Court & Equipment', 'court'],
+    ['Rally Situations', 'rally'],
+    ['The Net', 'rally'],
+    ['2026 Changes', 'changes']
+  ];
+
+  const LABELS = {
+    en: {
+      kitchen: 'Court diagram: the non-volley zone (kitchen) is highlighted',
+      serving: 'Court diagram: the serve goes diagonally to the opposite service court',
+      lines: 'Court diagram: a ball touching a line is in',
+      faults: 'Court diagram: the net and the kitchen lines are highlighted',
+      scoring: 'Scoreboard example: server score, receiver score, server number',
+      court: 'Court diagram: 20 feet wide, 44 feet long, kitchen 7 feet',
+      rally: 'Court diagram: a rally across the net',
+      changes: 'Court diagram: 2026 rule changes'
+    },
+    fr: {
+      kitchen: 'Schéma du terrain : la zone de non-volée (cuisine) est en surbrillance',
+      serving: 'Schéma du terrain : le service va en diagonale vers le carré de service opposé',
+      lines: 'Schéma du terrain : une balle qui touche une ligne est bonne',
+      faults: 'Schéma du terrain : le filet et les lignes de la cuisine sont en surbrillance',
+      scoring: 'Exemple de tableau de score : score du serveur, du relanceur, numéro du serveur',
+      court: 'Schéma du terrain : 6,10 m de large, 13,40 m de long, cuisine 2,13 m',
+      rally: 'Schéma du terrain : un échange par-dessus le filet',
+      changes: 'Schéma du terrain : changements de règles 2026'
+    }
+  };
+
+  const COURT = '#0b4e7c';
+  const LINE = '#ffffff';
+  const HI = '#fde047';
+
+  // Top view, 5 units per foot: court x 10..110, y 5..225, net at y 115,
+  // kitchen lines at y 80 and 150, centre line at x 60.
+  function base(extra) {
+    return (
+      `<rect x="0" y="0" width="120" height="230" rx="8" fill="#15803d"/>` +
+      `<rect x="10" y="5" width="100" height="220" fill="${COURT}"/>` +
+      (extra && extra.under ? extra.under : '') +
+      `<g stroke="${LINE}" stroke-width="2" fill="none">` +
+      `<rect x="10" y="5" width="100" height="220"/>` +
+      `<line x1="10" y1="80" x2="110" y2="80"/><line x1="10" y1="150" x2="110" y2="150"/>` +
+      `<line x1="60" y1="5" x2="60" y2="80"/><line x1="60" y1="150" x2="60" y2="225"/></g>` +
+      `<line x1="4" y1="115" x2="116" y2="115" stroke="${LINE}" stroke-width="3" stroke-dasharray="4 3"/>` +
+      (extra && extra.over ? extra.over : '')
+    );
+  }
+
+  const ball = (x, y) =>
+    `<circle cx="${x}" cy="${y}" r="7" fill="#d9f03c" stroke="#fff" stroke-width="1.5"/>`;
+
+  const DRAW = {
+    kitchen: () =>
+      base({
+        under: `<rect x="10" y="80" width="100" height="35" fill="${HI}" opacity="0.6"/><rect x="10" y="115" width="100" height="35" fill="${HI}" opacity="0.6"/>`
+      }),
+    serving: () =>
+      base({
+        under: `<rect x="10" y="5" width="50" height="75" fill="${HI}" opacity="0.55"/>`,
+        over:
+          `<path d="M88 214 L38 44" stroke="${HI}" stroke-width="3" stroke-dasharray="6 4" fill="none"/>` +
+          `<path d="M38 44 l-2 12 m2 -12 l10 6" stroke="${HI}" stroke-width="3" fill="none"/>` +
+          ball(88, 214)
+      }),
+    lines: () =>
+      base({
+        over:
+          `<rect x="10" y="5" width="100" height="220" fill="none" stroke="${HI}" stroke-width="4"/>` +
+          ball(110, 60)
+      }),
+    faults: () =>
+      base({
+        over:
+          `<line x1="4" y1="115" x2="116" y2="115" stroke="${HI}" stroke-width="4"/>` +
+          `<line x1="10" y1="80" x2="110" y2="80" stroke="${HI}" stroke-width="4"/>` +
+          `<line x1="10" y1="150" x2="110" y2="150" stroke="${HI}" stroke-width="4"/>`
+      }),
+    court: () =>
+      base({
+        over:
+          `<g fill="${HI}" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="11" text-anchor="middle">` +
+          `<text x="60" y="200">20 ft</text><text x="60" y="63">7 ft</text>` +
+          `<text x="36" y="118" transform="rotate(-90 36 118)">44 ft</text></g>`
+      }),
+    rally: () =>
+      base({
+        over:
+          `<path d="M38 205 L84 40 L44 190" stroke="${HI}" stroke-width="3" stroke-dasharray="6 4" fill="none"/>` +
+          ball(44, 190)
+      }),
+    changes: () =>
+      base({
+        under: `<rect x="10" y="80" width="100" height="70" fill="${HI}" opacity="0.35"/>`,
+        over: `<text x="60" y="124" fill="#fff" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="26" text-anchor="middle">2026</text>`
+      })
+  };
+
+  function scoreboard() {
+    return (
+      `<rect x="0" y="0" width="120" height="230" rx="8" fill="#15803d"/>` +
+      `<rect x="8" y="70" width="104" height="80" rx="8" fill="#0f172a"/>` +
+      `<text x="60" y="118" fill="#fff" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="26" text-anchor="middle">7-4-2</text>` +
+      `<text x="60" y="140" fill="${HI}" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="9" text-anchor="middle">server · receiver · #</text>`
+    );
+  }
+
+  function topicFor(tags) {
+    const list = Array.isArray(tags) ? tags.map((t) => String(t || '').trim()) : [];
+    for (const [tag, topic] of TOPIC_BY_TAG) {
+      if (list.includes(tag)) return topic;
+    }
+    return '';
+  }
+
+  function svgFor(tags, lang) {
+    const topic = topicFor(tags);
+    if (!topic) return '';
+    const labels = LABELS[lang === 'fr' ? 'fr' : 'en'];
+    const body = topic === 'scoring' ? scoreboard() : DRAW[topic]();
+    return (
+      `<svg class="wt-court-diagram" data-topic="${topic}" viewBox="0 0 120 230" role="img" ` +
+      `aria-label="${labels[topic]}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`
+    );
+  }
+
+  window.WT_Court = { topicFor, svgFor, TOPIC_BY_TAG };
+})();
+
+/* ===== score-card.js ===== */
+/* Score card: a 1080x1350 image of the player's score, drawn on a canvas and
+   shared as a picture (or downloaded when the browser cannot share files). */
+(() => {
+  'use strict';
+
+  const W = 1080;
+  const H = 1350;
+
+  const COPY = {
+    en: { title: 'Pickleball Rules Quiz', points: 'points', cta: 'Can you beat me?', url: 'pickleballrulesquiz.com' },
+    fr: { title: 'Défi des règles du pickleball', points: 'points', cta: 'Tu fais mieux ?', url: 'pickleballrulesquiz.com/fr.html' }
+  };
+
+  function copyFor(lang) {
+    return COPY[lang === 'fr' ? 'fr' : 'en'];
+  }
+
+  // Draws the card on any 2D context (a real canvas or a recording stub in tests).
+  function draw(ctx, options) {
+    const o = options || {};
+    const c = copyFor(o.lang);
+    const score = Math.max(0, Math.floor(Number(o.score) || 0));
+
+    ctx.fillStyle = '#15803d';
+    ctx.fillRect(0, 0, W, H);
+
+    // court
+    ctx.fillStyle = '#0b4e7c';
+    ctx.fillRect(90, 130, W - 180, 760);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(90, 130, W - 180, 760);
+    ctx.beginPath();
+    ctx.moveTo(90, 340);
+    ctx.lineTo(W - 90, 340);
+    ctx.moveTo(90, 680);
+    ctx.lineTo(W - 90, 680);
+    ctx.moveTo(W / 2, 130);
+    ctx.lineTo(W / 2, 340);
+    ctx.moveTo(W / 2, 680);
+    ctx.lineTo(W / 2, 890);
+    ctx.stroke();
+    ctx.setLineDash([18, 14]);
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.moveTo(60, 510);
+    ctx.lineTo(W - 60, 510);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // score
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 330px Inter, Arial, sans-serif';
+    ctx.fillText(String(score), W / 2, 520);
+    ctx.font = '700 56px Inter, Arial, sans-serif';
+    ctx.fillStyle = '#fde047';
+    ctx.fillText(c.points.toUpperCase(), W / 2, 600);
+
+    // ball
+    ctx.beginPath();
+    ctx.arc(W - 190, 250, 44, 0, Math.PI * 2);
+    ctx.fillStyle = '#d9f03c';
+    ctx.fill();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    // texts below the court
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 76px Inter, Arial, sans-serif';
+    ctx.fillText(c.cta, W / 2, 1010);
+    ctx.font = '700 52px Inter, Arial, sans-serif';
+    ctx.fillText(c.title, W / 2, 1100);
+    ctx.fillStyle = '#fde047';
+    ctx.font = '700 46px Inter, Arial, sans-serif';
+    ctx.fillText(c.url, W / 2, 1200);
+    if (o.label) {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 44px Inter, Arial, sans-serif';
+      ctx.fillText(String(o.label), W / 2, 90);
+    }
+  }
+
+  function toBlob(options) {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('canvas unavailable'));
+        return;
+      }
+      draw(ctx, options);
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('no image'))), 'image/png');
+    });
+  }
+
+  function fileName(score) {
+    return `pickleball-score-${Math.max(0, Math.floor(Number(score) || 0))}.png`;
+  }
+
+  function download(blob, name) {
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(href), 1000);
+  }
+
+  // options: { score, lang, label, text }. Shares the picture when the browser
+  // can share files, otherwise downloads it.
+  async function share(options) {
+    const o = options || {};
+    const blob = await toBlob(o);
+    const name = fileName(o.score);
+    try {
+      const file = new File([blob], name, { type: 'image/png' });
+      const data = { files: [file], text: String(o.text || '') };
+      if (navigator.canShare && navigator.canShare(data) && navigator.share) {
+        await navigator.share(data);
+        return 'shared';
+      }
+    } catch (err) {
+      if (err && err.name === 'AbortError') return 'cancelled';
+    }
+    download(blob, name);
+    return 'downloaded';
+  }
+
+  window.WT_ScoreCard = { W, H, draw, toBlob, share, fileName };
+})();
+
+/* ===== rapidfire-fx.js ===== */
+/* Rapid Fire effects: a paddle that returns the ball, wave banners, power-up
+   capsules and a boss question. Visual effects and a bonus life only: the score
+   rules and the fall speed are untouched. State lives in the UI runtime, and sync() redraws the effects
+   from that state after every render so a re-render cannot drop them. */
+(() => {
+  'use strict';
+
+  const WAVE_EVERY = 5; // questions per wave
+  const LIFE_STREAK = 8;
+  const PADDLE_MS = 450;
+  const BANNER_MS = 1400;
+  const CAPSULE_MS = 1200;
+  const MIN_BOSS_DECK = 5;
+
+  const TEXT = {
+    en: { wave: 'WAVE', boss: 'BOSS', life: '+1 LIFE' },
+    fr: { wave: 'VAGUE', boss: 'BOSS', life: '+1 VIE' }
+  };
+
+  // served = questions already served before the one that is about to fall.
+  function waveFor(served) {
+    const n = Math.floor(Number(served) || 0);
+    return n > 0 && n % WAVE_EVERY === 0 ? n / WAVE_EVERY + 1 : 0;
+  }
+
+  // Power-up earned by a correct answer that makes this streak ("" = none).
+  // Only a life: the fall speed is the owner's tuning and is never changed here.
+  function powerFor(info) {
+    const i = info || {};
+    const streak = Math.floor(Number(i.streak) || 0);
+    const lost = Number(i.chancesLeft) < Number(i.maxChances);
+    return streak === LIFE_STREAK && lost ? 'life' : '';
+  }
+
+  function isBoss(index, total) {
+    return Number(total) >= MIN_BOSS_DECK && Number(index) === Number(total) - 1;
+  }
+
+  function el(parent, className, text) {
+    const node = document.createElement('div');
+    node.className = className;
+    if (text != null) node.textContent = text;
+    parent.appendChild(node);
+    return node;
+  }
+
+  // Replays an effect from where it should be now (negative delay), so the
+  // animation continues instead of restarting after a re-render.
+  function resume(node, startedAt, now) {
+    node.style.animationDelay = `-${Math.max(0, now - startedAt)}ms`;
+  }
+
+  // laneEl: the falling lane; rf: effect state; options: { lang, chipEl, boss, now }
+  function sync(laneEl, rf, options) {
+    if (!laneEl || !rf) return;
+    const o = options || {};
+    const now = Number.isFinite(o.now) ? o.now : Date.now();
+    const text = TEXT[o.lang === 'fr' ? 'fr' : 'en'];
+
+    laneEl.querySelectorAll('.wt-rf-fx').forEach((node) => node.remove());
+
+    const paddle = el(laneEl, 'wt-rf-fx wt-rf-paddle');
+    if (rf.paddle && now - rf.paddle.t < PADDLE_MS) {
+      paddle.classList.add(rf.paddle.side === 'right' ? 'is-hit-right' : 'is-hit-left');
+      resume(paddle, rf.paddle.t, now);
+    }
+
+    if (rf.wave && now - rf.wave.t < BANNER_MS) {
+      resume(el(laneEl, 'wt-rf-fx wt-rf-banner', `${text.wave} ${rf.wave.n}`), rf.wave.t, now);
+    }
+    if (rf.boss && now - rf.boss.t < BANNER_MS) {
+      resume(el(laneEl, 'wt-rf-fx wt-rf-banner wt-rf-banner--boss', text.boss), rf.boss.t, now);
+    }
+    if (rf.power && now - rf.power.t < CAPSULE_MS) {
+      const capsule = el(laneEl, `wt-rf-fx wt-rf-capsule wt-rf-capsule--${rf.power.kind}`, text[rf.power.kind]);
+      resume(capsule, rf.power.t, now);
+    }
+
+    if (o.chipEl && o.chipEl.classList) {
+      o.chipEl.classList.toggle('wt-bonus-chip--boss', Boolean(o.boss));
+    }
+  }
+
+  window.WT_RFX = { waveFor, powerFor, isBoss, sync };
 })();
 
 /* ===== ui.js ===== */
@@ -14635,9 +15205,11 @@ void (function () {
     const isPractice = String(runType || '').trim() === 'PRACTICE';
     const msg = isPractice
       ? String(wording?.practice?.startRunChancesOverlayPractice || '').trim()
-      : Number.isFinite(maxChances)
-        ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
-        : '';
+      : gs.maxChances == null
+        ? String(wording?.ui?.startRunNoEliminationOverlay || '').trim()
+        : Number.isFinite(maxChances)
+          ? getRunStartOverlayText(wording?.ui, clampInt(maxChances, 1, 99))
+          : '';
     if (!msg) return;
 
     // Controller priority: run-start is a blocking overlay, below chance/game-over.
@@ -15018,6 +15590,7 @@ function UI({ storage, game, config, wording }) {
       'open-paywall',
       'copy-share',
       'share-native',
+      'share-card',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -15349,6 +15922,25 @@ function UI({ storage, game, config, wording }) {
         case 'share-native':
           void self.shareNative();
           break;
+
+        case 'share-card': {
+          const cardBtn =
+            event && event.target && event.target.closest
+              ? event.target.closest('[data-action="share-card"]')
+              : null;
+          const cardScore = Number(cardBtn && cardBtn.getAttribute('data-score')) || 0;
+          const cardText = String(self._getShareText ? self._getShareText() : '');
+          if (window.WT_ScoreCard) {
+            void window.WT_ScoreCard
+              .share({
+                score: cardScore,
+                text: cardText,
+                lang: String(document.documentElement.lang || '').slice(0, 2)
+              })
+              .catch(() => {});
+          }
+          break;
+        }
 
         case 'send-share-email':
           self.sendShareViaEmail();
@@ -18959,6 +19551,12 @@ UI.prototype.startRun = function (mistakesOnly) {
       feedbackLine: String(res.feedbackLine || '').trim()
     };
 
+    try {
+      if (window.WT_SFX) window.WT_SFX.play(res.isCorrect === true ? 'correct' : 'wrong');
+    } catch (_) {
+      /* sound is optional */
+    }
+
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)
     try {
       const liveEl = document.getElementById('answer-feedback');
@@ -19001,6 +19599,8 @@ UI.prototype.startRun = function (mistakesOnly) {
     const sbFeedback = String(this.config?.secretBonus?.feedback || '').trim();
 
     if (runMode === MODES.BONUS) {
+      this._rfOnAnswer(choiceBool, res);
+
       // Terms-box visual feedback (BONUS): stash verdict, apply after render.
       const bonusFlashClass =
         res.isCorrect === true
@@ -20890,6 +21490,38 @@ UI.prototype._startPaywallTicker = function () {
     }
   };
 
+  // Rapid Fire: paddle return and power-ups after an answer (state only; sync() draws it).
+  UI.prototype._rfOnAnswer = function (choiceBool, res) {
+    try {
+      if (!window.WT_RFX || !this._runtime) return;
+      const rf = (this._runtime.rf = this._runtime.rf || {});
+      const now = Date.now();
+      rf.paddle = { side: choiceBool === true ? 'left' : 'right', t: now };
+      if (res && res.isCorrect === true && this.game) {
+        const st = this.game.getState();
+        const power = window.WT_RFX.powerFor({
+          streak: st.correctStreak,
+          chancesLeft: st.chancesLeft,
+          maxChances: st.maxChances
+        });
+        if (power === 'life' && typeof this.game.grantChance === 'function') {
+          if (!this.game.grantChance()) return;
+        }
+        if (power) rf.power = { kind: power, t: now };
+      }
+      // Draw at once: the next render can come later than the 450 ms paddle move.
+      const lane = this.appEl ? this.appEl.querySelector('[data-wt-bonus-lane]') : null;
+      const chip = this.appEl ? this.appEl.querySelector('[data-wt-bonus-chip]') : null;
+      window.WT_RFX.sync(lane, rf, {
+        lang: String(document.documentElement.lang || '').slice(0, 2),
+        chipEl: chip,
+        boss: rf.bossNow === true
+      });
+    } catch (_) {
+      /* effects are optional */
+    }
+  };
+
   UI.prototype._secretBonusFallStartOrSync = function () {
     if (!this._runtime) return;
 
@@ -21020,6 +21652,23 @@ UI.prototype._startPaywallTicker = function () {
       );
       sbf.speed01PerSec = speedPct / 100;
 
+      // Rapid Fire effects: a new run starts clean, then waves and the boss are announced.
+      try {
+        if (servedSoFar === 0) this._runtime.rf = {};
+        const rfNow = Date.now();
+        const wave = window.WT_RFX ? window.WT_RFX.waveFor(servedSoFar) : 0;
+        if (wave > 0) this._runtime.rf.wave = { n: wave, t: rfNow };
+        const total =
+          this.game && typeof this.game.getTotal === 'function'
+            ? this.game.getTotal()
+            : 0;
+        const boss = window.WT_RFX ? window.WT_RFX.isBoss(servedSoFar, total) : false;
+        this._runtime.rf.bossNow = boss;
+        if (boss) this._runtime.rf.boss = { t: rfNow };
+      } catch (_) {
+        /* effects are optional */
+      }
+
       // Reset transform immediately
       try {
         sbf.chipEl.style.transform = 'translate3d(0px, 0px, 0px)';
@@ -21042,6 +21691,18 @@ UI.prototype._startPaywallTicker = function () {
           });
         }
       } catch (_) {}
+    }
+
+    try {
+      if (window.WT_RFX && this._runtime.rf) {
+        window.WT_RFX.sync(lane, this._runtime.rf, {
+          lang: String(document.documentElement.lang || '').slice(0, 2),
+          chipEl: chip,
+          boss: this._runtime.rf.bossNow === true
+        });
+      }
+    } catch (_) {
+      /* effects are optional */
     }
 
     if (sbf.running === true) return;
@@ -23337,8 +23998,20 @@ ${questionAudioHtml}
       const stableExplanation = String(ans.feedbackLine || '').trim();
 
       const explanationLabel = String(w.explanationLabel || '').trim();
+      let courtDiagramHtml = '';
+      try {
+        courtDiagramHtml = window.WT_Court
+          ? window.WT_Court.svgFor(
+              extractTagsFromItem(item),
+              String(document.documentElement.lang || '').slice(0, 2)
+            )
+          : '';
+      } catch (_) {
+        courtDiagramHtml = '';
+      }
+
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : '';
 
       return renderShell(`

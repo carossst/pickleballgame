@@ -1,4 +1,4 @@
-  UI.prototype.render = function () {
+UI.prototype.render = function () {
     if (!this.appEl) return;
 
     // Safety net: clear stuck overlay locks on LANDING/END (fail-closed)
@@ -2100,8 +2100,20 @@ ${questionAudioHtml}
       const stableExplanation = String(ans.feedbackLine || '').trim();
 
       const explanationLabel = String(w.explanationLabel || '').trim();
+      let courtDiagramHtml = '';
+      try {
+        courtDiagramHtml = window.WT_Court
+          ? window.WT_Court.svgFor(
+              extractTagsFromItem(item),
+              String(document.documentElement.lang || '').slice(0, 2)
+            )
+          : '';
+      } catch (_) {
+        courtDiagramHtml = '';
+      }
+
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
         : '';
 
       return renderShell(`

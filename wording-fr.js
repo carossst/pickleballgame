@@ -525,6 +525,7 @@
 
       startRunChancesOverlay:
         'La partie se termine après {maxChances} erreurs.',
+      startRunNoEliminationOverlay: 'Les erreurs ne mettent pas fin à cette partie.',
       startOverlayTapAnywhere: "Appuyez n'importe où pour commencer",
       dailyChallengeStartOverlayLabel: '',
       dailyChallengeStartOverlayLineTemplate: '',
@@ -857,7 +858,8 @@
       bonusCtaPrimary: 'Jouer en Mode Rapide (1 jeton)',
 
       practiceCtaCountPremium: 'Revoir mes erreurs',
-      shareTitle: 'Partager le jeu'
+      shareTitle: 'Partager le jeu',
+      shareCardCta: 'Partager ma carte de score'
     },
 
     paywall: {

@@ -73,6 +73,29 @@ test('checkout refuses a malformed payment URL', () => {
   expect(context.window.location.href).toBe('');
 });
 
+test('checkout only records a validated payment attempt and survives a storage failure', () => {
+  const { context, checkout } = loadCheckout();
+  const invalidUi = makeUi({
+    stripeStandardPaymentUrl: 'http://buy.stripe.com/pay'
+  });
+  const attempted = [];
+  invalidUi.storage = { markCheckoutStarted: (key) => attempted.push(key) };
+  checkout(invalidUi, 'STANDARD', null, makeHelpers());
+  expect(context.window.location.href).toBe('');
+  expect(attempted).toEqual([]);
+
+  const validUi = makeUi();
+  validUi.storage = {
+    markCheckoutStarted() {
+      throw new Error('Storage unavailable');
+    }
+  };
+  checkout(validUi, 'STANDARD', null, makeHelpers());
+  expect(context.window.location.href).toBe(
+    'https://buy.stripe.com/test_standard'
+  );
+});
+
 test('checkout does nothing while offline', () => {
   const { context, checkout } = loadCheckout();
   const ui = makeUi();

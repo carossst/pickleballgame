@@ -6,9 +6,9 @@
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "generate:seo-pages": "node scripts/generate-seo-pages.mjs",
     "generate:ui": "node scripts/generate-ui.mjs",
-    "generate:bundle": "node scripts/generate-app-bundle.mjs",
+    "generate:bundle": "npm run generate:ui && node scripts/generate-app-bundle.mjs",
     "generate:css": "node scripts/generate-css.mjs",
-    "build:assets": "npm run generate:ui && npm run generate:bundle && npm run generate:css",
+    "build:assets": "npm run generate:bundle && npm run generate:css",
     "publish:seo": "npm run generate:seo-pages && npm run generate:sitemap",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -23,8 +23,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.60.0",
-    "@vitest/coverage-v8": "^4.1.7",
+    "@vitest/coverage-v8": "^4.1.12",
     "prettier": "^3.8.3",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.12"
   }
 }
