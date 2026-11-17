@@ -746,6 +746,11 @@
     end: {
       secondFreeGameCta: 'Play my second free game',
       correctAnswersLine: '{correct}/{total} correct answers',
+      tierPerfect: 'Perfect game!',
+      tierGood: 'Nice rally!',
+      tierKeep: 'Keep playing!',
+      bonusChip: '+{bonus} bonus · streak',
+      shareChallenge: 'Challenge a friend',
       nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
 

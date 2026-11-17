@@ -70,6 +70,15 @@
     const correctAnswersLine = isRun && totalAnswered > 0 && Number.isFinite(lastRun.correctCount)
       ? fillTemplate(end.correctAnswersLine, { correct: lastRun.correctCount, total: totalAnswered })
       : "";
+    const outcomes = Array.isArray(lastRun.outcomes) ? lastRun.outcomes : [];
+    const endTier = (isRun && totalAnswered > 0 && window.WT_EndFx) ? window.WT_EndFx.tier(lastRun.correctCount, totalAnswered, scoreFP) : "";
+    const tierLabel = endTier ? String(end[endTier === "perfect" ? "tierPerfect" : endTier === "good" ? "tierGood" : "tierKeep"] || "").trim() : "";
+    const pipsHtml = (isRun && outcomes.length > 0)
+      ? `<div class="wt-end-pips" role="img" aria-label="${escapeHtml(correctAnswersLine)}">${outcomes.map((ok, i) => `<span class="wt-end-pip ${ok ? "wt-end-pip--ok" : "wt-end-pip--ko"}" style="--i:${i}">${ok ? "✓" : "✕"}</span>`).join("")}</div>`
+      : "";
+    const confettiHtml = (endTier === "perfect" || endTier === "good")
+      ? `<div class="wt-end-confetti" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>`
+      : "";
     const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
 
     let seen = null;
@@ -652,9 +661,6 @@
     } catch (_) { endRunCompletes = 0; }
     const shareExtrasOk = endRunCompletes >= 2 || scoreFP >= 3;
     const shareCardLabel = shareExtrasOk ? String(end.shareCardCta || "").trim() : "";
-    const shareCardHtml = (scoreFP > 0 && shareCardLabel)
-      ? `<button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
-      : "";
     // Other end screens (no mistake, last free game...) get the card link on its own line.
     const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
@@ -663,10 +669,19 @@
     const newsletterW = w.newsletter || {};
     const newsletterLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
     const newsletterLinkHtml = (isRun && newsletterW.link && window.WT_Newsletter && window.WT_Newsletter.shouldOffer(cfg, newsletterLang))
-      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="open-newsletter">${escapeHtml(newsletterW.link)}</button></p>`
+      ? `<div class="wt-box wt-box--tinted wt-end-newsletter">
+          <strong class="wt-meta">${escapeHtml(String(newsletterW.title || ""))}</strong>
+          <p class="wt-muted">${escapeHtml(String(newsletterW.landingLine || ""))}</p>
+          <button type="button" class="wt-btn wt-btn--secondary" data-action="open-newsletter">${escapeHtml(String(newsletterW.landingCta || newsletterW.link))}</button>
+        </div>`
       : "";
-    const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<p class="wt-paywall-linkline wt-end-share-links"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
+    const challengeLabel = String(end.shareChallenge || focusedShareLabel || "").trim();
+    const focusedShareHtml = (focusedRunEnd && shareEnabled && challengeLabel)
+      ? `<div class="wt-end-sharerow">
+          <button type="button" class="wt-btn wt-btn--secondary" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(challengeLabel)}</button>
+          ${(scoreFP > 0 && shareCardLabel) ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>` : ``}
+          ${shareExtrasOk && focusedInstagramLabel ? `<a class="wt-btn wt-btn--secondary" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a>` : ``}
+        </div>`
       : "";
 
     const leaderboardW = w.leaderboard || {};
@@ -735,15 +750,17 @@
   ${endTitle ? `<h1 class="wt-h1">${escapeHtml(endTitle)}</h1>` : ``}
   ${missingModeNoticeHtml}
 
+  ${confettiHtml}
   ${displayScoreLine ? `
     <div class="wt-end-score${newBest ? " wt-end-score--newbest" : ""}" role="group" aria-label="${escapeHtml(displayScoreLine)}">
       <div class="wt-end-score__headline">
         ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
-        <span class="wt-end-score__value">
+        <span class="wt-end-score__value"${(isRun && !isPractice) ? ` data-count="${scoreFP}" data-tier="${escapeHtml(endTier)}"` : ``}>
           ${escapeHtml(displayScoreValue || displayScoreLine)}
         </span>
       </div>
 
+      ${tierLabel ? `<span class="wt-end-tier wt-end-tier--${endTier}">${escapeHtml(tierLabel)}</span>` : ``}
       ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
 
       ${recordActive ? `
@@ -760,8 +777,9 @@
   ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
+    ${pipsHtml}
     ${correctAnswersLine ? `<p class="wt-muted">${escapeHtml(correctAnswersLine)}</p>` : ``}
-    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-muted">${escapeHtml(fillTemplate(w.system?.comboSummary || '', { correct: lastRun.correctCount, bonus: lastRun.bonusPoints }))}</p>` : ``}
+    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-end-bonuschip">${escapeHtml(fillTemplate(String(end.bonusChip || ""), { bonus: lastRun.bonusPoints }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
   </div>
@@ -804,7 +822,6 @@
 
   ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
   ${focusedShareHtml}
-  ${focusedRunEnd && shareEnabled && shareExtrasOk && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}
   ${newsletterLinkHtml}
 

@@ -848,6 +848,11 @@
       nextChallengeCta: 'Défi suivant',
       secondFreeGameCta: 'Jouer ma 2ᵉ partie gratuite',
       correctAnswersLine: '{correct}/{total} bonnes réponses',
+      tierPerfect: 'Partie parfaite !',
+      tierGood: 'Beau jeu !',
+      tierKeep: 'On continue !',
+      bonusChip: '+{bonus} bonus · série',
+      shareChallenge: 'Défier un ami',
       nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
 
       practiceCta: 'Revoir mes erreurs',
