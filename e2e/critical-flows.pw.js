@@ -70,7 +70,9 @@ test('first challenge, second free CTA and daily question have distinct scores a
   await page.clock.setFixedTime(new Date('2026-11-17T18:00:00Z'));
   await page.addInitScript(() => {
     window.pilotEvents = [];
-    window.goatcounter = { count: (event) => window.pilotEvents.push(event.path) };
+    window.goatcounter = {
+      count: (event) => window.pilotEvents.push(event.path)
+    };
   });
   await page.goto('/fr.html?wt-source=coach-pilote-fr');
   await page.getByRole('button', { name: 'Commencer', exact: true }).click();
@@ -80,34 +82,55 @@ test('first challenge, second free CTA and daily question have distinct scores a
     await page.locator('button[data-action="continue"]').click();
   }
   await expect(page.locator('.wt-end-score__value')).toHaveText('6');
-  await expect(page.getByText('5/5 bonnes réponses', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Jouer ma 2ᵉ partie gratuite' })).toBeVisible();
-  expect((await page.evaluate(() => window.pilotEvents)).some(
-    (path) => path.includes('event/run-complete/run/free-run-1/') && path.includes('src-coach-pilote-fr')
-  )).toBe(true);
+  await expect(
+    page.getByText('5/5 bonnes réponses', { exact: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Jouer ma 2ᵉ partie gratuite' })
+  ).toBeVisible();
+  expect(
+    (await page.evaluate(() => window.pilotEvents)).some(
+      (path) =>
+        path.includes('event/run-complete/run/free-run-1/') &&
+        path.includes('src-coach-pilote-fr')
+    )
+  ).toBe(true);
 
   await page.clock.setFixedTime(new Date('2026-11-18T18:00:00Z'));
   await page.reload();
-  const question = page.getByRole('button', { name: 'Question du jour gratuite' });
+  const question = page.getByRole('button', {
+    name: 'Question du jour gratuite'
+  });
   await question.click();
-  const readRuns = () => page.evaluate(
-    () => JSON.parse(localStorage.getItem(window.WT_CONFIG.storage.storageKey)).runs
-  );
+  const readRuns = () =>
+    page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem(window.WT_CONFIG.storage.storageKey))
+          .runs
+    );
   const before = await readRuns();
   await page.locator('[data-action="daily-question-true"]').click();
-  await expect(page.getByText('Revenez demain pour une nouvelle question.')).toBeVisible();
+  await expect(
+    page.getByText('Revenez demain pour une nouvelle question.')
+  ).toBeVisible();
   expect(await readRuns()).toEqual(before);
-  expect((await page.evaluate(() => window.pilotEvents)).filter(
-    (path) => path.includes('event/return-after-play/day-1/')
-  )).toHaveLength(1);
+  expect(
+    (await page.evaluate(() => window.pilotEvents)).filter((path) =>
+      path.includes('event/return-after-play/day-1/')
+    )
+  ).toHaveLength(1);
   await page.keyboard.press('Escape');
   await expect(question).toBeFocused();
   await page.reload();
   await question.click();
-  await expect(page.getByText('Revenez demain pour une nouvelle question.')).toBeVisible();
-  expect((await page.evaluate(() => window.pilotEvents)).filter(
-    (path) => path.includes('event/return-after-play/')
-  )).toHaveLength(0);
+  await expect(
+    page.getByText('Revenez demain pour une nouvelle question.')
+  ).toBeVisible();
+  expect(
+    (await page.evaluate(() => window.pilotEvents)).filter((path) =>
+      path.includes('event/return-after-play/')
+    )
+  ).toHaveLength(0);
 });
 
 test('free run end screen offers a visible way to share the score', async ({
@@ -352,20 +375,14 @@ test('newsletter signup: link, validation and Kit form post', async ({
     });
     await route.fulfill({ json: content });
   });
-  // The feature is off until the owner pastes the Kit form URLs: turn it on for this test.
-  await page.route('**/app.bundle.js*', async (route) => {
-    const response = await route.fetch();
-    const body = (await response.text()).replace(
-      /en:\s*"",\s*fr:\s*"https:\/\/app\.kit\.com\/forms\/10204850\/subscriptions"/,
-      'en: "https://kit.example.test/forms/1/subscriptions", fr: ""'
-    );
-    await route.fulfill({ response, body });
-  });
   const posts = [];
-  await page.route('https://kit.example.test/**', async (route) => {
-    posts.push(route.request().postData() || '');
-    await route.fulfill({ status: 200, body: '' });
-  });
+  await page.route(
+    'https://app.kit.com/forms/10205105/subscriptions',
+    async (route) => {
+      posts.push(route.request().postData() || '');
+      await route.fulfill({ status: 200, body: '' });
+    }
+  );
   await startFreshRun(page);
   for (let i = 0; i < 8; i++) {
     if (await page.locator('.wt-card--end').isVisible()) break;
@@ -445,6 +462,15 @@ test('newsletter link is hidden while no Kit form is configured', async ({
   page
 }) => {
   await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  // Simulate an unconfigured English form by blanking its address in the bundle.
+  await page.route('**/app.bundle.js*', async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(
+      /en:\s*"https:\/\/app\.kit\.com\/forms\/10205105\/subscriptions"/,
+      'en: ""'
+    );
+    await route.fulfill({ response, body });
+  });
   await startFreshRun(page);
   for (let i = 0; i < 12; i++) {
     if (await page.locator('.wt-card--end').isVisible()) break;
