@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.52",
+    version: "4.3.53",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -9263,7 +9263,13 @@ Merci !`
     const focusedLocale = String(document.documentElement?.lang || "en").toLowerCase() === "fr" ? "fr" : "en";
     const focusedInstagramHref = focusedLocale === "fr" ? "./share.html?lang=fr" : "./share.html";
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
-    const shareCardLabel = String(end.shareCardCta || "").trim();
+    // Share extras (score card, Instagram) only once the player is engaged: 2+ games, or a score of 3+.
+    let endRunCompletes = 0;
+    try {
+      endRunCompletes = Number((ui.storage.getCounters() || {}).runCompletes) || 0;
+    } catch (_) { endRunCompletes = 0; }
+    const shareExtrasOk = endRunCompletes >= 2 || scoreFP >= 3;
+    const shareCardLabel = shareExtrasOk ? String(end.shareCardCta || "").trim() : "";
     const shareCardHtml = (scoreFP > 0 && shareCardLabel)
       ? `<button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
       : "";
@@ -9416,7 +9422,7 @@ Merci !`
 
   ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
   ${focusedShareHtml}
-  ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
+  ${focusedRunEnd && shareEnabled && shareExtrasOk && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}
   ${newsletterLinkHtml}
 
