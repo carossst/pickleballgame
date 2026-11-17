@@ -1,0 +1,225 @@
+{
+ "comment": "Draft only: NOT read by the game. Every item is taken from the 2026 USA Pickleball Official Rulebook (rules cited in each explanation). To use them: owner review, add to content.json, regenerate the Worker content key and redeploy the Worker, then update the '200 questions' wording.",
+ "items": [
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may reach over the non-volley zone (NVZ) with the paddle to volley, as long as nothing touches the zone.",
+     "explanationShort": "The NVZ is two-dimensional: it does not extend above the playing surface.\nWhat matters is contact with the zone, not the air above it.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c."
+    },
+    "fr": {
+     "question": "Un joueur peut tendre sa raquette au-dessus de la zone de non-volée (ZNV) pour volleyer, tant que rien ne touche la zone.",
+     "explanationShort": "La ZNV est en deux dimensions : elle ne s'étend pas au-dessus de la surface de jeu.\nCe qui compte, c'est le contact avec la zone, pas l'air au-dessus.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.c."
+    }
+   },
+   "id": 201
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A volleying player whose foot touches the non-volley zone (NVZ) line commits a fault.",
+     "explanationShort": "All lines that bound the NVZ are part of the zone.\nTouching the line while volleying is touching the NVZ.\n2026 USA Pickleball Official Rulebook, Rule 3.A.4.c."
+    },
+    "fr": {
+     "question": "Un joueur qui volleye et dont le pied touche la ligne de la zone de non-volée (ZNV) commet une faute.",
+     "explanationShort": "Toutes les lignes qui délimitent la ZNV font partie de la zone.\nToucher la ligne en volleyant, c'est toucher la ZNV.\nRèglement officiel USA Pickleball 2026, règle 3.A.4.c."
+    }
+   },
+   "id": 202
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Hard",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player who volleys from outside the non-volley zone (NVZ) commits a fault if their momentum makes them touch their partner, who is standing in the NVZ.",
+     "explanationShort": "A volleying player's momentum must not cause contact with anything in contact with the NVZ, including the partner.\nThis applies even after the ball becomes dead.\n2026 USA Pickleball Official Rulebook, Rule 11.A.2."
+    },
+    "fr": {
+     "question": "Un joueur qui volleye hors de la zone de non-volée (ZNV) commet une faute si son élan lui fait toucher son partenaire, qui se tient dans la ZNV.",
+     "explanationShort": "L'élan du joueur qui volleye ne doit pas l'amener à toucher quoi que ce soit qui est en contact avec la ZNV, partenaire compris.\nCela vaut même après que la balle est devenue morte.\nRèglement officiel USA Pickleball 2026, règle 11.A.2."
+    }
+   },
+   "id": 203
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "After touching the non-volley zone (NVZ), a player may volley as soon as both feet are completely outside the zone.",
+     "explanationShort": "The player must have both feet on the playing surface completely outside the NVZ before volleying.\nThere is no waiting time.\n2026 USA Pickleball Official Rulebook, Rule 11.A.3."
+    },
+    "fr": {
+     "question": "Après avoir touché la zone de non-volée (ZNV), un joueur peut volleyer dès que ses deux pieds sont complètement hors de la zone.",
+     "explanationShort": "Le joueur doit avoir ses deux pieds sur la surface de jeu, complètement hors de la ZNV, avant de volleyer.\nIl n'y a aucun délai d'attente.\nRèglement officiel USA Pickleball 2026, règle 11.A.3."
+    }
+   },
+   "id": 204
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may stand in the non-volley zone (NVZ) to hit a ball that has already bounced.",
+     "explanationShort": "A volley is a strike of the ball before it bounces.\nThe NVZ restriction only applies while volleying.\n2026 USA Pickleball Official Rulebook, Rule 11.A."
+    },
+    "fr": {
+     "question": "Un joueur peut se tenir dans la zone de non-volée (ZNV) pour frapper une balle qui a déjà rebondi.",
+     "explanationShort": "Une volée est une frappe avant le rebond de la balle.\nLa restriction de la ZNV ne s'applique que pendant une volée.\nRèglement officiel USA Pickleball 2026, règle 11.A."
+    }
+   },
+   "id": 205
+  },
+  {
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Easy",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may call a non-volley zone (NVZ) fault on their own partner.",
+     "explanationShort": "Players may only call NVZ faults and service foot faults on an opponent.\nA player cannot call a fault on their own side.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3."
+    },
+    "fr": {
+     "question": "Un joueur peut annoncer une faute de zone de non-volée (ZNV) contre son propre partenaire.",
+     "explanationShort": "Un joueur ne peut annoncer une faute de ZNV et une faute de pied au service que contre un adversaire.\nOn ne peut pas annoncer une faute contre son propre camp.\nRèglement officiel USA Pickleball 2026, règle 9.B.3."
+    }
+   },
+   "id": 206
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A non-volley zone (NVZ) fault should be called as soon as it is detected, and before the next serve is hit.",
+     "explanationShort": "A fault should be called as soon as it is committed or detected.\nIt must be called before the serve that begins the next rally is hit.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.a."
+    },
+    "fr": {
+     "question": "Une faute de zone de non-volée (ZNV) doit être annoncée dès qu'elle est détectée, et avant que le service suivant soit frappé.",
+     "explanationShort": "Une faute doit être annoncée dès qu'elle est commise ou détectée.\nElle doit l'être avant que le service qui lance l'échange suivant soit frappé.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.a."
+    }
+   },
+   "id": 207
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "If the two teams disagree about whether a non-volley zone (NVZ) fault was committed, the rally is replayed.",
+     "explanationShort": "When there is any disagreement between teams about a fault call, the rally must be replayed.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.b."
+    },
+    "fr": {
+     "question": "Si les deux équipes ne sont pas d'accord sur une faute de zone de non-volée (ZNV), l'échange est rejoué.",
+     "explanationShort": "En cas de désaccord entre les équipes sur une annonce de faute, l'échange doit être rejoué.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.b."
+    }
+   },
+   "id": 208
+  },
+  {
+   "correctAnswer": true,
+   "tags": [
+    "Non-Volley Zone",
+    "Hard",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "If partners disagree about a non-volley zone (NVZ) fault call, the disagreement is decided in favor of their opponents.",
+     "explanationShort": "Any disagreement between partners on a fault call is decided to the benefit of their opponents.\n2026 USA Pickleball Official Rulebook, Rule 9.B.3.c."
+    },
+    "fr": {
+     "question": "Si les partenaires ne sont pas d'accord sur une annonce de faute de zone de non-volée (ZNV), le désaccord est tranché en faveur de leurs adversaires.",
+     "explanationShort": "Tout désaccord entre partenaires sur une annonce de faute est tranché au bénéfice de leurs adversaires.\nRèglement officiel USA Pickleball 2026, règle 9.B.3.c."
+    }
+   },
+   "id": 209
+  },
+  {
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Intermediate",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "A player may call a double bounce fault on an opponent during the rally, just like a non-volley zone (NVZ) fault.",
+     "explanationShort": "Players may only call NVZ faults and service foot faults on an opponent.\nFor any other fault, they may mention it after the rally but cannot enforce it.\n2026 USA Pickleball Official Rulebook, Rule 9.B.4."
+    },
+    "fr": {
+     "question": "Un joueur peut annoncer une faute de double rebond contre un adversaire pendant l'échange, comme une faute de zone de non-volée (ZNV).",
+     "explanationShort": "Un joueur ne peut annoncer que les fautes de ZNV et les fautes de pied au service contre un adversaire.\nPour toute autre faute, il peut la mentionner après l'échange mais ne peut pas la faire appliquer.\nRèglement officiel USA Pickleball 2026, règle 9.B.4."
+    }
+   },
+   "id": 210
+  },
+  {
+   "correctAnswer": false,
+   "tags": [
+    "Non-Volley Zone",
+    "Hard",
+    "Singles",
+    "Doubles"
+   ],
+   "i18n": {
+    "en": {
+     "question": "If a volleying player's paddle touches the non-volley zone (NVZ) during the volley, it is not a fault because only the player's body counts.",
+     "explanationShort": "Anything in contact with the volleying player counts: contact with the NVZ while volleying is a fault.\nThe paddle is part of that contact.\n2026 USA Pickleball Official Rulebook, Rule 11.A.1."
+    },
+    "fr": {
+     "question": "Si la raquette d'un joueur qui volleye touche la zone de non-volée (ZNV) pendant la volée, ce n'est pas une faute, car seul le corps du joueur compte.",
+     "explanationShort": "Tout ce qui est en contact avec le joueur qui volleye compte : toucher la ZNV pendant une volée est une faute.\nLa raquette fait partie de ce contact.\nRèglement officiel USA Pickleball 2026, règle 11.A.1."
+    }
+   },
+   "id": 211
+  }
+ ]
+}
