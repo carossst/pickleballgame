@@ -820,7 +820,11 @@
     })}
   </div>
 
-  ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
+  ${nextTicketLine ? `<div class="wt-end-ticketgoal" role="note">
+    <span class="wt-end-ticketgoal__icon" aria-hidden="true">${renderIcon("zap")}</span>
+    <span class="wt-end-ticketgoal__text">${escapeHtml(nextTicketLine)}</span>
+    <span class="wt-end-ticketgoal__track" aria-hidden="true">${Array.from({ length: Math.min(8, Math.max(1, dailyTargetScore)) }, (_, i) => `<i class="${i === Math.min(8, Math.max(1, dailyTargetScore)) - 1 ? "is-goal" : ""}"></i>`).join("")}</span>
+  </div>` : ``}
   ${focusedShareHtml}
   ${shareCardOnlyHtml}
   ${newsletterLinkHtml}

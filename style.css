@@ -5893,3 +5893,55 @@ body:has(.wt-container[data-wt-mode='bonus'][data-wt-state='playing']) {
 .wt-end-summary {
   text-align: center;
 }
+
+/* Next-game goal: ticket icon, the sentence, and one dot per point to score (last one = ticket). */
+.wt-end-ticketgoal {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px var(--space-4);
+  margin: var(--space-6) 0 0;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md, 14px);
+  background: rgba(22, 119, 190, 0.08);
+  text-align: left;
+}
+
+.wt-end-ticketgoal__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  background: rgb(var(--primary-depth));
+}
+
+.wt-end-ticketgoal__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.wt-end-ticketgoal__text {
+  font-size: var(--fs-sm, 14px);
+  font-weight: 600;
+  color: rgb(var(--text-muted));
+}
+
+.wt-end-ticketgoal__track {
+  grid-column: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.wt-end-ticketgoal__track i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(22, 119, 190, 0.25);
+}
+
+.wt-end-ticketgoal__track i.is-goal {
+  background: #f0b323;
+  box-shadow: 0 0 0 3px rgba(240, 179, 35, 0.3);
+}
