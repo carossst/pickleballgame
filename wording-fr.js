@@ -848,6 +848,11 @@
       nextChallengeCta: 'Défi suivant',
       secondFreeGameCta: 'Jouer ma 2ᵉ partie gratuite',
       correctAnswersLine: '{correct}/{total} bonnes réponses',
+      tierPerfect: 'Partie parfaite !',
+      tierGood: 'Beau jeu !',
+      tierKeep: 'On continue !',
+      bonusChip: '+{bonus} bonus · série',
+      shareChallenge: 'Défier un ami',
       nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
 
       practiceCta: 'Revoir mes erreurs',
@@ -1087,6 +1092,8 @@ Essayez celle-ci :
 
     newsletter: {
       link: 'Recevoir de nouvelles questions pièges par e-mail',
+      landingLine: 'De temps en temps, une nouvelle question piège. Gratuit, désinscription en un clic.',
+      landingCta: 'Recevoir les nouvelles questions',
       title: 'De nouvelles questions pièges par e-mail',
       intro: 'Recevez de nouvelles questions sur les règles et les nouveautés du jeu par e-mail, avec la réponse et la référence du règlement.',
       emailLabel: 'E-mail',

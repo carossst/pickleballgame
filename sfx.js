@@ -61,6 +61,9 @@
       // paddle on ball: a short, bright "pop"
       note(c, 'triangle', 620, 980, 0, 0.09, 0.22);
       note(c, 'sine', 1240, 1500, 0.04, 0.07, 0.08);
+    } else if (kind === 'win') {
+      // short rising arpeggio
+      [523, 659, 784, 1047].forEach((f, i) => note(c, 'triangle', f, f * 1.01, i * 0.09, 0.16, 0.2));
     } else {
       // dull thud
       note(c, 'sine', 170, 70, 0, 0.18, 0.3);
@@ -71,15 +74,17 @@
     try {
       if (typeof window.navigator.vibrate !== 'function') return;
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      window.navigator.vibrate(kind === 'correct' ? 15 : [35, 40, 35]);
+      window.navigator.vibrate(
+        kind === 'correct' ? 15 : kind === 'win' ? [30, 40, 30, 40, 60] : [35, 40, 35]
+      );
     } catch (_) {
       /* not supported */
     }
   }
 
-  // kind: "correct" or "wrong"
+  // kind: "correct", "wrong" or "win"
   function play(kind) {
-    const k = kind === 'correct' ? 'correct' : 'wrong';
+    const k = kind === 'correct' || kind === 'win' ? kind : 'wrong';
     vibrate(k);
     if (enabled) sound(k);
   }

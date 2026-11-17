@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.51",
+    version: "4.3.54",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1687,6 +1687,11 @@
     end: {
       secondFreeGameCta: 'Play my second free game',
       correctAnswersLine: '{correct}/{total} correct answers',
+      tierPerfect: 'Perfect game!',
+      tierGood: 'Nice rally!',
+      tierKeep: 'Keep playing!',
+      bonusChip: '+{bonus} bonus · streak',
+      shareChallenge: 'Challenge a friend',
       nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
 
@@ -2000,6 +2005,8 @@ Try this one:
 
     newsletter: {
       link: 'Get new tricky questions by email',
+      landingLine: 'Now and then, a new tricky question. Free, unsubscribe in one click.',
+      landingCta: 'Get new questions by email',
       title: 'New tricky questions by email',
       intro: 'Get new rule questions and news about the game by email, with the answer and the rulebook reference.',
       emailLabel: 'Email',
@@ -2972,6 +2979,11 @@ Thanks!`
       nextChallengeCta: 'Défi suivant',
       secondFreeGameCta: 'Jouer ma 2ᵉ partie gratuite',
       correctAnswersLine: '{correct}/{total} bonnes réponses',
+      tierPerfect: 'Partie parfaite !',
+      tierGood: 'Beau jeu !',
+      tierKeep: 'On continue !',
+      bonusChip: '+{bonus} bonus · série',
+      shareChallenge: 'Défier un ami',
       nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
 
       practiceCta: 'Revoir mes erreurs',
@@ -3211,6 +3223,8 @@ Essayez celle-ci :
 
     newsletter: {
       link: 'Recevoir de nouvelles questions pièges par e-mail',
+      landingLine: 'De temps en temps, une nouvelle question piège. Gratuit, désinscription en un clic.',
+      landingCta: 'Recevoir les nouvelles questions',
       title: 'De nouvelles questions pièges par e-mail',
       intro: 'Recevez de nouvelles questions sur les règles et les nouveautés du jeu par e-mail, avec la réponse et la référence du règlement.',
       emailLabel: 'E-mail',
@@ -8684,6 +8698,15 @@ Merci !`
     const correctAnswersLine = isRun && totalAnswered > 0 && Number.isFinite(lastRun.correctCount)
       ? fillTemplate(end.correctAnswersLine, { correct: lastRun.correctCount, total: totalAnswered })
       : "";
+    const outcomes = Array.isArray(lastRun.outcomes) ? lastRun.outcomes : [];
+    const endTier = (isRun && totalAnswered > 0 && window.WT_EndFx) ? window.WT_EndFx.tier(lastRun.correctCount, totalAnswered, scoreFP) : "";
+    const tierLabel = endTier ? String(end[endTier === "perfect" ? "tierPerfect" : endTier === "good" ? "tierGood" : "tierKeep"] || "").trim() : "";
+    const pipsHtml = (isRun && outcomes.length > 0)
+      ? `<div class="wt-end-pips" role="img" aria-label="${escapeHtml(correctAnswersLine)}">${outcomes.map((ok, i) => `<span class="wt-end-pip ${ok ? "wt-end-pip--ok" : "wt-end-pip--ko"}" style="--i:${i}">${ok ? "✓" : "✕"}</span>`).join("")}</div>`
+      : "";
+    const confettiHtml = (endTier === "perfect" || endTier === "good")
+      ? `<div class="wt-end-confetti" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>`
+      : "";
     const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
 
     let seen = null;
@@ -9259,10 +9282,13 @@ Merci !`
     const focusedLocale = String(document.documentElement?.lang || "en").toLowerCase() === "fr" ? "fr" : "en";
     const focusedInstagramHref = focusedLocale === "fr" ? "./share.html?lang=fr" : "./share.html";
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
-    const shareCardLabel = String(end.shareCardCta || "").trim();
-    const shareCardHtml = (scoreFP > 0 && shareCardLabel)
-      ? `<button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
-      : "";
+    // Share extras (score card, Instagram) only once the player is engaged: 2+ games, or a score of 3+.
+    let endRunCompletes = 0;
+    try {
+      endRunCompletes = Number((ui.storage.getCounters() || {}).runCompletes) || 0;
+    } catch (_) { endRunCompletes = 0; }
+    const shareExtrasOk = endRunCompletes >= 2 || scoreFP >= 3;
+    const shareCardLabel = shareExtrasOk ? String(end.shareCardCta || "").trim() : "";
     // Other end screens (no mistake, last free game...) get the card link on its own line.
     const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
@@ -9271,10 +9297,19 @@ Merci !`
     const newsletterW = w.newsletter || {};
     const newsletterLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
     const newsletterLinkHtml = (isRun && newsletterW.link && window.WT_Newsletter && window.WT_Newsletter.shouldOffer(cfg, newsletterLang))
-      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="open-newsletter">${escapeHtml(newsletterW.link)}</button></p>`
+      ? `<div class="wt-box wt-box--tinted wt-end-newsletter">
+          <strong class="wt-meta">${escapeHtml(String(newsletterW.title || ""))}</strong>
+          <p class="wt-muted">${escapeHtml(String(newsletterW.landingLine || ""))}</p>
+          <button type="button" class="wt-btn wt-btn--secondary" data-action="open-newsletter">${escapeHtml(String(newsletterW.landingCta || newsletterW.link))}</button>
+        </div>`
       : "";
-    const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<p class="wt-paywall-linkline wt-end-share-links"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
+    const challengeLabel = String(end.shareChallenge || focusedShareLabel || "").trim();
+    const focusedShareHtml = (focusedRunEnd && shareEnabled && challengeLabel)
+      ? `<div class="wt-end-sharerow">
+          <button type="button" class="wt-btn wt-btn--secondary" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(challengeLabel)}</button>
+          ${(scoreFP > 0 && shareCardLabel) ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>` : ``}
+          ${shareExtrasOk && focusedInstagramLabel ? `<a class="wt-btn wt-btn--secondary" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a>` : ``}
+        </div>`
       : "";
 
     const leaderboardW = w.leaderboard || {};
@@ -9343,15 +9378,17 @@ Merci !`
   ${endTitle ? `<h1 class="wt-h1">${escapeHtml(endTitle)}</h1>` : ``}
   ${missingModeNoticeHtml}
 
+  ${confettiHtml}
   ${displayScoreLine ? `
     <div class="wt-end-score${newBest ? " wt-end-score--newbest" : ""}" role="group" aria-label="${escapeHtml(displayScoreLine)}">
       <div class="wt-end-score__headline">
         ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
-        <span class="wt-end-score__value">
+        <span class="wt-end-score__value"${(isRun && !isPractice) ? ` data-count="${scoreFP}" data-tier="${escapeHtml(endTier)}"` : ``}>
           ${escapeHtml(displayScoreValue || displayScoreLine)}
         </span>
       </div>
 
+      ${tierLabel ? `<span class="wt-end-tier wt-end-tier--${endTier}">${escapeHtml(tierLabel)}</span>` : ``}
       ${celebrationLabel ? `<span class="wt-end-score__label">${escapeHtml(celebrationLabel)}</span>` : ``}
 
       ${recordActive ? `
@@ -9368,8 +9405,9 @@ Merci !`
   ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
+    ${pipsHtml}
     ${correctAnswersLine ? `<p class="wt-muted">${escapeHtml(correctAnswersLine)}</p>` : ``}
-    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-muted">${escapeHtml(fillTemplate(w.system?.comboSummary || '', { correct: lastRun.correctCount, bonus: lastRun.bonusPoints }))}</p>` : ``}
+    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-end-bonuschip">${escapeHtml(fillTemplate(String(end.bonusChip || ""), { bonus: lastRun.bonusPoints }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
   </div>
@@ -9412,7 +9450,6 @@ Merci !`
 
   ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
   ${focusedShareHtml}
-  ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}
   ${newsletterLinkHtml}
 
@@ -9724,9 +9761,22 @@ Merci !`
 
         const houseAdCta = String(pcW.houseAdCta || haW.ctaPrimary || "").trim();
 
+        const nlW = w?.newsletter || {};
+        const nlLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
+        const nlOn = !!(window.WT_Newsletter && nlW.landingCta && window.WT_Newsletter.shouldOffer(cfg, nlLang));
+        if (waitlistEligible && !houseAdEligible && nlOn) {
+          // One clear, compact signup replaces the repeated waitlist texts.
+          postCompletionHtml = `
+          <div class="wt-divider"></div>
+          <strong class="wt-meta">${escapeHtml(String(nlW.title || ""))}</strong>
+          <p class="wt-muted">${escapeHtml(String(nlW.landingLine || ""))}</p>
+          <div class="wt-actions wt-postcompletion-actions">
+            <button class="wt-btn wt-btn--secondary" data-action="open-newsletter">${escapeHtml(String(nlW.landingCta))}</button>
+          </div>`;
+        } else
         postCompletionHtml = `
           <div class="wt-divider"></div>
-          ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
+          ${title && !(waitlistEligible && title === waitlistCta) ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
           <div class="wt-stack wt-stack--xs wt-postcompletion-copy">
             ${body1 ? `<p class="wt-muted">${escapeHtml(body1)}</p>` : ``}
             ${waitlistEligible && body2 ? `<p class="wt-muted">${escapeHtml(body2)}</p>` : ``}
@@ -9743,7 +9793,7 @@ Merci !`
             ` : ``}
           </div>
 
-          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
+          ${waitlistEligible && waitlistDisclaimer && waitlistDisclaimer !== body1 ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
         `;
       }
     } catch (_) { postCompletionHtml = ""; }
@@ -12724,6 +12774,9 @@ ${(() => {
       // paddle on ball: a short, bright "pop"
       note(c, 'triangle', 620, 980, 0, 0.09, 0.22);
       note(c, 'sine', 1240, 1500, 0.04, 0.07, 0.08);
+    } else if (kind === 'win') {
+      // short rising arpeggio
+      [523, 659, 784, 1047].forEach((f, i) => note(c, 'triangle', f, f * 1.01, i * 0.09, 0.16, 0.2));
     } else {
       // dull thud
       note(c, 'sine', 170, 70, 0, 0.18, 0.3);
@@ -12734,15 +12787,17 @@ ${(() => {
     try {
       if (typeof window.navigator.vibrate !== 'function') return;
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      window.navigator.vibrate(kind === 'correct' ? 15 : [35, 40, 35]);
+      window.navigator.vibrate(
+        kind === 'correct' ? 15 : kind === 'win' ? [30, 40, 30, 40, 60] : [35, 40, 35]
+      );
     } catch (_) {
       /* not supported */
     }
   }
 
-  // kind: "correct" or "wrong"
+  // kind: "correct", "wrong" or "win"
   function play(kind) {
-    const k = kind === 'correct' ? 'correct' : 'wrong';
+    const k = kind === 'correct' || kind === 'win' ? kind : 'wrong';
     vibrate(k);
     if (enabled) sound(k);
   }
@@ -13173,6 +13228,68 @@ ${(() => {
   }
 
   window.WT_RFX = { waveFor, powerFor, isBoss, sync };
+})();
+
+/* ===== end-fx.js ===== */
+/* End-of-game flourish: result tier, score count-up and a win sound.
+   The markup (pips, confetti, tier label) is rendered by ui-screen-end.js; this module only
+   decides the tier and animates what is already there, so a re-render never loses anything. */
+(() => {
+  'use strict';
+
+  // "perfect" = every answer right, "good" = a solid game, "keep" = room to grow.
+  function tier(correct, total, score) {
+    const c = Number(correct) || 0;
+    const t = Number(total) || 0;
+    if (t >= 5 && c === t) return 'perfect';
+    if ((Number(score) || 0) >= 3 || (t > 0 && c / t >= 0.6)) return 'good';
+    return 'keep';
+  }
+
+  const reduced = () =>
+    Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  let lastRunAt = 0;
+
+  function countUp(node, target) {
+    if (reduced() || target <= 0) return;
+    const start = performance.now();
+    const duration = 750;
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      node.textContent = String(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    node.textContent = '0';
+    requestAnimationFrame(tick);
+  }
+
+  function enhance() {
+    const node = document.querySelector('.wt-end-score__value[data-count]:not([data-fx])');
+    if (!node) return;
+    node.setAttribute('data-fx', '1');
+    const now = Date.now();
+    if (now - lastRunAt < 3000) return; // a re-render of the same end screen: no replay
+    lastRunAt = now;
+    const target = Number(node.getAttribute('data-count')) || 0;
+    if (String(node.textContent).trim() === String(target)) countUp(node, target);
+    const t = node.getAttribute('data-tier');
+    if ((t === 'perfect' || t === 'good') && window.WT_SFX) window.WT_SFX.play('win');
+  }
+
+  function start() {
+    if (!document.body) return;
+    new MutationObserver(enhance).observe(document.body, { childList: true, subtree: true });
+    enhance();
+  }
+
+  window.WT_EndFx = { tier, enhance };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
 })();
 
 /* ===== ui.js ===== */
@@ -18954,6 +19071,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.runStartedAt = Date.now();
     this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
     this._runtime.runAnswerLog = [];
+    this._runtime.runOutcomes = [];
     if (startedFromLanding) {
       if (
         this.storage &&
@@ -19378,6 +19496,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.runStartedAt = Date.now();
     this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
     this._runtime.runAnswerLog = [];
+    this._runtime.runOutcomes = [];
     this._runtime.runMode = MODES.BONUS;
     this._runtime.lastAnswer = null;
     this._runtime.reviewingFeedback = false;
@@ -19868,6 +19987,7 @@ UI.prototype.startRun = function (mistakesOnly) {
       );
       const answerMs = clampInt(Date.now() - shownAt, 0, 10 * 60 * 1000);
       this._runtime.runItemIds.push(id);
+      if (Array.isArray(this._runtime.runOutcomes)) this._runtime.runOutcomes.push(res.isCorrect === true);
       if (Array.isArray(this._runtime.runAnswerLog)) {
         this._runtime.runAnswerLog.push({
           id,
@@ -20828,6 +20948,9 @@ UI.prototype.startRun = function (mistakesOnly) {
       dailyTicketDayKey,
       answerLog: Array.isArray(this._runtime.runAnswerLog)
         ? this._runtime.runAnswerLog.slice()
+        : [],
+      outcomes: Array.isArray(this._runtime.runOutcomes)
+        ? this._runtime.runOutcomes.slice()
         : [],
       poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending,
       levelProgress

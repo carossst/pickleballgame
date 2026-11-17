@@ -32,6 +32,7 @@ const SOURCES = [
   "court-diagram.js",
   "score-card.js",
   "rapidfire-fx.js",
+  "end-fx.js",
   "ui.js",
   "pwa.js",
   "email.js",

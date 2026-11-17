@@ -287,9 +287,22 @@
 
         const houseAdCta = String(pcW.houseAdCta || haW.ctaPrimary || "").trim();
 
+        const nlW = w?.newsletter || {};
+        const nlLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
+        const nlOn = !!(window.WT_Newsletter && nlW.landingCta && window.WT_Newsletter.shouldOffer(cfg, nlLang));
+        if (waitlistEligible && !houseAdEligible && nlOn) {
+          // One clear, compact signup replaces the repeated waitlist texts.
+          postCompletionHtml = `
+          <div class="wt-divider"></div>
+          <strong class="wt-meta">${escapeHtml(String(nlW.title || ""))}</strong>
+          <p class="wt-muted">${escapeHtml(String(nlW.landingLine || ""))}</p>
+          <div class="wt-actions wt-postcompletion-actions">
+            <button class="wt-btn wt-btn--secondary" data-action="open-newsletter">${escapeHtml(String(nlW.landingCta))}</button>
+          </div>`;
+        } else
         postCompletionHtml = `
           <div class="wt-divider"></div>
-          ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
+          ${title && !(waitlistEligible && title === waitlistCta) ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
           <div class="wt-stack wt-stack--xs wt-postcompletion-copy">
             ${body1 ? `<p class="wt-muted">${escapeHtml(body1)}</p>` : ``}
             ${waitlistEligible && body2 ? `<p class="wt-muted">${escapeHtml(body2)}</p>` : ``}
@@ -306,7 +319,7 @@
             ` : ``}
           </div>
 
-          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
+          ${waitlistEligible && waitlistDisclaimer && waitlistDisclaimer !== body1 ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
         `;
       }
     } catch (_) { postCompletionHtml = ""; }

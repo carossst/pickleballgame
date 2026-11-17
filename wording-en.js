@@ -746,6 +746,11 @@
     end: {
       secondFreeGameCta: 'Play my second free game',
       correctAnswersLine: '{correct}/{total} correct answers',
+      tierPerfect: 'Perfect game!',
+      tierGood: 'Nice rally!',
+      tierKeep: 'Keep playing!',
+      bonusChip: '+{bonus} bonus · streak',
+      shareChallenge: 'Challenge a friend',
       nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
 
@@ -1059,6 +1064,8 @@ Try this one:
 
     newsletter: {
       link: 'Get new tricky questions by email',
+      landingLine: 'Now and then, a new tricky question. Free, unsubscribe in one click.',
+      landingCta: 'Get new questions by email',
       title: 'New tricky questions by email',
       intro: 'Get new rule questions and news about the game by email, with the answer and the rulebook reference.',
       emailLabel: 'Email',

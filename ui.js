@@ -5776,6 +5776,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.runStartedAt = Date.now();
     this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
     this._runtime.runAnswerLog = [];
+    this._runtime.runOutcomes = [];
     if (startedFromLanding) {
       if (
         this.storage &&
@@ -6200,6 +6201,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.runStartedAt = Date.now();
     this._runtime.currentQuestionShownAt = this._runtime.runStartedAt;
     this._runtime.runAnswerLog = [];
+    this._runtime.runOutcomes = [];
     this._runtime.runMode = MODES.BONUS;
     this._runtime.lastAnswer = null;
     this._runtime.reviewingFeedback = false;
@@ -6690,6 +6692,7 @@ UI.prototype.startRun = function (mistakesOnly) {
       );
       const answerMs = clampInt(Date.now() - shownAt, 0, 10 * 60 * 1000);
       this._runtime.runItemIds.push(id);
+      if (Array.isArray(this._runtime.runOutcomes)) this._runtime.runOutcomes.push(res.isCorrect === true);
       if (Array.isArray(this._runtime.runAnswerLog)) {
         this._runtime.runAnswerLog.push({
           id,
@@ -7650,6 +7653,9 @@ UI.prototype.startRun = function (mistakesOnly) {
       dailyTicketDayKey,
       answerLog: Array.isArray(this._runtime.runAnswerLog)
         ? this._runtime.runAnswerLog.slice()
+        : [],
+      outcomes: Array.isArray(this._runtime.runOutcomes)
+        ? this._runtime.runOutcomes.slice()
         : [],
       poolCompleteCelebration: !!this._runtime?.poolCompleteCelebrationPending,
       levelProgress

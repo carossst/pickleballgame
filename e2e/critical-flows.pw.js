@@ -155,9 +155,11 @@ test('free run end screen offers a visible way to share the score', async ({
       .locator('[data-action="share-native"], [data-action="copy-share"]')
       .first()
   ).toBeVisible();
-  await expect(
-    page.locator('.wt-card--end a[href*="share.html"]')
-  ).toBeVisible();
+  // The Instagram kit and score card wait until the player is engaged (2+ games or score 3+).
+  await expect(page.locator('.wt-card--end a[href*="share.html"]')).toHaveCount(
+    0
+  );
+  await expect(page.locator('[data-action="share-card"]')).toHaveCount(0);
 });
 
 test('statement box keeps the verdict colour while the feedback is shown', async ({
