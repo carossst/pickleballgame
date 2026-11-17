@@ -96,6 +96,9 @@ These are known tradeoffs we are keeping on purpose.
 - [manifest.fr.json](./manifest.fr.json): French PWA manifest
 - [success.html](./success.html): post-checkout success / unlock page
 - [poster.html](./poster.html): printable A4 club/court poster with a local QR code
+- [clubs/index.html](./clubs/index.html): page for clubs and coaches (tagged links, tagged poster, QR code); logic in `clubs.js` and `club-link.js`
+- `sfx.js`, `court-diagram.js`, `score-card.js`, `rapidfire-fx.js`: answer sounds, court diagrams, shareable score image, Rapid Fire effects (see `IMPLEMENTATION_MEMORY.md`)
+- [CHANTIER_A_FAIRE.md](./CHANTIER_A_FAIRE.md): project handoff and open work
 
 ## CSS Guardrails
 
