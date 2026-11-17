@@ -1059,6 +1059,8 @@ Try this one:
 
     newsletter: {
       link: 'Get new tricky questions by email',
+      landingLine: 'Now and then, a new tricky question. Free, unsubscribe in one click.',
+      landingCta: 'Get new questions by email',
       title: 'New tricky questions by email',
       intro: 'Get new rule questions and news about the game by email, with the answer and the rulebook reference.',
       emailLabel: 'Email',

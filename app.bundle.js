@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.51",
+    version: "4.3.52",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -2000,6 +2000,8 @@ Try this one:
 
     newsletter: {
       link: 'Get new tricky questions by email',
+      landingLine: 'Now and then, a new tricky question. Free, unsubscribe in one click.',
+      landingCta: 'Get new questions by email',
       title: 'New tricky questions by email',
       intro: 'Get new rule questions and news about the game by email, with the answer and the rulebook reference.',
       emailLabel: 'Email',
@@ -3211,6 +3213,8 @@ Essayez celle-ci :
 
     newsletter: {
       link: 'Recevoir de nouvelles questions pièges par e-mail',
+      landingLine: 'De temps en temps, une nouvelle question piège. Gratuit, désinscription en un clic.',
+      landingCta: 'Recevoir les nouvelles questions',
       title: 'De nouvelles questions pièges par e-mail',
       intro: 'Recevez de nouvelles questions sur les règles et les nouveautés du jeu par e-mail, avec la réponse et la référence du règlement.',
       emailLabel: 'E-mail',
@@ -9724,9 +9728,22 @@ Merci !`
 
         const houseAdCta = String(pcW.houseAdCta || haW.ctaPrimary || "").trim();
 
+        const nlW = w?.newsletter || {};
+        const nlLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
+        const nlOn = !!(window.WT_Newsletter && nlW.landingCta && window.WT_Newsletter.shouldOffer(cfg, nlLang));
+        if (waitlistEligible && !houseAdEligible && nlOn) {
+          // One clear, compact signup replaces the repeated waitlist texts.
+          postCompletionHtml = `
+          <div class="wt-divider"></div>
+          <strong class="wt-meta">${escapeHtml(String(nlW.title || ""))}</strong>
+          <p class="wt-muted">${escapeHtml(String(nlW.landingLine || ""))}</p>
+          <div class="wt-actions wt-postcompletion-actions">
+            <button class="wt-btn wt-btn--secondary" data-action="open-newsletter">${escapeHtml(String(nlW.landingCta))}</button>
+          </div>`;
+        } else
         postCompletionHtml = `
           <div class="wt-divider"></div>
-          ${title ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
+          ${title && !(waitlistEligible && title === waitlistCta) ? `<strong class="wt-meta">${escapeHtml(title)}</strong>` : ``}
           <div class="wt-stack wt-stack--xs wt-postcompletion-copy">
             ${body1 ? `<p class="wt-muted">${escapeHtml(body1)}</p>` : ``}
             ${waitlistEligible && body2 ? `<p class="wt-muted">${escapeHtml(body2)}</p>` : ``}
@@ -9743,7 +9760,7 @@ Merci !`
             ` : ``}
           </div>
 
-          ${waitlistEligible && waitlistDisclaimer ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
+          ${waitlistEligible && waitlistDisclaimer && waitlistDisclaimer !== body1 ? `<p class="wt-muted wt-postcompletion-disclaimer">${escapeHtml(waitlistDisclaimer)}</p>` : ``}
         `;
       }
     } catch (_) { postCompletionHtml = ""; }

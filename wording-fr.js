@@ -1087,6 +1087,8 @@ Essayez celle-ci :
 
     newsletter: {
       link: 'Recevoir de nouvelles questions pièges par e-mail',
+      landingLine: 'De temps en temps, une nouvelle question piège. Gratuit, désinscription en un clic.',
+      landingCta: 'Recevoir les nouvelles questions',
       title: 'De nouvelles questions pièges par e-mail',
       intro: 'Recevez de nouvelles questions sur les règles et les nouveautés du jeu par e-mail, avec la réponse et la référence du règlement.',
       emailLabel: 'E-mail',
