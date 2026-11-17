@@ -309,8 +309,8 @@ test('newsletter signup: link, validation and Kit form post', async ({
   await page.route('**/app.bundle.js*', async (route) => {
     const response = await route.fetch();
     const body = (await response.text()).replace(
-      /formAction:\s*\{\s*en:\s*"",\s*fr:\s*""\s*\}/,
-      'formAction: { en: "https://kit.example.test/forms/1/subscriptions", fr: "" }'
+      /en:\s*"",\s*fr:\s*"https:\/\/app\.kit\.com\/forms\/10204850\/subscriptions"/,
+      'en: "https://kit.example.test/forms/1/subscriptions", fr: ""'
     );
     await route.fulfill({ response, body });
   });
@@ -343,6 +343,55 @@ test('newsletter signup: link, validation and Kit form post', async ({
   expect(posts).toHaveLength(1);
   expect(posts[0]).toContain('email_address=test%40example.com');
   expect(posts[0]).toContain('first_name%5D=Marie');
+});
+
+test('French newsletter form posts the configured Kit fields (request intercepted)', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  const posts = [];
+  await page.route(
+    'https://app.kit.com/forms/10204850/subscriptions',
+    async (route) => {
+      posts.push(route.request().postData() || '');
+      await route.fulfill({ status: 200, body: '' });
+    }
+  );
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+  await page.goto('/fr.html', { waitUntil: 'domcontentloaded' });
+  await page
+    .getByRole('button', { name: 'Commencer', exact: true })
+    .click({ timeout: 15000 });
+  for (let i = 0; i < 8; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1500 })
+      .catch(() => {});
+  }
+  await page.locator('[data-action="open-newsletter"]').click();
+  await page.locator('#wt-nl-email').fill('test@example.com');
+  await page.locator('#wt-nl-first').fill('Marie');
+  await page.locator('[data-action="confirm-newsletter"]').click();
+  await expect(page.locator('#wt-nl-msg')).toContainText('boîte mail');
+  expect(posts).toHaveLength(1);
+  expect(posts[0]).toContain('email_address=test%40example.com');
+  expect(posts[0]).toContain('fields%5Bfirst_name%5D=Marie');
 });
 
 test('newsletter link is hidden while no Kit form is configured', async ({

@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.48",
+    version: "4.3.49",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -568,7 +568,10 @@
     // is shown and nothing is sent. Paste, per language, the "action" URL found in the
     // HTML embed code of the Kit form (https://app.kit.com/forms/<id>/subscriptions).
     newsletter: {
-      formAction: { en: "", fr: "" },
+      formAction: {
+        en: "",
+        fr: "https://app.kit.com/forms/10204850/subscriptions"
+      },
       // Field names used by the Kit embed form; change only if the embed code differs.
       fieldNames: { email: "email_address", firstName: "fields[first_name]" }
     },
