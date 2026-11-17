@@ -4,7 +4,8 @@ const AxeBuilder = require('@axe-core/playwright').default;
 const pages = [
   { path: '/', name: 'English home' },
   { path: '/fr.html', name: 'French home' },
-  { path: '/poster', name: 'Printable poster' }
+  { path: '/poster', name: 'Printable poster' },
+  { path: '/share.html', name: 'Instagram share kit' }
 ];
 
 for (const spec of pages) {

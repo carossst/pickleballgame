@@ -51,6 +51,9 @@ const ASSETS_TO_CACHE = [
   "./poster.css",
   "./poster.js",
   "./poster-qr-vendor.js",
+  "./share.html",
+  "./share.css",
+  "./share.js",
   "./style.css",
   "./app.bundle.js",
   "./config.js",
@@ -171,6 +174,8 @@ function getOfflineDocumentFallback(pathname) {
       return "./poster.html";
     case "/poster/":
       return "./poster/index.html";
+    case "/share.html":
+      return "./share.html";
     case "/404.html":
       return "./404.html";
     default:

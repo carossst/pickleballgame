@@ -145,6 +145,7 @@
       terms: 'Terms',
       press: 'Press',
       poster: 'Poster',
+      instagramChallenge: 'Instagram challenge',
 
       // Locale-aware links (consumed via data-wt-href in markup if needed).
       links: {
@@ -154,6 +155,9 @@
         },
         poster: {
           href: './poster/'
+        },
+        instagramChallenge: {
+          href: './share.html'
         }
       }
     },
@@ -1023,6 +1027,7 @@ Thanks!`
       ctaLabel: 'Copy challenge',
       nativeLabel: 'Share challenge',
       emailLabel: 'Email challenge',
+      instagramLabel: 'Prepare an Instagram post',
       emailSubject: 'Try Pickleball Rules Quiz',
       previewLabel: 'Challenge preview',
       toastCopied: 'Copied.',

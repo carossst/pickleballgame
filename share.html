@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prepare a ready to share Instagram post for Pickleball Rules Challenge.">
+    <title>Share Pickleball Rules Challenge</title>
+    <link rel="icon" href="./icons/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="./share.css">
+    <script data-goatcounter="https://caroles.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  </head>
+  <body>
+    <main class="share-page" aria-labelledby="share-title">
+      <nav class="share-nav" data-share-aria="navLabel" aria-label="Share navigation">
+        <a href="./" data-share="backLink">Back to challenge</a>
+        <a href="./poster/" data-share="posterLink">Poster</a>
+      </nav>
+
+      <section class="share-layout">
+        <div class="share-copy">
+          <p class="share-eyebrow" data-share="eyebrow">Ready to share</p>
+          <h1 id="share-title" data-share="title">Prepare an Instagram post</h1>
+          <p class="share-intro" data-share="intro"></p>
+
+          <div class="share-formats" role="group" data-share-aria="formatLabel" aria-label="Image format">
+            <span class="share-format-label" data-share="formatLabelText">Format</span>
+            <div class="share-format-options">
+              <button class="share-format is-selected" type="button" data-format="feed" aria-pressed="true">
+                <span data-share="feedFormat">Feed 4:5</span>
+              </button>
+              <button class="share-format" type="button" data-format="square" aria-pressed="false">
+                <span data-share="squareFormat">Square 1:1</span>
+              </button>
+              <button class="share-format" type="button" data-format="story" aria-pressed="false">
+                <span data-share="storyFormat">Story 9:16</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="share-actions">
+            <button class="share-button share-button-primary" type="button" data-action="native-share">
+              <span data-share="nativeButton">Share from my phone</span>
+            </button>
+            <button class="share-button" type="button" data-action="copy-caption">
+              <span data-share="copyButton">Copy caption</span>
+            </button>
+            <button class="share-button" type="button" data-action="download-image">
+              <span data-share="downloadButton">Download image</span>
+            </button>
+            <a class="share-button share-button-link" data-action="open-instagram" data-share="instagramLink" href="https://www.instagram.com/" target="_blank" rel="noopener">
+              <span data-share="openButton">Open Instagram</span>
+            </a>
+          </div>
+
+          <p class="share-note" data-share="note"></p>
+          <p class="share-status" role="status" aria-live="polite" data-share="status"></p>
+        </div>
+
+        <div class="share-preview-wrap">
+          <p class="share-preview-label" data-share="previewLabel">Preview</p>
+          <canvas id="instagram-art" class="share-preview" width="1080" height="1350"></canvas>
+        </div>
+      </section>
+
+      <section class="share-caption-panel" aria-labelledby="caption-title">
+        <h2 id="caption-title" data-share="captionTitle">Caption</h2>
+        <textarea id="instagram-caption" readonly rows="8" data-share-aria="captionAria" aria-label="Instagram caption"></textarea>
+      </section>
+    </main>
+    <script src="./share.js"></script>
+  </body>
+</html>

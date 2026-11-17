@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.32",
+    version: "4.3.33",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1071,6 +1071,7 @@
       terms: 'Terms',
       press: 'Press',
       poster: 'Poster',
+      instagramChallenge: 'Instagram challenge',
 
       // Locale-aware links (consumed via data-wt-href in markup if needed).
       links: {
@@ -1080,6 +1081,9 @@
         },
         poster: {
           href: './poster/'
+        },
+        instagramChallenge: {
+          href: './share.html'
         }
       }
     },
@@ -1949,6 +1953,7 @@ Thanks!`
       ctaLabel: 'Copy challenge',
       nativeLabel: 'Share challenge',
       emailLabel: 'Email challenge',
+      instagramLabel: 'Prepare an Instagram post',
       emailSubject: 'Try Pickleball Rules Quiz',
       previewLabel: 'Challenge preview',
       toastCopied: 'Copied.',
@@ -2226,6 +2231,7 @@ Thanks!`
       terms: 'Conditions',
       press: 'Presse',
       poster: 'Affiche',
+      instagramChallenge: 'Défi Instagram',
 
       links: {
         bonjourPickleball: {
@@ -2234,6 +2240,9 @@ Thanks!`
         },
         poster: {
           href: './poster/?lang=fr'
+        },
+        instagramChallenge: {
+          href: './share.html?lang=fr'
         }
       }
     },
@@ -3130,6 +3139,7 @@ Merci !`
       ctaLabel: 'Copier le message',
       nativeLabel: 'Partager le défi',
       emailLabel: "Préparer l'e-mail",
+      instagramLabel: 'Préparer un post Instagram',
       emailSubject: 'Essaie Quiz Pickleball',
       previewLabel: 'Aperçu du message',
       toastCopied: 'Copié.',
@@ -22253,8 +22263,11 @@ ${audioSettingsHtml}
     const nativeLabel = String(share.nativeLabel || '').trim();
     const emailLabel = String(share.emailLabel || '').trim();
     const emailSubject = String(share.emailSubject || '').trim();
+    const instagramLabel = String(share.instagramLabel || '').trim();
     const shareAria = String(w.system?.shareAria || '').trim();
     const text = String(getShareText ? getShareText() : '').trim();
+    const locale = String(document.documentElement?.lang || 'en').toLowerCase() === 'fr' ? 'fr' : 'en';
+    const instagramHref = locale === 'fr' ? './share.html?lang=fr' : './share.html';
 
     const canCopy = !!(ctaLabel && text);
     const canNative = !!(
@@ -22266,7 +22279,7 @@ ${audioSettingsHtml}
     const canEmail = !!(emailLabel && emailSubject && text);
 
     if (!title && !text) return '';
-    if (!canCopy && !canNative && !canEmail && !text) return '';
+    if (!canCopy && !canNative && !canEmail && !instagramLabel && !text) return '';
 
     return `
       <details class="wt-accordion">
@@ -22307,6 +22320,16 @@ ${audioSettingsHtml}
                 <button type="button" class="wt-btn wt-btn--secondary" data-action="send-share-email">
                   ${escapeHtml(emailLabel)}
                 </button>
+              `
+                  : ``
+              }
+
+              ${
+                instagramLabel
+                  ? `
+                <a class="wt-btn wt-btn--secondary" href="${instagramHref}">
+                  ${escapeHtml(instagramLabel)}
+                </a>
               `
                   : ``
               }
@@ -23866,7 +23889,8 @@ ${questionAudioHtml}
         if (hasNonEmptyContent(root)) {
             const hasPress = !!(root.querySelector && root.querySelector("#wt-press-link"));
             const hasPoster = !!(root.querySelector && root.querySelector("#wt-poster-link"));
-            if (hasPress && hasPoster) return;
+            const hasInstagram = !!(root.querySelector && root.querySelector("#wt-instagram-link"));
+            if (hasPress && hasPoster && hasInstagram) return;
         }
 
         root.innerHTML = `
@@ -23902,6 +23926,9 @@ ${questionAudioHtml}
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-poster-link" class="wt-footer-link" href="./poster/"
               data-wt-wording="footer.poster" data-wt-href="footer.links.poster.href"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-instagram-link" class="wt-footer-link" href="./share.html"
+              data-wt-wording="footer.instagramChallenge" data-wt-href="footer.links.instagramChallenge.href"></a>
           </div>
         </div>
       </div>

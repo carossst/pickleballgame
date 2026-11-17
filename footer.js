@@ -21,7 +21,8 @@
         if (hasNonEmptyContent(root)) {
             const hasPress = !!(root.querySelector && root.querySelector("#wt-press-link"));
             const hasPoster = !!(root.querySelector && root.querySelector("#wt-poster-link"));
-            if (hasPress && hasPoster) return;
+            const hasInstagram = !!(root.querySelector && root.querySelector("#wt-instagram-link"));
+            if (hasPress && hasPoster && hasInstagram) return;
         }
 
         root.innerHTML = `
@@ -57,6 +58,9 @@
             <span class="wt-footer-sep" aria-hidden="true">·</span>
             <a id="wt-poster-link" class="wt-footer-link" href="./poster/"
               data-wt-wording="footer.poster" data-wt-href="footer.links.poster.href"></a>
+            <span class="wt-footer-sep" aria-hidden="true">·</span>
+            <a id="wt-instagram-link" class="wt-footer-link" href="./share.html"
+              data-wt-wording="footer.instagramChallenge" data-wt-href="footer.links.instagramChallenge.href"></a>
           </div>
         </div>
       </div>

@@ -9940,8 +9940,11 @@ ${audioSettingsHtml}
     const nativeLabel = String(share.nativeLabel || '').trim();
     const emailLabel = String(share.emailLabel || '').trim();
     const emailSubject = String(share.emailSubject || '').trim();
+    const instagramLabel = String(share.instagramLabel || '').trim();
     const shareAria = String(w.system?.shareAria || '').trim();
     const text = String(getShareText ? getShareText() : '').trim();
+    const locale = String(document.documentElement?.lang || 'en').toLowerCase() === 'fr' ? 'fr' : 'en';
+    const instagramHref = locale === 'fr' ? './share.html?lang=fr' : './share.html';
 
     const canCopy = !!(ctaLabel && text);
     const canNative = !!(
@@ -9953,7 +9956,7 @@ ${audioSettingsHtml}
     const canEmail = !!(emailLabel && emailSubject && text);
 
     if (!title && !text) return '';
-    if (!canCopy && !canNative && !canEmail && !text) return '';
+    if (!canCopy && !canNative && !canEmail && !instagramLabel && !text) return '';
 
     return `
       <details class="wt-accordion">
@@ -9994,6 +9997,16 @@ ${audioSettingsHtml}
                 <button type="button" class="wt-btn wt-btn--secondary" data-action="send-share-email">
                   ${escapeHtml(emailLabel)}
                 </button>
+              `
+                  : ``
+              }
+
+              ${
+                instagramLabel
+                  ? `
+                <a class="wt-btn wt-btn--secondary" href="${instagramHref}">
+                  ${escapeHtml(instagramLabel)}
+                </a>
               `
                   : ``
               }

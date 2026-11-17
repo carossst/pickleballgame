@@ -22,6 +22,10 @@ for (const spec of pages) {
       timeout: 15000
     });
     await expect(page.locator('html')).toHaveAttribute('lang', spec.lang);
+    await expect(page.locator('#wt-instagram-link')).toHaveAttribute(
+      'href',
+      spec.lang === 'fr' ? './share.html?lang=fr' : './share.html'
+    );
     expect(pageErrors).toEqual([]);
   });
 
@@ -123,4 +127,47 @@ test('French poster is localized and links back to the French quiz', async ({
   await expect(page.locator('[data-poster="back"]')).toHaveAttribute('href', '../fr.html');
   await expect(page.locator('[data-poster="url"]')).toHaveText('www.pickleballrulesquiz.com/fr.html');
   await expect(page.locator('#poster-qr svg')).toBeVisible();
+});
+
+test('Instagram share kit prepares an English post and a generated image', async ({
+  page
+}) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(String(error.message || error)));
+  const response = await page.goto('/share.html', {
+    waitUntil: 'domcontentloaded'
+  });
+  expect(response && response.ok()).toBeTruthy();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('#instagram-caption')).toHaveValue(/Try 2 games free/);
+  await expect(page.locator('#instagram-caption')).toHaveValue(/utm_campaign=instagram_challenge/);
+  await expect(page.locator('[data-action="download-image"]')).toBeVisible();
+  await expect(page.locator('#instagram-art')).toHaveAttribute('width', '1080');
+  await expect(page.locator('#instagram-art')).toHaveAttribute('height', '1350');
+  await page.locator('[data-format="square"]').click();
+  await expect(page.locator('#instagram-art')).toHaveAttribute('height', '1080');
+  await page.locator('[data-format="story"]').click();
+  await expect(page.locator('#instagram-art')).toHaveAttribute('height', '1920');
+  const hasPixels = await page.locator('#instagram-art').evaluate((canvas) => {
+    const data = canvas.getContext('2d').getImageData(0, 0, 1, 1).data;
+    return data.some((value) => value !== 0);
+  });
+  expect(hasPixels).toBe(true);
+  expect(pageErrors).toEqual([]);
+});
+
+test('French Instagram share kit uses the French caption and route', async ({
+  page
+}) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(String(error.message || error)));
+  const response = await page.goto('/share.html?lang=fr', {
+    waitUntil: 'domcontentloaded'
+  });
+  expect(response && response.ok()).toBeTruthy();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(page.locator('[data-share="backLink"]')).toHaveText('Retour au défi');
+  await expect(page.locator('#instagram-caption')).toHaveValue(/2 parties gratuites/);
+  await expect(page.locator('#instagram-caption')).toHaveValue(/\/fr\.html\?utm_source=instagram/);
+  expect(pageErrors).toEqual([]);
 });

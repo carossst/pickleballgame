@@ -147,6 +147,7 @@
       terms: 'Conditions',
       press: 'Presse',
       poster: 'Affiche',
+      instagramChallenge: 'Défi Instagram',
 
       links: {
         bonjourPickleball: {
@@ -155,6 +156,9 @@
         },
         poster: {
           href: './poster/?lang=fr'
+        },
+        instagramChallenge: {
+          href: './share.html?lang=fr'
         }
       }
     },
@@ -1051,6 +1055,7 @@ Merci !`
       ctaLabel: 'Copier le message',
       nativeLabel: 'Partager le défi',
       emailLabel: "Préparer l'e-mail",
+      instagramLabel: 'Préparer un post Instagram',
       emailSubject: 'Essaie Quiz Pickleball',
       previewLabel: 'Aperçu du message',
       toastCopied: 'Copié.',
