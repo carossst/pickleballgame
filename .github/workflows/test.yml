@@ -23,10 +23,12 @@ jobs:
         run: npm run test:coverage
       - name: Formatting
         run: npm run format:check
+      - name: JavaScript syntax check
+        run: npm run test:syntax
       - name: Verify generated production assets
         run: |
           npm run build:assets
-          git diff --exit-code -- app.bundle.js style.css
+          git diff --exit-code -- app.bundle.js style.css ui.js
       - name: Verify generated SEO pages
         run: |
           npm run publish:seo

@@ -160,6 +160,14 @@ test('French Instagram share kit uses the French caption and route', async ({
   page
 }) => {
   const pageErrors = [];
+  await page.addInitScript(() => {
+    const originalFillText = CanvasRenderingContext2D.prototype.fillText;
+    CanvasRenderingContext2D.prototype.fillText = function (text, ...args) {
+      window.__canvasText = window.__canvasText || [];
+      window.__canvasText.push(String(text));
+      return originalFillText.call(this, text, ...args);
+    };
+  });
   page.on('pageerror', (error) => pageErrors.push(String(error.message || error)));
   const response = await page.goto('/share.html?lang=fr', {
     waitUntil: 'domcontentloaded'
@@ -169,5 +177,8 @@ test('French Instagram share kit uses the French caption and route', async ({
   await expect(page.locator('[data-share="backLink"]')).toHaveText('Retour au défi');
   await expect(page.locator('#instagram-caption')).toHaveValue(/2 parties gratuites/);
   await expect(page.locator('#instagram-caption')).toHaveValue(/\/fr\.html\?utm_source=instagram/);
+  expect(await page.evaluate(() => window.__canvasText || [])).toContain(
+    'Basé sur le règlement USA Pickleball'
+  );
   expect(pageErrors).toEqual([]);
 });

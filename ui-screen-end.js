@@ -628,9 +628,13 @@
     // The common end screen (free run lost, not exhausted) hides the collapsed
     // share accordion; keep one visible link so the score can still be shared.
     const focusedShareLabel = String(shareTitle || "").trim();
+    const focusedShare = w.share || {};
+    const focusedInstagramLabel = String(focusedShare.instagramLabel || "").trim();
+    const focusedLocale = String(document.documentElement?.lang || "en").toLowerCase() === "fr" ? "fr" : "en";
+    const focusedInstagramHref = focusedLocale === "fr" ? "./share.html?lang=fr" : "./share.html";
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button></p>`
+      ? `<div class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${focusedInstagramLabel ? ` <a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a>` : ""}</div>`
       : "";
 
     const leaderboardW = w.leaderboard || {};

@@ -85,6 +85,7 @@ test('free run end screen offers a visible way to share the score', async ({
       .locator('[data-action="share-native"], [data-action="copy-share"]')
       .first()
   ).toBeVisible();
+  await expect(page.locator('.wt-card--end a[href*="share.html"]')).toBeVisible();
 });
 
 test('question statement is readable: text contrasts with its box', async ({

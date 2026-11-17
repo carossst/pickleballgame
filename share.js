@@ -7,22 +7,14 @@
     url: 'https://www.pickleballrulesquiz.com/',
     instagramUrl: 'https://www.instagram.com/',
     formats: {
-      feed: { width: 1080, height: 1350, fileSuffix: 'feed-4x5' },
-      square: { width: 1080, height: 1080, fileSuffix: 'square' },
-      story: { width: 1080, height: 1920, fileSuffix: 'story-9x16' }
-    },
-    colors: {
-      ink: '#0f172a',
-      accent: '#075985',
-      sky: '#38bdf8',
-      paper: '#ffffff',
-      muted: '#475569'
+      feed: { width: 1080, height: 1350 },
+      square: { width: 1080, height: 1080 },
+      story: { width: 1080, height: 1920 }
     },
     copy: {
       en: {
-        eyebrow: 'Ready to share',
         title: 'Prepare an Instagram post',
-        intro: 'Download a ready made image, copy the caption, and share the challenge with your friends.',
+        intro: 'Choose a format, then save the image and copy the caption for Instagram.',
         nativeButton: 'Share from my phone',
         copyButton: 'Copy caption',
         downloadButton: 'Download image',
@@ -42,18 +34,20 @@
         statusCopied: 'Caption copied.',
         statusDownloaded: 'Image downloaded.',
         statusShared: 'Share sheet opened.',
-        statusFallback: 'Caption copied. Add the image on Instagram.',
+        statusFallback: 'Sharing is unavailable. Download the image and copy the caption below.',
+        statusCopyFailed: 'Copy the selected caption manually.',
+        statusImageFailed: 'Could not prepare the image. Try again.',
         canvasKicker: 'PICKLEBALL RULES CHALLENGE',
         canvasTitle: 'THINK YOU KNOW\nTHE RULES?',
         canvasBody: 'Three mistakes and the challenge ends.',
         canvasCta: 'TRY 2 GAMES FREE',
         canvasUrl: 'pickleballrulesquiz.com',
+        canvasFooter: 'Based on the USA Pickleball rulebook',
         caption: 'Think you know the pickleball rules?\n\nTry the Pickleball Rules Challenge. Three mistakes and the challenge ends.\n\nTry 2 games free. No signup required.\n\n{url}'
       },
       fr: {
-        eyebrow: 'Prêt à partager',
         title: 'Préparer un post Instagram',
-        intro: "Téléchargez une image prête à publier, copiez la légende et partagez le défi avec vos amis.",
+        intro: "Choisissez un format, puis enregistrez l’image et copiez la légende pour Instagram.",
         nativeButton: 'Partager depuis mon téléphone',
         copyButton: 'Copier la légende',
         downloadButton: "Télécharger l'image",
@@ -73,12 +67,15 @@
         statusCopied: 'Légende copiée.',
         statusDownloaded: 'Image téléchargée.',
         statusShared: 'Menu de partage ouvert.',
-        statusFallback: "Légende copiée. Ajoutez l'image sur Instagram.",
+        statusFallback: "Le partage est indisponible. Téléchargez l’image et copiez la légende.",
+        statusCopyFailed: 'Copiez manuellement la légende sélectionnée.',
+        statusImageFailed: 'Impossible de préparer l’image. Réessayez.',
         canvasKicker: 'DÉFI DES RÈGLES DU PICKLEBALL',
         canvasTitle: 'VOUS CONNAISSEZ\nLES RÈGLES ?',
         canvasBody: 'Trois erreurs et le défi s’arrête.',
         canvasCta: '2 PARTIES GRATUITES',
         canvasUrl: 'pickleballrulesquiz.com/fr.html',
+        canvasFooter: 'Basé sur le règlement USA Pickleball',
         caption: 'Vous connaissez les règles du pickleball ?\n\nEssayez le Défi des règles du pickleball. Trois erreurs et le défi s’arrête.\n\n2 parties gratuites. Sans inscription.\n\n{url}'
       }
     }
@@ -90,6 +87,8 @@
   const campaignUrl = `${targetUrl}?utm_source=instagram&utm_medium=organic_social&utm_campaign=${SHARE_CONFIG.campaign}`;
   let selectedFormat = 'feed';
   let brandLogo = null;
+  let imageFile = null;
+  let imageJob = null;
 
   function setText(name, value) {
     const element = document.querySelector(`[data-share="${name}"]`);
@@ -145,63 +144,79 @@
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    const { colors } = SHARE_CONFIG;
     const format = SHARE_CONFIG.formats[selectedFormat];
     const width = format.width;
     const height = format.height;
-    const offset = Math.max(0, (height - 1080) * 0.42);
+    const offset = (height - 1080) / 2;
     canvas.width = width;
     canvas.height = height;
 
-    ctx.fillStyle = '#f8fbff';
+    const background = ctx.createLinearGradient(0, 0, width, height);
+    background.addColorStop(0, '#07172d');
+    background.addColorStop(1, '#103d57');
+    ctx.fillStyle = background;
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = colors.sky;
-    ctx.fillRect(0, 0, width, 26);
-    ctx.fillStyle = colors.accent;
-    ctx.fillRect(0, height - 26, width, 26);
+    ctx.save();
+    ctx.translate(822, offset + 460);
+    ctx.rotate(-0.35);
+    ctx.strokeStyle = '#7dd3fc40';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(-180, -310, 360, 620);
+    ctx.strokeRect(-180, -84, 360, 168);
+    ctx.beginPath();
+    ctx.moveTo(0, -310);
+    ctx.lineTo(0, -84);
+    ctx.moveTo(0, 84);
+    ctx.lineTo(0, 310);
+    ctx.stroke();
+    ctx.restore();
 
-    const panelY = 72 + offset;
-    ctx.fillStyle = '#e0f2fe';
-    ctx.fillRect(60, panelY, 960, 880);
-    ctx.fillStyle = colors.accent;
-    ctx.fillRect(60, panelY, 12, 880);
+    const panelY = 115 + offset;
+    const lime = '#d9fa73';
 
     if (brandLogo) {
-      ctx.fillStyle = colors.paper;
+      ctx.fillStyle = '#fff';
       ctx.fillRect(88, panelY + 34, 104, 104);
       ctx.drawImage(brandLogo, 96, panelY + 42, 88, 88);
     }
 
-    ctx.fillStyle = colors.accent;
-    ctx.font = '900 30px Arial, sans-serif';
-    ctx.letterSpacing = '3px';
+    ctx.fillStyle = lime;
+    ctx.font = '800 26px Arial, sans-serif';
     ctx.fillText(copy.canvasKicker, brandLogo ? 230 : 88, panelY + 96);
 
-    ctx.fillStyle = colors.ink;
-    ctx.font = '900 82px Arial, sans-serif';
-    drawText(ctx, copy.canvasTitle, 112, panelY + 300, 820, 94);
+    ctx.fillStyle = '#fff';
+    ctx.font = '900 86px Arial, sans-serif';
+    drawText(ctx, copy.canvasTitle, 88, panelY + 295, 904, 100);
 
-    ctx.fillStyle = colors.muted;
+    ctx.fillStyle = '#cfe7f5';
     ctx.font = '700 34px Arial, sans-serif';
-    drawText(ctx, copy.canvasBody, 112, panelY + 570, 800, 48);
+    drawText(ctx, copy.canvasBody, 88, panelY + 490, 904, 48);
 
-    ctx.fillStyle = colors.accent;
-    ctx.fillRect(112, panelY + 720, 520, 86);
-    ctx.fillStyle = colors.paper;
+    ctx.fillStyle = lime;
+    ctx.fillRect(88, panelY + 545, 470, 76);
+    ctx.fillStyle = '#07172d';
     ctx.font = '900 30px Arial, sans-serif';
-    ctx.fillText(copy.canvasCta, 144, panelY + 775);
+    ctx.fillText(copy.canvasCta, 116, panelY + 594);
 
-    ctx.fillStyle = colors.ink;
+    ctx.fillStyle = '#fff';
     ctx.font = '800 31px Arial, sans-serif';
-    ctx.fillText(copy.canvasUrl, 88, height - 144);
-    ctx.fillStyle = colors.muted;
+    ctx.fillText(copy.canvasUrl, 88, panelY + 710);
+    ctx.fillStyle = '#cfe7f5';
     ctx.font = '600 24px Arial, sans-serif';
-    ctx.fillText('Based on the USA Pickleball rulebook', 88, height - 98);
+    ctx.fillText(copy.canvasFooter, 88, panelY + 754);
+    prepareImage(canvas);
   }
 
-  function getBlob() {
-    const canvas = document.getElementById('instagram-art');
-    return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+  function prepareImage(canvas) {
+    const name = `pickleball-rules-challenge-${selectedFormat}-${locale}.png`;
+    imageFile = null;
+    const job = new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+      .then((blob) => blob ? new File([blob], name, { type: 'image/png' }) : null)
+      .catch(() => null);
+    imageJob = job;
+    job.then((file) => {
+      if (imageJob === job) imageFile = file;
+    });
   }
 
   async function copyCaption() {
@@ -212,38 +227,52 @@
       const field = document.getElementById('instagram-caption');
       field.focus();
       field.select();
-      document.execCommand('copy');
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch (_) {}
+      if (!copied) {
+        setText('status', copy.statusCopyFailed);
+        return;
+      }
     }
     setText('status', copy.statusCopied);
     track('copy-caption');
   }
 
   async function downloadImage() {
-    const blob = await getBlob();
-    if (!blob) return;
+    const file = await imageJob;
+    if (!file) {
+      setText('status', copy.statusImageFailed);
+      return;
+    }
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `pickleball-rules-challenge-${selectedFormat}-${locale}.png`;
+    link.href = URL.createObjectURL(file);
+    link.download = file.name;
+    document.body.append(link);
     link.click();
-    URL.revokeObjectURL(link.href);
+    link.remove();
+    const objectUrl = link.href;
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
     setText('status', copy.statusDownloaded);
     track('download-image');
   }
 
   async function nativeShare() {
-    const blob = await getBlob();
-    const file = blob ? new File([blob], `pickleball-rules-challenge-${selectedFormat}-${locale}.png`, { type: 'image/png' }) : null;
-    const payload = { title: 'Pickleball Rules Challenge', text: document.getElementById('instagram-caption')?.value || '', url: campaignUrl };
-    if (file && navigator.canShare && navigator.canShare({ files: [file] })) payload.files = [file];
+    const payload = {
+      title: locale === 'fr' ? 'Défi des règles du pickleball' : 'Pickleball Rules Challenge',
+      text: document.getElementById('instagram-caption').value,
+      files: imageFile ? [imageFile] : []
+    };
     try {
-      if (typeof navigator.share !== 'function') throw new Error('share unavailable');
+      if (!imageFile || !navigator.canShare?.(payload)) {
+        setText('status', copy.statusFallback);
+        track('instagram-fallback');
+        return;
+      }
       await navigator.share(payload);
       setText('status', copy.statusShared);
       track('native-share');
     } catch (error) {
       if (error && error.name === 'AbortError') return;
-      await copyCaption();
-      window.open(SHARE_CONFIG.instagramUrl, '_blank', 'noopener');
       setText('status', copy.statusFallback);
       track('instagram-fallback');
     }
@@ -252,7 +281,6 @@
   function init() {
     document.documentElement.lang = locale;
     document.title = locale === 'fr' ? 'Partager le Défi des règles du pickleball' : 'Share Pickleball Rules Challenge';
-    setText('eyebrow', copy.eyebrow);
     setText('title', copy.title);
     setText('intro', copy.intro);
     setText('nativeButton', copy.nativeButton);
@@ -271,8 +299,13 @@
     setAria('navLabel', copy.navLabel);
     setAria('formatLabel', copy.formatLabel);
     setAria('captionAria', copy.captionAria);
+    setAria('previewImage', `${copy.canvasTitle.replace('\n', ' ')} ${copy.canvasBody} ${copy.canvasCta}`);
     const instagramLink = document.querySelector('[data-share="instagramLink"]');
     if (instagramLink) instagramLink.href = SHARE_CONFIG.instagramUrl;
+    if (locale === 'fr') {
+      document.querySelector('[data-share="backLink"]').href = './fr.html';
+      document.querySelector('[data-share="posterLink"]').href = './poster/?lang=fr';
+    }
     const caption = document.getElementById('instagram-caption');
     if (caption) caption.value = copy.caption.replace('{url}', campaignUrl);
     const logo = new Image();
@@ -296,7 +329,9 @@
     });
     document.querySelector('[data-action="copy-caption"]')?.addEventListener('click', copyCaption);
     document.querySelector('[data-action="download-image"]')?.addEventListener('click', downloadImage);
-    document.querySelector('[data-action="native-share"]')?.addEventListener('click', nativeShare);
+    const nativeButton = document.querySelector('[data-action="native-share"]');
+    nativeButton.hidden = typeof navigator.share !== 'function' || typeof navigator.canShare !== 'function';
+    nativeButton.addEventListener('click', nativeShare);
     document.querySelector('[data-action="open-instagram"]')?.addEventListener('click', () => track('open-instagram'));
     track('open');
   }
