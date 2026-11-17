@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.54",
+    version: "4.3.55",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -9448,7 +9448,11 @@ Merci !`
     })}
   </div>
 
-  ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
+  ${nextTicketLine ? `<div class="wt-end-ticketgoal" role="note">
+    <span class="wt-end-ticketgoal__icon" aria-hidden="true">${renderIcon("zap")}</span>
+    <span class="wt-end-ticketgoal__text">${escapeHtml(nextTicketLine)}</span>
+    <span class="wt-end-ticketgoal__track" aria-hidden="true">${Array.from({ length: Math.min(8, Math.max(1, dailyTargetScore)) }, (_, i) => `<i class="${i === Math.min(8, Math.max(1, dailyTargetScore)) - 1 ? "is-goal" : ""}"></i>`).join("")}</span>
+  </div>` : ``}
   ${focusedShareHtml}
   ${shareCardOnlyHtml}
   ${newsletterLinkHtml}
@@ -9537,7 +9541,7 @@ Merci !`
           ${badgeHtml || ``}
           ${label ? `<span class="wt-landing-stat__label">${escapeHtml(label)}</span>` : ``}
         </div>
-        ${title ? `<p class="wt-landing-stat__title">${escapeHtml(title)}</p>` : ``}
+        ${(title && title.toLowerCase() !== label.toLowerCase()) ? `<p class="wt-landing-stat__title">${escapeHtml(title)}</p>` : ``}
         ${subHtml ? `<p class="wt-landing-stat__sub">${subHtml}</p>` : ``}
         ${showProgress ? `
           <div class="wt-progress${progressClass}" role="img" aria-label="${escapeHtml(`${pct}%`)}">
@@ -10292,7 +10296,6 @@ ${(() => {
     ${b >= 1 && landing.dailyQuestionCta ? `
       <div class="wt-landing-followup">
         <button type="button" class="wt-text-action" data-action="open-daily-question"${Number(ui._runtime?.contentTotal) > 0 ? '' : ' disabled'}>${escapeHtml(landing.dailyQuestionCta)}</button>
-        <p class="wt-sub wt-muted">${escapeHtml(landing.dailyQuestionReady || '')}</p>
       </div>
     ` : ''}
 
@@ -10303,7 +10306,7 @@ ${(() => {
             ${welcomeBackHtml}
           </div>
         ` : ``}
-        ${(!welcomeBackHtml && levelProgressQuickHtml) ? levelProgressQuickHtml : ``}
+        ${(!welcomeBackHtml && !primaryInsightHtml && levelProgressQuickHtml) ? levelProgressQuickHtml : ``}
         <div class="wt-landing-dashboard__grid${dashboardGridClass}">
           ${primaryInsightHtml ? `<div class="wt-landing-dashboard__spotlight">${primaryInsightHtml}</div>` : ``}
           ${secondaryInsightHtml ? `<div class="wt-landing-dashboard__secondary">${secondaryInsightHtml}</div>` : ``}
@@ -10320,7 +10323,6 @@ ${(() => {
     ${isPostPaywallVariant ? `` : postCompletionHtml}
 
     ${showLandingInstallPrompt ? `
-      <p class="wt-sub wt-muted wt-landing-trust">${escapeHtml(microTrust)}</p>
       ${installCtaLabel ? `
         <div class="wt-actions wt-actions--stack">
           <button class="wt-btn wt-btn--secondary" data-action="install-app">

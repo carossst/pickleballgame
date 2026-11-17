@@ -271,14 +271,15 @@ test('landing first visit hides personal best, daily, and leaderboard blocks', (
   expect(html).not.toContain('THIS WEEK');
 });
 
-test('landing after first completed run shows level, daily, and leaderboard blocks', () => {
+test('landing after first completed run shows daily and leaderboard blocks without the level badge', () => {
   const modules = loadLandingModules();
   const html = modules.renderLanding(
     createUi(1, { seenCount: 8 }),
     buildHelpers(modules.renderLeaderboardLandingCard)
   );
 
-  expect(html).toContain('Current level: COURT-READY');
+  // The level badge steps aside while a daily/best card is shown, to keep the landing light.
+  expect(html).not.toContain('Current level: COURT-READY');
   expect(html).toContain('DAILY CHALLENGE');
   expect(html).toContain('THIS WEEK');
   expect(html).not.toContain('PERSONAL BEST');
@@ -304,7 +305,8 @@ test('landing hides phase progress card when no seen questions exist yet', () =>
   );
 
   expect(html).not.toContain("You've seen 0 questions so far.");
-  expect(html).toContain('Current level: COURT-READY');
+  // The level badge steps aside while a daily/best card is shown, to keep the landing light.
+  expect(html).not.toContain('Current level: COURT-READY');
   expect(html).toContain('DAILY CHALLENGE');
   expect(html).not.toContain('PERSONAL BEST');
 });
