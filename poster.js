@@ -35,9 +35,9 @@
       fr: {
         eyebrow: 'Pour les clubs et les terrains',
         offeredBy: 'Offert par',
-        overline: 'Saurez-vous trancher 5 situations pièges au pickleball ?',
+        overline: 'Saurez-vous répondre juste à 5 questions pièges sur les règles du pickle ?',
         title: 'Défi des règles du pickleball',
-        hook: 'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.',
+        hook: 'Testez-vous sur de vraies situations de jeu, découvrez la règle et voyez où vous en êtes.',
         bullets: [
           '2 parties gratuites, sans inscription',
           '200 questions sur les règles, basées sur le règlement USA Pickleball 2026',
@@ -52,8 +52,8 @@
         print: "Imprimer l'affiche",
         actionsLabel: "Actions de l'affiche",
         offerLabel: 'Ce que le quiz comprend',
-        qrLabel: 'QR code pour jouer au défi des règles du pickleball',
-        description: 'Affiche imprimable du défi des règles du pickleball pour les clubs et les terrains.'
+        qrLabel: 'QR code pour jouer au défi des règles du pickle',
+        description: 'Affiche imprimable du défi des règles du pickle pour les clubs et les terrains.'
       }
     }
   };

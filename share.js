@@ -76,7 +76,7 @@
         canvasCta: '2 PARTIES GRATUITES',
         canvasUrl: 'pickleballrulesquiz.com/fr.html',
         canvasFooter: 'Basé sur le règlement USA Pickleball',
-        caption: 'Vous connaissez les règles du pickleball ?\n\nEssayez le Défi des règles du pickleball et découvrez une explication après chaque réponse.\n\n2 parties gratuites. Sans inscription.\n\n{url}'
+        caption: 'Vous connaissez les règles du pickle ?\n\nEssayez le Défi des règles du pickle et découvrez une explication après chaque réponse.\n\n2 parties gratuites. Sans inscription.\n\n{url}'
       }
     }
   };
@@ -271,7 +271,7 @@
 
   async function nativeShare() {
     const payload = {
-      title: locale === 'fr' ? 'Défi des règles du pickleball' : 'Pickleball Rules Challenge',
+      title: locale === 'fr' ? 'Défi des règles du pickle' : 'Pickleball Rules Challenge',
       text: document.getElementById('instagram-caption').value,
       files: imageFile ? [imageFile] : []
     };
@@ -293,7 +293,7 @@
 
   function init() {
     document.documentElement.lang = locale;
-    document.title = locale === 'fr' ? 'Partager le Défi des règles du pickleball' : 'Share Pickleball Rules Challenge';
+    document.title = locale === 'fr' ? 'Partager le Défi des règles du pickle' : 'Share Pickleball Rules Challenge';
     setText('title', copy.title);
     setText('intro', copy.intro);
     setText('nativeButton', copy.nativeButton);

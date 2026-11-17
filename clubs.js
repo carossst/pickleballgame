@@ -32,7 +32,7 @@
       posterOpen: 'Ouvrir le poster',
       messageTitle: 'Message prêt à coller (WhatsApp, newsletter)',
       message: (url) =>
-        `🏓 Défi pickleball : saurez-vous trancher 5 situations pièges ? Testez vos connaissances des règles, 2 parties gratuites, sans inscription : ${url}`,
+        `🏓 Défi des règles du pickle : saurez-vous répondre juste à 5 questions pièges ? Testez vos connaissances, 2 parties gratuites, sans inscription : ${url}`,
       qrTitle: 'Votre QR code',
       qrDownload: 'Télécharger le QR code (SVG)',
       themesTitle: 'Liens par thème, pour illustrer une séance',

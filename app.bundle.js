@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.55",
+    version: "4.3.56",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -2347,9 +2347,9 @@ Thanks!`
       dailyQuestionCorrect: 'Bonne réponse !',
       dailyQuestionIncorrect: 'À retenir pour la prochaine fois.',
       title: 'Défi des règles du pickleball',
-      tagline: '**Saurez-vous trancher 5 situations pièges au pickleball ?**',
+      tagline: '**Saurez-vous répondre juste à 5 questions pièges sur les règles du pickle ?**',
       subtitle:
-        'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.\nService, fautes, score, annonces de ligne et changements de règles.',
+        'Testez-vous sur de vraies situations de jeu, découvrez la règle et voyez où vous en êtes.\nService, fautes, score, annonces de ligne et changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
       proofLine: '200 questions · Une explication après chaque réponse',
       microTrust: 'Installez-la après votre première partie.',
@@ -2419,7 +2419,7 @@ Thanks!`
 
     shareBonus: {
       title: 'Une partie offerte',
-      body: 'Partagez Quiz Pickleball avec un ami et gagnez une partie supplémentaire. Une seule fois.',
+      body: 'Défiez un ami au quiz des règles du pickle et gagnez une partie supplémentaire. Une seule fois.',
       ctaShare: 'Partager et jouer',
       ctaLater: 'Plus tard',
       toastUnlocked: 'Une partie débloquée.',
@@ -2478,7 +2478,7 @@ Thanks!`
       titleRun3: 'Dernier conseil avant de jouer',
 
       run1Lines: [
-        'Vous voyez les règles du pickleball une par une.\nDécidez si chacune est vraie ou fausse.',
+        'Vous voyez les règles du pickle une par une.\nDécidez si chacune est vraie ou fausse.',
         'Bonne réponse : +1 point.',
         '4 bonnes réponses de suite activent les points doubles jusqu’à la prochaine erreur.',
         'Mauvaise réponse : +1 erreur.',
@@ -3088,7 +3088,7 @@ Thanks!`
     howto: {
       title: 'Comment jouer',
       howToPlayLine1:
-        'Vous voyez une affirmation sur les règles du pickleball.',
+        'Vous voyez une affirmation sur les règles du pickle.',
       howToPlayLine2: 'Décidez si elle est vraie ou fausse.',
       howToPlayLine3: 'Choisissez Vrai ou Faux.',
       audioTitle: 'Audio des questions',
