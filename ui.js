@@ -10855,7 +10855,7 @@ UI.prototype.render = function () {
 
       ${momentumHtml}
 
-	  	    ${
+      ${
             showSeenOnlyRule
               ? `
 	      <p class="wt-muted wt-playing-seenonly">

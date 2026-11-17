@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.45",
+    version: "4.3.46",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1142,7 +1142,7 @@
       subtitle:
         'Test real game situations, learn the rule, and see where you stand.\nServing, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
-      proofLine: '200 questions · 3 mistakes end the run · Practice what you miss',
+      proofLine: '200 questions · An explanation after each answer',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',
@@ -2304,7 +2304,7 @@ Thanks!`
       subtitle:
         'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.\nService, fautes, score, annonces de ligne et changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
-      proofLine: '200 questions · 3 erreurs terminent la partie · Travaillez ce qui manque',
+      proofLine: '200 questions · Une explication après chaque réponse',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',
@@ -23752,7 +23752,7 @@ UI.prototype.render = function () {
 
       ${momentumHtml}
 
-	  	    ${
+      ${
             showSeenOnlyRule
               ? `
 	      <p class="wt-muted wt-playing-seenonly">
@@ -25107,6 +25107,8 @@ ${questionAudioHtml}
 (() => {
   'use strict';
 
+  let activeUi;
+
   function buildUpdateReloadUrl() {
     const url = new URL(window.location.href);
     url.searchParams.set('wt-refresh', String(Date.now()));
@@ -25373,7 +25375,7 @@ ${questionAudioHtml}
       const msg = getUpdateToastMessage();
       if (!msg) return;
 
-      const uiState = String(window.WT_APP?.ui?.state || '').trim();
+      const uiState = activeUi?.state;
       // Never interrupt an active question or feedback screen. When the UI state
       // is not known yet, stay silent as well; the next page load can surface it.
       if (uiState !== 'LANDING') {
@@ -25821,6 +25823,7 @@ ${questionAudioHtml}
 
       // Init UI immediately (LANDING is not content-dependent)
       const ui = new window.WT_UI({ storage, game, config, wording });
+      activeUi = ui;
       if (ui && typeof ui.setContentLoading === 'function')
         ui.setContentLoading(true);
       trackCheckoutCancelReturn(ui);

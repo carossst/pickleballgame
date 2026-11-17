@@ -215,7 +215,7 @@
       subtitle:
         'Testez des situations de jeu réelles, découvrez la règle et voyez où vous en êtes.\nService, fautes, score, annonces de ligne et changements de règles.',
       microFun: '2 parties gratuites · Sans inscription · Commencez en 30 secondes',
-      proofLine: '200 questions · 3 erreurs terminent la partie · Travaillez ce qui manque',
+      proofLine: '200 questions · Une explication après chaque réponse',
       microTrust: 'Installez-la après votre première partie.',
       seoBridgeTitleQuestionTemplate: 'Depuis le guide : {label}',
       seoBridgeTitleThemeTemplate: 'Depuis le thème : {label}',

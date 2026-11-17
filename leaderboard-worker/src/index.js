@@ -589,50 +589,24 @@ export async function handlePostScore(request, env) {
   const playerId = clampNonNegativeInt(player.player_id);
   const weekKey = getUtcWeekKey(now());
 
-  const existingSubmission = await env.DB.prepare(
+  const findSubmission = env.DB.prepare(
     `
-      SELECT submission_id, score_fp, accepted, reject_reason
+      SELECT player_id, score_fp, week_key, accepted, reject_reason
       FROM score_submissions
       WHERE run_id = ?1
-      LIMIT ?2
     `
-  )
-    .bind(runId, 1)
-    .first();
+  ).bind(runId);
+  const refreshRanks = ["weekly", "all"].map((windowType) =>
+    prepareBestScore(env.DB, playerId, runId, windowType)
+  );
+  const existingSubmission = await findSubmission.first();
 
   if (existingSubmission) {
-    const accepted = clampNonNegativeInt(existingSubmission.accepted) === 1;
-    if (!accepted) {
-      logWarn("worker.score.duplicate_rejected", {
-        path: new URL(request.url).pathname,
-        reason: String(existingSubmission.reject_reason || "REJECTED")
-      });
-      return json(
-        {
-          ok: false,
-          accepted: false,
-          reject_reason: String(existingSubmission.reject_reason || "REJECTED")
-        },
-        { status: 409 },
-        request,
-        env
-      );
-    }
-
-    const weeklyRank = await getPlayerRank(env.DB, playerId, "weekly", weekKey);
-    const allTimeRank = await getPlayerRank(env.DB, playerId, "all", "all");
-    logInfo("worker.score.duplicate_accepted", {
-      path: new URL(request.url).pathname,
-      score_fp_server: clampNonNegativeInt(existingSubmission.score_fp)
-    });
-    return json({
-      ok: true,
-      accepted: true,
-      score_fp_server: clampNonNegativeInt(existingSubmission.score_fp),
-      weekly_rank: weeklyRank,
-      all_time_rank: allTimeRank,
-      duplicate: true
-    }, undefined, request, env);
+    const rejection = rejectDuplicate(existingSubmission, playerId, request, env);
+    if (rejection) return rejection;
+    // Repair submissions recorded by older versions before a ranking write failed.
+    await env.DB.batch(refreshRanks);
+    return respondWithScore(existingSubmission, playerId, true, request, env);
   }
 
   const validated = validateSubmittedAnswers(rawAnswers, ANSWER_KEY);
@@ -678,7 +652,7 @@ export async function handlePostScore(request, env) {
   }
   const ts = now();
 
-  const insertResult = await env.DB.prepare(
+  const insert = env.DB.prepare(
     `
       INSERT INTO score_submissions (
         player_id,
@@ -694,7 +668,8 @@ export async function handlePostScore(request, env) {
         reject_reason,
         created_at
       )
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 1, "", ?10)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 1, '', ?10)
+      ON CONFLICT(run_id) DO NOTHING
     `
   )
     .bind(
@@ -708,11 +683,16 @@ export async function handlePostScore(request, env) {
       scoreFpServer,
       JSON.stringify(answers),
       ts
-    )
-    .run();
+    );
 
-  const submissionId = clampNonNegativeInt(insertResult?.meta?.last_row_id);
-  if (submissionId <= 0) {
+  // All writes use the stored row, including when a simultaneous retry won the insert.
+  const [insertResult, , , storedResult] = await env.DB.batch([
+    insert,
+    ...refreshRanks,
+    findSubmission
+  ]);
+  const submission = storedResult.results?.[0];
+  if (!submission) {
     logError("worker.score.insert_failed", {
       path: new URL(request.url).pathname
     });
@@ -728,99 +708,63 @@ export async function handlePostScore(request, env) {
     );
   }
 
-  await upsertBestScore(env.DB, {
-    playerId,
-    submissionId,
-    scoreFp: scoreFpServer,
-    updatedAt: ts,
-    windowType: "weekly",
-    weekKey
-  });
-
-  await upsertBestScore(env.DB, {
-    playerId,
-    submissionId,
-    scoreFp: scoreFpServer,
-    updatedAt: ts,
-    windowType: "all",
-    weekKey: "all"
-  });
-
-  const weeklyRank = await getPlayerRank(env.DB, playerId, "weekly", weekKey);
-  const allTimeRank = await getPlayerRank(env.DB, playerId, "all", "all");
-
-  logInfo("worker.score.accepted", {
-    path: new URL(request.url).pathname,
-    answers_count: Array.isArray(answers) ? answers.length : 0,
-    duration_ms: durationMs,
-    score_fp_server: scoreFpServer,
-    weekly_rank: weeklyRank,
-    all_time_rank: allTimeRank
-  });
-
-  return json({
-    ok: true,
-    accepted: true,
-    score_fp_server: scoreFpServer,
-    weekly_rank: weeklyRank,
-    all_time_rank: allTimeRank
-  }, undefined, request, env);
+  const rejection = rejectDuplicate(submission, playerId, request, env);
+  if (rejection) return rejection;
+  return respondWithScore(submission, playerId, insertResult.meta?.changes === 0, request, env);
 }
 
-export async function upsertBestScore(db, params) {
-  const playerId = clampNonNegativeInt(params?.playerId);
-  const submissionId = clampNonNegativeInt(params?.submissionId);
-  const scoreFp = clampNonNegativeInt(params?.scoreFp);
-  const updatedAt = clampNonNegativeInt(params?.updatedAt);
-  const windowType = normalizeWindow(params?.windowType === "all" ? "all" : params?.windowType);
-  const weekKey = String(params?.weekKey || "").trim();
-
-  if (playerId <= 0 || submissionId <= 0 || !windowType || !weekKey) return;
-
-  const existing = await db.prepare(
-    `
-      SELECT best_score_fp
-      FROM leaderboard_best
-      WHERE player_id = ?1 AND window_type = ?2 AND week_key = ?3
-      LIMIT 1
-    `
-  )
-    .bind(playerId, windowType, weekKey)
-    .first();
-
-  const existingBest = clampNonNegativeInt(existing?.best_score_fp);
-  if (!existing) {
-    await db.prepare(
-      `
-        INSERT INTO leaderboard_best (
-          player_id,
-          window_type,
-          week_key,
-          best_score_fp,
-          best_submission_id,
-          updated_at
-        )
-        VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-      `
-    )
-      .bind(playerId, windowType, weekKey, scoreFp, submissionId, updatedAt)
-      .run();
-    return;
+function rejectDuplicate(submission, playerId, request, env) {
+  let reason;
+  if (clampNonNegativeInt(submission.player_id) !== playerId) {
+    reason = "RUN_ID_CONFLICT";
+  } else if (submission.accepted !== 1) {
+    reason = String(submission.reject_reason || "REJECTED");
   }
+  if (!reason) return null;
+  logWarn("worker.score.duplicate_rejected", {
+    path: new URL(request.url).pathname,
+    reason
+  });
+  return json({ ok: false, accepted: false, reject_reason: reason }, { status: 409 }, request, env);
+}
 
-  if (scoreFp <= existingBest) return;
+async function respondWithScore(submission, playerId, duplicate, request, env) {
+  const weeklyRank = await getPlayerRank(env.DB, playerId, "weekly", submission.week_key);
+  const allTimeRank = await getPlayerRank(env.DB, playerId, "all", "all");
+  const result = {
+    ok: true,
+    accepted: true,
+    score_fp_server: clampNonNegativeInt(submission.score_fp),
+    weekly_rank: weeklyRank,
+    all_time_rank: allTimeRank,
+    ...(duplicate ? { duplicate: true } : {})
+  };
+  logInfo(duplicate ? "worker.score.duplicate_accepted" : "worker.score.accepted", {
+    path: new URL(request.url).pathname,
+    score_fp_server: result.score_fp_server,
+    weekly_rank: weeklyRank,
+    all_time_rank: allTimeRank
+  });
+  return json(result, undefined, request, env);
+}
 
-  await db.prepare(
+function prepareBestScore(db, playerId, runId, windowType) {
+  return db.prepare(
     `
-      UPDATE leaderboard_best
-      SET best_score_fp = ?4,
-          best_submission_id = ?5,
-          updated_at = ?6
-      WHERE player_id = ?1 AND window_type = ?2 AND week_key = ?3
+      INSERT INTO leaderboard_best (
+        player_id, window_type, week_key, best_score_fp, best_submission_id, updated_at
+      )
+      SELECT player_id, ?3, CASE WHEN ?3 = 'all' THEN 'all' ELSE week_key END,
+             score_fp, submission_id, created_at
+      FROM score_submissions
+      WHERE player_id = ?1 AND run_id = ?2 AND accepted = 1
+      ON CONFLICT(player_id, window_type, week_key) DO UPDATE SET
+        best_score_fp = excluded.best_score_fp,
+        best_submission_id = excluded.best_submission_id,
+        updated_at = excluded.updated_at
+      WHERE excluded.best_score_fp > leaderboard_best.best_score_fp
     `
-  )
-    .bind(playerId, windowType, weekKey, scoreFp, submissionId, updatedAt)
-    .run();
+  ).bind(playerId, runId, windowType);
 }
 
 export async function getPlayerRank(db, playerId, windowType, weekKey) {

@@ -255,6 +255,54 @@ test('an installed quiz can open the French Instagram kit offline', async ({
   await expect(page.locator('#instagram-caption')).toHaveValue(/utm_campaign=instagram_challenge/);
 });
 
+test('French PWA shows a waiting update and activates it on request', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  // Enable the production PWA flow on the local server, even under an active worker.
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'WT_CONFIG', {
+      configurable: true,
+      set(config) {
+        config.environment = 'production';
+        config.serviceWorker.enabled = true;
+        Object.defineProperty(window, 'WT_CONFIG', {
+          configurable: true,
+          writable: true,
+          value: config
+        });
+      }
+    });
+  });
+  await page.goto('/share.html');
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.register(
+      '/sw.js?v=test-previous&app=pickleball_rules_quiz_v1'
+    );
+    await navigator.serviceWorker.ready;
+  });
+  await expect.poll(() => page.evaluate(
+    () => navigator.serviceWorker.controller?.scriptURL
+  )).toContain('v=test-previous');
+
+  await page.goto('/fr.html');
+  const toast = page.locator('#update-toast');
+  await expect(toast).toContainText('Nouvelle version disponible.');
+  const apply = toast.locator('[data-action="apply-update"]');
+  await expect(apply).toBeEnabled({ timeout: 10000 });
+  const version = await page.evaluate(() => window.WT_CONFIG.version);
+  expect(await page.evaluate(
+    () => navigator.serviceWorker.controller?.scriptURL
+  )).toContain('v=test-previous');
+
+  await apply.click();
+  await expect(page).toHaveURL(/wt-refresh=/);
+  await expect.poll(() => page.evaluate(
+    () => navigator.serviceWorker.controller?.scriptURL
+  )).toContain(`v=${version}`);
+  await expect(page.getByRole('button', { name: 'Commencer', exact: true })).toBeVisible();
+});
+
 test('poster for a club shows its name and tags the QR code', async ({
   page
 }) => {

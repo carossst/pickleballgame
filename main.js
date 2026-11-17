@@ -3,6 +3,8 @@
 (() => {
   'use strict';
 
+  let activeUi;
+
   function buildUpdateReloadUrl() {
     const url = new URL(window.location.href);
     url.searchParams.set('wt-refresh', String(Date.now()));
@@ -269,7 +271,7 @@
       const msg = getUpdateToastMessage();
       if (!msg) return;
 
-      const uiState = String(window.WT_APP?.ui?.state || '').trim();
+      const uiState = activeUi?.state;
       // Never interrupt an active question or feedback screen. When the UI state
       // is not known yet, stay silent as well; the next page load can surface it.
       if (uiState !== 'LANDING') {
@@ -717,6 +719,7 @@
 
       // Init UI immediately (LANDING is not content-dependent)
       const ui = new window.WT_UI({ storage, game, config, wording });
+      activeUi = ui;
       if (ui && typeof ui.setContentLoading === 'function')
         ui.setContentLoading(true);
       trackCheckoutCancelReturn(ui);

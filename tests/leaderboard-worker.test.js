@@ -198,122 +198,166 @@ test('POST /score rejects duplicate answer ids fail-closed', async () => {
   });
 });
 
-test('POST /score is idempotent for duplicate run_id', async () => {
-  const request = new Request('https://example.test/score', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      device_uuid: 'dev-3',
-      run_id: 'run-dup',
-      run_number: 3,
-      content_version: '2026-10-28-combo4',
-      run_mode: 'RUN',
-      duration_ms: 6400,
-      answers: [{ id: 1, answer: false, ms: 10 }]
-    })
-  });
-
-  const seenRuns = [];
-  const env = {
-    DB: createFakeDb((sql, args, op) => {
-      if (
-        sql.includes('SELECT player_id, opt_in FROM players') &&
-        op === 'first'
-      ) {
-        return { player_id: 11, opt_in: 1 };
+function createSqliteDb(sqlite) {
+  return {
+    prepare(sql) {
+      return {
+        bind(...args) {
+          const params = Object.fromEntries(
+            args.map((arg, i) => [`?${i + 1}`, arg])
+          );
+          const stmt = sqlite.prepare(sql);
+          return {
+            first: () => stmt.get(params),
+            execute: () =>
+              /^\s*SELECT\b/i.test(sql)
+                ? { results: stmt.all(params) }
+                : { meta: stmt.run(params) }
+          };
+        }
+      };
+    },
+    batch(statements) {
+      sqlite.exec('BEGIN');
+      try {
+        const results = statements.map((statement) => statement.execute());
+        sqlite.exec('COMMIT');
+        return results;
+      } catch (error) {
+        sqlite.exec('ROLLBACK');
+        throw error;
       }
-      if (
-        sql.includes('FROM score_submissions') &&
-        sql.includes('WHERE run_id') &&
-        op === 'first'
-      ) {
-        seenRuns.push(args[0]);
-        return {
-          submission_id: 99,
-          score_fp: 17,
-          accepted: 1,
-          reject_reason: ''
-        };
-      }
-      if (sql.includes('SELECT best_score_fp, updated_at') && op === 'first') {
-        return { best_score_fp: 17, updated_at: 1000 };
-      }
-      if (sql.includes('COUNT(*) AS count_rows') && op === 'first') {
-        return { count_rows: 4 };
-      }
-      if (sql.includes('INSERT INTO score_submissions') && op === 'run') {
-        throw new Error('Duplicate flow should not insert a new submission');
-      }
-      throw new Error(`Unexpected query: ${op} ${sql}`);
-    })
+    }
   };
+}
 
-  const response = await workerModule.handlePostScore(request, env);
-  expect(response.status).toBe(200);
-  await expect(readJson(response)).resolves.toEqual({
-    ok: true,
-    accepted: true,
-    score_fp_server: 17,
-    weekly_rank: 5,
-    all_time_rank: 5,
-    duplicate: true
+async function withScoreDatabase(run) {
+  const { DatabaseSync } = await import('node:sqlite');
+  const sqlite = new DatabaseSync(':memory:');
+  try {
+    sqlite.exec(
+      require('node:fs').readFileSync(
+        require('node:path').resolve(
+          __dirname,
+          '../leaderboard-worker/schema.sql'
+        ),
+        'utf8'
+      )
+    );
+    sqlite.exec(`
+      INSERT INTO players (player_id, device_uuid, nickname, created_at, updated_at)
+      VALUES (11, 'dev-3', 'Player', 1, 1), (12, 'dev-4', 'Other', 1, 1)
+    `);
+    const env = { DB: createSqliteDb(sqlite) };
+    const submit = (runId, answers, device = 'dev-3') =>
+      workerModule.handlePostScore(
+        new Request('https://example.test/score', {
+          method: 'POST',
+          body: JSON.stringify({
+            device_uuid: device,
+            run_id: runId,
+            run_number: 3,
+            content_version: '2026-10-28-combo4',
+            run_mode: 'RUN',
+            duration_ms: 6400,
+            answers
+          })
+        }),
+        env
+      );
+    await run(sqlite, submit);
+  } finally {
+    sqlite.close();
+  }
+}
+
+const correctAnswer = { id: 1, answer: false, ms: 1000 };
+const wrongAnswer = { id: 1, answer: true, ms: 1000 };
+
+test('score batch rolls back a partial write and can be retried', async () => {
+  await withScoreDatabase(async (sqlite, submit) => {
+    sqlite.exec(`
+      CREATE TRIGGER fail_all BEFORE INSERT ON leaderboard_best
+      WHEN NEW.window_type = 'all'
+      BEGIN SELECT RAISE(ABORT, 'simulated D1 write failure'); END;
+    `);
+    await expect(submit('run-retry', [correctAnswer])).rejects.toThrow(
+      'simulated D1 write failure'
+    );
+    expect(
+      sqlite.prepare('SELECT COUNT(*) AS n FROM score_submissions').get().n
+    ).toBe(0);
+    expect(
+      sqlite.prepare('SELECT COUNT(*) AS n FROM leaderboard_best').get().n
+    ).toBe(0);
+    sqlite.exec('DROP TRIGGER fail_all');
+    const response = await submit('run-retry', [correctAnswer]);
+    await expect(response.json()).resolves.toMatchObject({
+      accepted: true,
+      score_fp_server: 1,
+      weekly_rank: 1,
+      all_time_rank: 1
+    });
   });
-  expect(seenRuns).toEqual(['run-dup']);
 });
 
-test('upsertBestScore does not replace an existing best with a lower score', async () => {
-  const calls = [];
-  const db = createFakeDb((sql, args, op) => {
-    calls.push({ sql, args, op });
-    if (sql.includes('SELECT best_score_fp') && op === 'first') {
-      return { best_score_fp: 20 };
-    }
-    if (sql.includes('UPDATE leaderboard_best') && op === 'run') {
-      throw new Error('Lower score should not trigger an update');
-    }
-    return null;
+test('score retries repair historical ranks and lower scores preserve the best', async () => {
+  await withScoreDatabase(async (sqlite, submit) => {
+    sqlite.exec(`
+      INSERT INTO score_submissions (
+        player_id, run_id, run_number, content_version, run_mode, duration_ms,
+        week_key, score_fp, answers_json, created_at
+      ) VALUES (11, 'run-historical', 3, '2026-10-28-combo4', 'RUN', 6400,
+        '2026-W21', 17, '[]', 1234);
+    `);
+    const retry = await submit('run-historical', [wrongAnswer]);
+    await expect(retry.json()).resolves.toMatchObject({
+      accepted: true,
+      duplicate: true,
+      score_fp_server: 17,
+      weekly_rank: 1,
+      all_time_rank: 1
+    });
+    const conflict = await submit('run-historical', [correctAnswer], 'dev-4');
+    expect(conflict.status).toBe(409);
+    const results = await Promise.all([
+      submit('run-lower', [wrongAnswer]),
+      submit('run-higher', [correctAnswer]),
+      submit('run-higher', [correctAnswer])
+    ]);
+    const responses = await Promise.all(
+      results.map((response) => response.json())
+    );
+    expect(responses.every((response) => response.accepted)).toBe(true);
+    expect(responses.filter((response) => response.duplicate)).toHaveLength(1);
+    const rows = sqlite
+      .prepare(
+        'SELECT window_type, week_key, best_score_fp, updated_at FROM leaderboard_best'
+      )
+      .all();
+    expect(rows).toHaveLength(3);
+    expect(rows).toEqual(
+      expect.arrayContaining([
+        {
+          window_type: 'weekly',
+          week_key: '2026-W21',
+          best_score_fp: 17,
+          updated_at: 1234
+        },
+        {
+          window_type: 'all',
+          week_key: 'all',
+          best_score_fp: 17,
+          updated_at: 1234
+        }
+      ])
+    );
+    expect(
+      rows.find(
+        (row) => row.window_type === 'weekly' && row.week_key !== '2026-W21'
+      ).best_score_fp
+    ).toBe(1);
   });
-
-  await workerModule.upsertBestScore(db, {
-    playerId: 1,
-    submissionId: 2,
-    scoreFp: 19,
-    updatedAt: 123,
-    windowType: 'weekly',
-    weekKey: '2026-W21'
-  });
-
-  expect(
-    calls.filter((it) => it.sql.includes('SELECT best_score_fp'))
-  ).toHaveLength(1);
-  expect(
-    calls.filter((it) => it.sql.includes('UPDATE leaderboard_best'))
-  ).toHaveLength(0);
-});
-
-test('upsertBestScore replaces an existing best with a higher score', async () => {
-  let updateArgs = null;
-  const db = createFakeDb((sql, args, op) => {
-    if (sql.includes('SELECT best_score_fp') && op === 'first') {
-      return { best_score_fp: 20 };
-    }
-    if (sql.includes('UPDATE leaderboard_best') && op === 'run') {
-      updateArgs = args;
-      return { success: true };
-    }
-    return null;
-  });
-
-  await workerModule.upsertBestScore(db, {
-    playerId: 1,
-    submissionId: 5,
-    scoreFp: 21,
-    updatedAt: 555,
-    windowType: 'weekly',
-    weekKey: '2026-W21'
-  });
-
-  expect(updateArgs).toEqual([1, 'weekly', '2026-W21', 21, 5, 555]);
 });
 
 test('getPlayerRank uses score, updated_at, and player_id tie-break inputs', async () => {

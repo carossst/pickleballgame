@@ -213,7 +213,7 @@
       subtitle:
         'Test real game situations, learn the rule, and see where you stand.\nServing, faults, scoring, line calls, and rule changes.',
       microFun: '2 free games · No signup · 30 seconds to start',
-      proofLine: '200 questions · 3 mistakes end the run · Practice what you miss',
+      proofLine: '200 questions · An explanation after each answer',
       microTrust: 'Install it after your first game.',
       seoBridgeTitleQuestionTemplate: 'From the guide: {label}',
       seoBridgeTitleThemeTemplate: 'From the topic: {label}',

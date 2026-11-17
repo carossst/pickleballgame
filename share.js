@@ -39,11 +39,11 @@
         statusImageFailed: 'Could not prepare the image. Try again.',
         canvasKicker: 'PICKLEBALL RULES CHALLENGE',
         canvasTitle: 'THINK YOU KNOW\nTHE RULES?',
-        canvasBody: 'Three mistakes and the challenge ends.',
+        canvasBody: 'Get an explanation after every answer.',
         canvasCta: 'TRY 2 GAMES FREE',
         canvasUrl: 'pickleballrulesquiz.com',
         canvasFooter: 'Based on the USA Pickleball rulebook',
-        caption: 'Think you know the pickleball rules?\n\nTry the Pickleball Rules Challenge. Three mistakes and the challenge ends.\n\nTry 2 games free. No signup required.\n\n{url}'
+        caption: 'Think you know the pickleball rules?\n\nTry the Pickleball Rules Challenge and get an explanation after every answer.\n\nTry 2 games free. No signup required.\n\n{url}'
       },
       fr: {
         title: 'Préparer un post Instagram',
@@ -72,11 +72,11 @@
         statusImageFailed: 'Impossible de préparer l’image. Réessayez.',
         canvasKicker: 'DÉFI DES RÈGLES DU PICKLEBALL',
         canvasTitle: 'VOUS CONNAISSEZ\nLES RÈGLES ?',
-        canvasBody: 'Trois erreurs et le défi s’arrête.',
+        canvasBody: 'Une explication après chaque réponse.',
         canvasCta: '2 PARTIES GRATUITES',
         canvasUrl: 'pickleballrulesquiz.com/fr.html',
         canvasFooter: 'Basé sur le règlement USA Pickleball',
-        caption: 'Vous connaissez les règles du pickleball ?\n\nEssayez le Défi des règles du pickleball. Trois erreurs et le défi s’arrête.\n\n2 parties gratuites. Sans inscription.\n\n{url}'
+        caption: 'Vous connaissez les règles du pickleball ?\n\nEssayez le Défi des règles du pickleball et découvrez une explication après chaque réponse.\n\n2 parties gratuites. Sans inscription.\n\n{url}'
       }
     }
   };
