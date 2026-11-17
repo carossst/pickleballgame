@@ -25,6 +25,8 @@ const SOURCES = [
   "ui-stats-sharing.js",
   "ui-checkout.js",
   "ui-growth.js",
+  "newsletter.js",
+  "ui-newsletter.js",
   "ui-leaderboard.js",
   "sfx.js",
   "court-diagram.js",

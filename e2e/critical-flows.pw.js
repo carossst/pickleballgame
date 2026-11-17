@@ -85,7 +85,9 @@ test('free run end screen offers a visible way to share the score', async ({
       .locator('[data-action="share-native"], [data-action="copy-share"]')
       .first()
   ).toBeVisible();
-  await expect(page.locator('.wt-card--end a[href*="share.html"]')).toBeVisible();
+  await expect(
+    page.locator('.wt-card--end a[href*="share.html"]')
+  ).toBeVisible();
 });
 
 test('statement box keeps the verdict colour while the feedback is shown', async ({
@@ -289,6 +291,78 @@ test('Rapid Fire: paddle, wave banner and life capsule', async ({ page }) => {
   for (let i = 0; i < 8; i++) await answer('answer-true');
   await expect(page.locator('.wt-rf-capsule')).toContainText('+1 LIFE');
   await expect(page.locator('.wt-hud-metric--mistakes')).toContainText('0/3');
+});
+
+test('newsletter signup: link, validation and Kit form post', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.route('**/content.json', async (route) => {
+    const response = await route.fetch();
+    const content = await response.json();
+    content.items.forEach((item) => {
+      item.correctAnswer = true;
+    });
+    await route.fulfill({ json: content });
+  });
+  // The feature is off until the owner pastes the Kit form URLs: turn it on for this test.
+  await page.route('**/app.bundle.js*', async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text()).replace(
+      /formAction:\s*\{\s*en:\s*"",\s*fr:\s*""\s*\}/,
+      'formAction: { en: "https://kit.example.test/forms/1/subscriptions", fr: "" }'
+    );
+    await route.fulfill({ response, body });
+  });
+  const posts = [];
+  await page.route('https://kit.example.test/**', async (route) => {
+    posts.push(route.request().postData() || '');
+    await route.fulfill({ status: 200, body: '' });
+  });
+  await startFreshRun(page);
+  for (let i = 0; i < 8; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1500 })
+      .catch(() => {});
+  }
+  await page.locator('[data-action="open-newsletter"]').click();
+  await page.locator('#wt-nl-email').fill('not-an-email');
+  await page.locator('[data-action="confirm-newsletter"]').click();
+  await expect(page.locator('#wt-nl-msg')).toContainText('valid email');
+  expect(posts).toHaveLength(0);
+  await page.locator('#wt-nl-email').fill('test@example.com');
+  await page.locator('#wt-nl-first').fill('Marie');
+  await page.locator('[data-action="confirm-newsletter"]').click();
+  await expect(page.locator('#wt-nl-msg')).toContainText('check your inbox');
+  expect(posts).toHaveLength(1);
+  expect(posts[0]).toContain('email_address=test%40example.com');
+  expect(posts[0]).toContain('first_name%5D=Marie');
+});
+
+test('newsletter link is hidden while no Kit form is configured', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await startFreshRun(page);
+  for (let i = 0; i < 12; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1500 })
+      .catch(() => {});
+  }
+  await expect(page.locator('.wt-card--end')).toBeVisible();
+  await expect(page.locator('[data-action="open-newsletter"]')).toHaveCount(0);
 });
 
 test('question statement is readable: text contrasts with its box', async ({

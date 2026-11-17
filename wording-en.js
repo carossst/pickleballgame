@@ -1049,6 +1049,21 @@ Try this one:
       funFactTemplatesTrue: [`"{question}" True or false? 🤔`]
     },
 
+    newsletter: {
+      link: 'Get new tricky questions by email',
+      title: 'New tricky questions by email',
+      intro: 'Get new rule questions and news about the game by email, with the answer and the rulebook reference.',
+      emailLabel: 'Email',
+      firstNameLabel: 'First name (optional)',
+      consent:
+        'You will receive a confirmation email first. By subscribing you agree to receive emails from Bonjour Pickleball. You can unsubscribe in one click from any email.',
+      privacyLink: 'Privacy policy',
+      cta: 'Subscribe',
+      thanks: 'Almost done: check your inbox and confirm your email address.',
+      errorEmail: 'Please enter a valid email address.',
+      errorNetwork: 'Something went wrong. Please try again in a moment.'
+    },
+
     installPrompt: {
       title: 'Install Pickleball Rules Quiz',
       body: 'Add it to your home screen and open it like an app.\nNo App Store. No account. One tap to play.',

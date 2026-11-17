@@ -255,3 +255,10 @@ All are classic browser scripts exposing a `window.WT_*` global. Those marked "b
 - Styles: the court skin and the Rapid Fire arcade look are at the end of `styles/screens.css`; the sound button and the diagram at the end of `styles/components.css`.
 
 Contract worth remembering: anything added to the DOM after a render is lost at the next render. The feedback colour is keyed on `.wt-feedback--ok / --bad` in CSS for that reason.
+
+## Newsletter signup (Kit) and the ui/ sources
+
+- `ui.js` is generated from `ui/01-foundation.js` ... `ui/05-rendering.js` by `scripts/generate-ui.mjs` (run by `npm run generate:bundle`). Edit the files in `ui/`; the action dispatcher and `trackedEndActions` are in `ui/02-lifecycle.js`.
+- `newsletter.js` (bundle): `WT_Newsletter` validates the email (first name optional, 40 characters), posts `email_address` and `fields[first_name]` (names configurable in `WT_CONFIG.newsletter.fieldNames`) to the Kit form action URL with `fetch(..., { mode: 'no-cors' })`, and remembers the signup in `localStorage` key `wt-newsletter`. The answer of a no-cors post cannot be read, so the UI says "check your inbox"; Kit sends the confirmation email (double opt-in is a Kit setting). A hidden honeypot field `#wt-nl-website` skips bot submissions.
+- `ui-newsletter.js` (bundle): `WT_UI_Newsletter.open(ui)` / `submit(ui)`, wired to the actions `open-newsletter` and `confirm-newsletter`. The end-screen link (`ui-screen-end.js`) only shows when `WT_CONFIG.newsletter.formAction[lang]` is an https URL and the player has not subscribed. It is empty by default: the feature is off until the owner pastes the Kit form URLs. Wording keys: `newsletter.*` (EN and FR).
+- Analytics: `newsletter_submit` (no personal data). `privacy.html` section 5 describes the signup and Kit.

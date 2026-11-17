@@ -1077,6 +1077,21 @@ Essayez celle-ci :
       funFactTemplatesTrue: [`"{question}" Vrai ou faux ? 🤔`]
     },
 
+    newsletter: {
+      link: 'Recevoir de nouvelles questions pièges par e-mail',
+      title: 'De nouvelles questions pièges par e-mail',
+      intro: 'Recevez de nouvelles questions sur les règles et les nouveautés du jeu par e-mail, avec la réponse et la référence du règlement.',
+      emailLabel: 'E-mail',
+      firstNameLabel: 'Prénom (facultatif)',
+      consent:
+        'Vous recevrez d’abord un e-mail de confirmation. En vous inscrivant, vous acceptez de recevoir des e-mails de Bonjour Pickleball. Vous pouvez vous désinscrire en un clic depuis n’importe quel e-mail.',
+      privacyLink: 'Politique de confidentialité',
+      cta: 'S’inscrire',
+      thanks: 'Presque terminé : consultez votre boîte mail et confirmez votre adresse.',
+      errorEmail: 'Veuillez saisir une adresse e-mail valide.',
+      errorNetwork: 'Une erreur est survenue. Réessayez dans un instant.'
+    },
+
     installPrompt: {
       title: 'Installer Quiz Pickleball',
       body: "Ajoutez-la à votre écran d'accueil et ouvrez-la comme une application.\nPas d'App Store. Pas de compte. Un geste pour jouer.",
