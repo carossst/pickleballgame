@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex,follow">
+    <meta name="description" content="Votre inscription est confirmée.">
+    <title>Inscription confirmée - Pickleball Rules Quiz</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
+    <link rel="icon" href="../icons/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="../style.css">
+    <script data-goatcounter="https://caroles.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</head>
+
+<body class="wt-page--doc">
+    <div class="wt-app">
+        <main id="main-content" class="wt-main">
+            <div class="wt-container wt-container--doc">
+                <div class="wt-card">
+                    <!-- French by default; ?lang=en shows the English text -->
+                    <section id="confirmation-fr" lang="fr">
+                        <h1 class="wt-h1">Inscription confirmée !</h1>
+                        <p class="wt-press-lead">Merci, votre adresse e-mail est confirmée.</p>
+                        <p>
+                            De temps en temps, vous recevrez de nouvelles questions pièges sur les règles du pickleball
+                            et les nouveautés du jeu. Un e-mail de bienvenue arrive dans quelques instants : pensez à regarder vos indésirables.
+                        </p>
+                        <p>En attendant, testez vos connaissances :</p>
+                        <p>
+                            <a class="wt-btn wt-btn--primary wt-btn--block" data-confirmation-play
+                                href="../fr.html?wt-source=newsletter-confirmation">Jouer au quiz</a>
+                        </p>
+                    </section>
+
+                    <section id="confirmation-en" lang="en" hidden>
+                        <h1 class="wt-h1">Subscription confirmed!</h1>
+                        <p class="wt-press-lead">Thank you, your email address is confirmed.</p>
+                        <p>
+                            From time to time you will receive new tricky pickleball rule questions and news about the game.
+                            A welcome email is on its way: check your spam folder if you do not see it.
+                        </p>
+                        <p>In the meantime, test your knowledge:</p>
+                        <p>
+                            <a class="wt-btn wt-btn--primary wt-btn--block" data-confirmation-play
+                                href="../?wt-source=newsletter-confirmation">Play the quiz</a>
+                        </p>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            try {
+                if (new URLSearchParams(window.location.search).get('lang') === 'en') {
+                    document.documentElement.lang = 'en';
+                    document.title = 'Subscription confirmed - Pickleball Rules Quiz';
+                    document.getElementById('confirmation-fr').hidden = true;
+                    document.getElementById('confirmation-en').hidden = false;
+                }
+            } catch (_) { /* French stays visible */ }
+        })();
+    </script>
+</body>
+
+</html>

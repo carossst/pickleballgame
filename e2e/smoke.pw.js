@@ -388,3 +388,26 @@ test('clubs page builds tagged links from a club name', async ({ page }) => {
     'coach-evry-pickle'
   );
 });
+
+test('newsletter confirmation page: French by default, English on request, tagged play link', async ({
+  page
+}) => {
+  await page.goto('/confirmation/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('h1:visible')).toHaveText(
+    'Inscription confirmée !'
+  );
+  await expect(
+    page.locator('[data-confirmation-play]:visible')
+  ).toHaveAttribute('href', '../fr.html?wt-source=newsletter-confirmation');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    'content',
+    'noindex,follow'
+  );
+  await page.goto('/confirmation/?lang=en', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('h1:visible')).toHaveText(
+    'Subscription confirmed!'
+  );
+  await expect(
+    page.locator('[data-confirmation-play]:visible')
+  ).toHaveAttribute('href', '../?wt-source=newsletter-confirmation');
+});
