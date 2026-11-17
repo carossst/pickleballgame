@@ -210,6 +210,11 @@
     },
 
     landing: {
+      dailyQuestionCta: 'Question du jour gratuite',
+      dailyQuestionReady: 'Une question et son explication. Sans utiliser de partie.',
+      dailyQuestionDone: 'Revenez demain pour une nouvelle question.',
+      dailyQuestionCorrect: 'Bonne réponse !',
+      dailyQuestionIncorrect: 'À retenir pour la prochaine fois.',
       title: 'Défi des règles du pickleball',
       tagline: '**Saurez-vous trancher 5 situations pièges au pickleball ?**',
       subtitle:
@@ -645,7 +650,7 @@
       modalTitle: 'Mode Rapide',
       modalBody:
         "Le Mode Rapide est plus rapide et plus exigeant.\nIl n'utilise que les questions que vous avez déjà vues.\nCoût : {cost} jeton{costPluralS}.\nDisponible maintenant : {tickets}.",
-      modalCta: 'Jouer en Mode Rapide (1 jeton)',
+      modalCta: 'Jouer en Mode Rapide ({cost} jeton{costPluralS})',
       ticketRequiredTitle: 'Aucun jeton Mode Rapide disponible.',
       ticketRequiredBodyDaily:
         "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez le défi du jour pour en gagner un.",
@@ -841,6 +846,9 @@
       houseAdSummaryLabel: 'Enchaînez avec une autre partie',
       playAgain: 'Rejouer',
       nextChallengeCta: 'Défi suivant',
+      secondFreeGameCta: 'Jouer ma 2ᵉ partie gratuite',
+      correctAnswersLine: '{correct}/{total} bonnes réponses',
+      nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
 
       practiceCta: 'Revoir mes erreurs',
       practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',

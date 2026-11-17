@@ -163,9 +163,10 @@ UI.prototype.startRun = function (mistakesOnly) {
 
     this._runtime.runItemIds = [];
     this._runtime.runMistakeIds = [];
+    this._runtime.freeRunNumber = runStartNumber;
     this._runtime.currentRunNumber = currentRunNumber;
     this._runtime.runMode = mistakesOnly === true ? MODES.PRACTICE : MODES.RUN;
-    this._runtime.challengeKind = fixedIds.length
+    this._runtime.challengeKind = mistakesOnly !== true && fixedIds.length
       ? (requestedRunKind === 'DAILY' ? 'DAILY' : 'FRIEND')
       : '';
     this._runtime.pendingRunKind = '';
@@ -276,7 +277,9 @@ UI.prototype.startRun = function (mistakesOnly) {
           'run_start',
           window.WT_Analytics.inferUiContext(this, {
             mode: this._runtime.runMode,
-            run_type: runType || ''
+            run_type: runType || '',
+            free_run_number: runStartNumber,
+            challenge_kind: this._runtime.challengeKind
           })
         );
       }
@@ -1956,6 +1959,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.lastRun = {
       mode,
       runType: String(this._runtime?.runType || '').trim(),
+      freeRunNumber: mode === MODES.RUN ? this._runtime.freeRunNumber : null,
       runId: String(this._runtime?.currentRunId || '').trim(),
       runNumber: clampInt(this._runtime?.currentRunNumber, 0, 999999999),
       durationMs: clampInt(
@@ -2003,6 +2007,8 @@ UI.prototype.startRun = function (mistakesOnly) {
           window.WT_Analytics.inferUiContext(this, {
             mode,
             run_type: this._runtime.lastRun.runType || '',
+            free_run_number: this._runtime.lastRun.freeRunNumber,
+            challenge_kind: mode === MODES.RUN ? this._runtime.challengeKind : '',
             ...(mode === MODES.RUN ? {
               combo_reached: Number(gameState.comboActivations || 0) > 0,
               combo_activations: Number(gameState.comboActivations || 0),

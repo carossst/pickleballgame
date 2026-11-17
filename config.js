@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.49",
+    version: "4.3.50",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -135,7 +135,7 @@
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
       // Ordered so true/false never repeats more than twice in a row.
       cardIdsByRun: {
-        1: [23, 156, 105, 50, 26, 143, 62, 113, 144, 48],
+        1: [23, 62, 156, 105, 26, 143, 50, 113, 144, 48],
         2: [44, 155, 66, 124, 98, 109, 150, 22, 131, 3, 21, 16]
       }
     },

@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.49",
+    version: "4.3.50",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -139,7 +139,7 @@
       // with the highest-value "aha" questions and 2-3 hard ones near the end.
       // Ordered so true/false never repeats more than twice in a row.
       cardIdsByRun: {
-        1: [23, 156, 105, 50, 26, 143, 62, 113, 144, 48],
+        1: [23, 62, 156, 105, 26, 143, 50, 113, 144, 48],
         2: [44, 155, 66, 124, 98, 109, 150, 22, 131, 3, 21, 16]
       }
     },
@@ -1149,6 +1149,11 @@
     },
 
     landing: {
+      dailyQuestionCta: 'Free question of the day',
+      dailyQuestionReady: 'One question and its explanation. No game credit needed.',
+      dailyQuestionDone: 'Come back tomorrow for a new question.',
+      dailyQuestionCorrect: 'Correct!',
+      dailyQuestionIncorrect: 'One to remember next time.',
       title: 'Pickleball Rules Quiz',
       tagline: '**Can you get 5 tricky pickleball calls right?**',
       subtitle:
@@ -1572,7 +1577,7 @@
       modalTitle: 'Rapid Fire Mode',
       modalBody:
         "Rapid Fire Mode is faster and more demanding.\nIt uses only questions you've already seen in the game.\nCost: {cost} ticket{costPluralS}.\nAvailable now: {tickets}.",
-      modalCta: 'Play Rapid Fire (1 ticket)',
+      modalCta: 'Play Rapid Fire ({cost} ticket{costPluralS})',
       ticketRequiredTitle: 'No Rapid Fire ticket available.',
       ticketRequiredBodyDaily:
         "Rapid Fire costs {cost} ticket{costPluralS}.\nYou have {tickets} right now.\nPlay today's challenge to earn one.",
@@ -1680,6 +1685,9 @@
     },
 
     end: {
+      secondFreeGameCta: 'Play my second free game',
+      correctAnswersLine: '{correct}/{total} correct answers',
+      nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
 
       poolCompleteTitle: 'All questions complete.',
@@ -2326,6 +2334,11 @@ Thanks!`
     },
 
     landing: {
+      dailyQuestionCta: 'Question du jour gratuite',
+      dailyQuestionReady: 'Une question et son explication. Sans utiliser de partie.',
+      dailyQuestionDone: 'Revenez demain pour une nouvelle question.',
+      dailyQuestionCorrect: 'Bonne réponse !',
+      dailyQuestionIncorrect: 'À retenir pour la prochaine fois.',
       title: 'Défi des règles du pickleball',
       tagline: '**Saurez-vous trancher 5 situations pièges au pickleball ?**',
       subtitle:
@@ -2761,7 +2774,7 @@ Thanks!`
       modalTitle: 'Mode Rapide',
       modalBody:
         "Le Mode Rapide est plus rapide et plus exigeant.\nIl n'utilise que les questions que vous avez déjà vues.\nCoût : {cost} jeton{costPluralS}.\nDisponible maintenant : {tickets}.",
-      modalCta: 'Jouer en Mode Rapide (1 jeton)',
+      modalCta: 'Jouer en Mode Rapide ({cost} jeton{costPluralS})',
       ticketRequiredTitle: 'Aucun jeton Mode Rapide disponible.',
       ticketRequiredBodyDaily:
         "Le Mode Rapide coûte {cost} jeton{costPluralS}.\nVous en avez {tickets} pour l'instant.\nJouez le défi du jour pour en gagner un.",
@@ -2957,6 +2970,9 @@ Thanks!`
       houseAdSummaryLabel: 'Enchaînez avec une autre partie',
       playAgain: 'Rejouer',
       nextChallengeCta: 'Défi suivant',
+      secondFreeGameCta: 'Jouer ma 2ᵉ partie gratuite',
+      correctAnswersLine: '{correct}/{total} bonnes réponses',
+      nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
 
       practiceCta: 'Revoir mes erreurs',
       practiceCtaTemplate: 'Revoir vos {count} question{pluralS} ratée{pluralS}',
@@ -3691,6 +3707,18 @@ Merci !`
     if (p.price_key) {
       const priceKey = slugify(p.price_key);
       if (priceKey) parts.push(`price-${priceKey}`);
+    }
+
+    if (p.free_run_number === 1 || p.free_run_number === 2) {
+      parts.push(`free-run-${p.free_run_number}`);
+    }
+
+    if (p.challenge_kind === 'DAILY' || p.challenge_kind === 'FRIEND') {
+      parts.push(`challenge-${p.challenge_kind.toLowerCase()}`);
+    }
+
+    if (p.return_day === 'day-1' || p.return_day === 'day-2-plus') {
+      parts.push(p.return_day);
     }
 
     if (typeof p.combo_reached === 'boolean') {
@@ -8652,6 +8680,10 @@ Merci !`
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const maxChances = clampInt(lastRun.maxChances || cfg?.game?.maxChances, 0, 99);
     const totalPresented = Array.isArray(ui._runtime?.runItemIds) ? ui._runtime.runItemIds.length : 0;
+    const totalAnswered = Array.isArray(lastRun.answerLog) ? lastRun.answerLog.length : totalPresented;
+    const correctAnswersLine = isRun && totalAnswered > 0 && Number.isFinite(lastRun.correctCount)
+      ? fillTemplate(end.correctAnswersLine, { correct: lastRun.correctCount, total: totalAnswered })
+      : "";
     const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
 
     let seen = null;
@@ -9074,11 +9106,19 @@ Merci !`
     // Keep the compact end screen during the free preview, but do not hide the
     // final-run conversion offer: exhausted players must still see the share
     // bonus that unlocks one third game.
+    const nextIsSecondFree = isRun && !premium && !runsExhausted && lastRun.freeRunNumber === 1;
+    const secondCap = clampInt(cfg.curatedFreeRuns?.maxQuestionsByRun?.[2], 0, 99);
+    const secondMaxScore = secondCap + Math.max(0, secondCap - 4);
+    const nextTicketLine = nextIsSecondFree && cfg.secretBonus?.enabled === true &&
+      dailyModel?.rewardAvailableToday && !dailyModel.ticketAtCap &&
+      dailyTargetScore > 0 && dailyTargetScore <= secondMaxScore
+      ? fillTemplate(end.nextGameTicketLine, { target: dailyTargetScore })
+      : "";
     const focusedRunEnd = !!(
       isRun &&
       !premium &&
       !runsExhausted &&
-      lastRunMistakeCount > 0 &&
+      (lastRunMistakeCount > 0 || nextIsSecondFree) &&
       !poolCompleteCelebration
     );
     // Last free game: the screen has one job (upgrade, or share for one more
@@ -9090,9 +9130,9 @@ Merci !`
     const focusedEndPrimaryLabel = focusedRunEnd
       ? (runsExhausted
         ? upgradeCta
-        : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
+        : String((nextIsSecondFree && end.secondFreeGameCta) || end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
       : "";
-    const focusedRunCopyTpl = focusedRunEnd
+    const focusedRunCopyTpl = focusedRunEnd && lastRunMistakeCount > 0
       ? String((runsExhausted ? end.focusedRunPaywallLine : end.focusedRunPracticeLine) || end.focusedRunLine || "").trim()
       : "";
     const focusedRunCopy = focusedRunCopyTpl
@@ -9328,6 +9368,7 @@ Merci !`
   ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
+    ${correctAnswersLine ? `<p class="wt-muted">${escapeHtml(correctAnswersLine)}</p>` : ``}
     ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-muted">${escapeHtml(fillTemplate(w.system?.comboSummary || '', { correct: lastRun.correctCount, bonus: lastRun.bonusPoints }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
@@ -9369,6 +9410,7 @@ Merci !`
     })}
   </div>
 
+  ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
   ${focusedShareHtml}
   ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}
@@ -10196,6 +10238,13 @@ ${(() => {
     })()}
 
     ${postBlock}
+
+    ${b >= 1 && landing.dailyQuestionCta ? `
+      <div class="wt-landing-followup">
+        <button type="button" class="wt-text-action" data-action="open-daily-question"${Number(ui._runtime?.contentTotal) > 0 ? '' : ' disabled'}>${escapeHtml(landing.dailyQuestionCta)}</button>
+        <p class="wt-sub wt-muted">${escapeHtml(landing.dailyQuestionReady || '')}</p>
+      </div>
+    ` : ''}
 
     ${hasDashboard && !isPostPaywallVariant ? `
       <section class="wt-landing-dashboard">
@@ -12906,8 +12955,8 @@ ${(() => {
   const H = 1350;
 
   const COPY = {
-    en: { title: 'Pickleball Rules Quiz', points: 'points', cta: 'Can you beat me?', url: 'pickleballrulesquiz.com' },
-    fr: { title: 'Défi des règles du pickleball', points: 'points', cta: 'Tu fais mieux ?', url: 'pickleballrulesquiz.com/fr.html' }
+    en: { title: 'Pickleball Rules Quiz', points: 'points', correct: 'correct answers', cta: 'Can you beat me?', url: 'pickleballrulesquiz.com' },
+    fr: { title: 'Défi des règles du pickleball', points: 'points', correct: 'bonnes réponses', cta: 'Tu fais mieux ?', url: 'pickleballrulesquiz.com/fr.html' }
   };
 
   function copyFor(lang) {
@@ -12953,8 +13002,13 @@ ${(() => {
     ctx.font = '800 330px Inter, Arial, sans-serif';
     ctx.fillText(String(score), W / 2, 520);
     ctx.font = '700 56px Inter, Arial, sans-serif';
-    ctx.fillStyle = '#fde047';
+    ctx.fillStyle = '#fff';
     ctx.fillText(c.points.toUpperCase(), W / 2, 600);
+    if (Number.isInteger(o.total) && o.total > 0 && Number.isInteger(o.correct) &&
+      o.correct >= 0 && o.correct <= o.total) {
+      ctx.font = '700 39px Inter, Arial, sans-serif';
+      ctx.fillText(`${o.correct}/${o.total} ${c.correct}`, W / 2, 756);
+    }
 
     // ball
     ctx.beginPath();
@@ -12971,7 +13025,7 @@ ${(() => {
     ctx.fillText(c.cta, W / 2, 1010);
     ctx.font = '700 52px Inter, Arial, sans-serif';
     ctx.fillText(c.title, W / 2, 1100);
-    ctx.fillStyle = '#fde047';
+    ctx.fillStyle = '#fff';
     ctx.font = '700 46px Inter, Arial, sans-serif';
     ctx.fillText(c.url, W / 2, 1200);
     if (o.label) {
@@ -13011,7 +13065,7 @@ ${(() => {
     setTimeout(() => URL.revokeObjectURL(href), 1000);
   }
 
-  // options: { score, lang, label, text }. Shares the picture when the browser
+  // options: { score, correct, total, lang, label, text }. Shares the picture when the browser
   // can share files, otherwise downloads it.
   async function share(options) {
     const o = options || {};
@@ -14030,6 +14084,26 @@ void (function () {
       .filter(Boolean)
       .sort((a, b) => a.hash - b.hash || a.id - b.id);
     return keyed.slice(0, clampInt(count, 1, 50)).map((entry) => entry.id);
+  }
+
+  function trackPostPlayReturn(ui) {
+    const runs = ui.storage?.getLastRuns?.(20) || [];
+    const lastPlay = Math.max(0, ...runs
+      .filter((run) => run.meta?.mode === MODES.RUN)
+      .map((run) => Number(run.endedAt) || 0));
+    if (lastPlay <= 0) return;
+
+    const day = getCommonDayKey();
+    const daysSincePlay = (Date.parse(day) - Date.parse(getCommonDayKey(new Date(lastPlay)))) / 86400000;
+    if (daysSincePlay < 1) return;
+
+    const key = `${ui.config.storage.storageKey}:post-play-return-day`;
+    if (window.localStorage.getItem(key) === day) return;
+    window.localStorage.setItem(key, day);
+    const analytics = window.WT_Analytics;
+    analytics.trackFunnel('return_after_play', analytics.inferUiContext(ui, {
+      return_day: daysSincePlay === 1 ? 'day-1' : 'day-2-plus'
+    }));
   }
 
   function getQueryList(name) {
@@ -15963,6 +16037,15 @@ function UI({ storage, game, config, wording }) {
           self.closeModal();
           break;
 
+        case 'open-daily-question':
+          self.openDailyQuestion();
+          break;
+
+        case 'daily-question-true':
+        case 'daily-question-false':
+          self.openDailyQuestion(action === 'daily-question-true');
+          break;
+
         case 'enter-secret-bonus':
           self.closeModal();
           if (self._runtime) self._runtime.secretBonusPending = false;
@@ -16170,6 +16253,8 @@ function UI({ storage, game, config, wording }) {
             void window.WT_ScoreCard
               .share({
                 score: cardScore,
+                correct: self._runtime?.lastRun?.correctCount,
+                total: self._runtime?.lastRun?.answerLog?.length,
                 text: cardText,
                 lang: String(document.documentElement.lang || '').slice(0, 2)
               })
@@ -16654,74 +16739,42 @@ function UI({ storage, game, config, wording }) {
 
       e.preventDefault();
 
-      // Once unlocked (persisted), 1 tap starts BONUS directly (no modal).
-      if (hasSolvedSecretChestHint(self.storage)) {
-        try {
-          chest.classList.remove('wt-btn-icon--tease');
-        } catch (_) {
-          /* ignore */
-        }
-        if (typeof self.startSecretBonusRun === 'function')
-          self.startSecretBonusRun();
-        return;
-      }
-
       const sb = self.wording?.secretBonus || {};
       const title = String(sb.modalTitle || '').trim();
-      const bodyTpl = String(sb.modalBody || '').trim();
-      const cta = String(sb.modalCta || '').trim();
-      const notNow =
-        String(self.wording?.system?.notNow || '').trim() ||
-        String(self.wording?.system?.close || '').trim();
-      const body = fillTemplate(bodyTpl, {
-        tickets: String(getRapidFireTicketBalance(self.storage)),
-        cost: String(getRapidFireTicketCost(self.storage)),
-        pluralS: getRapidFireTicketBalance(self.storage) > 1 ? 's' : '',
-        costPluralS: getRapidFireTicketCost(self.storage) > 1 ? 's' : ''
-      });
+      const tickets = getRapidFireTicketBalance(self.storage);
+      const cost = getRapidFireTicketCost(self.storage);
+      const vars = {
+        tickets,
+        cost,
+        pluralS: tickets === 1 ? '' : 's',
+        costPluralS: cost === 1 ? '' : 's'
+      };
+      const body = fillTemplate(sb.modalBody, vars);
+      const cta = fillTemplate(sb.modalCta, vars);
+      const notNow = String(self.wording?.system?.notNow || self.wording?.system?.close || '').trim();
 
       function enterSecretBonusFlow() {
-        // If the welcome modal was already shown earlier, avoid a second modal here.
-        if (hasShownSecretChestWelcome(self.storage)) {
-          markSolvedSecretChestHint(self.storage);
-          try {
-            chest.classList.remove('wt-btn-icon--tease');
-          } catch (_) {
-            /* ignore */
-          }
-          if (typeof self.startSecretBonusRun === 'function')
-            self.startSecretBonusRun();
+        if (tickets < cost) {
+          self.openRapidFireTicketRequiredModal();
           return;
         }
+        if (!title || !body || !cta) return;
 
-        // Mark solved NOW so the confirmation modal is shown only once per device.
         markSolvedSecretChestHint(self.storage);
-        try {
-          chest.classList.remove('wt-btn-icon--tease');
-        } catch (_) {
-          /* ignore */
-        }
+        if (!hasShownSecretChestWelcome(self.storage)) markShownSecretChestWelcome(self.storage);
+        chest.classList.remove('wt-btn-icon--tease');
+        self.openModal(`
+          <p class="wt-text-preline">${escapeHtml(body)}</p>
+          <div class="wt-actions">
+            <button class="wt-btn wt-btn--primary" data-action="enter-secret-bonus">${escapeHtml(cta)}</button>
+            ${notNow ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(notNow)}</button>` : ''}
+          </div>
+        `, title);
+      }
 
-        // No fallback copy: only show the confirmation modal if wording exists.
-        if (title && body && cta && typeof self.openModal === 'function') {
-          // Mark shown before opening (one-shot per device) and to prevent render loops from re-opening.
-          markShownSecretChestWelcome(self.storage);
-
-          if (self._runtime) self._runtime.secretBonusPending = true;
-          const html = `
-              <p class="wt-text-preline">${escapeHtml(body)}</p>
-              <div class="wt-actions">
-                <button class="wt-btn wt-btn--primary" data-action="enter-secret-bonus">${escapeHtml(cta)}</button>
-                ${notNow ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(notNow)}</button>` : ``}
-              </div>
-            `;
-
-          self.openModal(html, title);
-          return;
-        }
-
-        if (typeof self.startSecretBonusRun === 'function')
-          self.startSecretBonusRun();
+      if (hasSolvedSecretChestHint(self.storage)) {
+        enterSecretBonusFlow();
+        return;
       }
 
       // Simple mode: 1 tap triggers immediately.
@@ -17665,6 +17718,7 @@ function UI({ storage, game, config, wording }) {
 
   UI.prototype.closeModal = function () {
     if (!this.modalEl || !this.modalContentEl) return;
+    const modalKey = this._runtime?._modalKey;
 
     // A11Y: remove focus trap listener
     try {
@@ -17710,7 +17764,9 @@ function UI({ storage, game, config, wording }) {
       const prev = this._runtime ? this._runtime._lastFocusBeforeModal : null;
       if (this._runtime) this._runtime._lastFocusBeforeModal = null;
 
-      if (prev && typeof prev.focus === 'function' && document.contains(prev)) {
+      if (modalKey === 'daily-question') {
+        this.appEl?.querySelector('[data-action="open-daily-question"]')?.focus();
+      } else if (prev && typeof prev.focus === 'function' && document.contains(prev)) {
         prev.focus();
       }
     } catch (_) {
@@ -17720,6 +17776,62 @@ function UI({ storage, game, config, wording }) {
     if (this.state === STATES.PLAYING) {
       syncAutoReadCurrentQuestion(this);
     }
+  };
+
+  UI.prototype.openDailyQuestion = function (choice) {
+    const w = this.wording?.landing || {};
+    if (this.state !== STATES.LANDING || !w.dailyQuestionCta) return;
+
+    const items = (this._runtime?.contentItems || []).filter(
+      (item) => item?.question && typeof item.correctAnswer === 'boolean'
+    );
+    if (!items.length) {
+      const loading = this.getContentLoadingCopy();
+      if (loading) toastNow(this.config, loading);
+      return;
+    }
+
+    const now = new Date();
+    const day = getCommonDayKey(now);
+    const item = items[Math.floor(now.getTime() / 86400000) % items.length];
+    const shown = this._runtime.dailyQuestionShown;
+    if (shown?.day !== day || shown?.id !== item.id) choice = undefined;
+    this._runtime.dailyQuestionShown = { day, id: item.id };
+    const key = `${this.config.storage.storageKey}:daily-question`;
+    let saved = this._runtime.dailyQuestionAnswer;
+    if (!saved) {
+      try { saved = JSON.parse(window.localStorage.getItem(key)); } catch (_) {}
+    }
+    const alreadyAnswered = saved?.day === day && saved?.id === item.id &&
+      typeof saved.choice === 'boolean';
+    if (!alreadyAnswered && typeof choice === 'boolean') {
+      saved = { day, id: item.id, choice };
+      this._runtime.dailyQuestionAnswer = saved;
+      try { window.localStorage.setItem(key, JSON.stringify(saved)); } catch (_) {}
+      window.WT_Analytics?.trackFunnel('daily_question_complete', window.WT_Analytics.inferUiContext(this));
+    } else if (typeof choice !== 'boolean') {
+      window.WT_Analytics?.trackFunnel('daily_question_open', window.WT_Analytics.inferUiContext(this));
+    }
+
+    const ui = this.wording?.ui || {};
+    const heading = `<p class="wt-h2">${escapeHtml(item.question)}</p>`;
+    const answerLabel = item.correctAnswer ? ui.trueLabel : ui.falseLabel;
+    const answered = alreadyAnswered || typeof choice === 'boolean';
+    const body = answered
+      ? `<div role="status">
+          <strong>${escapeHtml(answerLabel)} · ${escapeHtml(saved.choice === item.correctAnswer ? w.dailyQuestionCorrect : w.dailyQuestionIncorrect)}</strong>
+          <p class="wt-text-preline">${escapeHtml(item.explanationShort || '')}</p>
+          <p class="wt-muted">${escapeHtml(w.dailyQuestionDone)}</p>
+        </div>`
+      : `<div class="wt-actions">
+          <button type="button" class="wt-btn wt-btn--primary" data-action="daily-question-true">${escapeHtml(ui.trueLabel)}</button>
+          <button type="button" class="wt-btn wt-btn--secondary" data-action="daily-question-false">${escapeHtml(ui.falseLabel)}</button>
+        </div>`;
+    const trap = this._runtime._modalTrapHandler;
+    if (trap && this._runtime._modalKey === 'daily-question') {
+      this.modalEl.removeEventListener('keydown', trap);
+    }
+    this.openModal(heading + body, w.dailyQuestionCta, { modalKey: 'daily-question' });
   };
 
   UI.prototype.openHowToModal = function () {
@@ -18889,9 +19001,10 @@ UI.prototype.startRun = function (mistakesOnly) {
 
     this._runtime.runItemIds = [];
     this._runtime.runMistakeIds = [];
+    this._runtime.freeRunNumber = runStartNumber;
     this._runtime.currentRunNumber = currentRunNumber;
     this._runtime.runMode = mistakesOnly === true ? MODES.PRACTICE : MODES.RUN;
-    this._runtime.challengeKind = fixedIds.length
+    this._runtime.challengeKind = mistakesOnly !== true && fixedIds.length
       ? (requestedRunKind === 'DAILY' ? 'DAILY' : 'FRIEND')
       : '';
     this._runtime.pendingRunKind = '';
@@ -19002,7 +19115,9 @@ UI.prototype.startRun = function (mistakesOnly) {
           'run_start',
           window.WT_Analytics.inferUiContext(this, {
             mode: this._runtime.runMode,
-            run_type: runType || ''
+            run_type: runType || '',
+            free_run_number: runStartNumber,
+            challenge_kind: this._runtime.challengeKind
           })
         );
       }
@@ -20682,6 +20797,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.lastRun = {
       mode,
       runType: String(this._runtime?.runType || '').trim(),
+      freeRunNumber: mode === MODES.RUN ? this._runtime.freeRunNumber : null,
       runId: String(this._runtime?.currentRunId || '').trim(),
       runNumber: clampInt(this._runtime?.currentRunNumber, 0, 999999999),
       durationMs: clampInt(
@@ -20729,6 +20845,8 @@ UI.prototype.startRun = function (mistakesOnly) {
           window.WT_Analytics.inferUiContext(this, {
             mode,
             run_type: this._runtime.lastRun.runType || '',
+            free_run_number: this._runtime.lastRun.freeRunNumber,
+            challenge_kind: mode === MODES.RUN ? this._runtime.challengeKind : '',
             ...(mode === MODES.RUN ? {
               combo_reached: Number(gameState.comboActivations || 0) > 0,
               combo_activations: Number(gameState.comboActivations || 0),
@@ -22194,6 +22312,7 @@ UI.prototype.render = function () {
             'landing_view',
             window.WT_Analytics.inferUiContext(this)
           );
+          trackPostPlayReturn(this);
         }
       }
     } catch (_) {

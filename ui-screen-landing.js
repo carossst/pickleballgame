@@ -802,6 +802,13 @@ ${(() => {
 
     ${postBlock}
 
+    ${b >= 1 && landing.dailyQuestionCta ? `
+      <div class="wt-landing-followup">
+        <button type="button" class="wt-text-action" data-action="open-daily-question"${Number(ui._runtime?.contentTotal) > 0 ? '' : ' disabled'}>${escapeHtml(landing.dailyQuestionCta)}</button>
+        <p class="wt-sub wt-muted">${escapeHtml(landing.dailyQuestionReady || '')}</p>
+      </div>
+    ` : ''}
+
     ${hasDashboard && !isPostPaywallVariant ? `
       <section class="wt-landing-dashboard">
         ${welcomeBackHtml ? `

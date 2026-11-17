@@ -60,6 +60,7 @@ UI.prototype.render = function () {
             'landing_view',
             window.WT_Analytics.inferUiContext(this)
           );
+          trackPostPlayReturn(this);
         }
       }
     } catch (_) {

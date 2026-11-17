@@ -193,7 +193,7 @@
       ctx.drawImage(brandLogo, 96, panelY + 42, 88, 88);
     }
 
-    ctx.fillStyle = lime;
+    ctx.fillStyle = '#cfe7f5';
     ctx.font = '800 26px Arial, sans-serif';
     ctx.fillText(copy.canvasKicker, brandLogo ? 230 : 88, panelY + 96);
 
@@ -205,9 +205,9 @@
     ctx.font = '700 34px Arial, sans-serif';
     drawText(ctx, copy.canvasBody, 88, panelY + 490, 904, 48);
 
-    ctx.fillStyle = lime;
+    ctx.fillStyle = '#145c85';
     ctx.fillRect(88, panelY + 545, 470, 76);
-    ctx.fillStyle = '#07172d';
+    ctx.fillStyle = '#fff';
     ctx.font = '900 30px Arial, sans-serif';
     ctx.fillText(copy.canvasCta, 116, panelY + 594);
 

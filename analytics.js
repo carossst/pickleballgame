@@ -120,6 +120,18 @@
       if (priceKey) parts.push(`price-${priceKey}`);
     }
 
+    if (p.free_run_number === 1 || p.free_run_number === 2) {
+      parts.push(`free-run-${p.free_run_number}`);
+    }
+
+    if (p.challenge_kind === 'DAILY' || p.challenge_kind === 'FRIEND') {
+      parts.push(`challenge-${p.challenge_kind.toLowerCase()}`);
+    }
+
+    if (p.return_day === 'day-1' || p.return_day === 'day-2-plus') {
+      parts.push(p.return_day);
+    }
+
     if (typeof p.combo_reached === 'boolean') {
       parts.push(p.combo_reached ? 'combo-reached' : 'combo-not-reached');
     }

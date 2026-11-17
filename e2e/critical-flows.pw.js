@@ -63,6 +63,53 @@ test('success page creates a valid local unlock code', async ({ page }) => {
   await expect(page.locator('#code')).toHaveText(/^PRQ-\d{4}-\d{4}$/);
 });
 
+test('first challenge, second free CTA and daily question have distinct scores and events', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.clock.setFixedTime(new Date('2026-11-17T18:00:00Z'));
+  await page.addInitScript(() => {
+    window.pilotEvents = [];
+    window.goatcounter = { count: (event) => window.pilotEvents.push(event.path) };
+  });
+  await page.goto('/fr.html?wt-source=coach-pilote-fr');
+  await page.getByRole('button', { name: 'Commencer', exact: true }).click();
+  for (const choice of ['false', 'true', 'false', 'false', 'true']) {
+    await page.locator(`[data-action="answer-${choice}"]`).click();
+    await expect(page.locator('.wt-feedback--ok')).toBeVisible();
+    await page.locator('button[data-action="continue"]').click();
+  }
+  await expect(page.locator('.wt-end-score__value')).toHaveText('6');
+  await expect(page.getByText('5/5 bonnes réponses', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Jouer ma 2ᵉ partie gratuite' })).toBeVisible();
+  expect((await page.evaluate(() => window.pilotEvents)).some(
+    (path) => path.includes('event/run-complete/run/free-run-1/') && path.includes('src-coach-pilote-fr')
+  )).toBe(true);
+
+  await page.clock.setFixedTime(new Date('2026-11-18T18:00:00Z'));
+  await page.reload();
+  const question = page.getByRole('button', { name: 'Question du jour gratuite' });
+  await question.click();
+  const readRuns = () => page.evaluate(
+    () => JSON.parse(localStorage.getItem(window.WT_CONFIG.storage.storageKey)).runs
+  );
+  const before = await readRuns();
+  await page.locator('[data-action="daily-question-true"]').click();
+  await expect(page.getByText('Revenez demain pour une nouvelle question.')).toBeVisible();
+  expect(await readRuns()).toEqual(before);
+  expect((await page.evaluate(() => window.pilotEvents)).filter(
+    (path) => path.includes('event/return-after-play/day-1/')
+  )).toHaveLength(1);
+  await page.keyboard.press('Escape');
+  await expect(question).toBeFocused();
+  await page.reload();
+  await question.click();
+  await expect(page.getByText('Revenez demain pour une nouvelle question.')).toBeVisible();
+  expect((await page.evaluate(() => window.pilotEvents)).filter(
+    (path) => path.includes('event/return-after-play/')
+  )).toHaveLength(0);
+});
+
 test('free run end screen offers a visible way to share the score', async ({
   page
 }) => {

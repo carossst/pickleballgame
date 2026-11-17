@@ -7,8 +7,8 @@
   const H = 1350;
 
   const COPY = {
-    en: { title: 'Pickleball Rules Quiz', points: 'points', cta: 'Can you beat me?', url: 'pickleballrulesquiz.com' },
-    fr: { title: 'Défi des règles du pickleball', points: 'points', cta: 'Tu fais mieux ?', url: 'pickleballrulesquiz.com/fr.html' }
+    en: { title: 'Pickleball Rules Quiz', points: 'points', correct: 'correct answers', cta: 'Can you beat me?', url: 'pickleballrulesquiz.com' },
+    fr: { title: 'Défi des règles du pickleball', points: 'points', correct: 'bonnes réponses', cta: 'Tu fais mieux ?', url: 'pickleballrulesquiz.com/fr.html' }
   };
 
   function copyFor(lang) {
@@ -54,8 +54,13 @@
     ctx.font = '800 330px Inter, Arial, sans-serif';
     ctx.fillText(String(score), W / 2, 520);
     ctx.font = '700 56px Inter, Arial, sans-serif';
-    ctx.fillStyle = '#fde047';
+    ctx.fillStyle = '#fff';
     ctx.fillText(c.points.toUpperCase(), W / 2, 600);
+    if (Number.isInteger(o.total) && o.total > 0 && Number.isInteger(o.correct) &&
+      o.correct >= 0 && o.correct <= o.total) {
+      ctx.font = '700 39px Inter, Arial, sans-serif';
+      ctx.fillText(`${o.correct}/${o.total} ${c.correct}`, W / 2, 756);
+    }
 
     // ball
     ctx.beginPath();
@@ -72,7 +77,7 @@
     ctx.fillText(c.cta, W / 2, 1010);
     ctx.font = '700 52px Inter, Arial, sans-serif';
     ctx.fillText(c.title, W / 2, 1100);
-    ctx.fillStyle = '#fde047';
+    ctx.fillStyle = '#fff';
     ctx.font = '700 46px Inter, Arial, sans-serif';
     ctx.fillText(c.url, W / 2, 1200);
     if (o.label) {
@@ -112,7 +117,7 @@
     setTimeout(() => URL.revokeObjectURL(href), 1000);
   }
 
-  // options: { score, lang, label, text }. Shares the picture when the browser
+  // options: { score, correct, total, lang, label, text }. Shares the picture when the browser
   // can share files, otherwise downloads it.
   async function share(options) {
     const o = options || {};

@@ -208,6 +208,11 @@
     },
 
     landing: {
+      dailyQuestionCta: 'Free question of the day',
+      dailyQuestionReady: 'One question and its explanation. No game credit needed.',
+      dailyQuestionDone: 'Come back tomorrow for a new question.',
+      dailyQuestionCorrect: 'Correct!',
+      dailyQuestionIncorrect: 'One to remember next time.',
       title: 'Pickleball Rules Quiz',
       tagline: '**Can you get 5 tricky pickleball calls right?**',
       subtitle:
@@ -631,7 +636,7 @@
       modalTitle: 'Rapid Fire Mode',
       modalBody:
         "Rapid Fire Mode is faster and more demanding.\nIt uses only questions you've already seen in the game.\nCost: {cost} ticket{costPluralS}.\nAvailable now: {tickets}.",
-      modalCta: 'Play Rapid Fire (1 ticket)',
+      modalCta: 'Play Rapid Fire ({cost} ticket{costPluralS})',
       ticketRequiredTitle: 'No Rapid Fire ticket available.',
       ticketRequiredBodyDaily:
         "Rapid Fire costs {cost} ticket{costPluralS}.\nYou have {tickets} right now.\nPlay today's challenge to earn one.",
@@ -739,6 +744,9 @@
     },
 
     end: {
+      secondFreeGameCta: 'Play my second free game',
+      correctAnswersLine: '{correct}/{total} correct answers',
+      nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
 
       poolCompleteTitle: 'All questions complete.',

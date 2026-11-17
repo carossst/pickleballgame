@@ -66,6 +66,10 @@
     const scoreFP = clampInt(lastRun.scoreFP, 0, 99999);
     const maxChances = clampInt(lastRun.maxChances || cfg?.game?.maxChances, 0, 99);
     const totalPresented = Array.isArray(ui._runtime?.runItemIds) ? ui._runtime.runItemIds.length : 0;
+    const totalAnswered = Array.isArray(lastRun.answerLog) ? lastRun.answerLog.length : totalPresented;
+    const correctAnswersLine = isRun && totalAnswered > 0 && Number.isFinite(lastRun.correctCount)
+      ? fillTemplate(end.correctAnswersLine, { correct: lastRun.correctCount, total: totalAnswered })
+      : "";
     const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
 
     let seen = null;
@@ -488,11 +492,19 @@
     // Keep the compact end screen during the free preview, but do not hide the
     // final-run conversion offer: exhausted players must still see the share
     // bonus that unlocks one third game.
+    const nextIsSecondFree = isRun && !premium && !runsExhausted && lastRun.freeRunNumber === 1;
+    const secondCap = clampInt(cfg.curatedFreeRuns?.maxQuestionsByRun?.[2], 0, 99);
+    const secondMaxScore = secondCap + Math.max(0, secondCap - 4);
+    const nextTicketLine = nextIsSecondFree && cfg.secretBonus?.enabled === true &&
+      dailyModel?.rewardAvailableToday && !dailyModel.ticketAtCap &&
+      dailyTargetScore > 0 && dailyTargetScore <= secondMaxScore
+      ? fillTemplate(end.nextGameTicketLine, { target: dailyTargetScore })
+      : "";
     const focusedRunEnd = !!(
       isRun &&
       !premium &&
       !runsExhausted &&
-      lastRunMistakeCount > 0 &&
+      (lastRunMistakeCount > 0 || nextIsSecondFree) &&
       !poolCompleteCelebration
     );
     // Last free game: the screen has one job (upgrade, or share for one more
@@ -504,9 +516,9 @@
     const focusedEndPrimaryLabel = focusedRunEnd
       ? (runsExhausted
         ? upgradeCta
-        : String(end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
+        : String((nextIsSecondFree && end.secondFreeGameCta) || end.nextChallengeCta || runPlayAgain || end.playAgain || "").trim())
       : "";
-    const focusedRunCopyTpl = focusedRunEnd
+    const focusedRunCopyTpl = focusedRunEnd && lastRunMistakeCount > 0
       ? String((runsExhausted ? end.focusedRunPaywallLine : end.focusedRunPracticeLine) || end.focusedRunLine || "").trim()
       : "";
     const focusedRunCopy = focusedRunCopyTpl
@@ -742,6 +754,7 @@
   ${focusedRunEnd ? "" : levelUnlockHtml}
 
   <div class="wt-end-summary">
+    ${correctAnswersLine ? `<p class="wt-muted">${escapeHtml(correctAnswersLine)}</p>` : ``}
     ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-muted">${escapeHtml(fillTemplate(w.system?.comboSummary || '', { correct: lastRun.correctCount, bonus: lastRun.bonusPoints }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
@@ -783,6 +796,7 @@
     })}
   </div>
 
+  ${nextTicketLine ? `<p class="wt-paywall-linkline wt-muted">${escapeHtml(nextTicketLine)}</p>` : ``}
   ${focusedShareHtml}
   ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}

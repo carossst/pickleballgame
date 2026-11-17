@@ -908,6 +908,26 @@ void (function () {
     return keyed.slice(0, clampInt(count, 1, 50)).map((entry) => entry.id);
   }
 
+  function trackPostPlayReturn(ui) {
+    const runs = ui.storage?.getLastRuns?.(20) || [];
+    const lastPlay = Math.max(0, ...runs
+      .filter((run) => run.meta?.mode === MODES.RUN)
+      .map((run) => Number(run.endedAt) || 0));
+    if (lastPlay <= 0) return;
+
+    const day = getCommonDayKey();
+    const daysSincePlay = (Date.parse(day) - Date.parse(getCommonDayKey(new Date(lastPlay)))) / 86400000;
+    if (daysSincePlay < 1) return;
+
+    const key = `${ui.config.storage.storageKey}:post-play-return-day`;
+    if (window.localStorage.getItem(key) === day) return;
+    window.localStorage.setItem(key, day);
+    const analytics = window.WT_Analytics;
+    analytics.trackFunnel('return_after_play', analytics.inferUiContext(ui, {
+      return_day: daysSincePlay === 1 ? 'day-1' : 'day-2-plus'
+    }));
+  }
+
   function getQueryList(name) {
     try {
       const value = new URLSearchParams(window.location.search).get(name) || '';
@@ -2839,6 +2859,15 @@ function UI({ storage, game, config, wording }) {
           self.closeModal();
           break;
 
+        case 'open-daily-question':
+          self.openDailyQuestion();
+          break;
+
+        case 'daily-question-true':
+        case 'daily-question-false':
+          self.openDailyQuestion(action === 'daily-question-true');
+          break;
+
         case 'enter-secret-bonus':
           self.closeModal();
           if (self._runtime) self._runtime.secretBonusPending = false;
@@ -3046,6 +3075,8 @@ function UI({ storage, game, config, wording }) {
             void window.WT_ScoreCard
               .share({
                 score: cardScore,
+                correct: self._runtime?.lastRun?.correctCount,
+                total: self._runtime?.lastRun?.answerLog?.length,
                 text: cardText,
                 lang: String(document.documentElement.lang || '').slice(0, 2)
               })
@@ -3530,74 +3561,42 @@ function UI({ storage, game, config, wording }) {
 
       e.preventDefault();
 
-      // Once unlocked (persisted), 1 tap starts BONUS directly (no modal).
-      if (hasSolvedSecretChestHint(self.storage)) {
-        try {
-          chest.classList.remove('wt-btn-icon--tease');
-        } catch (_) {
-          /* ignore */
-        }
-        if (typeof self.startSecretBonusRun === 'function')
-          self.startSecretBonusRun();
-        return;
-      }
-
       const sb = self.wording?.secretBonus || {};
       const title = String(sb.modalTitle || '').trim();
-      const bodyTpl = String(sb.modalBody || '').trim();
-      const cta = String(sb.modalCta || '').trim();
-      const notNow =
-        String(self.wording?.system?.notNow || '').trim() ||
-        String(self.wording?.system?.close || '').trim();
-      const body = fillTemplate(bodyTpl, {
-        tickets: String(getRapidFireTicketBalance(self.storage)),
-        cost: String(getRapidFireTicketCost(self.storage)),
-        pluralS: getRapidFireTicketBalance(self.storage) > 1 ? 's' : '',
-        costPluralS: getRapidFireTicketCost(self.storage) > 1 ? 's' : ''
-      });
+      const tickets = getRapidFireTicketBalance(self.storage);
+      const cost = getRapidFireTicketCost(self.storage);
+      const vars = {
+        tickets,
+        cost,
+        pluralS: tickets === 1 ? '' : 's',
+        costPluralS: cost === 1 ? '' : 's'
+      };
+      const body = fillTemplate(sb.modalBody, vars);
+      const cta = fillTemplate(sb.modalCta, vars);
+      const notNow = String(self.wording?.system?.notNow || self.wording?.system?.close || '').trim();
 
       function enterSecretBonusFlow() {
-        // If the welcome modal was already shown earlier, avoid a second modal here.
-        if (hasShownSecretChestWelcome(self.storage)) {
-          markSolvedSecretChestHint(self.storage);
-          try {
-            chest.classList.remove('wt-btn-icon--tease');
-          } catch (_) {
-            /* ignore */
-          }
-          if (typeof self.startSecretBonusRun === 'function')
-            self.startSecretBonusRun();
+        if (tickets < cost) {
+          self.openRapidFireTicketRequiredModal();
           return;
         }
+        if (!title || !body || !cta) return;
 
-        // Mark solved NOW so the confirmation modal is shown only once per device.
         markSolvedSecretChestHint(self.storage);
-        try {
-          chest.classList.remove('wt-btn-icon--tease');
-        } catch (_) {
-          /* ignore */
-        }
+        if (!hasShownSecretChestWelcome(self.storage)) markShownSecretChestWelcome(self.storage);
+        chest.classList.remove('wt-btn-icon--tease');
+        self.openModal(`
+          <p class="wt-text-preline">${escapeHtml(body)}</p>
+          <div class="wt-actions">
+            <button class="wt-btn wt-btn--primary" data-action="enter-secret-bonus">${escapeHtml(cta)}</button>
+            ${notNow ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(notNow)}</button>` : ''}
+          </div>
+        `, title);
+      }
 
-        // No fallback copy: only show the confirmation modal if wording exists.
-        if (title && body && cta && typeof self.openModal === 'function') {
-          // Mark shown before opening (one-shot per device) and to prevent render loops from re-opening.
-          markShownSecretChestWelcome(self.storage);
-
-          if (self._runtime) self._runtime.secretBonusPending = true;
-          const html = `
-              <p class="wt-text-preline">${escapeHtml(body)}</p>
-              <div class="wt-actions">
-                <button class="wt-btn wt-btn--primary" data-action="enter-secret-bonus">${escapeHtml(cta)}</button>
-                ${notNow ? `<button class="wt-btn wt-btn--secondary" data-action="close-modal">${escapeHtml(notNow)}</button>` : ``}
-              </div>
-            `;
-
-          self.openModal(html, title);
-          return;
-        }
-
-        if (typeof self.startSecretBonusRun === 'function')
-          self.startSecretBonusRun();
+      if (hasSolvedSecretChestHint(self.storage)) {
+        enterSecretBonusFlow();
+        return;
       }
 
       // Simple mode: 1 tap triggers immediately.
@@ -4541,6 +4540,7 @@ function UI({ storage, game, config, wording }) {
 
   UI.prototype.closeModal = function () {
     if (!this.modalEl || !this.modalContentEl) return;
+    const modalKey = this._runtime?._modalKey;
 
     // A11Y: remove focus trap listener
     try {
@@ -4586,7 +4586,9 @@ function UI({ storage, game, config, wording }) {
       const prev = this._runtime ? this._runtime._lastFocusBeforeModal : null;
       if (this._runtime) this._runtime._lastFocusBeforeModal = null;
 
-      if (prev && typeof prev.focus === 'function' && document.contains(prev)) {
+      if (modalKey === 'daily-question') {
+        this.appEl?.querySelector('[data-action="open-daily-question"]')?.focus();
+      } else if (prev && typeof prev.focus === 'function' && document.contains(prev)) {
         prev.focus();
       }
     } catch (_) {
@@ -4596,6 +4598,62 @@ function UI({ storage, game, config, wording }) {
     if (this.state === STATES.PLAYING) {
       syncAutoReadCurrentQuestion(this);
     }
+  };
+
+  UI.prototype.openDailyQuestion = function (choice) {
+    const w = this.wording?.landing || {};
+    if (this.state !== STATES.LANDING || !w.dailyQuestionCta) return;
+
+    const items = (this._runtime?.contentItems || []).filter(
+      (item) => item?.question && typeof item.correctAnswer === 'boolean'
+    );
+    if (!items.length) {
+      const loading = this.getContentLoadingCopy();
+      if (loading) toastNow(this.config, loading);
+      return;
+    }
+
+    const now = new Date();
+    const day = getCommonDayKey(now);
+    const item = items[Math.floor(now.getTime() / 86400000) % items.length];
+    const shown = this._runtime.dailyQuestionShown;
+    if (shown?.day !== day || shown?.id !== item.id) choice = undefined;
+    this._runtime.dailyQuestionShown = { day, id: item.id };
+    const key = `${this.config.storage.storageKey}:daily-question`;
+    let saved = this._runtime.dailyQuestionAnswer;
+    if (!saved) {
+      try { saved = JSON.parse(window.localStorage.getItem(key)); } catch (_) {}
+    }
+    const alreadyAnswered = saved?.day === day && saved?.id === item.id &&
+      typeof saved.choice === 'boolean';
+    if (!alreadyAnswered && typeof choice === 'boolean') {
+      saved = { day, id: item.id, choice };
+      this._runtime.dailyQuestionAnswer = saved;
+      try { window.localStorage.setItem(key, JSON.stringify(saved)); } catch (_) {}
+      window.WT_Analytics?.trackFunnel('daily_question_complete', window.WT_Analytics.inferUiContext(this));
+    } else if (typeof choice !== 'boolean') {
+      window.WT_Analytics?.trackFunnel('daily_question_open', window.WT_Analytics.inferUiContext(this));
+    }
+
+    const ui = this.wording?.ui || {};
+    const heading = `<p class="wt-h2">${escapeHtml(item.question)}</p>`;
+    const answerLabel = item.correctAnswer ? ui.trueLabel : ui.falseLabel;
+    const answered = alreadyAnswered || typeof choice === 'boolean';
+    const body = answered
+      ? `<div role="status">
+          <strong>${escapeHtml(answerLabel)} · ${escapeHtml(saved.choice === item.correctAnswer ? w.dailyQuestionCorrect : w.dailyQuestionIncorrect)}</strong>
+          <p class="wt-text-preline">${escapeHtml(item.explanationShort || '')}</p>
+          <p class="wt-muted">${escapeHtml(w.dailyQuestionDone)}</p>
+        </div>`
+      : `<div class="wt-actions">
+          <button type="button" class="wt-btn wt-btn--primary" data-action="daily-question-true">${escapeHtml(ui.trueLabel)}</button>
+          <button type="button" class="wt-btn wt-btn--secondary" data-action="daily-question-false">${escapeHtml(ui.falseLabel)}</button>
+        </div>`;
+    const trap = this._runtime._modalTrapHandler;
+    if (trap && this._runtime._modalKey === 'daily-question') {
+      this.modalEl.removeEventListener('keydown', trap);
+    }
+    this.openModal(heading + body, w.dailyQuestionCta, { modalKey: 'daily-question' });
   };
 
   UI.prototype.openHowToModal = function () {
@@ -5765,9 +5823,10 @@ UI.prototype.startRun = function (mistakesOnly) {
 
     this._runtime.runItemIds = [];
     this._runtime.runMistakeIds = [];
+    this._runtime.freeRunNumber = runStartNumber;
     this._runtime.currentRunNumber = currentRunNumber;
     this._runtime.runMode = mistakesOnly === true ? MODES.PRACTICE : MODES.RUN;
-    this._runtime.challengeKind = fixedIds.length
+    this._runtime.challengeKind = mistakesOnly !== true && fixedIds.length
       ? (requestedRunKind === 'DAILY' ? 'DAILY' : 'FRIEND')
       : '';
     this._runtime.pendingRunKind = '';
@@ -5878,7 +5937,9 @@ UI.prototype.startRun = function (mistakesOnly) {
           'run_start',
           window.WT_Analytics.inferUiContext(this, {
             mode: this._runtime.runMode,
-            run_type: runType || ''
+            run_type: runType || '',
+            free_run_number: runStartNumber,
+            challenge_kind: this._runtime.challengeKind
           })
         );
       }
@@ -7558,6 +7619,7 @@ UI.prototype.startRun = function (mistakesOnly) {
     this._runtime.lastRun = {
       mode,
       runType: String(this._runtime?.runType || '').trim(),
+      freeRunNumber: mode === MODES.RUN ? this._runtime.freeRunNumber : null,
       runId: String(this._runtime?.currentRunId || '').trim(),
       runNumber: clampInt(this._runtime?.currentRunNumber, 0, 999999999),
       durationMs: clampInt(
@@ -7605,6 +7667,8 @@ UI.prototype.startRun = function (mistakesOnly) {
           window.WT_Analytics.inferUiContext(this, {
             mode,
             run_type: this._runtime.lastRun.runType || '',
+            free_run_number: this._runtime.lastRun.freeRunNumber,
+            challenge_kind: mode === MODES.RUN ? this._runtime.challengeKind : '',
             ...(mode === MODES.RUN ? {
               combo_reached: Number(gameState.comboActivations || 0) > 0,
               combo_activations: Number(gameState.comboActivations || 0),
@@ -9070,6 +9134,7 @@ UI.prototype.render = function () {
             'landing_view',
             window.WT_Analytics.inferUiContext(this)
           );
+          trackPostPlayReturn(this);
         }
       }
     } catch (_) {

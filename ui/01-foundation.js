@@ -905,6 +905,26 @@ void (function () {
     return keyed.slice(0, clampInt(count, 1, 50)).map((entry) => entry.id);
   }
 
+  function trackPostPlayReturn(ui) {
+    const runs = ui.storage?.getLastRuns?.(20) || [];
+    const lastPlay = Math.max(0, ...runs
+      .filter((run) => run.meta?.mode === MODES.RUN)
+      .map((run) => Number(run.endedAt) || 0));
+    if (lastPlay <= 0) return;
+
+    const day = getCommonDayKey();
+    const daysSincePlay = (Date.parse(day) - Date.parse(getCommonDayKey(new Date(lastPlay)))) / 86400000;
+    if (daysSincePlay < 1) return;
+
+    const key = `${ui.config.storage.storageKey}:post-play-return-day`;
+    if (window.localStorage.getItem(key) === day) return;
+    window.localStorage.setItem(key, day);
+    const analytics = window.WT_Analytics;
+    analytics.trackFunnel('return_after_play', analytics.inferUiContext(ui, {
+      return_day: daysSincePlay === 1 ? 'day-1' : 'day-2-plus'
+    }));
+  }
+
   function getQueryList(name) {
     try {
       const value = new URLSearchParams(window.location.search).get(name) || '';
