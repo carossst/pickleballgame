@@ -158,6 +158,7 @@ function UI({ storage, game, config, wording }) {
       'copy-share',
       'share-native',
       'share-card',
+      'open-newsletter',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -472,6 +473,14 @@ function UI({ storage, game, config, wording }) {
 
         case 'confirm-redeem':
           self._confirmRedeemCode();
+          break;
+
+        case 'open-newsletter':
+          if (window.WT_UI_Newsletter) window.WT_UI_Newsletter.open(self);
+          break;
+
+        case 'confirm-newsletter':
+          if (window.WT_UI_Newsletter) void window.WT_UI_Newsletter.submit(self);
           break;
 
         case 'auto-redeem-now':

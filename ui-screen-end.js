@@ -641,6 +641,12 @@
     const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
       : "";
+    // Newsletter link: only when the owner has configured a Kit form, and not once subscribed.
+    const newsletterW = w.newsletter || {};
+    const newsletterLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
+    const newsletterLinkHtml = (isRun && newsletterW.link && window.WT_Newsletter && window.WT_Newsletter.shouldOffer(cfg, newsletterLang))
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="open-newsletter">${escapeHtml(newsletterW.link)}</button></p>`
+      : "";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
       ? `<p class="wt-paywall-linkline wt-end-share-links"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
       : "";
@@ -780,6 +786,7 @@
   ${focusedShareHtml}
   ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}
+  ${newsletterLinkHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}

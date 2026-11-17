@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.47",
+    version: "4.3.48",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -564,6 +564,15 @@
 
 
     // Waitlist
+    // Newsletter signup through a Kit (ConvertKit) form. Empty URL = feature off: no link
+    // is shown and nothing is sent. Paste, per language, the "action" URL found in the
+    // HTML embed code of the Kit form (https://app.kit.com/forms/<id>/subscriptions).
+    newsletter: {
+      formAction: { en: "", fr: "" },
+      // Field names used by the Kit embed form; change only if the embed code differs.
+      fieldNames: { email: "email_address", firstName: "fields[first_name]" }
+    },
+
     waitlist: {
       enabled: true,
 
@@ -1978,6 +1987,21 @@ Try this one:
       funFactTemplatesTrue: [`"{question}" True or false? 🤔`]
     },
 
+    newsletter: {
+      link: 'Get new tricky questions by email',
+      title: 'New tricky questions by email',
+      intro: 'Get new rule questions and news about the game by email, with the answer and the rulebook reference.',
+      emailLabel: 'Email',
+      firstNameLabel: 'First name (optional)',
+      consent:
+        'You will receive a confirmation email first. By subscribing you agree to receive emails from Bonjour Pickleball. You can unsubscribe in one click from any email.',
+      privacyLink: 'Privacy policy',
+      cta: 'Subscribe',
+      thanks: 'Almost done: check your inbox and confirm your email address.',
+      errorEmail: 'Please enter a valid email address.',
+      errorNetwork: 'Something went wrong. Please try again in a moment.'
+    },
+
     installPrompt: {
       title: 'Install Pickleball Rules Quiz',
       body: 'Add it to your home screen and open it like an app.\nNo App Store. No account. One tap to play.',
@@ -3164,6 +3188,21 @@ Essayez celle-ci :
       teaserTrue: 'Parfois la réponse évidente est la bonne.',
       funFactTemplatesTrap: [`"{question}" Vrai ou faux ? 🤔`],
       funFactTemplatesTrue: [`"{question}" Vrai ou faux ? 🤔`]
+    },
+
+    newsletter: {
+      link: 'Recevoir de nouvelles questions pièges par e-mail',
+      title: 'De nouvelles questions pièges par e-mail',
+      intro: 'Recevez de nouvelles questions sur les règles et les nouveautés du jeu par e-mail, avec la réponse et la référence du règlement.',
+      emailLabel: 'E-mail',
+      firstNameLabel: 'Prénom (facultatif)',
+      consent:
+        'Vous recevrez d’abord un e-mail de confirmation. En vous inscrivant, vous acceptez de recevoir des e-mails de Bonjour Pickleball. Vous pouvez vous désinscrire en un clic depuis n’importe quel e-mail.',
+      privacyLink: 'Politique de confidentialité',
+      cta: 'S’inscrire',
+      thanks: 'Presque terminé : consultez votre boîte mail et confirmez votre adresse.',
+      errorEmail: 'Veuillez saisir une adresse e-mail valide.',
+      errorNetwork: 'Une erreur est survenue. Réessayez dans un instant.'
     },
 
     installPrompt: {
@@ -9185,6 +9224,12 @@ Merci !`
     const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
       : "";
+    // Newsletter link: only when the owner has configured a Kit form, and not once subscribed.
+    const newsletterW = w.newsletter || {};
+    const newsletterLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
+    const newsletterLinkHtml = (isRun && newsletterW.link && window.WT_Newsletter && window.WT_Newsletter.shouldOffer(cfg, newsletterLang))
+      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="open-newsletter">${escapeHtml(newsletterW.link)}</button></p>`
+      : "";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
       ? `<p class="wt-paywall-linkline wt-end-share-links"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
       : "";
@@ -9324,6 +9369,7 @@ Merci !`
   ${focusedShareHtml}
   ${focusedRunEnd && shareEnabled && focusedInstagramLabel ? `<p class="wt-paywall-linkline"><a class="wt-text-action" href="${focusedInstagramHref}">${escapeHtml(focusedInstagramLabel)}</a></p>` : ""}
   ${shareCardOnlyHtml}
+  ${newsletterLinkHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
   ${runsExhausted && !focusedRunEnd && !slimExhaustedEnd ? paywallBridgeHtml : ``}
@@ -11338,6 +11384,184 @@ ${(() => {
     remindHouseAdLater,
     openHouseAd
   };
+})();
+
+/* ===== newsletter.js ===== */
+/* Newsletter signup through a Kit (ConvertKit) form. Nothing is sent anywhere
+   until the owner pastes the form action URLs into WT_CONFIG.newsletter.formAction.
+   The browser posts the same fields as Kit's own embed form; the answer of a
+   cross-origin form post cannot be read, so the UI says "check your inbox"
+   (Kit sends the confirmation email: double opt-in is set in Kit). */
+(() => {
+  'use strict';
+
+  const KEY = 'wt-newsletter';
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function cfgOf(config) {
+    return (config && config.newsletter) || {};
+  }
+
+  function formAction(config, lang) {
+    const by = cfgOf(config).formAction || {};
+    const url = String(by[lang === 'fr' ? 'fr' : 'en'] || '').trim();
+    return /^https:\/\//.test(url) ? url : '';
+  }
+
+  function isConfigured(config, lang) {
+    return formAction(config, lang) !== '';
+  }
+
+  // "sent" | "dismissed" | "" (never asked)
+  function state() {
+    try {
+      return window.localStorage.getItem(KEY) || '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function remember(value) {
+    try {
+      window.localStorage.setItem(KEY, value);
+    } catch (_) {
+      /* private mode: the link may show again, which is harmless */
+    }
+  }
+
+  // Link shown on the end screens: configured, and not already subscribed.
+  function shouldOffer(config, lang) {
+    return isConfigured(config, lang) && state() !== 'sent';
+  }
+
+  function validate(input) {
+    const email = String((input && input.email) || '').trim();
+    const firstName = String((input && input.firstName) || '').trim().slice(0, 40);
+    if (email.length > 254 || !EMAIL_RE.test(email)) return { ok: false, reason: 'EMAIL' };
+    return { ok: true, email, firstName };
+  }
+
+  // Posts the form. Resolves "sent" (answer unreadable by design), "invalid",
+  // "off" (not configured) or "unavailable" (network error).
+  async function submit(config, lang, input) {
+    const action = formAction(config, lang);
+    if (!action) return 'off';
+    const v = validate(input);
+    if (!v.ok) return 'invalid';
+    if (input && input.website) return 'sent'; // honeypot: a bot filled the hidden field
+    const names = Object.assign(
+      { email: 'email_address', firstName: 'fields[first_name]' },
+      cfgOf(config).fieldNames || {}
+    );
+    const body = new URLSearchParams();
+    body.set(names.email, v.email);
+    if (v.firstName) body.set(names.firstName, v.firstName);
+    try {
+      await fetch(action, { method: 'POST', mode: 'no-cors', body });
+    } catch (_) {
+      return 'unavailable';
+    }
+    remember('sent');
+    return 'sent';
+  }
+
+  window.WT_Newsletter = { formAction, isConfigured, state, remember, shouldOffer, validate, submit, KEY };
+})();
+
+/* ===== ui-newsletter.js ===== */
+// ui-newsletter.js — newsletter signup window (Kit form). Used by ui.js actions
+// "open-newsletter" and "confirm-newsletter". Logic and network are in newsletter.js.
+(() => {
+  'use strict';
+
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function langOf() {
+    return String(document.documentElement.lang || '').slice(0, 2) === 'fr' ? 'fr' : 'en';
+  }
+
+  function words(ui) {
+    return (ui && ui.wording && ui.wording.newsletter) || {};
+  }
+
+  function open(ui) {
+    const NL = window.WT_Newsletter;
+    if (!ui || !NL || !NL.isConfigured(ui.config, langOf())) return;
+    const n = words(ui);
+    const html = `
+      <p>${esc(n.intro)}</p>
+      <label class="wt-label" for="wt-nl-email">${esc(n.emailLabel)}</label>
+      <input id="wt-nl-email" class="wt-input" type="email" autocomplete="email" inputmode="email" maxlength="254" />
+      <label class="wt-label" for="wt-nl-first">${esc(n.firstNameLabel)}</label>
+      <input id="wt-nl-first" class="wt-input" type="text" autocomplete="given-name" maxlength="40" />
+      <input id="wt-nl-website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <p class="wt-muted">${esc(n.consent)} <a href="./privacy.html" target="_blank" rel="noopener">${esc(n.privacyLink)}</a></p>
+      <div class="wt-actions">
+        <button class="wt-btn wt-btn--primary" data-action="confirm-newsletter">${esc(n.cta)}</button>
+      </div>
+      <p id="wt-nl-msg" class="wt-muted" aria-live="polite"></p>
+    `;
+    ui.openModal(html, String(n.title || ''));
+    try {
+      const input = ui.modalContentEl && ui.modalContentEl.querySelector('#wt-nl-email');
+      if (input && typeof input.focus === 'function') input.focus();
+    } catch (_) {
+      /* focus is a convenience */
+    }
+  }
+
+  async function submit(ui) {
+    const NL = window.WT_Newsletter;
+    const root = ui && ui.modalContentEl;
+    if (!NL || !root) return;
+    const n = words(ui);
+    const get = (id) => {
+      const el = root.querySelector(id);
+      return el ? String(el.value || '') : '';
+    };
+    const msg = root.querySelector('#wt-nl-msg');
+    const button = root.querySelector('[data-action="confirm-newsletter"]');
+    const say = (text) => {
+      if (msg) msg.textContent = String(text || '');
+    };
+
+    if (button) button.disabled = true;
+    const result = await NL.submit(ui.config, langOf(), {
+      email: get('#wt-nl-email'),
+      firstName: get('#wt-nl-first'),
+      website: get('#wt-nl-website')
+    });
+
+    if (result === 'sent') {
+      say(n.thanks);
+      root.querySelectorAll('input, [data-action="confirm-newsletter"]').forEach((el) => {
+        el.disabled = true;
+      });
+      try {
+        if (window.WT_Analytics && typeof window.WT_Analytics.trackFunnel === 'function') {
+          window.WT_Analytics.trackFunnel(
+            'newsletter_submit',
+            typeof window.WT_Analytics.inferUiContext === 'function'
+              ? window.WT_Analytics.inferUiContext(ui, {})
+              : {}
+          );
+        }
+      } catch (_) {
+        /* analytics is optional */
+      }
+      return;
+    }
+    if (button) button.disabled = false;
+    say(result === 'invalid' ? n.errorEmail : n.errorNetwork);
+  }
+
+  window.WT_UI_Newsletter = { open, submit };
 })();
 
 /* ===== ui-leaderboard.js ===== */
@@ -15591,6 +15815,7 @@ function UI({ storage, game, config, wording }) {
       'copy-share',
       'share-native',
       'share-card',
+      'open-newsletter',
       'send-share-email',
       'open-leaderboard-profile',
       'claim-share-bonus',
@@ -15905,6 +16130,14 @@ function UI({ storage, game, config, wording }) {
 
         case 'confirm-redeem':
           self._confirmRedeemCode();
+          break;
+
+        case 'open-newsletter':
+          if (window.WT_UI_Newsletter) window.WT_UI_Newsletter.open(self);
+          break;
+
+        case 'confirm-newsletter':
+          if (window.WT_UI_Newsletter) void window.WT_UI_Newsletter.submit(self);
           break;
 
         case 'auto-redeem-now':

@@ -143,21 +143,36 @@ test('Instagram share kit prepares an English post and a generated image', async
   page
 }) => {
   const pageErrors = [];
-  page.on('pageerror', (error) => pageErrors.push(String(error.message || error)));
+  page.on('pageerror', (error) =>
+    pageErrors.push(String(error.message || error))
+  );
   const response = await page.goto('/share.html', {
     waitUntil: 'domcontentloaded'
   });
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('#instagram-caption')).toHaveValue(/Try 2 games free/);
-  await expect(page.locator('#instagram-caption')).toHaveValue(/utm_campaign=instagram_challenge/);
+  await expect(page.locator('#instagram-caption')).toHaveValue(
+    /Try 2 games free/
+  );
+  await expect(page.locator('#instagram-caption')).toHaveValue(
+    /utm_campaign=instagram_challenge/
+  );
   await expect(page.locator('[data-action="download-image"]')).toBeVisible();
   await expect(page.locator('#instagram-art')).toHaveAttribute('width', '1080');
-  await expect(page.locator('#instagram-art')).toHaveAttribute('height', '1350');
+  await expect(page.locator('#instagram-art')).toHaveAttribute(
+    'height',
+    '1350'
+  );
   await page.locator('[data-format="square"]').click();
-  await expect(page.locator('#instagram-art')).toHaveAttribute('height', '1080');
+  await expect(page.locator('#instagram-art')).toHaveAttribute(
+    'height',
+    '1080'
+  );
   await page.locator('[data-format="story"]').click();
-  await expect(page.locator('#instagram-art')).toHaveAttribute('height', '1920');
+  await expect(page.locator('#instagram-art')).toHaveAttribute(
+    'height',
+    '1920'
+  );
   const hasPixels = await page.locator('#instagram-art').evaluate((canvas) => {
     const data = canvas.getContext('2d').getImageData(0, 0, 1, 1).data;
     return data.some((value) => value !== 0);
@@ -178,17 +193,31 @@ test('French Instagram share kit uses the French caption and route', async ({
       return originalFillText.call(this, text, ...args);
     };
   });
-  page.on('pageerror', (error) => pageErrors.push(String(error.message || error)));
+  page.on('pageerror', (error) =>
+    pageErrors.push(String(error.message || error))
+  );
   const response = await page.goto('/share.html?lang=fr', {
     waitUntil: 'domcontentloaded'
   });
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('[data-share="backLink"]')).toHaveText('Retour au défi');
-  await expect(page.locator('[data-share="backLink"]')).toHaveAttribute('href', './fr.html');
-  await expect(page.locator('[data-share="posterLink"]')).toHaveAttribute('href', './poster/?lang=fr');
-  await expect(page.locator('#instagram-caption')).toHaveValue(/2 parties gratuites/);
-  await expect(page.locator('#instagram-caption')).toHaveValue(/\/fr\.html\?utm_source=instagram/);
+  await expect(page.locator('[data-share="backLink"]')).toHaveText(
+    'Retour au défi'
+  );
+  await expect(page.locator('[data-share="backLink"]')).toHaveAttribute(
+    'href',
+    './fr.html'
+  );
+  await expect(page.locator('[data-share="posterLink"]')).toHaveAttribute(
+    'href',
+    './poster/?lang=fr'
+  );
+  await expect(page.locator('#instagram-caption')).toHaveValue(
+    /2 parties gratuites/
+  );
+  await expect(page.locator('#instagram-caption')).toHaveValue(
+    /\/fr\.html\?utm_source=instagram/
+  );
   expect(await page.evaluate(() => window.__canvasText || [])).toContain(
     'Basé sur le règlement USA Pickleball'
   );
@@ -203,16 +232,23 @@ test('Instagram kit keeps mobile controls visible and downloads the selected PNG
   await page.goto('/share.html?lang=fr');
   const canvas = page.locator('#instagram-art');
   await page.locator('[data-format="story"]').click();
-  await expect(page.locator('[data-format="story"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-format="story"]')).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  );
   const box = await canvas.boundingBox();
   expect(box.width / box.height).toBeCloseTo(1080 / 1920, 1);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth)
+  ).toBeLessThanOrEqual(390);
 
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.locator('[data-action="download-image"]').click()
   ]);
-  expect(download.suggestedFilename()).toBe('pickleball-rules-challenge-story-fr.png');
+  expect(download.suggestedFilename()).toBe(
+    'pickleball-rules-challenge-story-fr.png'
+  );
   const png = await readFile(await download.path());
   expect(png.subarray(1, 4).toString()).toBe('PNG');
   expect(png.readUInt32BE(16)).toBe(1080);
@@ -228,10 +264,14 @@ test('Instagram kit reports blocked clipboard access and selects the caption', a
   });
   await page.goto('/share.html');
   await page.locator('[data-action="copy-caption"]').click();
-  await expect(page.getByRole('status')).toHaveText('Copy the selected caption manually.');
-  expect(await page.locator('#instagram-caption').evaluate(
-    (field) => field.selectionEnd - field.selectionStart
-  )).toBeGreaterThan(0);
+  await expect(page.getByRole('status')).toHaveText(
+    'Copy the selected caption manually.'
+  );
+  expect(
+    await page
+      .locator('#instagram-caption')
+      .evaluate((field) => field.selectionEnd - field.selectionStart)
+  ).toBeGreaterThan(0);
 });
 
 test('an installed quiz can open the French Instagram kit offline', async ({
@@ -248,11 +288,17 @@ test('an installed quiz can open the French Instagram kit offline', async ({
     await route.fulfill({ response, body });
   });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await expect
+    .poll(() =>
+      page.evaluate(() => Boolean(navigator.serviceWorker.controller))
+    )
+    .toBe(true);
   await context.setOffline(true);
   await page.goto('/share.html?lang=fr');
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('#instagram-caption')).toHaveValue(/utm_campaign=instagram_challenge/);
+  await expect(page.locator('#instagram-caption')).toHaveValue(
+    /utm_campaign=instagram_challenge/
+  );
 });
 
 test('French PWA shows a waiting update and activates it on request', async ({
@@ -281,9 +327,11 @@ test('French PWA shows a waiting update and activates it on request', async ({
     );
     await navigator.serviceWorker.ready;
   });
-  await expect.poll(() => page.evaluate(
-    () => navigator.serviceWorker.controller?.scriptURL
-  )).toContain('v=test-previous');
+  await expect
+    .poll(() =>
+      page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)
+    )
+    .toContain('v=test-previous');
 
   await page.goto('/fr.html');
   const toast = page.locator('#update-toast');
@@ -291,16 +339,20 @@ test('French PWA shows a waiting update and activates it on request', async ({
   const apply = toast.locator('[data-action="apply-update"]');
   await expect(apply).toBeEnabled({ timeout: 10000 });
   const version = await page.evaluate(() => window.WT_CONFIG.version);
-  expect(await page.evaluate(
-    () => navigator.serviceWorker.controller?.scriptURL
-  )).toContain('v=test-previous');
+  expect(
+    await page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)
+  ).toContain('v=test-previous');
 
   await apply.click();
   await expect(page).toHaveURL(/wt-refresh=/);
-  await expect.poll(() => page.evaluate(
-    () => navigator.serviceWorker.controller?.scriptURL
-  )).toContain(`v=${version}`);
-  await expect(page.getByRole('button', { name: 'Commencer', exact: true })).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(() => navigator.serviceWorker.controller?.scriptURL)
+    )
+    .toContain(`v=${version}`);
+  await expect(
+    page.getByRole('button', { name: 'Commencer', exact: true })
+  ).toBeVisible();
 });
 
 test('poster for a club shows its name and tags the QR code', async ({

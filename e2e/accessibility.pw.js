@@ -9,7 +9,9 @@ const pages = [
 ];
 
 for (const spec of pages) {
-  test(`${spec.name} has no serious accessibility violations`, async ({ page }) => {
+  test(`${spec.name} has no serious accessibility violations`, async ({
+    page
+  }) => {
     const response = await page.goto(spec.path, {
       waitUntil: 'domcontentloaded'
     });
