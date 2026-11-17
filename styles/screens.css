@@ -1699,6 +1699,13 @@ arcade" feel; deviation from --fs-* scale is expected. */
   font-size: var(--fs-sm);
 }
 
+.wt-end-share-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-8) var(--space-16);
+}
+
 @media (max-width: 480px) {
   .wt-card--paywall {
     padding-inline: var(--gap-3);

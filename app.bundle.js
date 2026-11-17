@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.46",
+    version: "4.3.47",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -2812,7 +2812,7 @@ Thanks!`
 
       playing: {
         questionLabel: 'Question',
-        assertion: 'Cette affirmation est-elle vraie ou fausse ?',
+        assertion: 'Vrai ou faux\u202f?',
         answersAria: 'Choix de réponse',
         questionHeadingTemplate: '',
         feedbackTitleOk: '',
@@ -9179,14 +9179,14 @@ Merci !`
     const focusedShareCanNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
     const shareCardLabel = String(end.shareCardCta || "").trim();
     const shareCardHtml = (scoreFP > 0 && shareCardLabel)
-      ? `<span aria-hidden="true"> · </span><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
+      ? `<button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button>`
       : "";
     // Other end screens (no mistake, last free game...) get the card link on its own line.
     const shareCardOnlyHtml = (!focusedRunEnd && isRun && scoreFP > 0 && shareCardLabel)
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
       : "";
     const focusedShareHtml = (focusedRunEnd && shareEnabled && focusedShareLabel)
-      ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
+      ? `<p class="wt-paywall-linkline wt-end-share-links"><button type="button" class="wt-text-action" data-action="${focusedShareCanNative ? "share-native" : "copy-share"}">${escapeHtml(focusedShareLabel)}</button>${shareCardHtml}</p>`
       : "";
 
     const leaderboardW = w.leaderboard || {};

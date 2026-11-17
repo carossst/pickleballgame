@@ -723,7 +723,7 @@
 
       playing: {
         questionLabel: 'Question',
-        assertion: 'Cette affirmation est-elle vraie ou fausse ?',
+        assertion: 'Vrai ou faux\u202f?',
         answersAria: 'Choix de réponse',
         questionHeadingTemplate: '',
         feedbackTitleOk: '',
