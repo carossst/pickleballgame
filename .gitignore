@@ -4,3 +4,6 @@ node_modules/
 coverage/
 leaderboard-worker/wrangler.jsonc
 REGRESSION_GUARDRAILS.md
+
+test-results/
+playwright-report/

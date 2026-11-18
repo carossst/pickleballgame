@@ -87,6 +87,9 @@ Le jeu possède maintenant une boucle complète : découvrir, jouer, comprendre 
 4. Ajouter une série de jours consécutifs uniquement si les retours montrent que le défi quotidien génère déjà des retours.
 5. Renforcer le classement avec des objectifs de proximité, par exemple « encore 2 points pour dépasser le joueur précédent ».
 
+- **Accueil : le défi du jour s'affiche dès la première partie terminée** (Codex, 17 nov. 2026 : la condition « retour un autre jour » a été retirée) et, si le joueur ne peut pas le jouer, la carte propose « Débloquer pour jouer » (paywall). Ce choix va à l'inverse de l'allègement de l'accueil du premier jour ; à garder ou non selon les chiffres de GoatCounter (`daily_challenge_start` / `daily_challenge_complete`, nouveaux événements).
+- **Ne pas commiter `test-results/`** (sorties de Playwright, désormais dans `.gitignore`).
+
 ## À faire (par ordre)
 
 État au 17 novembre 2026 : `main` est en version 4.3.61, les améliorations du défi quotidien et les overlays sont fusionnées, et les changements analytics sont prêts à être commités. Les deux formulaires Kit (FR et EN) sont branchés, les 5 pages de réponses SEO sont publiées, l'accueil et l'écran de fin ont été refaits (voir « Ce qui existe »).
