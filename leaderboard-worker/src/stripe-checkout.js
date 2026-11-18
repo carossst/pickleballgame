@@ -58,13 +58,8 @@ export async function handleCheckoutVerify(request, env) {
       session.mode !== "payment" || session.client_reference_id !== body.deviceId ||
       session.metadata?.product !== "prq-premium-v1" ||
       session.metadata?.device_id !== body.deviceId ||
-      ![env.STRIPE_PRICE_EARLY, env.STRIPE_PRICE_STANDARD].includes(session?.line_items?.data?.[0]?.price?.id)) {
-    // The line item is retrieved separately below; this guard intentionally excludes it.
-    if (session.payment_status !== "paid" || session.status !== "complete" ||
-        session.mode !== "payment" || session.client_reference_id !== body.deviceId ||
-        session.metadata?.product !== "prq-premium-v1" || session.metadata?.device_id !== body.deviceId) {
-      return json({ ok: false, error: "Payment not verified" }, 403);
-    }
+      session.metadata?.device_id !== body.deviceId) {
+    return json({ ok: false, error: "Payment not verified" }, 403);
   }
   const items = await stripe("/checkout/sessions/" + encodeURIComponent(body.sessionId) + "/line_items?limit=10", env.STRIPE_SECRET_KEY);
   if (items.data?.length !== 1 || items.data[0]?.quantity !== 1 ||
