@@ -7,7 +7,7 @@ Pickleball Rules Quiz is an independent product by Bonjour Pickleball. Every que
 ## Quiz
 
 - [Play the quiz (English)](https://www.pickleballrulesquiz.com/): the full app — two free runs, then one-time purchase
-- [Jouer au quiz (français)](https://www.pickleballrulesquiz.com/fr.html): version française complète
+- French rules, explained in depth: https://www.bonjourpickleball.fr/ (the quiz is also playable in French on this site, but that page is not indexed)
 
 ## Rules by theme
 

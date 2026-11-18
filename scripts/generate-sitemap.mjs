@@ -56,27 +56,10 @@ entries.push(
     loc: `${BASE}/`,
     lastmod: fixedLastmod("/"),
     changefreq: "weekly",
-    priority: "1.0",
-    alternates: [
-      { hreflang: "en", href: `${BASE}/` },
-      { hreflang: "fr", href: `${BASE}/fr.html` },
-      { hreflang: "x-default", href: `${BASE}/` }
-    ]
+    priority: "1.0"
   })
 );
-entries.push(
-  urlEntry({
-    loc: `${BASE}/fr.html`,
-    lastmod: fixedLastmod("/fr.html"),
-    changefreq: "weekly",
-    priority: "0.9",
-    alternates: [
-      { hreflang: "en", href: `${BASE}/` },
-      { hreflang: "fr", href: `${BASE}/fr.html` },
-      { hreflang: "x-default", href: `${BASE}/` }
-    ]
-  })
-);
+// fr.html stays playable but is noindex (bonjourpickleball.fr owns French SEO): not listed here.
 for (const page of ["press.html", "privacy.html", "terms.html"]) {
   entries.push(
     urlEntry({

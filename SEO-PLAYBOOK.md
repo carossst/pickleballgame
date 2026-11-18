@@ -8,10 +8,14 @@ Référence unique de la stratégie SEO. Dernière mise à jour : 2026-06-14.
 ## 1. Périmètre et répartition des langues
 
 - **pickleballrulesquiz.com = English only.** Tout le SEO anglais (marché US/CA).
-- **bonjourpickleball.fr = tout le SEO français.** Aucune page FR sur le .com
+- **bonjourpickleball.fr = tout le SEO français.** Aucune page FR indexée sur le .com
   (cannibalisation de notre propre autorité francophone sinon).
-- Hreflang : uniquement entre la racine du .com et /fr.html (déjà en place),
-  et potentiellement entre les deux hubs si le .fr crée une page quiz.
+- **/fr.html reste jouable mais en `noindex,follow`** (décision de la propriétaire, 18 nov. 2026) :
+  absente du sitemap, sans hreflang, non bloquée dans robots.txt (Google doit lire le noindex).
+  Le jeu sert à jouer, le site sert à comprendre : la version française du jeu renvoie vers
+  bonjourpickleball.fr.
+- Hreflang : aucun entre la racine du .com et /fr.html. Les hreflang `?lang=fr` de press,
+  privacy, terms et 404 sont inchangés (à revoir avec la propriétaire).
 
 ## 2. Architecture en 4 couches
 
