@@ -17,6 +17,7 @@
 - **Pas de pages SEO en français**, pour ne pas concurrencer bonjourpickleball.fr.
 - **Les questions viennent du règlement officiel USA Pickleball 2026, jamais d'une rédaction de mémoire.** Chaque question cite la règle exacte (forme existante : « 2026 USA Pickleball Official Rulebook, Rule 11.A. »).
 - **Fusions :** ne fusionner une PR que lorsque la propriétaire dit « fusionne la N » (CI verte). Réponses en français, courtes, économes en jetons ; ne jamais annoncer « fait » sans l'avoir vérifié.
+- **`fr.html` : jouable mais `noindex,follow`** (18 nov. 2026). Le .com est le jeu, bonjourpickleball.fr porte tout le SEO français. Pas de hreflang entre `/` et `/fr.html`, absente du sitemap, non bloquée dans robots.txt. Ne pas la réindexer sans l'accord de la propriétaire. À faire ensuite : liens depuis la version française vers bonjourpickleball.fr (écran de fin, pied de page, sous l'explication), **uniquement avec des adresses vérifiées en ligne (HTTP 200)** : l'agent n'a pas accès au site live, il faut que la propriétaire donne les adresses exactes.
 
 ## Règles de travail techniques
 
