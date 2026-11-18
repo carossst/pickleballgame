@@ -1,3 +1,4 @@
+import { handleCheckoutCreate, handleCheckoutVerify } from "./stripe-checkout.js";
 import {
   ANSWER_KEY_ENTRIES,
   LEADERBOARD_CONTENT_VERSION
@@ -958,6 +959,15 @@ export default {
         if (originCheck) return originCheck;
       }
 
+      if (request.method === "POST" && (url.pathname === "/checkout/create" || url.pathname === "/checkout/verify")) {
+        const result = url.pathname === "/checkout/create"
+          ? await handleCheckoutCreate(request, env)
+          : await handleCheckoutVerify(request, env);
+        const headers = new Headers(result.headers);
+        Object.entries(corsHeaders(request, env)).forEach(([key, value]) => headers.set(key, value));
+        return new Response(result.body, { status: result.status, headers });
+      }
+
       if (request.method === "GET" && url.pathname === "/leaderboard") {
         return handleGetLeaderboard(request, env);
       }
@@ -990,7 +1000,9 @@ export default {
           "POST /player",
           "DELETE /player",
           "POST /score",
-          "POST /redeem-code"
+          "POST /redeem-code",
+          "POST /checkout/create",
+          "POST /checkout/verify"
         ]
       }, undefined, request, env);
     } catch (error) {
