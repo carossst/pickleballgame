@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.58",
+    version: "4.3.60",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1696,6 +1696,8 @@
       tierPerfect: 'Perfect game!',
       tierGood: 'Nice rally!',
       tierKeep: 'Keep playing!',
+      tierRecord: 'New record!',
+      tierPracticeAll: 'All fixed!',
       bonusChip: '+{bonus} bonus · streak',
       shareChallenge: 'Challenge a friend',
       nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
@@ -2994,6 +2996,8 @@ Thanks!`
       tierPerfect: 'Partie parfaite !',
       tierGood: 'Beau jeu !',
       tierKeep: 'On continue !',
+      tierRecord: 'Nouveau record !',
+      tierPracticeAll: 'Toutes corrigées !',
       bonusChip: '+{bonus} bonus · série',
       shareChallenge: 'Défier un ami',
       nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
@@ -8717,12 +8721,22 @@ Merci !`
       ? fillTemplate(end.correctAnswersLine, { correct: lastRun.correctCount, total: totalAnswered })
       : "";
     const outcomes = Array.isArray(lastRun.outcomes) ? lastRun.outcomes : [];
-    const endTier = (isRun && totalAnswered > 0 && window.WT_EndFx) ? window.WT_EndFx.tier(lastRun.correctCount, totalAnswered, scoreFP) : "";
-    const tierLabel = endTier ? String(end[endTier === "perfect" ? "tierPerfect" : endTier === "good" ? "tierGood" : "tierKeep"] || "").trim() : "";
+    let endTier = "";
+    if (window.WT_EndFx) {
+      if (isRun && totalAnswered > 0) endTier = window.WT_EndFx.tier(lastRun.correctCount, totalAnswered, scoreFP);
+      else if (isBonus) endTier = window.WT_EndFx.bonusTier(scoreFP, lastRun.newBest === true);
+      else if (isPractice) endTier = window.WT_EndFx.practiceTier(outcomes);
+    }
+    const tierKey = endTier === "record" ? "tierRecord"
+      : (endTier === "perfect" && isPractice) ? "tierPracticeAll"
+      : endTier === "perfect" ? "tierPerfect"
+      : endTier === "good" ? "tierGood"
+      : endTier === "keep" ? "tierKeep" : "";
+    const tierLabel = tierKey ? String(end[tierKey] || "").trim() : "";
     const pipsHtml = (isRun && outcomes.length > 0)
       ? `<div class="wt-end-pips" role="img" aria-label="${escapeHtml(correctAnswersLine)}">${outcomes.map((ok, i) => `<span class="wt-end-pip ${ok ? "wt-end-pip--ok" : "wt-end-pip--ko"}" style="--i:${i}">${ok ? "✓" : "✕"}</span>`).join("")}</div>`
       : "";
-    const confettiHtml = (endTier === "perfect" || endTier === "good")
+    const confettiHtml = (endTier === "perfect" || endTier === "good" || endTier === "record")
       ? `<div class="wt-end-confetti" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>`
       : "";
     const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
@@ -9405,7 +9419,7 @@ Merci !`
     <div class="wt-end-score${newBest ? " wt-end-score--newbest" : ""}" role="group" aria-label="${escapeHtml(displayScoreLine)}">
       <div class="wt-end-score__headline">
         ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
-        <span class="wt-end-score__value"${(isRun && !isPractice) ? ` data-count="${scoreFP}" data-tier="${escapeHtml(endTier)}"` : ``}>
+        <span class="wt-end-score__value"${(isRun || isBonus || isPractice) ? ` data-count="${scoreFP}" data-tier="${escapeHtml(endTier)}"` : ``}>
           ${escapeHtml(displayScoreValue || displayScoreLine)}
         </span>
       </div>
@@ -13242,6 +13256,19 @@ ${(() => {
     return 'keep';
   }
 
+  // Rapid Fire: a new best of 3+ is a record, 5+ is a solid game, below that no fuss.
+  function bonusTier(score, newBest) {
+    const s = Number(score) || 0;
+    if (newBest === true && s >= 3) return 'record';
+    return s >= 5 ? 'good' : '';
+  }
+
+  // Practice (replaying mistakes): only a clean sweep is celebrated.
+  function practiceTier(outcomes) {
+    const list = Array.isArray(outcomes) ? outcomes : [];
+    return list.length > 0 && list.every((v) => v === true) ? 'perfect' : '';
+  }
+
   const reduced = () =>
     Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
@@ -13271,7 +13298,7 @@ ${(() => {
     const target = Number(node.getAttribute('data-count')) || 0;
     if (String(node.textContent).trim() === String(target)) countUp(node, target);
     const t = node.getAttribute('data-tier');
-    if ((t === 'perfect' || t === 'good') && window.WT_SFX) window.WT_SFX.play('win');
+    if ((t === 'perfect' || t === 'good' || t === 'record') && window.WT_SFX) window.WT_SFX.play('win');
   }
 
   function start() {
@@ -13280,7 +13307,112 @@ ${(() => {
     enhance();
   }
 
-  window.WT_EndFx = { tier, enhance };
+  window.WT_EndFx = { tier, bonusTier, practiceTier, enhance };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
+})();
+
+/* ===== play-fx.js ===== */
+/* In-game feedback flourishes: a floating +N, a streak banner, a ball that crosses the card
+   (or hits the net), a shake on the lives, and a slide-in for each new question.
+   Pure decoration: it reads the DOM that ui/ already renders and never touches scores or timing.
+   ui/03-gameplay.js calls WT_PlayFx.note() right after validating an answer. */
+(() => {
+  'use strict';
+
+  const MILESTONES = [3, 5, 8, 12, 20];
+
+  function streakMilestone(streak) {
+    return MILESTONES.indexOf(Number(streak)) !== -1;
+  }
+
+  const reduced = () =>
+    Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  let pending = null;
+  let lastQuestionKey = '';
+
+  function note(info) {
+    pending = Object.assign({ at: Date.now() }, info || {});
+  }
+
+  const FLAME =
+    '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-1-.5-2-1-3 3 1 5 4 5 7a7 7 0 0 1-14 0c0-6 5-7 7-13z" fill="currentColor"/></svg>';
+
+  function layerFor(card) {
+    const layer = document.createElement('div');
+    layer.className = 'wt-fx-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    card.appendChild(layer);
+    setTimeout(() => layer.remove(), 1800);
+    return layer;
+  }
+
+  function el(cls, html) {
+    const node = document.createElement('span');
+    node.className = cls;
+    if (html != null) node.innerHTML = html;
+    return node;
+  }
+
+  function onFeedback(feedback) {
+    feedback.setAttribute('data-fx', '1');
+    const card = feedback.closest('.wt-card');
+    const info = pending && Date.now() - pending.at < 3000 ? pending : null;
+    pending = null;
+    if (!card || reduced()) return;
+    const ok = info ? info.correct === true : feedback.classList.contains('wt-feedback--ok');
+    const layer = layerFor(card);
+
+    if (ok) {
+      const pill = document.querySelector('.wt-pill__delta--score');
+      const delta = pill ? String(pill.textContent || '').trim() : '+1';
+      layer.appendChild(el('wt-fx-plus', delta || '+1'));
+      layer.appendChild(el('wt-fx-ball wt-fx-ball--ok'));
+      const streak = info ? Number(info.streak) : 0;
+      if (streakMilestone(streak)) {
+        // Compact and language-neutral: the existing micro toast already says it in words.
+        layer.appendChild(el('wt-fx-streak', `${FLAME}<b>\u00d7${streak}</b>`));
+      }
+    } else {
+      layer.appendChild(el('wt-fx-ball wt-fx-ball--ko'));
+      const lives = document.querySelector('.wt-hud-metric--mistakes');
+      if (lives) {
+        lives.classList.remove('wt-fx-shake');
+        void lives.offsetWidth;
+        lives.classList.add('wt-fx-shake');
+      }
+    }
+  }
+
+  function onQuestion(card) {
+    const key = String(card.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    if (!key || key === lastQuestionKey) return;
+    lastQuestionKey = key;
+    if (reduced()) return;
+    card.classList.add('wt-fx-enter');
+  }
+
+  function scan() {
+    const root = document.getElementById('app') || document.body;
+    if (!root || document.querySelector('[data-wt-mode="bonus"]')) return;
+    const feedback = root.querySelector('.wt-card[role="status"] .wt-feedback:not([data-fx])');
+    if (feedback) return onFeedback(feedback);
+    const answer = root.querySelector('[data-action="answer-true"]');
+    const card = answer && answer.closest('.wt-card');
+    if (card && card.getAttribute('role') !== 'status') onQuestion(card);
+  }
+
+  function start() {
+    if (!document.body) return;
+    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+    scan();
+  }
+
+  window.WT_PlayFx = { note, streakMilestone };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
@@ -20063,6 +20195,16 @@ UI.prototype.startRun = function (mistakesOnly) {
       if (window.WT_SFX) window.WT_SFX.play(res.isCorrect === true ? 'correct' : 'wrong');
     } catch (_) {
       /* sound is optional */
+    }
+
+    try {
+      if (window.WT_PlayFx)
+        window.WT_PlayFx.note({
+          correct: res.isCorrect === true,
+          streak: Number(this._runtime?.microPics?.correctStreak || 0)
+        });
+    } catch (_) {
+      /* decoration only */
     }
 
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)

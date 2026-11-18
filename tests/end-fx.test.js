@@ -21,3 +21,40 @@ describe('end-fx tier', () => {
     expect(load().tier(0, 0, 0)).toBe('keep');
   });
 });
+
+describe('play-fx streak milestones', () => {
+  const fx = () =>
+    loadBrowserScript('play-fx.js', {
+      window: { matchMedia: () => ({ matches: false }) },
+      document: {
+        readyState: 'complete',
+        body: null,
+        getElementById: () => null,
+        addEventListener() {},
+        querySelector: () => null
+      }
+    }).window.WT_PlayFx;
+
+  it('celebrates 3, 5, 8, 12 and 20 in a row only', () => {
+    const { streakMilestone } = fx();
+    [3, 5, 8, 12, 20].forEach((n) => expect(streakMilestone(n)).toBe(true));
+    [0, 1, 2, 4, 6, 9].forEach((n) => expect(streakMilestone(n)).toBe(false));
+  });
+});
+
+describe('end-fx tiers for Rapid Fire and practice', () => {
+  it('Rapid Fire: record needs a new best of 3+, solid from 5', () => {
+    const { bonusTier } = load();
+    expect(bonusTier(4, true)).toBe('record');
+    expect(bonusTier(2, true)).toBe('');
+    expect(bonusTier(6, false)).toBe('good');
+    expect(bonusTier(3, false)).toBe('');
+  });
+
+  it('practice: only a clean sweep is celebrated', () => {
+    const { practiceTier } = load();
+    expect(practiceTier([true, true, true])).toBe('perfect');
+    expect(practiceTier([true, false])).toBe('');
+    expect(practiceTier([])).toBe('');
+  });
+});
