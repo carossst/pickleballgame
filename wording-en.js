@@ -297,6 +297,7 @@
       cardTitle: 'THIS WEEK',
       cardSubDefault: 'See where your score lands this week.',
       cardSubJoined: 'See where your score ranks this week.',
+      cardRankLine: 'You are #{rank} this week. Play again to move up.',
       cardCtaJoin: 'Join leaderboard',
       cardCtaView: 'View leaderboard',
       cardCtaShare: 'Share leaderboard',

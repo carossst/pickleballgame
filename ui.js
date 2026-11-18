@@ -2877,6 +2877,16 @@ function UI({ storage, game, config, wording }) {
 
         case 'start-secret-bonus':
           self.closeModal();
+          try {
+            window.WT_Analytics?.trackFunnel(
+              'rapid_fire_start',
+              window.WT_Analytics.inferUiContext(self, {
+                entry_point: self.state === STATES.END ? 'end' : 'landing'
+              })
+            );
+          } catch (_) {
+            /* Analytics must not interrupt gameplay. */
+          }
           if (self._runtime) self._runtime.secretBonusPending = false;
           if (typeof self.startSecretBonusRun === 'function')
             self.startSecretBonusRun();
@@ -2909,6 +2919,17 @@ function UI({ storage, game, config, wording }) {
               self.storage.markDailyChallengeClicked();
             } catch (_) {
               /* silent */
+            }
+
+            try {
+              window.WT_Analytics?.trackFunnel(
+                'daily_challenge_start',
+                window.WT_Analytics.inferUiContext(self, {
+                  entry_point: self.state === STATES.END ? 'end' : 'landing'
+                })
+              );
+            } catch (_) {
+              /* Analytics must not interrupt gameplay. */
             }
           }
 
@@ -7696,6 +7717,48 @@ UI.prototype.startRun = function (mistakesOnly) {
       }
     } catch (_) {
       /* silent */
+    }
+
+    if (
+      mode === MODES.RUN &&
+      (this._runtime.lastRun.challengeKind === 'DAILY' || dailyChallengeCompleted) &&
+      window.WT_Analytics &&
+      typeof window.WT_Analytics.trackFunnel === 'function' &&
+      typeof window.WT_Analytics.inferUiContext === 'function'
+    ) {
+      try {
+        window.WT_Analytics.trackFunnel(
+          'daily_challenge_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            challenge_kind: this._runtime.lastRun.challengeKind || 'RUN',
+            completed: dailyChallengeCompleted,
+            score: scoreFP,
+            target_score: dailyTargetScore
+          })
+        );
+      } catch (_) {
+        /* Analytics must not interrupt gameplay. */
+      }
+    }
+
+    if (
+      mode === MODES.BONUS &&
+      window.WT_Analytics &&
+      typeof window.WT_Analytics.trackFunnel === 'function' &&
+      typeof window.WT_Analytics.inferUiContext === 'function'
+    ) {
+      try {
+        window.WT_Analytics.trackFunnel(
+          'rapid_fire_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            score: scoreFP,
+            correct_count: Number(gameState.correctCount || 0),
+            max_correct_streak: finalMaxStreak
+          })
+        );
+      } catch (_) {
+        /* Analytics must not interrupt gameplay. */
+      }
     }
 
     try {

@@ -321,6 +321,16 @@ function UI({ storage, game, config, wording }) {
 
         case 'start-secret-bonus':
           self.closeModal();
+          try {
+            window.WT_Analytics?.trackFunnel(
+              'rapid_fire_start',
+              window.WT_Analytics.inferUiContext(self, {
+                entry_point: self.state === STATES.END ? 'end' : 'landing'
+              })
+            );
+          } catch (_) {
+            /* Analytics must not interrupt gameplay. */
+          }
           if (self._runtime) self._runtime.secretBonusPending = false;
           if (typeof self.startSecretBonusRun === 'function')
             self.startSecretBonusRun();
@@ -353,6 +363,17 @@ function UI({ storage, game, config, wording }) {
               self.storage.markDailyChallengeClicked();
             } catch (_) {
               /* silent */
+            }
+
+            try {
+              window.WT_Analytics?.trackFunnel(
+                'daily_challenge_start',
+                window.WT_Analytics.inferUiContext(self, {
+                  entry_point: self.state === STATES.END ? 'end' : 'landing'
+                })
+              );
+            } catch (_) {
+              /* Analytics must not interrupt gameplay. */
             }
           }
 

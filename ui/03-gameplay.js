@@ -2038,6 +2038,48 @@ UI.prototype.startRun = function (mistakesOnly) {
       /* silent */
     }
 
+    if (
+      mode === MODES.RUN &&
+      (this._runtime.lastRun.challengeKind === 'DAILY' || dailyChallengeCompleted) &&
+      window.WT_Analytics &&
+      typeof window.WT_Analytics.trackFunnel === 'function' &&
+      typeof window.WT_Analytics.inferUiContext === 'function'
+    ) {
+      try {
+        window.WT_Analytics.trackFunnel(
+          'daily_challenge_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            challenge_kind: this._runtime.lastRun.challengeKind || 'RUN',
+            completed: dailyChallengeCompleted,
+            score: scoreFP,
+            target_score: dailyTargetScore
+          })
+        );
+      } catch (_) {
+        /* Analytics must not interrupt gameplay. */
+      }
+    }
+
+    if (
+      mode === MODES.BONUS &&
+      window.WT_Analytics &&
+      typeof window.WT_Analytics.trackFunnel === 'function' &&
+      typeof window.WT_Analytics.inferUiContext === 'function'
+    ) {
+      try {
+        window.WT_Analytics.trackFunnel(
+          'rapid_fire_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            score: scoreFP,
+            correct_count: Number(gameState.correctCount || 0),
+            max_correct_streak: finalMaxStreak
+          })
+        );
+      } catch (_) {
+        /* Analytics must not interrupt gameplay. */
+      }
+    }
+
     try {
       void this.submitLeaderboardRun(this._runtime.lastRun).then((res) => {
         if (

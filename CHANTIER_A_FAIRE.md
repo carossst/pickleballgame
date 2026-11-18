@@ -1,6 +1,6 @@
 # Reprise du projet (pour une nouvelle conversation)
 
-État au 16 novembre 2026. Ce fichier suffit pour reprendre le travail sans l'historique. Les détails techniques des modules sont dans `IMPLEMENTATION_MEMORY.md`.
+État au 17 novembre 2026. Ce fichier suffit pour reprendre le travail sans l'historique. Les détails techniques des modules sont dans `IMPLEMENTATION_MEMORY.md`.
 
 ## Le projet en bref
 
@@ -38,7 +38,7 @@
 
 ## Ce qui existe (fait et fusionné)
 
-Parcours : accroche et accueil « terrain », première partie de 5 questions sans élimination, deuxième de 10 (3 erreurs), paywall allégé (3 avantages, prix, compte à rebours), écran de fin allégé, lien de partage avec le score, carte de score en image, défi du jour seulement à partir de la deuxième visite, classement masqué tant qu'il a moins de 3 scores.
+Parcours : accroche et accueil « terrain », première partie de 5 questions sans élimination, deuxième de 10 (3 erreurs), paywall allégé (3 avantages, prix, compte à rebours), écran de fin allégé, lien de partage avec le score, carte de score en image, défi du jour visible dès la première partie terminée, classement masqué tant qu'il a moins de 3 scores.
 Jeu : habillage terrain (question bleue, Vrai vert, Faux rouge), couleur du verdict conservée pendant le feedback, schémas de terrain dans les explications (8 thèmes), son et vibration (son coupé par défaut, bouton en note de musique en haut à droite).
 Rapid Fire : look « terrain de nuit », raquette, bannière de vague toutes les 5 questions, capsule +1 vie après 8 bonnes réponses d'affilée, question « boss » en dernier. Les points et la vitesse sont inchangés.
 Clubs et coachs : page `/clubs/` et poster personnalisé (`/poster/?club=Nom` ou `?coach=Nom`), liens étiquetés `club-<nom>` / `coach-<nom>` qui apparaissent dans GoatCounter sous `src-club-<nom>`. Un lien vers une page `/quiz/<thème>/` perd l'étiquette (son bouton Play met `wt-source=seo`) : utiliser les liens directs de `/clubs/`. Tout thème ajouté dans `seo-pages.json` doit l'être aussi dans `THEMES` de `club-link.js` (un test compare).
@@ -46,13 +46,52 @@ SEO : l'accueil et chaque page ont des liens vers les 8 thèmes ; les 5 pages de
 Kit de partage Instagram (Codex) : pages `share.html`, `share.js`, `share.css` et lien « Prepare an Instagram post » sur l'écran de fin. Serveur du classement : écritures rendues atomiques (Codex). Mise à jour du service worker corrigée (Codex).
 Écran de fin refait (17 nov. 2026) : titre selon le résultat (`end-fx.js`, `WT_EndFx.tier`), une pastille par réponse (`lastRun.outcomes`, non envoyé au classement), compteur de score, confettis, son de victoire (`WT_SFX.play('win')`), rangée de boutons de partage (Défier un ami, Carte de score, Instagram ; les deux derniers seulement à partir de la 2e partie ou d'un score de 3), encadré e-mail, pastille d'objectif du ticket Rapid Fire. Accueil : un simple lien e-mail à la place des textes de liste d'attente répétés, bloc « niveau » masqué quand une carte défi ou meilleur score s'affiche, bouton « Installer l'application » retiré de l'accueil (18 nov.). Newsletter : formulaires Kit français et anglais branchés.
 Animations (18 nov. 2026, `play-fx.js` et styles) : +N qui s'envole, badge de série ×N à 3, 5, 8, 12 et 20 bonnes réponses, balle qui traverse la carte (ou tombe au filet), tremblement des vies, glissement de chaque nouvelle question ; sur tous les écrans de fin, les blocs montent un par un et le bouton principal brille une fois. Titre, confettis et son de victoire aussi en Rapid Fire (nouveau record de 3+ ou score de 5+) et en pratique (toutes les erreurs corrigées) ; seuils dans `end-fx.js` (`bonusTier`, `practiceTier`), à ajuster avec les chiffres réels. Tout est coupé en mode « réduire les animations » et ne change ni les scores ni les délais. Pas fait : battement de tension sur la dernière question (aucun compteur de question accessible dans l'interface).
-Événements GoatCounter déjà envoyés : `landing_view`, `run_start`, `run_complete`, `paywall_view`, `paywall_dismiss`, `checkout_start`, `unlock_success`, `end_action_click` (dont le partage), `combo_unlocked`.
+Événements GoatCounter déjà envoyés : `landing_view`, `run_start`, `run_complete`, `paywall_view`, `paywall_dismiss`, `checkout_start`, `unlock_success`, `end_action_click` (dont le partage), `combo_unlocked`, `daily_challenge_start`, `daily_challenge_complete`, `rapid_fire_start`, `rapid_fire_complete`. Le classement conserve aussi le rang hebdomadaire connu pour afficher un objectif de progression.
+
+## Audit croisé gaming, sales et marketing — 17 novembre 2026
+
+### Verdict
+
+Le jeu possède maintenant une boucle complète : découvrir, jouer, comprendre ses erreurs, rejouer, relever le défi du jour, gagner un jeton, essayer le Mode Rapide et viser un meilleur score. Le principal enjeu n'est plus d'ajouter des modes, mais de rendre les boucles existantes lisibles et de mesurer leur rendement.
+
+### Gaming
+
+- Forces : parties gratuites courtes, explication après chaque réponse, Mode Erreurs, Mode Rapide, progression, meilleur score, défi quotidien et classement.
+- Risque : une partie normale peut aussi faire progresser l'objectif du défi quotidien. Il faut conserver une copy claire pour distinguer « partie » et « défi du jour ».
+- Décision : ne pas ajouter de nouveau mode avant d'avoir observé l'usage du défi quotidien et du Mode Rapide.
+
+### Sales
+
+- L'offre reste lisible : 2 parties gratuites, sans inscription, paiement unique, 200 questions, Mode Erreurs et parties illimitées.
+- Le paiement côté navigateur reste contournable. C'est le premier risque avant toute campagne payante réelle.
+- Mesurer avant de modifier le prix : visites, parties commencées, parties terminées, paywall vu, checkout commencé et achat.
+
+### Marketing
+
+- Promesse commune recommandée : « Un nouveau défi chaque jour. Des explications après chaque réponse. Deux parties gratuites, sans inscription. »
+- Conserver « pickleball » dans le SEO et le nom officiel, et employer « pickle » dans les messages courts destinés aux joueurs français.
+- Vérifier que les témoignages diffusés sont réels et autorisés.
+
+### Technique
+
+- Les nouveaux événements suivent maintenant la boucle défi quotidien → jeton → Mode Rapide.
+- La progression reste locale, sans compte : effacer les données ou changer d'appareil efface la progression locale.
+- Le renouvellement quotidien utilise une journée commune UTC et un compte à rebours visible. À surveiller avec des joueurs français et américains.
+- Le rendu mobile Android Chrome et la capture noire doivent encore être vérifiés sur appareil réel.
+
+### Pistes restantes, dans l'ordre
+
+1. Comparer dans GoatCounter les quatre événements `daily_challenge_start`, `daily_challenge_complete`, `rapid_fire_start` et `rapid_fire_complete`.
+2. Vérifier le parcours mobile réel et la capture d'écran Android Chrome.
+3. Sécuriser l'activation premium côté serveur avant les premières ventes significatives.
+4. Ajouter une série de jours consécutifs uniquement si les retours montrent que le défi quotidien génère déjà des retours.
+5. Renforcer le classement avec des objectifs de proximité, par exemple « encore 2 points pour dépasser le joueur précédent ».
 
 ## À faire (par ordre)
 
-État au 17 novembre 2026 : `main` est en version 4.3.55, tout est fusionné, la CI est verte. Les deux formulaires Kit (FR et EN) sont branchés, les 5 pages de réponses SEO sont publiées, l'accueil et l'écran de fin ont été refaits (voir « Ce qui existe »).
+État au 17 novembre 2026 : `main` est en version 4.3.61, les améliorations du défi quotidien et les overlays sont fusionnées, et les changements analytics sont prêts à être commités. Les deux formulaires Kit (FR et EN) sont branchés, les 5 pages de réponses SEO sont publiées, l'accueil et l'écran de fin ont été refaits (voir « Ce qui existe »).
 
-1. **Mesurer avant de construire (dans 7 à 10 jours).** La propriétaire colle les lignes GoatCounter dans la conversation : `landing_view`, `run_start`, `run_complete`, `paywall_view`, `checkout_start`, `newsletter_submit`, et les sources `src-email-...`, `src-club-...`. Regarder : combien finissent une partie, combien s'inscrivent à l'e-mail, d'où viennent les visites. Le vrai frein est le trafic, pas le jeu.
+1. **Mesurer avant de construire (dans 7 à 10 jours).** La propriétaire colle les lignes GoatCounter dans la conversation : `landing_view`, `run_start`, `run_complete`, `daily_challenge_start`, `daily_challenge_complete`, `rapid_fire_start`, `rapid_fire_complete`, `paywall_view`, `checkout_start`, `newsletter_submit`, et les sources `src-email-...`, `src-club-...`. Regarder : combien finissent une partie, combien reviennent, combien utilisent le jeton, combien s'inscrivent à l'e-mail, d'où viennent les visites. Le vrai frein est probablement encore le trafic et le retour, pas le moteur du jeu.
 2. **Paiement (à traiter avant ou dès les premières ventes réelles).** Le code d'accès `PRQ-xxxx-xxxx` est accepté côté navigateur et `success.html` en génère un : contournable. Reporté sur décision de la propriétaire ; passe en premier dès qu'il y a des ventes.
 3. **Règlement 2027 : refonte globale des questions.** Décision de la propriétaire : ne pas ajouter de questions au jeu avant (pas de « 211 questions »). Quand le règlement 2027 sortira : revoir les 200 questions, en ajouter (kitchen en priorité, 8 sur 200 aujourd'hui), choisir un nombre rond, mettre à jour tous les « 200 questions » (accueil, wording, poster, JSON-LD de `index.html`, pages SEO, `llms.txt`), lancer `npm run generate:leaderboard-key` et **redéployer le Worker du classement avant la mise en ligne** (il valide les réponses avec sa propre copie du contenu), puis `npm run publish:seo` et tous les tests. Ne rien rédiger de mémoire : tout doit venir du règlement.
 4. **Contenu de la newsletter.** `NEWSLETTER_CONTENU.md` contient 11 questions sur la zone de non-volée tirées du règlement 2026 (aussi dans `drafts/kitchen-questions-draft.json`, non lues par le jeu), le format d'e-mail et un rythme (un e-mail par semaine au maximum). Les utiliser aussi en posts.

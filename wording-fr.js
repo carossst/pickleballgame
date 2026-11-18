@@ -300,6 +300,7 @@
       cardTitle: 'CETTE SEMAINE',
       cardSubDefault: 'Voyez où votre score se situe cette semaine.',
       cardSubJoined: 'Voyez votre classement cette semaine.',
+      cardRankLine: 'Vous êtes #{rank} cette semaine. Encore une partie pour progresser.',
       cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
       cardCtaShare: 'Partager le classement',

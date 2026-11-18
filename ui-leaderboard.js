@@ -335,6 +335,7 @@
         profile?.optIn === true && !!String(profile?.nickname || '').trim(),
       nickname: String(profile?.nickname || '').trim(),
       bestScoreFP: getLocalBestScore(ui),
+      weeklyRank: clampInt(bucket?.lastKnownWeeklyRank, 0, 999999),
       lastFetchedAt,
       nextRefreshAt
     };
@@ -373,6 +374,10 @@
       bestScoreLineTemplate && model.bestScoreFP > 0
         ? fillTemplate(bestScoreLineTemplate, { score: String(model.bestScoreFP) })
         : '';
+    const rankLineTemplate = String(w.cardRankLine || '').trim();
+    const rankLine = rankLineTemplate && model.weeklyRank > 0
+      ? fillTemplate(rankLineTemplate, { rank: String(model.weeklyRank) })
+      : '';
 
     const rowsHtml = model.loading
       ? `<p class="wt-muted">${escapeHtml(loadingLabel)}</p>`
@@ -403,6 +408,7 @@
         ${sub ? `<p class="wt-leaderboard-card__sub">${escapeHtml(sub)}</p>` : ``}
         ${weeklyResetLine ? `<p class="wt-leaderboard-card__freshness"><span>${escapeHtml(weeklyResetLine)}</span></p>` : ``}
         ${bestScoreLine ? `<p class="wt-muted">${escapeHtml(bestScoreLine)}</p>` : ``}
+        ${rankLine ? `<p class="wt-leaderboard-card__rank-line">${escapeHtml(rankLine)}</p>` : ``}
         ${rowsHtml}
         <div class="wt-landing-stat__actions">
           ${viewLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">${escapeHtml(viewLabel)}</button>` : ``}

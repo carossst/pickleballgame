@@ -1244,6 +1244,7 @@
       cardTitle: 'THIS WEEK',
       cardSubDefault: 'See where your score lands this week.',
       cardSubJoined: 'See where your score ranks this week.',
+      cardRankLine: 'You are #{rank} this week. Play again to move up.',
       cardCtaJoin: 'Join leaderboard',
       cardCtaView: 'View leaderboard',
       cardCtaShare: 'Share leaderboard',
@@ -2445,6 +2446,7 @@ Thanks!`
       cardTitle: 'CETTE SEMAINE',
       cardSubDefault: 'Voyez où votre score se situe cette semaine.',
       cardSubJoined: 'Voyez votre classement cette semaine.',
+      cardRankLine: 'Vous êtes #{rank} cette semaine. Encore une partie pour progresser.',
       cardCtaJoin: 'Rejoindre le classement',
       cardCtaView: 'Voir le classement',
       cardCtaShare: 'Partager le classement',
@@ -12017,6 +12019,7 @@ ${(() => {
         profile?.optIn === true && !!String(profile?.nickname || '').trim(),
       nickname: String(profile?.nickname || '').trim(),
       bestScoreFP: getLocalBestScore(ui),
+      weeklyRank: clampInt(bucket?.lastKnownWeeklyRank, 0, 999999),
       lastFetchedAt,
       nextRefreshAt
     };
@@ -12055,6 +12058,10 @@ ${(() => {
       bestScoreLineTemplate && model.bestScoreFP > 0
         ? fillTemplate(bestScoreLineTemplate, { score: String(model.bestScoreFP) })
         : '';
+    const rankLineTemplate = String(w.cardRankLine || '').trim();
+    const rankLine = rankLineTemplate && model.weeklyRank > 0
+      ? fillTemplate(rankLineTemplate, { rank: String(model.weeklyRank) })
+      : '';
 
     const rowsHtml = model.loading
       ? `<p class="wt-muted">${escapeHtml(loadingLabel)}</p>`
@@ -12085,6 +12092,7 @@ ${(() => {
         ${sub ? `<p class="wt-leaderboard-card__sub">${escapeHtml(sub)}</p>` : ``}
         ${weeklyResetLine ? `<p class="wt-leaderboard-card__freshness"><span>${escapeHtml(weeklyResetLine)}</span></p>` : ``}
         ${bestScoreLine ? `<p class="wt-muted">${escapeHtml(bestScoreLine)}</p>` : ``}
+        ${rankLine ? `<p class="wt-leaderboard-card__rank-line">${escapeHtml(rankLine)}</p>` : ``}
         ${rowsHtml}
         <div class="wt-landing-stat__actions">
           ${viewLabel ? `<button type="button" class="wt-btn wt-btn--secondary" data-action="open-leaderboard">${escapeHtml(viewLabel)}</button>` : ``}
@@ -16344,6 +16352,16 @@ function UI({ storage, game, config, wording }) {
 
         case 'start-secret-bonus':
           self.closeModal();
+          try {
+            window.WT_Analytics?.trackFunnel(
+              'rapid_fire_start',
+              window.WT_Analytics.inferUiContext(self, {
+                entry_point: self.state === STATES.END ? 'end' : 'landing'
+              })
+            );
+          } catch (_) {
+            /* Analytics must not interrupt gameplay. */
+          }
           if (self._runtime) self._runtime.secretBonusPending = false;
           if (typeof self.startSecretBonusRun === 'function')
             self.startSecretBonusRun();
@@ -16376,6 +16394,17 @@ function UI({ storage, game, config, wording }) {
               self.storage.markDailyChallengeClicked();
             } catch (_) {
               /* silent */
+            }
+
+            try {
+              window.WT_Analytics?.trackFunnel(
+                'daily_challenge_start',
+                window.WT_Analytics.inferUiContext(self, {
+                  entry_point: self.state === STATES.END ? 'end' : 'landing'
+                })
+              );
+            } catch (_) {
+              /* Analytics must not interrupt gameplay. */
             }
           }
 
@@ -21163,6 +21192,48 @@ UI.prototype.startRun = function (mistakesOnly) {
       }
     } catch (_) {
       /* silent */
+    }
+
+    if (
+      mode === MODES.RUN &&
+      (this._runtime.lastRun.challengeKind === 'DAILY' || dailyChallengeCompleted) &&
+      window.WT_Analytics &&
+      typeof window.WT_Analytics.trackFunnel === 'function' &&
+      typeof window.WT_Analytics.inferUiContext === 'function'
+    ) {
+      try {
+        window.WT_Analytics.trackFunnel(
+          'daily_challenge_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            challenge_kind: this._runtime.lastRun.challengeKind || 'RUN',
+            completed: dailyChallengeCompleted,
+            score: scoreFP,
+            target_score: dailyTargetScore
+          })
+        );
+      } catch (_) {
+        /* Analytics must not interrupt gameplay. */
+      }
+    }
+
+    if (
+      mode === MODES.BONUS &&
+      window.WT_Analytics &&
+      typeof window.WT_Analytics.trackFunnel === 'function' &&
+      typeof window.WT_Analytics.inferUiContext === 'function'
+    ) {
+      try {
+        window.WT_Analytics.trackFunnel(
+          'rapid_fire_complete',
+          window.WT_Analytics.inferUiContext(this, {
+            score: scoreFP,
+            correct_count: Number(gameState.correctCount || 0),
+            max_correct_streak: finalMaxStreak
+          })
+        );
+      } catch (_) {
+        /* Analytics must not interrupt gameplay. */
+      }
     }
 
     try {
