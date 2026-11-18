@@ -165,13 +165,11 @@
 
     const tagline = String(landing.tagline || "").trim();
     const proofLine = String(landing.proofLine || "").trim();
-    const microTrust = String(landing.microTrust || "").trim();
     const seoBridgeTitleQuestionTpl = String(landing.seoBridgeTitleQuestionTemplate || "").trim();
     const seoBridgeTitleThemeTpl = String(landing.seoBridgeTitleThemeTemplate || "").trim();
     const seoBridgeBodyQuestion = String(landing.seoBridgeBodyQuestion || "").trim();
     const seoBridgeBodyTheme = String(landing.seoBridgeBodyTheme || "").trim();
     const seoBridgeTrust = String(landing.seoBridgeTrust || "").trim();
-    const installCtaLabel = String(ui.wording?.installPrompt?.ctaPrimary || "").trim();
     const postTitle = String(landing.postPaywallTitle || "").trim();
     const postBody = String(landing.postPaywallBody || "").trim();
     const postCta = String(landing.postPaywallCta || "").trim();
@@ -219,18 +217,6 @@
           (b == null) ? a :
             Math.max(a, b);
     const runPlays = Math.max(runCompletes, (c == null ? 0 : c));
-
-    let showLandingInstallPrompt = false;
-    try {
-      showLandingInstallPrompt =
-        !premium &&
-        !isPostPaywallVariant &&
-        Number.isFinite(runCompletes) &&
-        runCompletes >= 1 &&
-        microTrust &&
-        typeof ui._canShowInstallPrompt === "function" &&
-        ui._canShowInstallPrompt() === true;
-    } catch (_) { showLandingInstallPrompt = false; }
 
     let runsBalance = null;
     if (!premium && ui.storage && typeof ui.storage.getRunsBalance === "function") {
@@ -289,16 +275,11 @@
 
         const nlW = w?.newsletter || {};
         const nlLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
-        const nlOn = !!(window.WT_Newsletter && nlW.landingCta && window.WT_Newsletter.shouldOffer(cfg, nlLang));
+        const nlOn = !!(window.WT_Newsletter && (nlW.link || nlW.landingCta) && window.WT_Newsletter.shouldOffer(cfg, nlLang));
         if (waitlistEligible && !houseAdEligible && nlOn) {
-          // One clear, compact signup replaces the repeated waitlist texts.
+          // One discreet link replaces the repeated waitlist texts (the daily card above stays the focus).
           postCompletionHtml = `
-          <div class="wt-divider"></div>
-          <strong class="wt-meta">${escapeHtml(String(nlW.title || ""))}</strong>
-          <p class="wt-muted">${escapeHtml(String(nlW.landingLine || ""))}</p>
-          <div class="wt-actions wt-postcompletion-actions">
-            <button class="wt-btn wt-btn--secondary" data-action="open-newsletter">${escapeHtml(String(nlW.landingCta))}</button>
-          </div>`;
+          <p class="wt-paywall-linkline wt-landing-newsletter-link"><button type="button" class="wt-text-action" data-action="open-newsletter">${escapeHtml(String(nlW.link || nlW.landingCta))}</button></p>`;
         } else
         postCompletionHtml = `
           <div class="wt-divider"></div>
@@ -843,16 +824,6 @@ ${(() => {
     ` : ``}
 
     ${isPostPaywallVariant ? `` : postCompletionHtml}
-
-    ${showLandingInstallPrompt ? `
-      ${installCtaLabel ? `
-        <div class="wt-actions wt-actions--stack">
-          <button class="wt-btn wt-btn--secondary" data-action="install-app">
-            ${escapeHtml(installCtaLabel)}
-          </button>
-        </div>
-      ` : ``}
-    ` : ``}
 
 </div>
 `;
