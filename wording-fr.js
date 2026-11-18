@@ -274,6 +274,7 @@
       dailyChallengeRewardPendingTemplate:
         "Vous l'avez déjà réussi une fois. Réussissez-le à nouveau aujourd'hui sur votre dernière partie gratuite pour gagner 1 jeton Mode Rapide.",
       dailyChallengeCta: 'Commencer',
+      dailyChallengeLockedCta: 'Débloquer pour jouer',
 
       postPaywallTitle: 'Votre aperçu gratuit est terminé.',
       postPaywallBody:

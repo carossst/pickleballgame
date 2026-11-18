@@ -61,7 +61,7 @@ test('French wording keeps softened share copy and rank-based levels', () => {
   expect(fr.share.template).toContain('Je viens de découvrir Quiz Pickleball.');
 
   expect(fr.landing.dailyChallengeTitleTemplate).toBe(
-    'Visez un score de {targetScore}+'
+    'Nouveau défi chaque jour · Visez {targetScore}+'
   );
 
   expect(fr.levels.byLevel[1].label).toBe('BRONZE');

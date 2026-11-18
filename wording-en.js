@@ -271,6 +271,7 @@
       dailyChallengeRewardPendingTemplate:
         'Cleared once already.\nClear it again today on your last free run to earn 1 Rapid Fire ticket.',
       dailyChallengeCta: 'Start challenge',
+      dailyChallengeLockedCta: 'Unlock to play',
 
       postPaywallTitle: 'Your free preview is complete.',
       postPaywallBody:

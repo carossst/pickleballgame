@@ -424,6 +424,7 @@
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
         const dailyRewardPendingTpl = String(landing.dailyChallengeRewardPendingTemplate || "").trim();
         const dailyCta = String(landing.dailyChallengeCta || "").trim();
+        const dailyLockedCta = String(landing.dailyChallengeLockedCta || landing.postPaywallCta || "").trim();
         const dailyGoalLine = dailyTitleTpl
           ? fillTemplate(dailyTitleTpl, {
             targetScore: String(dailyModel.targetScore)
@@ -468,6 +469,10 @@
         if (rewardLine) dailyLines.push(rewardLine);
         dailySub = dailyLines.map((line) => String(line || "").trim()).filter(Boolean).join("\n");
 
+        const dailyCanStart = !dailyModel.completedToday && dailyModel.challengePlayable;
+        const dailyAction = dailyCanStart ? "start-daily-challenge" : (!dailyModel.completedToday ? "open-paywall" : "");
+        const dailyActionLabel = dailyCanStart ? dailyCta : (!dailyModel.completedToday ? dailyLockedCta : "");
+
         if (dailyBadge || dailySub) {
           dailyChallengeCardHtml = renderLandingStatsCard({
             label: dailyBadge,
@@ -480,10 +485,10 @@
               : " wt-landing-stat--daily",
             progressClass: (dailyModel.completedToday && !dailyModel.rewardPendingReplay) ? " wt-progress--mastery" : "",
             cardAttrs: `data-wt-daily-challenge-card="1"`,
-            cardAction: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : "start-daily-challenge",
-            cardActionAria: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : dailyCta,
-            ctaAction: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : "start-daily-challenge",
-            ctaLabel: ((dailyModel.completedToday && !dailyModel.rewardPendingReplay) || !dailyModel.challengePlayable) ? "" : dailyCta
+            cardAction: dailyAction,
+            cardActionAria: dailyActionLabel,
+            ctaAction: dailyAction,
+            ctaLabel: dailyActionLabel
           }, escapeHtml);
         }
       }
