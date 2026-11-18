@@ -1351,7 +1351,8 @@ button.wt-level-chip {
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
-  padding: var(--space-10) var(--gap-2);
+  padding: var(--space-8) var(--gap-2);
+  font-size: var(--fs-sm);
   font-weight: 700;
   box-shadow: var(--shadow-2);
 
