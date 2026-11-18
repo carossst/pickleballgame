@@ -258,14 +258,14 @@
       personalBestLockedSub:
         'Unlock full access to record your score and keep building your best.',
       dailyChallengeBadge: "DAILY CHALLENGE",
-      dailyChallengeTitleTemplate: 'Reach a score of {targetScore}+',
+      dailyChallengeTitleTemplate: 'A new challenge every day · Reach {targetScore}+',
       dailyChallengeProgressTemplate:
         'Today: {score}/{targetScore}.',
-      dailyChallengeResetTemplate: '',
+      dailyChallengeResetTemplate: 'New challenge in {resetTime}.',
       dailyChallengeCompletedTemplate:
-        'Daily challenge complete.\nNext challenge at {resetTime}.',
+        'Daily challenge complete.\nNew challenge in {resetTime}.',
       dailyChallengeRewardTemplate:
-        'Earn 1 ticket for Rapid Fire, the faster bonus mode.',
+        'Complete it to earn 1 Rapid Fire ticket.',
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
@@ -815,7 +815,7 @@
         'Daily challenge complete. +1 Rapid Fire ticket.',
       dailyChallengeTicketCapped:
         'Daily challenge complete. Tickets are capped at {cap}. Spend one to earn more.',
-      dailyChallengeMiss: 'Daily challenge missed.',
+      dailyChallengeMiss: 'Not yet. Try again or come back tomorrow for a new challenge.',
       dailyChallengeMissLastFree:
         'Not this time. Daily challenge missed.',
       dailyChallengeCtaRetry: 'Try the challenge again',

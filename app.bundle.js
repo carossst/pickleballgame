@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.60",
+    version: "4.3.61",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1205,14 +1205,14 @@
       personalBestLockedSub:
         'Unlock full access to record your score and keep building your best.',
       dailyChallengeBadge: "DAILY CHALLENGE",
-      dailyChallengeTitleTemplate: 'Reach a score of {targetScore}+',
+      dailyChallengeTitleTemplate: 'A new challenge every day · Reach {targetScore}+',
       dailyChallengeProgressTemplate:
         'Today: {score}/{targetScore}.',
-      dailyChallengeResetTemplate: '',
+      dailyChallengeResetTemplate: 'New challenge in {resetTime}.',
       dailyChallengeCompletedTemplate:
-        'Daily challenge complete.\nNext challenge at {resetTime}.',
+        'Daily challenge complete.\nNew challenge in {resetTime}.',
       dailyChallengeRewardTemplate:
-        'Earn 1 ticket for Rapid Fire, the faster bonus mode.',
+        'Complete it to earn 1 Rapid Fire ticket.',
       dailyChallengeRewardCappedTemplate:
         'Tickets are capped at {cap}. Spend one to earn another.',
       dailyChallengeRewardPendingTemplate:
@@ -1762,7 +1762,7 @@
         'Daily challenge complete. +1 Rapid Fire ticket.',
       dailyChallengeTicketCapped:
         'Daily challenge complete. Tickets are capped at {cap}. Spend one to earn more.',
-      dailyChallengeMiss: 'Daily challenge missed.',
+      dailyChallengeMiss: 'Not yet. Try again or come back tomorrow for a new challenge.',
       dailyChallengeMissLastFree:
         'Not this time. Daily challenge missed.',
       dailyChallengeCtaRetry: 'Try the challenge again',
@@ -2406,14 +2406,14 @@ Thanks!`
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Visez un score de {targetScore}+',
+      dailyChallengeTitleTemplate: 'Nouveau défi chaque jour · Visez {targetScore}+',
       dailyChallengeProgressTemplate:
         'Score du jour : {score}/{targetScore}',
-      dailyChallengeResetTemplate: '',
+      dailyChallengeResetTemplate: 'Nouveau défi dans {resetTime}.',
       dailyChallengeCompletedTemplate:
-        "Défi du jour réussi.\nProchain défi à {resetTime}.",
+        "Défi du jour réussi.\nNouveau défi dans {resetTime}.",
       dailyChallengeRewardTemplate:
-        'Gagnez 1 jeton pour le Mode Rapide, le mode bonus plus intense.',
+        'Réussissez-le pour gagner 1 jeton Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -2963,7 +2963,7 @@ Thanks!`
       dailyChallengeTicketWon: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       dailyChallengeTicketCapped:
         'Défi du jour réussi. Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
-      dailyChallengeMiss: 'Défi du jour manqué.',
+      dailyChallengeMiss: 'Pas encore. Retentez ou revenez demain pour un nouveau défi.',
       dailyChallengeMissLastFree:
         'Pas cette fois. Défi du jour manqué.',
       dailyChallengeCtaRetry: 'Retenter le défi du jour',
@@ -9922,14 +9922,10 @@ Merci !`
 
     try {
       // Product choice:
-      // the Daily Challenge appears only after at least one completed RUN.
-      // Before that, the landing should stay focused on the core loop and first-play clarity.
-      // It also waits for a return visit on a later day: on day one it only adds
-      // weight to the landing. Fail-open when the first-seen date is unknown.
-      const firstSeenAt = Number(ui.storage?.data?.analytics?.firstSeenAt);
-      const isReturnDay = !(Number.isFinite(firstSeenAt) && firstSeenAt > 0) ||
-        new Date(firstSeenAt).toDateString() !== new Date().toDateString();
-      if (Number.isFinite(runCompletes) && runCompletes >= 1 && isReturnDay) {
+      // show the Daily Challenge as soon as the player has completed one RUN.
+      // The first visit remains focused on the core loop; after that, the daily
+      // loop is visible immediately instead of waiting for a later visit.
+      if (Number.isFinite(runCompletes) && runCompletes >= 1) {
         const fallbackBestScoreFP = (ui.storage && typeof ui.storage.getPersonalBest === "function")
           ? clampInt(ui.storage.getPersonalBest()?.bestScoreFP, 0, 99999)
           : 0;
@@ -9938,6 +9934,7 @@ Merci !`
         const dailyBadge = String(landing.dailyChallengeBadge || "").trim();
         const dailyTitleTpl = String(landing.dailyChallengeTitleTemplate || "").trim();
         const dailyCompletedTpl = String(landing.dailyChallengeCompletedTemplate || "").trim();
+        const dailyResetTpl = String(landing.dailyChallengeResetTemplate || "").trim();
         const dailyRewardTpl = String(landing.dailyChallengeRewardTemplate || "").trim();
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
         const dailyRewardPendingTpl = String(landing.dailyChallengeRewardPendingTemplate || "").trim();
@@ -9961,6 +9958,12 @@ Merci !`
           : "";
 
         if (dailyGoalLine) dailyLines.push(dailyGoalLine);
+
+        if (!dailyModel.completedToday && !dailyModel.rewardPendingReplay && dailyResetTpl) {
+          dailyLines.push(fillTemplate(dailyResetTpl, {
+            resetTime: String(dailyModel.resetCountdown || "")
+          }));
+        }
 
         if (dailyModel.rewardPendingReplay && dailyRewardPendingTpl) {
           dailyLines.push(fillTemplate(dailyRewardPendingTpl, {

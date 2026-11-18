@@ -261,14 +261,14 @@
       personalBestLockedSub:
         "Débloquez l'accès complet pour enregistrer votre score et faire progresser votre meilleur résultat.",
       dailyChallengeBadge: 'DÉFI DU JOUR',
-      dailyChallengeTitleTemplate: 'Visez un score de {targetScore}+',
+      dailyChallengeTitleTemplate: 'Nouveau défi chaque jour · Visez {targetScore}+',
       dailyChallengeProgressTemplate:
         'Score du jour : {score}/{targetScore}',
-      dailyChallengeResetTemplate: '',
+      dailyChallengeResetTemplate: 'Nouveau défi dans {resetTime}.',
       dailyChallengeCompletedTemplate:
-        "Défi du jour réussi.\nProchain défi à {resetTime}.",
+        "Défi du jour réussi.\nNouveau défi dans {resetTime}.",
       dailyChallengeRewardTemplate:
-        'Gagnez 1 jeton pour le Mode Rapide, le mode bonus plus intense.',
+        'Réussissez-le pour gagner 1 jeton Mode Rapide.',
       dailyChallengeRewardCappedTemplate:
         'Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
       dailyChallengeRewardPendingTemplate:
@@ -818,7 +818,7 @@
       dailyChallengeTicketWon: 'Défi du jour réussi. +1 jeton Mode Rapide.',
       dailyChallengeTicketCapped:
         'Défi du jour réussi. Les jetons sont plafonnés à {cap}. Dépensez-en un pour en regagner.',
-      dailyChallengeMiss: 'Défi du jour manqué.',
+      dailyChallengeMiss: 'Pas encore. Retentez ou revenez demain pour un nouveau défi.',
       dailyChallengeMissLastFree:
         'Pas cette fois. Défi du jour manqué.',
       dailyChallengeCtaRetry: 'Retenter le défi du jour',
