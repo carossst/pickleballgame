@@ -666,6 +666,10 @@
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
       : "";
     // Newsletter link: only when the owner has configured a Kit form, and not once subscribed.
+    const rulesGuideEndHtml = isRun
+      ? (window.WT_RulesLink ? window.WT_RulesLink.anchor("guide", "end", (w.rulesLinks || {}).endLabel, "wt-text-action", escapeHtml) : "")
+      : "";
+    const rulesGuideEndBlock = rulesGuideEndHtml ? `<p class="wt-paywall-linkline">${rulesGuideEndHtml}</p>` : "";
     const newsletterW = w.newsletter || {};
     const newsletterLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
     const newsletterLinkHtml = (isRun && newsletterW.link && window.WT_Newsletter && window.WT_Newsletter.shouldOffer(cfg, newsletterLang))
@@ -827,6 +831,7 @@
   </div>` : ``}
   ${focusedShareHtml}
   ${shareCardOnlyHtml}
+  ${rulesGuideEndBlock}
   ${newsletterLinkHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}

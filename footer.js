@@ -67,6 +67,35 @@
     `;
     }
 
+    // French version only: link to the rules guide of bonjourpickleball.fr.
+    function syncRulesLink(root) {
+        const old = root.querySelector("#wt-rules-guide-link");
+        if (old) {
+            const prev = old.previousElementSibling;
+            if (prev && prev.classList && prev.classList.contains("wt-footer-sep")) prev.remove();
+            old.remove();
+        }
+        const rl = window.WT_RulesLink;
+        const wording = window.WT_WORDING;
+        const label = wording && wording.rulesLinks ? String(wording.rulesLinks.footerLabel || "").trim() : "";
+        if (!rl || !label || !rl.isFrench()) return;
+        const href = rl.href("guide", "footer");
+        const row = root.querySelector(".wt-footer-row--links");
+        if (!href || !row) return;
+        const sep = document.createElement("span");
+        sep.className = "wt-footer-sep";
+        sep.setAttribute("aria-hidden", "true");
+        sep.textContent = "\u00b7";
+        const a = document.createElement("a");
+        a.id = "wt-rules-guide-link";
+        a.className = "wt-footer-link";
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = label;
+        row.append(sep, a);
+    }
+
     function hydrateFooter(root) {
         if (!root) return;
 
@@ -74,6 +103,7 @@
         if (!wording || typeof wording.hydrate !== "function") return;
 
         wording.hydrate(root);
+        syncRulesLink(root);
 
         // Locale-aware Bonjour Pickleball link
         try {

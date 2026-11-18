@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.56",
+    version: "4.3.57",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -567,6 +567,12 @@
     // Newsletter signup through a Kit (ConvertKit) form. Empty URL = feature off: no link
     // is shown and nothing is sent. Paste, per language, the "action" URL found in the
     // HTML embed code of the Kit form (https://app.kit.com/forms/<id>/subscriptions).
+    // French version only: the rules guide of bonjourpickleball.fr (verified by the owner).
+    rulesLinks: {
+      guide: "https://www.bonjourpickleball.fr/regles/",
+      questions: "https://www.bonjourpickleball.fr/regles/questions/"
+    },
+
     newsletter: {
       formAction: {
         en: "https://app.kit.com/forms/10205105/subscriptions",
@@ -2003,6 +2009,12 @@ Try this one:
       funFactTemplatesTrue: [`"{question}" True or false? 🤔`]
     },
 
+    rulesLinks: {
+      endLabel: 'Understand the rules in detail on Bonjour Pickleball',
+      explainLabel: 'Understand the rule in detail',
+      footerLabel: 'Rules guide'
+    },
+
     newsletter: {
       link: 'Get new tricky questions by email',
       landingLine: 'Now and then, a new tricky question. Free, unsubscribe in one click.',
@@ -3219,6 +3231,12 @@ Essayez celle-ci :
       teaserTrue: 'Parfois la réponse évidente est la bonne.',
       funFactTemplatesTrap: [`"{question}" Vrai ou faux ? 🤔`],
       funFactTemplatesTrue: [`"{question}" Vrai ou faux ? 🤔`]
+    },
+
+    rulesLinks: {
+      endLabel: 'Comprendre les règles en détail sur Bonjour Pickleball',
+      explainLabel: 'Comprendre la règle en détail',
+      footerLabel: 'Guide des règles'
     },
 
     newsletter: {
@@ -9294,6 +9312,10 @@ Merci !`
       ? `<p class="wt-paywall-linkline"><button type="button" class="wt-text-action" data-action="share-card" data-score="${scoreFP}">${escapeHtml(shareCardLabel)}</button></p>`
       : "";
     // Newsletter link: only when the owner has configured a Kit form, and not once subscribed.
+    const rulesGuideEndHtml = isRun
+      ? (window.WT_RulesLink ? window.WT_RulesLink.anchor("guide", "end", (w.rulesLinks || {}).endLabel, "wt-text-action", escapeHtml) : "")
+      : "";
+    const rulesGuideEndBlock = rulesGuideEndHtml ? `<p class="wt-paywall-linkline">${rulesGuideEndHtml}</p>` : "";
     const newsletterW = w.newsletter || {};
     const newsletterLang = String(document.documentElement.lang || "").slice(0, 2) === "fr" ? "fr" : "en";
     const newsletterLinkHtml = (isRun && newsletterW.link && window.WT_Newsletter && window.WT_Newsletter.shouldOffer(cfg, newsletterLang))
@@ -9455,6 +9477,7 @@ Merci !`
   </div>` : ``}
   ${focusedShareHtml}
   ${shareCardOnlyHtml}
+  ${rulesGuideEndBlock}
   ${newsletterLinkHtml}
 
   ${runsExhausted && !focusedRunEnd ? shareBonusOfferHtml : ``}
@@ -13292,6 +13315,47 @@ ${(() => {
   } else {
     start();
   }
+})();
+
+/* ===== rules-link.js ===== */
+/* Links from the French game to the rules guide of bonjourpickleball.fr (the site explains,
+   the game plays). Shown on the French version only. The URLs come from config.js; each link
+   carries utm parameters so the .fr analytics can see where the visit came from. */
+(() => {
+  'use strict';
+
+  function isFrench() {
+    return (
+      String((document.documentElement && document.documentElement.lang) || '')
+        .slice(0, 2)
+        .toLowerCase() === 'fr'
+    );
+  }
+
+  // kind: "guide" (hub of the rules) or "questions"; place: "end", "explanation" or "footer".
+  function href(kind, place) {
+    const cfg = (window.WT_CONFIG && window.WT_CONFIG.rulesLinks) || {};
+    const base = String(
+      kind === 'questions' ? cfg.questions : cfg.guide || ''
+    ).trim();
+    if (!base) return '';
+    const url = new URL(base);
+    url.searchParams.set('utm_source', 'pickleballrulesquiz');
+    url.searchParams.set('utm_medium', 'quiz');
+    url.searchParams.set('utm_campaign', String(place || 'game'));
+    return url.toString();
+  }
+
+  // Ready-made anchor, or "" outside the French version or when no URL is configured.
+  function anchor(kind, place, label, className, escapeHtml) {
+    const text = String(label || '').trim();
+    const target = href(kind, place);
+    if (!isFrench() || !text || !target) return '';
+    const esc = typeof escapeHtml === 'function' ? escapeHtml : (s) => s;
+    return `<a class="${esc(className || 'wt-text-action')}" href="${esc(target)}" target="_blank" rel="noopener">${esc(text)}</a>`;
+  }
+
+  window.WT_RulesLink = { isFrench, href, anchor };
 })();
 
 /* ===== ui.js ===== */
@@ -24490,8 +24554,26 @@ ${questionAudioHtml}
         courtDiagramHtml = '';
       }
 
+      let explanationMoreHtml = '';
+      try {
+        const moreLink = window.WT_RulesLink
+          ? window.WT_RulesLink.anchor(
+              'questions',
+              'explanation',
+              (wAll.rulesLinks || {}).explainLabel,
+              'wt-text-action',
+              escapeHtml
+            )
+          : '';
+        explanationMoreHtml = moreLink
+          ? `<span class="wt-explanation__more">${moreLink}</span>`
+          : '';
+      } catch (_) {
+        explanationMoreHtml = '';
+      }
+
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}${explanationMoreHtml}</p>`
         : '';
 
       return renderShell(`
@@ -25101,6 +25183,35 @@ ${questionAudioHtml}
     `;
     }
 
+    // French version only: link to the rules guide of bonjourpickleball.fr.
+    function syncRulesLink(root) {
+        const old = root.querySelector("#wt-rules-guide-link");
+        if (old) {
+            const prev = old.previousElementSibling;
+            if (prev && prev.classList && prev.classList.contains("wt-footer-sep")) prev.remove();
+            old.remove();
+        }
+        const rl = window.WT_RulesLink;
+        const wording = window.WT_WORDING;
+        const label = wording && wording.rulesLinks ? String(wording.rulesLinks.footerLabel || "").trim() : "";
+        if (!rl || !label || !rl.isFrench()) return;
+        const href = rl.href("guide", "footer");
+        const row = root.querySelector(".wt-footer-row--links");
+        if (!href || !row) return;
+        const sep = document.createElement("span");
+        sep.className = "wt-footer-sep";
+        sep.setAttribute("aria-hidden", "true");
+        sep.textContent = "\u00b7";
+        const a = document.createElement("a");
+        a.id = "wt-rules-guide-link";
+        a.className = "wt-footer-link";
+        a.href = href;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = label;
+        row.append(sep, a);
+    }
+
     function hydrateFooter(root) {
         if (!root) return;
 
@@ -25108,6 +25219,7 @@ ${questionAudioHtml}
         if (!wording || typeof wording.hydrate !== "function") return;
 
         wording.hydrate(root);
+        syncRulesLink(root);
 
         // Locale-aware Bonjour Pickleball link
         try {

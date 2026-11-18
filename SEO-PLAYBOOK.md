@@ -13,7 +13,7 @@ Référence unique de la stratégie SEO. Dernière mise à jour : 2026-06-14.
 - **/fr.html reste jouable mais en `noindex,follow`** (décision de la propriétaire, 18 nov. 2026) :
   absente du sitemap, sans hreflang, non bloquée dans robots.txt (Google doit lire le noindex).
   Le jeu sert à jouer, le site sert à comprendre : la version française du jeu renvoie vers
-  bonjourpickleball.fr.
+  bonjourpickleball.fr (`rules-link.js`, `config.js` → `rulesLinks`).
 - Hreflang : aucun entre la racine du .com et /fr.html. Les hreflang `?lang=fr` de press,
   privacy, terms et 404 sont inchangés (à revoir avec la propriétaire).
 

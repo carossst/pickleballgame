@@ -2113,8 +2113,26 @@ ${questionAudioHtml}
         courtDiagramHtml = '';
       }
 
+      let explanationMoreHtml = '';
+      try {
+        const moreLink = window.WT_RulesLink
+          ? window.WT_RulesLink.anchor(
+              'questions',
+              'explanation',
+              (wAll.rulesLinks || {}).explainLabel,
+              'wt-text-action',
+              escapeHtml
+            )
+          : '';
+        explanationMoreHtml = moreLink
+          ? `<span class="wt-explanation__more">${moreLink}</span>`
+          : '';
+      } catch (_) {
+        explanationMoreHtml = '';
+      }
+
       const explanationHtml = stableExplanation
-        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}</p>`
+        ? `<p class="wt-explanation">${courtDiagramHtml}${explanationLabel ? `<span class="wt-explanation__label">${escapeHtml(explanationLabel)}</span>` : ``}${formatExplanationForDisplay(stableExplanation, cfg, questionText)}${explanationMoreHtml}</p>`
         : '';
 
       return renderShell(`

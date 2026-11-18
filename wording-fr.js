@@ -1090,6 +1090,12 @@ Essayez celle-ci :
       funFactTemplatesTrue: [`"{question}" Vrai ou faux ? 🤔`]
     },
 
+    rulesLinks: {
+      endLabel: 'Comprendre les règles en détail sur Bonjour Pickleball',
+      explainLabel: 'Comprendre la règle en détail',
+      footerLabel: 'Guide des règles'
+    },
+
     newsletter: {
       link: 'Recevoir de nouvelles questions pièges par e-mail',
       landingLine: 'De temps en temps, une nouvelle question piège. Gratuit, désinscription en un clic.',

@@ -51,7 +51,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.56",
+    version: "4.3.57",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -563,6 +563,12 @@
     // Newsletter signup through a Kit (ConvertKit) form. Empty URL = feature off: no link
     // is shown and nothing is sent. Paste, per language, the "action" URL found in the
     // HTML embed code of the Kit form (https://app.kit.com/forms/<id>/subscriptions).
+    // French version only: the rules guide of bonjourpickleball.fr (verified by the owner).
+    rulesLinks: {
+      guide: "https://www.bonjourpickleball.fr/regles/",
+      questions: "https://www.bonjourpickleball.fr/regles/questions/"
+    },
+
     newsletter: {
       formAction: {
         en: "https://app.kit.com/forms/10205105/subscriptions",
