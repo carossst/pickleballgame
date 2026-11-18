@@ -1696,7 +1696,7 @@
       tierPerfect: 'Perfect game!',
       tierGood: 'Nice rally!',
       tierKeep: 'Keep playing!',
-      bonusChip: '+{bonus} bonus · streak',
+      bonusChip: '+{bonus} bonus point{pluralS} from your streak',
       shareChallenge: 'Challenge a friend',
       nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
@@ -2994,7 +2994,7 @@ Thanks!`
       tierPerfect: 'Partie parfaite !',
       tierGood: 'Beau jeu !',
       tierKeep: 'On continue !',
-      bonusChip: '+{bonus} bonus · série',
+      bonusChip: '+{bonus} point{pluralS} bonus grâce à votre série',
       shareChallenge: 'Défier un ami',
       nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
 
@@ -9429,7 +9429,7 @@ Merci !`
   <div class="wt-end-summary">
     ${pipsHtml}
     ${correctAnswersLine ? `<p class="wt-muted">${escapeHtml(correctAnswersLine)}</p>` : ``}
-    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-end-bonuschip">${escapeHtml(fillTemplate(String(end.bonusChip || ""), { bonus: lastRun.bonusPoints }))}</p>` : ``}
+    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-end-bonuschip">${escapeHtml(fillTemplate(String(end.bonusChip || ""), { bonus: lastRun.bonusPoints, pluralS: Number(lastRun.bonusPoints) === 1 ? "" : "s" }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
   </div>

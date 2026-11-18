@@ -783,7 +783,7 @@
   <div class="wt-end-summary">
     ${pipsHtml}
     ${correctAnswersLine ? `<p class="wt-muted">${escapeHtml(correctAnswersLine)}</p>` : ``}
-    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-end-bonuschip">${escapeHtml(fillTemplate(String(end.bonusChip || ""), { bonus: lastRun.bonusPoints }))}</p>` : ``}
+    ${isRun && lastRun.bonusPoints > 0 ? `<p class="wt-end-bonuschip">${escapeHtml(fillTemplate(String(end.bonusChip || ""), { bonus: lastRun.bonusPoints, pluralS: Number(lastRun.bonusPoints) === 1 ? "" : "s" }))}</p>` : ``}
     ${microLinesHtml}
     <div class="wt-end-copy">${endCopyHtml}</div>
   </div>

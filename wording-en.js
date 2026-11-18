@@ -749,7 +749,7 @@
       tierPerfect: 'Perfect game!',
       tierGood: 'Nice rally!',
       tierKeep: 'Keep playing!',
-      bonusChip: '+{bonus} bonus · streak',
+      bonusChip: '+{bonus} bonus point{pluralS} from your streak',
       shareChallenge: 'Challenge a friend',
       nextGameTicketLine: 'Score {target} points to earn one Rapid Fire ticket.',
       title: '',
