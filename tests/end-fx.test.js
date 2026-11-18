@@ -21,3 +21,23 @@ describe('end-fx tier', () => {
     expect(load().tier(0, 0, 0)).toBe('keep');
   });
 });
+
+describe('play-fx streak milestones', () => {
+  const fx = () =>
+    loadBrowserScript('play-fx.js', {
+      window: { matchMedia: () => ({ matches: false }) },
+      document: {
+        readyState: 'complete',
+        body: null,
+        getElementById: () => null,
+        addEventListener() {},
+        querySelector: () => null
+      }
+    }).window.WT_PlayFx;
+
+  it('celebrates 3, 5, 8, 12 and 20 in a row only', () => {
+    const { streakMilestone } = fx();
+    [3, 5, 8, 12, 20].forEach((n) => expect(streakMilestone(n)).toBe(true));
+    [0, 1, 2, 4, 6, 9].forEach((n) => expect(streakMilestone(n)).toBe(false));
+  });
+});
