@@ -1073,6 +1073,16 @@ UI.prototype.startRun = function (mistakesOnly) {
       /* sound is optional */
     }
 
+    try {
+      if (window.WT_PlayFx)
+        window.WT_PlayFx.note({
+          correct: res.isCorrect === true,
+          streak: Number(this._runtime?.microPics?.correctStreak || 0)
+        });
+    } catch (_) {
+      /* decoration only */
+    }
+
     // A11Y: announce answer feedback via dedicated live region (avoid full-screen aria-live churn)
     try {
       const liveEl = document.getElementById('answer-feedback');

@@ -71,12 +71,22 @@
       ? fillTemplate(end.correctAnswersLine, { correct: lastRun.correctCount, total: totalAnswered })
       : "";
     const outcomes = Array.isArray(lastRun.outcomes) ? lastRun.outcomes : [];
-    const endTier = (isRun && totalAnswered > 0 && window.WT_EndFx) ? window.WT_EndFx.tier(lastRun.correctCount, totalAnswered, scoreFP) : "";
-    const tierLabel = endTier ? String(end[endTier === "perfect" ? "tierPerfect" : endTier === "good" ? "tierGood" : "tierKeep"] || "").trim() : "";
+    let endTier = "";
+    if (window.WT_EndFx) {
+      if (isRun && totalAnswered > 0) endTier = window.WT_EndFx.tier(lastRun.correctCount, totalAnswered, scoreFP);
+      else if (isBonus) endTier = window.WT_EndFx.bonusTier(scoreFP, lastRun.newBest === true);
+      else if (isPractice) endTier = window.WT_EndFx.practiceTier(outcomes);
+    }
+    const tierKey = endTier === "record" ? "tierRecord"
+      : (endTier === "perfect" && isPractice) ? "tierPracticeAll"
+      : endTier === "perfect" ? "tierPerfect"
+      : endTier === "good" ? "tierGood"
+      : endTier === "keep" ? "tierKeep" : "";
+    const tierLabel = tierKey ? String(end[tierKey] || "").trim() : "";
     const pipsHtml = (isRun && outcomes.length > 0)
       ? `<div class="wt-end-pips" role="img" aria-label="${escapeHtml(correctAnswersLine)}">${outcomes.map((ok, i) => `<span class="wt-end-pip ${ok ? "wt-end-pip--ok" : "wt-end-pip--ko"}" style="--i:${i}">${ok ? "✓" : "✕"}</span>`).join("")}</div>`
       : "";
-    const confettiHtml = (endTier === "perfect" || endTier === "good")
+    const confettiHtml = (endTier === "perfect" || endTier === "good" || endTier === "record")
       ? `<div class="wt-end-confetti" aria-hidden="true">${Array.from({ length: 14 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>`
       : "";
     const poolSize = clampInt(cfg?.game?.poolSize, 0, 99999);
@@ -759,7 +769,7 @@
     <div class="wt-end-score${newBest ? " wt-end-score--newbest" : ""}" role="group" aria-label="${escapeHtml(displayScoreLine)}">
       <div class="wt-end-score__headline">
         ${displayScoreHeading ? `<span class="wt-end-score__eyebrow">${escapeHtml(displayScoreHeading)}</span>` : ``}
-        <span class="wt-end-score__value"${(isRun && !isPractice) ? ` data-count="${scoreFP}" data-tier="${escapeHtml(endTier)}"` : ``}>
+        <span class="wt-end-score__value"${(isRun || isBonus || isPractice) ? ` data-count="${scoreFP}" data-tier="${escapeHtml(endTier)}"` : ``}>
           ${escapeHtml(displayScoreValue || displayScoreLine)}
         </span>
       </div>

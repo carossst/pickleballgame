@@ -629,3 +629,48 @@ test('French version links to the rules guide of bonjourpickleball.fr, English d
     page.locator('a[href*="bonjourpickleball.fr/regles"]')
   ).toHaveCount(0);
 });
+
+test('feedback flourishes: floating plus, streak banner and ball, none with reduced motion', async ({
+  browser
+}) => {
+  const makePage = async (reducedMotion) => {
+    const context = await browser.newContext({
+      baseURL: 'http://127.0.0.1:4173',
+      reducedMotion: reducedMotion ? 'reduce' : 'no-preference'
+    });
+    const page = await context.newPage();
+    await page.route('https://gc.zgo.at/**', (route) => route.abort());
+    await page.route('**/content.json', async (route) => {
+      const response = await route.fetch();
+      const content = await response.json();
+      content.items.forEach((item) => {
+        item.correctAnswer = true;
+      });
+      await route.fulfill({ json: content });
+    });
+    return { context, page };
+  };
+
+  const { context, page } = await makePage(false);
+  await startFreshRun(page);
+  await page.locator('[data-action="answer-true"]').click({ timeout: 5000 });
+  await expect(page.locator('.wt-fx-layer .wt-fx-plus')).toHaveCount(1);
+  await expect(page.locator('.wt-fx-layer .wt-fx-ball--ok')).toHaveCount(1);
+  for (let i = 0; i < 2; i++) {
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 4000 });
+    await page.locator('[data-action="answer-true"]').click({ timeout: 4000 });
+  }
+  await expect(page.locator('.wt-fx-layer .wt-fx-streak')).toHaveCount(1);
+  await context.close();
+
+  const reduced = await makePage(true);
+  await startFreshRun(reduced.page);
+  await reduced.page
+    .locator('[data-action="answer-true"]')
+    .click({ timeout: 5000 });
+  await expect(reduced.page.locator('.wt-feedback')).toBeVisible();
+  await expect(reduced.page.locator('.wt-fx-layer')).toHaveCount(0);
+  await reduced.context.close();
+});

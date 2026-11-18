@@ -851,6 +851,8 @@
       tierPerfect: 'Partie parfaite !',
       tierGood: 'Beau jeu !',
       tierKeep: 'On continue !',
+      tierRecord: 'Nouveau record !',
+      tierPracticeAll: 'Toutes corrigées !',
       bonusChip: '+{bonus} point{pluralS} bonus grâce à votre série',
       shareChallenge: 'Défier un ami',
       nextGameTicketLine: 'Marquez {target} points pour gagner un jeton Mode Rapide.',
