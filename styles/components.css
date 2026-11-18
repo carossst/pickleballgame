@@ -1860,3 +1860,9 @@ body:has(.wt-card--paywall) .wt-seo-links {
   height: auto;
   margin: 0 0 8px 12px;
 }
+
+.wt-explanation__more {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm, 14px);
+}

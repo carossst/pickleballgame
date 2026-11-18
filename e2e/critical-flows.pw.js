@@ -582,3 +582,50 @@ test('four green bars activate double points and a mistake clears them', async (
   expect(replayEvents).toHaveLength(1);
   expect(replayEvents[0].path).toContain('/combo-reached/');
 });
+
+test('French version links to the rules guide of bonjourpickleball.fr, English does not', async ({
+  page
+}) => {
+  await page.route('https://gc.zgo.at/**', (route) => route.abort());
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+  await page.goto('/fr.html', { waitUntil: 'domcontentloaded' });
+  await expect(
+    page.locator(
+      '#wt-rules-guide-link[href^="https://www.bonjourpickleball.fr/regles/"]'
+    )
+  ).toHaveCount(1);
+  await page
+    .getByRole('button', { name: 'Commencer', exact: true })
+    .click({ timeout: 15000 });
+  await page.locator('[data-action="answer-true"]').click({ timeout: 5000 });
+  await expect(
+    page.locator(
+      '.wt-explanation a[href^="https://www.bonjourpickleball.fr/regles/questions/"][rel~="noopener"]'
+    )
+  ).toHaveCount(1);
+  for (let i = 0; i < 10; i++) {
+    if (await page.locator('.wt-card--end').isVisible()) break;
+    await page
+      .locator('button[data-action="continue"]')
+      .click({ timeout: 1500 })
+      .catch(() => {});
+    await page
+      .locator('[data-action="answer-true"]')
+      .click({ timeout: 2000 })
+      .catch(() => {});
+  }
+  await expect(
+    page.locator(
+      '.wt-card--end a[href^="https://www.bonjourpickleball.fr/regles/?utm_source=pickleballrulesquiz"]'
+    )
+  ).toHaveCount(1);
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#wt-rules-guide-link')).toHaveCount(0);
+  await expect(
+    page.locator('a[href*="bonjourpickleball.fr/regles"]')
+  ).toHaveCount(0);
+});

@@ -1062,6 +1062,12 @@ Try this one:
       funFactTemplatesTrue: [`"{question}" True or false? 🤔`]
     },
 
+    rulesLinks: {
+      endLabel: 'Understand the rules in detail on Bonjour Pickleball',
+      explainLabel: 'Understand the rule in detail',
+      footerLabel: 'Rules guide'
+    },
+
     newsletter: {
       link: 'Get new tricky questions by email',
       landingLine: 'Now and then, a new tricky question. Free, unsubscribe in one click.',
