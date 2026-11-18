@@ -262,3 +262,10 @@ Contract worth remembering: anything added to the DOM after a render is lost at 
 - `newsletter.js` (bundle): `WT_Newsletter` validates the email (first name optional, 40 characters), posts `email_address` and `fields[first_name]` (names configurable in `WT_CONFIG.newsletter.fieldNames`) to the Kit form action URL with `fetch(..., { mode: 'no-cors' })`, and remembers the signup in `localStorage` key `wt-newsletter`. The answer of a no-cors post cannot be read, so the UI says "check your inbox"; Kit sends the confirmation email (double opt-in is a Kit setting). A hidden honeypot field `#wt-nl-website` skips bot submissions.
 - `ui-newsletter.js` (bundle): `WT_UI_Newsletter.open(ui)` / `submit(ui)`, wired to the actions `open-newsletter` and `confirm-newsletter`. The end-screen link (`ui-screen-end.js`) only shows when `WT_CONFIG.newsletter.formAction[lang]` is an https URL and the player has not subscribed. It is empty by default: the feature is off until the owner pastes the Kit form URLs. Wording keys: `newsletter.*` (EN and FR).
 - Analytics: `newsletter_submit` (no personal data). `privacy.html` section 5 describes the signup and Kit.
+
+## Landing stays light (owner decision, 18 November 2026)
+
+- One primary action per state (play, or the share offer once free games are used), then at most one or two discreet secondary blocks.
+- Removed on purpose: "Install the app" button and its helper line on the landing, the standalone level badge when a daily or best card is shown, the repeated waitlist texts (now one text link to the newsletter), the "No game credit needed" line, the duplicated "Best score" title.
+- Before adding a block to the landing, decide which one leaves. Code: `ui-screen-landing.js` (`render`, `renderLandingStatsCard`, `postCompletionHtml`).
+- Open question: the daily challenge card now appears right after the first completed run (Codex, 17 November). The owner wants a light landing; restoring the return-day condition is pending her decision. See `CHANTIER_A_FAIRE.md`.

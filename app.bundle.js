@@ -9938,7 +9938,6 @@ Merci !`
         const dailyBadge = String(landing.dailyChallengeBadge || "").trim();
         const dailyTitleTpl = String(landing.dailyChallengeTitleTemplate || "").trim();
         const dailyCompletedTpl = String(landing.dailyChallengeCompletedTemplate || "").trim();
-        const dailyResetTpl = String(landing.dailyChallengeResetTemplate || "").trim();
         const dailyRewardTpl = String(landing.dailyChallengeRewardTemplate || "").trim();
         const dailyRewardCappedTpl = String(landing.dailyChallengeRewardCappedTemplate || "").trim();
         const dailyRewardPendingTpl = String(landing.dailyChallengeRewardPendingTemplate || "").trim();
@@ -9963,12 +9962,6 @@ Merci !`
           : "";
 
         if (dailyGoalLine) dailyLines.push(dailyGoalLine);
-
-        if (!dailyModel.completedToday && !dailyModel.rewardPendingReplay && dailyResetTpl) {
-          dailyLines.push(fillTemplate(dailyResetTpl, {
-            resetTime: String(dailyModel.resetCountdown || "")
-          }));
-        }
 
         if (dailyModel.rewardPendingReplay && dailyRewardPendingTpl) {
           dailyLines.push(fillTemplate(dailyRewardPendingTpl, {
@@ -10004,8 +9997,7 @@ Merci !`
               : " wt-landing-stat--daily",
             progressClass: (dailyModel.completedToday && !dailyModel.rewardPendingReplay) ? " wt-progress--mastery" : "",
             cardAttrs: `data-wt-daily-challenge-card="1"`,
-            cardAction: dailyAction,
-            cardActionAria: dailyActionLabel,
+            // One button only: the card itself is not clickable (no nested interactive element).
             ctaAction: dailyAction,
             ctaLabel: dailyActionLabel
           }, escapeHtml);
