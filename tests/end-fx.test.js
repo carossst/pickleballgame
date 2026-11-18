@@ -41,3 +41,20 @@ describe('play-fx streak milestones', () => {
     [0, 1, 2, 4, 6, 9].forEach((n) => expect(streakMilestone(n)).toBe(false));
   });
 });
+
+describe('end-fx tiers for Rapid Fire and practice', () => {
+  it('Rapid Fire: record needs a new best of 3+, solid from 5', () => {
+    const { bonusTier } = load();
+    expect(bonusTier(4, true)).toBe('record');
+    expect(bonusTier(2, true)).toBe('');
+    expect(bonusTier(6, false)).toBe('good');
+    expect(bonusTier(3, false)).toBe('');
+  });
+
+  it('practice: only a clean sweep is celebrated', () => {
+    const { practiceTier } = load();
+    expect(practiceTier([true, true, true])).toBe('perfect');
+    expect(practiceTier([true, false])).toBe('');
+    expect(practiceTier([])).toBe('');
+  });
+});

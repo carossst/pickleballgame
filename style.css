@@ -6199,3 +6199,8 @@ body:has(.wt-container[data-wt-mode='bonus'][data-wt-state='playing']) {
     animation: none !important;
   }
 }
+
+.wt-end-tier--record {
+  background: linear-gradient(135deg, #f0b323, #d98a0b);
+  color: #3a2600;
+}
