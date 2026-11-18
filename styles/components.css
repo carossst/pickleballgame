@@ -1410,9 +1410,10 @@ button.wt-level-chip {
   /* Default accent MUST exist (gameplay overlay may not set a variant) */
   --wt-overlay-accent: var(--shadow-color);
 
-  /* Very light scrim */
+  /* Court-themed scrim: separate the event card without washing out the game. */
   --wt-overlay-backdrop: rgb(var(--shadow-color) / var(--wt-a-08));
   background: var(--wt-overlay-backdrop);
+  backdrop-filter: blur(2px);
 
   opacity: 0;
   visibility: hidden;
@@ -1447,42 +1448,60 @@ button.wt-level-chip {
 /* Variants */
 .wt-chance-overlay--danger {
   --wt-overlay-accent: var(--danger);
-  --wt-overlay-backdrop: rgb(var(--danger) / var(--wt-a-12));
+  --wt-overlay-backdrop: rgb(var(--danger-dark) / var(--wt-a-12));
 }
 
 .wt-chance-overlay--info {
-  --wt-overlay-accent: var(--info);
-  --wt-overlay-backdrop: rgb(var(--info) / var(--wt-a-08));
+  --wt-overlay-accent: var(--court-ball);
+  --wt-overlay-backdrop: rgb(var(--court-blue) / var(--wt-a-14));
 }
 
 .wt-chance-overlay--success {
   --wt-overlay-accent: var(--success);
-  --wt-overlay-backdrop: rgb(var(--success) / var(--wt-a-10));
+  --wt-overlay-backdrop: rgb(var(--success-dark) / var(--wt-a-12));
 }
 
 .wt-chance-overlay--success .wt-chance-overlay__text {
-  color: rgb(var(--success-dark));
+  color: #fff;
   font-weight: 700;
 }
 
 .wt-chance-overlay__title {
   display: inline-block;
-  font-size: var(--fs-body);
-  font-weight: 700;
-  line-height: 1.35;
-  color: rgb(var(--text-strong));
+  margin-bottom: 2px;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: var(--ls-ui-wide);
+  text-transform: uppercase;
+  color: rgb(var(--wt-overlay-accent));
 }
 
 .wt-chance-overlay__lead {
   display: inline-block;
-  font-size: var(--fs-body);
+  font-size: var(--fs-md);
   font-weight: 700;
   line-height: 1.35;
-  color: rgb(var(--text-strong));
+  color: #fff;
 }
 
 .wt-chance-overlay__hint {
   font-style: italic;
+  color: rgb(226 232 240 / var(--wt-a-90));
+}
+
+.wt-chance-overlay__text {
+  display: block;
+  max-width: 30rem;
+  color: #fff;
+  font-size: var(--fs-md);
+  font-weight: 650;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.wt-chance-overlay__text .wt-muted {
+  color: rgb(226 232 240 / var(--wt-a-90));
 }
 
 /* Content card */
@@ -1492,21 +1511,23 @@ button.wt-level-chip {
   flex-direction: column;
   align-items: center;
   gap: var(--gap-2);
-  padding: var(--gap-4) var(--space-18);
+  width: min(34rem, calc(100vw - 32px));
+  padding: var(--space-14) var(--space-18) var(--space-16);
 
   /* Keep short micro-hints visually compact instead of stretching like a modal card. */
-  width: fit-content;
-  max-width: min(34rem, 92vw);
+  max-width: min(34rem, calc(100vw - 32px));
 
-  background: rgb(var(--surface));
+  background: linear-gradient(180deg, rgb(11 78 124) 0%, rgb(8 45 72) 100%);
   border-radius: var(--r-card);
-  border: 1px solid rgb(var(--wt-overlay-accent) / var(--wt-a-18));
+  border: 2px solid rgb(var(--wt-overlay-accent));
+  border-top-width: 5px;
 
   box-shadow:
-    0 16px 36px rgb(var(--shadow-color) / var(--wt-a-16));
+    0 18px 42px rgb(var(--shadow-color) / var(--wt-a-35)),
+    0 0 0 1px rgb(255 255 255 / var(--wt-a-10));
 
   animation:
-    wtOverlayPop var(--wt-anim-overlay-pop) cubic-bezier(0.34, 1.56, 0.64, 1);
+    wtOverlayPop 280ms ease-out;
 }
 
 .wt-chance-overlay__content::before {
@@ -1523,6 +1544,23 @@ button.wt-level-chip {
     padding-right: var(--pad);
     padding-left: var(--pad);
     padding-bottom: calc(env(safe-area-inset-bottom) + var(--pad));
+  }
+}
+
+@media (max-width: 480px) {
+  .wt-chance-overlay__content {
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    padding-right: var(--space-12);
+    padding-left: var(--space-12);
+  }
+
+  .wt-chance-overlay__text {
+    font-size: var(--fs-base);
+  }
+
+  .wt-chance-overlay__title {
+    font-size: 0.72rem;
   }
 }
 
