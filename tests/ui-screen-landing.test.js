@@ -285,7 +285,7 @@ test('landing after first completed run shows daily and leaderboard blocks witho
   expect(html).not.toContain('PERSONAL BEST');
 });
 
-test('landing daily card is clickable when the challenge can be played', () => {
+test('landing daily card has a single button when the challenge can be played', () => {
   const modules = loadLandingModules();
   const html = modules.renderLanding(
     createUi(1, { bestScoreFP: 0, seenCount: 8 }),
@@ -293,8 +293,10 @@ test('landing daily card is clickable when the challenge can be played', () => {
   );
 
   expect(html).toContain('DAILY CHALLENGE');
-  expect(html).toContain('data-action="start-daily-challenge"');
-  expect(html).toContain('wt-landing-stat--clickable');
+  // One button only: the card itself is not a second interactive element.
+  expect(html.split('data-action="start-daily-challenge"')).toHaveLength(2);
+  expect(html).not.toContain('role="button"');
+  expect(html).not.toContain('New challenge in');
 });
 
 test('landing hides phase progress card when no seen questions exist yet', () => {
