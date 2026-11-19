@@ -82,6 +82,7 @@
       ],
       updateAvailable: 'New version available.',
       updateNow: 'Refresh app',
+      updateLater: 'Later',
 
       offlinePayment: 'Payment requires an internet connection.',
       copied: 'Copied',
@@ -902,18 +903,11 @@
       reassuranceTitle: '',
       reassuranceItems: [],
 
-      socialProofTitle: 'What players say',
-      socialProofQuotes: [
-        {
-          quote:
-            "★★★★★\nI was sure I'd ace it. Caught three rules I've been getting wrong at the club. The explanations actually help.",
-          author: 'Maya, tournament player'
-        },
-        {
-          quote:
-            "★★★★★\nTwo games in and I realized I'd been calling some things wrong for months.",
-          author: 'Jon, doubles regular'
-        }
+      socialProofTitle: 'What players discover',
+      socialProofItems: [
+        'Spot tricky rule calls from real game situations.',
+        'Get a clear explanation after every answer.',
+        'Review the mistakes that matter most to your game.'
       ],
 
       savingsLineTemplate: 'Save {saveAmount} with the early price.',

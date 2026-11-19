@@ -321,6 +321,14 @@
       if (window.__WT_SW_PENDING_UPDATE_TOAST__ === true) showUpdateToast();
     };
 
+    window.__WT_DISMISS_UPDATE__ = function () {
+      const waitingKey = getWaitingWorkerKey(window.__WT_SW_WAITING__ || null);
+      if (waitingKey) markUpdateToastSeen(waitingKey);
+      window.__WT_SW_UPDATE_READY__ = true;
+      window.__WT_SW_PENDING_UPDATE_TOAST__ = false;
+      hideUpdateToast();
+    };
+
     function setWaitingWorker(worker) {
       if (!worker) return;
       window.__WT_SW_WAITING__ = worker;

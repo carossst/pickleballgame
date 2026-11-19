@@ -653,6 +653,12 @@ function UI({ storage, game, config, wording }) {
           self.applyUpdateToast();
           break;
 
+        case 'dismiss-update':
+          if (typeof window.__WT_DISMISS_UPDATE__ === 'function') {
+            window.__WT_DISMISS_UPDATE__();
+          }
+          break;
+
         case 'remind-house-ad':
           self.remindHouseAdLater();
           break;

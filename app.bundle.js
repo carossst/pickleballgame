@@ -55,7 +55,7 @@
   window.WT_CONFIG = {
 
     // Product version (UI display, logs)
-    version: "4.3.64",
+    version: "4.3.65",
 
     // Storage schema version (localStorage).
     // Change ONLY if you accept a migration/wipe.
@@ -1029,6 +1029,7 @@
       ],
       updateAvailable: 'New version available.',
       updateNow: 'Refresh app',
+      updateLater: 'Later',
 
       offlinePayment: 'Payment requires an internet connection.',
       copied: 'Copied',
@@ -1849,18 +1850,11 @@
       reassuranceTitle: '',
       reassuranceItems: [],
 
-      socialProofTitle: 'What players say',
-      socialProofQuotes: [
-        {
-          quote:
-            "★★★★★\nI was sure I'd ace it. Caught three rules I've been getting wrong at the club. The explanations actually help.",
-          author: 'Maya, tournament player'
-        },
-        {
-          quote:
-            "★★★★★\nTwo games in and I realized I'd been calling some things wrong for months.",
-          author: 'Jon, doubles regular'
-        }
+      socialProofTitle: 'What players discover',
+      socialProofItems: [
+        'Spot tricky rule calls from real game situations.',
+        'Get a clear explanation after every answer.',
+        'Review the mistakes that matter most to your game.'
       ],
 
       savingsLineTemplate: 'Save {saveAmount} with the early price.',
@@ -2228,6 +2222,7 @@ Thanks!`
       ],
       updateAvailable: 'Nouvelle version disponible.',
       updateNow: "Recharger l'application",
+      updateLater: 'Plus tard',
 
       offlinePayment: 'Le paiement nécessite une connexion Internet.',
       copied: 'Copié',
@@ -3065,18 +3060,11 @@ Thanks!`
       reassuranceTitle: '',
       reassuranceItems: [],
 
-      socialProofTitle: 'Leurs retours après quelques parties',
-      socialProofQuotes: [
-        {
-          quote:
-            "★★★★★\nJe pensais tout connaître. J'ai découvert trois règles que je comprenais mal au club. Les explications aident vraiment.",
-          author: 'Christine, joueuse en club'
-        },
-        {
-          quote:
-            "★★★★★\nEn deux parties, j'ai réalisé que je faisais des erreurs depuis des mois.",
-          author: 'Jean, retraité'
-        }
+      socialProofTitle: 'Ce que vous allez découvrir',
+      socialProofItems: [
+        'Repérez les pièges à partir de vraies situations de jeu.',
+        'Obtenez une explication claire après chaque réponse.',
+        'Revoyez les erreurs les plus utiles pour votre jeu.'
       ],
 
       savingsLineTemplate: 'Économisez {saveAmount} avec le prix de lancement.',
@@ -8228,6 +8216,21 @@ Merci !`
     `;
   }
 
+  function renderPaywallDiscoveryCard(title, items, escapeHtml) {
+    const safeTitle = String(title || '').trim();
+    const safeItems = Array.isArray(items)
+      ? items.map((item) => String(item || '').trim()).filter(Boolean)
+      : [];
+    if (!safeTitle && !safeItems.length) return '';
+
+    return `
+      <div class="wt-box">
+        ${safeTitle ? `<div class="wt-meta">${escapeHtml(safeTitle)}</div>` : ''}
+        ${safeItems.length ? `<ul class="wt-list wt-paywall-discovery-list">${safeItems.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
+      </div>
+    `;
+  }
+
   function render(ui, helpers) {
     const {
       escapeHtml,
@@ -8469,6 +8472,7 @@ Merci !`
     };
 
     const socialProofTitle = String(pay.socialProofTitle || "").trim();
+    const socialProofItems = Array.isArray(pay.socialProofItems) ? pay.socialProofItems : [];
     const socialProofQuotes = Array.isArray(pay.socialProofQuotes) ? pay.socialProofQuotes : [];
     const notReadyCta = String(pay.notReadyCta || waitlistCta || "").trim();
     const notReadyLine = String(pay.notReadyLine || "").trim();
@@ -8563,7 +8567,9 @@ Merci !`
         escapeHtml
       )
       : "";
-    const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
+    const socialProofHtml = socialProofItems.length
+      ? renderPaywallDiscoveryCard(socialProofTitle, socialProofItems, escapeHtml)
+      : renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
     const paywallSummaryHtml = compactBullets.length
       ? `
       <div class="wt-paywall-summary" aria-label="${escapeHtml(compactTitle || valueTitle || "")}">
@@ -16681,6 +16687,12 @@ function UI({ storage, game, config, wording }) {
 
         case 'apply-update':
           self.applyUpdateToast();
+          break;
+
+        case 'dismiss-update':
+          if (typeof window.__WT_DISMISS_UPDATE__ === 'function') {
+            window.__WT_DISMISS_UPDATE__();
+          }
           break;
 
         case 'remind-house-ad':
@@ -26201,6 +26213,14 @@ ${questionAudioHtml}
     // the player returns to the landing screen.
     window.__WT_SHOW_PENDING_UPDATE__ = function () {
       if (window.__WT_SW_PENDING_UPDATE_TOAST__ === true) showUpdateToast();
+    };
+
+    window.__WT_DISMISS_UPDATE__ = function () {
+      const waitingKey = getWaitingWorkerKey(window.__WT_SW_WAITING__ || null);
+      if (waitingKey) markUpdateToastSeen(waitingKey);
+      window.__WT_SW_UPDATE_READY__ = true;
+      window.__WT_SW_PENDING_UPDATE_TOAST__ = false;
+      hideUpdateToast();
     };
 
     function setWaitingWorker(worker) {

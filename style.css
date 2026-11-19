@@ -2293,6 +2293,7 @@ button.wt-level-chip {
 
   transition: opacity var(--fast);
   opacity: 0;
+  visibility: hidden;
 
   /* CRITIQUE: ne doit jamais bloquer le chest (ou autre UI) */
   pointer-events: none;
@@ -2322,6 +2323,7 @@ button.wt-level-chip {
 
 .wt-toast--visible {
   opacity: 1;
+  visibility: visible;
 
   /* reste non-bloquant meme visible */
   pointer-events: none;

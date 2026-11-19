@@ -47,6 +47,21 @@
     `;
   }
 
+  function renderPaywallDiscoveryCard(title, items, escapeHtml) {
+    const safeTitle = String(title || '').trim();
+    const safeItems = Array.isArray(items)
+      ? items.map((item) => String(item || '').trim()).filter(Boolean)
+      : [];
+    if (!safeTitle && !safeItems.length) return '';
+
+    return `
+      <div class="wt-box">
+        ${safeTitle ? `<div class="wt-meta">${escapeHtml(safeTitle)}</div>` : ''}
+        ${safeItems.length ? `<ul class="wt-list wt-paywall-discovery-list">${safeItems.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
+      </div>
+    `;
+  }
+
   function render(ui, helpers) {
     const {
       escapeHtml,
@@ -288,6 +303,7 @@
     };
 
     const socialProofTitle = String(pay.socialProofTitle || "").trim();
+    const socialProofItems = Array.isArray(pay.socialProofItems) ? pay.socialProofItems : [];
     const socialProofQuotes = Array.isArray(pay.socialProofQuotes) ? pay.socialProofQuotes : [];
     const notReadyCta = String(pay.notReadyCta || waitlistCta || "").trim();
     const notReadyLine = String(pay.notReadyLine || "").trim();
@@ -382,7 +398,9 @@
         escapeHtml
       )
       : "";
-    const socialProofHtml = renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
+    const socialProofHtml = socialProofItems.length
+      ? renderPaywallDiscoveryCard(socialProofTitle, socialProofItems, escapeHtml)
+      : renderPaywallQuoteCard(socialProofTitle, socialProofQuotes, escapeHtml);
     const paywallSummaryHtml = compactBullets.length
       ? `
       <div class="wt-paywall-summary" aria-label="${escapeHtml(compactTitle || valueTitle || "")}">

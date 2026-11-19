@@ -81,6 +81,7 @@
       ],
       updateAvailable: 'Nouvelle version disponible.',
       updateNow: "Recharger l'application",
+      updateLater: 'Plus tard',
 
       offlinePayment: 'Le paiement nécessite une connexion Internet.',
       copied: 'Copié',
@@ -918,18 +919,11 @@
       reassuranceTitle: '',
       reassuranceItems: [],
 
-      socialProofTitle: 'Leurs retours après quelques parties',
-      socialProofQuotes: [
-        {
-          quote:
-            "★★★★★\nJe pensais tout connaître. J'ai découvert trois règles que je comprenais mal au club. Les explications aident vraiment.",
-          author: 'Christine, joueuse en club'
-        },
-        {
-          quote:
-            "★★★★★\nEn deux parties, j'ai réalisé que je faisais des erreurs depuis des mois.",
-          author: 'Jean, retraité'
-        }
+      socialProofTitle: 'Ce que vous allez découvrir',
+      socialProofItems: [
+        'Repérez les pièges à partir de vraies situations de jeu.',
+        'Obtenez une explication claire après chaque réponse.',
+        'Revoyez les erreurs les plus utiles pour votre jeu.'
       ],
 
       savingsLineTemplate: 'Économisez {saveAmount} avec le prix de lancement.',
