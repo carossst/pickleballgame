@@ -77,19 +77,6 @@ body {
   padding-bottom: 7mm;
 }
 
-.poster-mark {
-  display: inline-grid;
-  width: 17mm;
-  height: 17mm;
-  place-items: center;
-  border-radius: 50%;
-  color: #fff;
-  background: var(--poster-accent-dark);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-}
-
 .poster-kicker,
 .poster-overline {
   color: var(--poster-accent-dark);
