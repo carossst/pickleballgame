@@ -261,6 +261,19 @@ body {
     page-break-inside: avoid;
   }
 
+  /* Black-and-white friendly: no colour-only cues, no reliance on background graphics. */
+  .poster {
+    --poster-accent: #0f172a;
+    --poster-accent-dark: #0f172a;
+    --poster-muted: #334155;
+    --poster-line: #64748b;
+  }
+
+  .poster-bullets li::before {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   .poster-cta,
   .poster-footer,
   .poster-header,
