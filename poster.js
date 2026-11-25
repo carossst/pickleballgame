@@ -10,19 +10,19 @@
     },
     copy: {
       en: {
-        eyebrow: 'For clubs and courts',
+        eyebrow: 'For clubs, courts and players',
         offeredBy: 'Brought to you by',
-        overline: 'Can you get 5 tricky pickleball calls right?',
-        title: 'Pickleball Rules Quiz',
-        hook: 'Test real game situations, learn the rule, and see where you stand.',
+        overline: 'Think you know the rules?',
+        title: 'Pickleball Rules Challenge',
+        hook: 'Test real game situations. Learn the rule. Play with confidence.',
         bullets: [
-          'Try 2 games free, no signup',
-          '200 rules questions based on the 2026 USA Pickleball rulebook',
-          'Serving, scoring, faults, kitchen rules and line calls',
-          'Full access: $6.99 one time',
-          'No subscription'
+          '2 free games · no signup',
+          '200 true-or-false rules questions',
+          'Serving, scoring, faults, kitchen and line calls',
+          'Full access: $6.99 one time · no subscription'
         ],
-        cta: 'Scan to play',
+        cta: 'Scan to play free',
+        ctaNote: '2 free games · no signup',
         scanHint: 'Scan with your phone',
         footer: 'Based on the USA Pickleball rulebook',
         back: 'Back to quiz',
@@ -33,19 +33,19 @@
         description: 'Printable Pickleball Rules Quiz poster for clubs and courts.'
       },
       fr: {
-        eyebrow: 'Pour les clubs et les terrains',
+        eyebrow: 'Pour les clubs, terrains et joueurs',
         offeredBy: 'Offert par',
-        overline: 'Saurez-vous répondre juste à 5 questions pièges sur les règles du pickle ?',
-        title: 'Défi des règles du pickleball',
-        hook: 'Testez-vous sur de vraies situations de jeu, découvrez la règle et voyez où vous en êtes.',
+        overline: 'Vous pensez connaître les règles ?',
+        title: 'Défi des règles du pickle',
+        hook: 'Testez de vraies situations de jeu. Apprenez la règle. Jouez en confiance.',
         bullets: [
-          '2 parties gratuites, sans inscription',
-          '200 questions sur les règles, basées sur le règlement USA Pickleball 2026',
+          '2 parties gratuites · sans inscription',
+          '200 questions vrai ou faux sur les règles',
           'Service, score, fautes, zone de non-volée et lignes',
-          'Accès complet : 6,99 $ US en paiement unique',
-          'Sans abonnement'
+          'Accès complet : 6,99 $ US · sans abonnement'
         ],
-        cta: 'Scannez pour jouer',
+        cta: 'Scannez pour jouer gratuitement',
+        ctaNote: '2 parties gratuites · sans inscription',
         scanHint: 'Scannez avec votre téléphone',
         footer: 'Basé sur le règlement USA Pickleball',
         back: 'Retour au quiz',
@@ -64,6 +64,12 @@
 
   function getUrl() {
     return POSTER_CONFIG.urls[POSTER_CONFIG.locale] || POSTER_CONFIG.urls.en;
+  }
+
+  function getDisplayUrl() {
+    return POSTER_CONFIG.locale === 'fr'
+      ? 'pickleballrulesquiz.com/fr.html'
+      : 'pickleballrulesquiz.com';
   }
 
   // ?club=Name or ?coach=Name: show the name and put a tracking tag in the QR code.
@@ -109,7 +115,6 @@
 
   function init() {
     const copy = getCopy();
-    const url = getUrl();
     document.documentElement.lang = POSTER_CONFIG.locale;
     document.title = POSTER_CONFIG.locale === 'fr'
       ? 'Affiche du quiz des règles du pickleball'
@@ -125,7 +130,8 @@
     setText('[data-poster="title"]', copy.title);
     setText('[data-poster="hook"]', copy.hook);
     setText('[data-poster="cta"]', copy.cta);
-    setText('[data-poster="url"]', url.replace(/^https?:\/\//, ''));
+    setText('[data-poster="ctaNote"]', copy.ctaNote);
+    setText('[data-poster="url"]', getDisplayUrl());
     setText('[data-poster="scanHint"]', copy.scanHint);
     setText('[data-poster="footer"]', copy.footer);
     setText('[data-poster="back"]', copy.back);
