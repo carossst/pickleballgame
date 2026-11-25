@@ -16,7 +16,6 @@
         title: 'Pickleball Rules Challenge',
         hook: 'Test real game situations. Learn the rule. Play with confidence.',
         bullets: [
-          '2 free games · no signup',
           '200 true-or-false rules questions',
           'Serving, scoring, faults, kitchen and line calls',
           'Full access: $6.99 one time · no subscription'
@@ -30,7 +29,7 @@
         actionsLabel: 'Poster actions',
         offerLabel: 'What the quiz includes',
         qrLabel: 'QR code to play Pickleball Rules Quiz',
-        description: 'Printable Pickleball Rules Quiz poster for clubs and courts.'
+        description: 'Printable Pickleball Rules Challenge poster for clubs and courts.'
       },
       fr: {
         eyebrow: 'Pour les clubs, terrains et joueurs',
@@ -39,7 +38,6 @@
         title: 'Défi des règles du pickle',
         hook: 'Testez de vraies situations de jeu. Apprenez la règle. Jouez en confiance.',
         bullets: [
-          '2 parties gratuites · sans inscription',
           '200 questions vrai ou faux sur les règles',
           'Service, score, fautes, zone de non-volée et lignes',
           'Accès complet : 6,99 $ US · sans abonnement'
@@ -117,8 +115,8 @@
     const copy = getCopy();
     document.documentElement.lang = POSTER_CONFIG.locale;
     document.title = POSTER_CONFIG.locale === 'fr'
-      ? 'Affiche du quiz des règles du pickleball'
-      : 'Pickleball Rules Quiz Poster';
+      ? 'Affiche du défi des règles du pickle'
+      : 'Pickleball Rules Challenge Poster';
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute('content', copy.description);
     const sponsor = getSponsor();
